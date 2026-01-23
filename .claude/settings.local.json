@@ -11,7 +11,9 @@
       "WebFetch(domain:www.ryohin-keikaku.jp)",
       "Bash(npm uninstall:*)",
       "Bash(ls:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(npm run test:run:*)",
+      "Bash(npm run check-all:*)"
     ]
   }
 }
