@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { signIn, signUp } from "@/lib/auth/actions";
 
 export default function LoginPage() {
   const [mode, setMode] = useState<"login" | "signup">("login");
@@ -16,20 +16,16 @@ export default function LoginPage() {
   const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const supabase = createClient();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const result = await signIn(email, password);
 
-    if (error) {
-      setError("メールアドレスまたはパスワードが正しくありません");
+    if (result.error) {
+      setError(result.error);
       setIsLoading(false);
       return;
     }
@@ -56,33 +52,15 @@ export default function LoginPage() {
       return;
     }
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          name: name.trim(),
-        },
-      },
-    });
+    const result = await signUp(name.trim(), email, password);
 
-    if (error) {
-      if (error.message.includes("already registered")) {
-        setError("このメールアドレスは既に登録されています");
-      } else {
-        setError("登録に失敗しました。入力内容を確認してください");
-      }
+    if (result.error) {
+      setError(result.error);
       setIsLoading(false);
       return;
     }
 
-    // 自動ログインして遷移
-    const { error: loginError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (loginError) {
+    if (result.needsLogin) {
       setSuccess("登録が完了しました。ログインしてください");
       setMode("login");
       setIsLoading(false);
