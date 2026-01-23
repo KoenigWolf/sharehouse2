@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -8,40 +6,43 @@ import { Profile } from "@/types/profile";
 interface ProfileDetailProps {
   profile: Profile;
   isOwnProfile: boolean;
+  teaTimeEnabled?: boolean;
 }
 
-export function ProfileDetail({ profile, isOwnProfile }: ProfileDetailProps) {
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
+const getInitials = (name: string) => {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+};
 
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return null;
-    const date = new Date(dateString);
-    return date.toLocaleDateString("ja-JP", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
+const formatDate = (dateString: string | null) => {
+  if (!dateString) return null;
+  const date = new Date(dateString);
+  return date.toLocaleDateString("ja-JP", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+};
 
-  const calculateResidenceMonths = (dateString: string | null) => {
-    if (!dateString) return null;
-    const moveIn = new Date(dateString);
-    const now = new Date();
-    const months = (now.getFullYear() - moveIn.getFullYear()) * 12 + (now.getMonth() - moveIn.getMonth());
-    if (months < 1) return "入居したばかり";
-    if (months < 12) return `${months}ヶ月`;
-    const years = Math.floor(months / 12);
-    const remainingMonths = months % 12;
-    if (remainingMonths === 0) return `${years}年`;
-    return `${years}年${remainingMonths}ヶ月`;
-  };
+const calculateResidenceMonths = (dateString: string | null) => {
+  if (!dateString) return null;
+  const moveIn = new Date(dateString);
+  const now = new Date();
+  const months = (now.getFullYear() - moveIn.getFullYear()) * 12 + (now.getMonth() - moveIn.getMonth());
+  if (months < 1) return "入居したばかり";
+  if (months < 12) return `${months}ヶ月`;
+  const years = Math.floor(months / 12);
+  const remainingMonths = months % 12;
+  if (remainingMonths === 0) return `${years}年`;
+  return `${years}年${remainingMonths}ヶ月`;
+};
+
+export function ProfileDetail({ profile, isOwnProfile, teaTimeEnabled }: ProfileDetailProps) {
+  const isMockProfile = profile.id.startsWith("mock-");
 
   return (
     <div>
@@ -54,7 +55,19 @@ export function ProfileDetail({ profile, isOwnProfile }: ProfileDetailProps) {
         <span>戻る</span>
       </Link>
 
-      <div className="bg-white border border-[#e5e5e5]">
+      {/* 未登録バナー */}
+      {isMockProfile && (
+        <div className="mb-3 p-4 border border-dashed border-[#d4d4d4] bg-[#fafaf8]">
+          <p className="text-sm text-[#737373]">
+            この部屋はまだ住民が登録されていません
+          </p>
+          <p className="text-xs text-[#a3a3a3] mt-1">
+            サンプルデータを表示しています
+          </p>
+        </div>
+      )}
+
+      <div className={`bg-white border ${isMockProfile ? "border-dashed border-[#d4d4d4]" : "border-[#e5e5e5]"}`}>
         {/* 横並びレイアウト */}
         <div className="flex flex-col sm:flex-row">
           {/* アバター */}
@@ -119,7 +132,7 @@ export function ProfileDetail({ profile, isOwnProfile }: ProfileDetailProps) {
 
             {/* 趣味・関心 */}
             {profile.interests && profile.interests.length > 0 && (
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-1.5 mb-4">
                 {profile.interests.map((interest, index) => (
                   <span
                     key={index}
@@ -130,6 +143,14 @@ export function ProfileDetail({ profile, isOwnProfile }: ProfileDetailProps) {
                 ))}
               </div>
             )}
+
+            {/* ティータイム参加状況 */}
+            <div className="flex items-center gap-2 pt-3 border-t border-[#e5e5e5]">
+              <span className="text-base">☕</span>
+              <span className={`text-xs ${teaTimeEnabled ? "text-[#16a34a]" : "text-[#a3a3a3]"}`}>
+                ティータイム {teaTimeEnabled ? "参加中" : "不参加"}
+              </span>
+            </div>
           </div>
         </div>
       </div>
