@@ -71,8 +71,6 @@ export function formatDateShort(dateString: string, locale = "ja-JP"): string {
  * @param moveInDate - ISO date string of move-in date
  * @returns Human-readable duration string in Japanese
  */
-import type { Translator } from "@/lib/i18n";
-
 export function calculateResidenceDuration(
   moveInDate: string | null | undefined,
   t: Translator
