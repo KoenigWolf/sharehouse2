@@ -1,24 +1,24 @@
-"use client";
-
+import { memo } from "react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Profile } from "@/types/profile";
 
 interface ResidentCardProps {
   profile: Profile;
-  index: number;
   isCurrentUser?: boolean;
 }
 
-export function ResidentCard({ profile, isCurrentUser = false }: ResidentCardProps) {
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
+const getInitials = (name: string) => {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+};
+
+export const ResidentCard = memo(function ResidentCard({ profile, isCurrentUser = false }: ResidentCardProps) {
+  const isMockProfile = profile.id.startsWith("mock-");
 
   return (
     <Link href={`/profile/${profile.id}`}>
@@ -26,6 +26,8 @@ export function ResidentCard({ profile, isCurrentUser = false }: ResidentCardPro
         className={`bg-white border transition-colors cursor-pointer relative group ${
           isCurrentUser
             ? "border-[#b94a48] hover:border-[#a13f3d]"
+            : isMockProfile
+            ? "border-dashed border-[#d4d4d4] hover:border-[#a3a3a3]"
             : "border-[#e5e5e5] hover:border-[#b94a48]"
         }`}
       >
@@ -33,6 +35,13 @@ export function ResidentCard({ profile, isCurrentUser = false }: ResidentCardPro
         {isCurrentUser && (
           <div className="absolute top-0 right-0 z-10 bg-[#b94a48] text-white text-[10px] px-2 py-0.5 tracking-wide">
             あなた
+          </div>
+        )}
+
+        {/* 未登録バッジ */}
+        {isMockProfile && !isCurrentUser && (
+          <div className="absolute top-0 left-0 z-10 bg-[#e5e5e5] text-[#737373] text-[10px] px-2 py-0.5 tracking-wide">
+            未登録
           </div>
         )}
 
@@ -78,4 +87,4 @@ export function ResidentCard({ profile, isCurrentUser = false }: ResidentCardPro
       </div>
     </Link>
   );
-}
+});

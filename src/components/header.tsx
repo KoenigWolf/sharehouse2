@@ -20,6 +20,8 @@ export function Header() {
     { href: "/tea-time", label: "Tea Time" },
   ];
 
+  const isSettingsActive = pathname === "/settings";
+
   return (
     <header className="border-b border-[#e5e5e5] bg-white">
       <div className="container mx-auto px-4 h-12 flex items-center justify-between">
@@ -46,12 +48,24 @@ export function Header() {
             })}
           </nav>
         </div>
-        <button
-          onClick={handleLogout}
-          className="text-xs text-[#a3a3a3] hover:text-[#1a1a1a] transition-colors"
-        >
-          ログアウト
-        </button>
+        <div className="flex items-center gap-4">
+          <Link
+            href="/settings"
+            className={`text-xs tracking-wide transition-colors ${
+              isSettingsActive
+                ? "text-[#b94a48]"
+                : "text-[#737373] hover:text-[#1a1a1a]"
+            }`}
+          >
+            マイページ
+          </Link>
+          <button
+            onClick={handleLogout}
+            className="text-xs text-[#a3a3a3] hover:text-[#1a1a1a] transition-colors"
+          >
+            ログアウト
+          </button>
+        </div>
       </div>
     </header>
   );

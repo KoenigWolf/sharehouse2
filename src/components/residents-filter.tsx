@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { Input } from "@/components/ui/input";
 
 interface ResidentsFilterProps {
@@ -7,12 +8,9 @@ interface ResidentsFilterProps {
   onSearchChange: (query: string) => void;
   sortBy: "name" | "room_number" | "move_in_date";
   onSortChange: (sort: "name" | "room_number" | "move_in_date") => void;
-  interestFilter: string | null;
-  onInterestFilterChange: (interest: string | null) => void;
-  availableInterests: string[];
 }
 
-export function ResidentsFilter({
+export const ResidentsFilter = memo(function ResidentsFilter({
   searchQuery,
   onSearchChange,
   sortBy,
@@ -61,4 +59,4 @@ export function ResidentsFilter({
       </div>
     </div>
   );
-}
+});
