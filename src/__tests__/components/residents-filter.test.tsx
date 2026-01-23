@@ -45,7 +45,9 @@ describe("ResidentsFilter", () => {
 
     it("has placeholder text", () => {
       render(<ResidentsFilter {...defaultProps} />);
-      expect(screen.getByPlaceholderText("検索...")).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText("名前・趣味で検索")
+      ).toBeInTheDocument();
     });
   });
 

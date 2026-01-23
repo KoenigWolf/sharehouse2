@@ -34,6 +34,11 @@ vi.mock("next/link", () => ({
 // Suppress console errors during tests (optional)
 const originalError = console.error;
 beforeAll(() => {
+  document.documentElement.lang = "ja";
+  Object.defineProperty(navigator, "language", {
+    value: "ja-JP",
+    configurable: true,
+  });
   console.error = (...args: unknown[]) => {
     if (
       typeof args[0] === "string" &&
