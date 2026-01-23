@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { Provider } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { signIn, signUp } from "@/lib/auth/actions";
@@ -90,7 +91,7 @@ export default function LoginPage() {
 
     const supabase = createClient();
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
-      provider: "line",
+      provider: "line" as Provider,
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
       },
