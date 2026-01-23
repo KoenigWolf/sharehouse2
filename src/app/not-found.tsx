@@ -1,23 +1,44 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#fafaf8] p-4">
-      <div className="text-center">
-        <div className="w-24 h-24 mx-auto mb-8 bg-[#f5f5f3] flex items-center justify-center">
-          <span className="text-5xl">🏠</span>
+    <div className="min-h-screen bg-[#fafaf8] flex flex-col">
+      {/* ヘッダー */}
+      <header className="border-b border-[#e5e5e5] bg-white">
+        <div className="container mx-auto px-6 h-16 flex items-center">
+          <Link href="/" className="text-lg tracking-wider text-[#1a1a1a]">
+            SHARE HOUSE
+          </Link>
         </div>
-        <h1 className="text-5xl text-[#1a1a1a] mb-4 tracking-wide">404</h1>
-        <p className="text-[#737373] mb-8">
-          お探しのページが見つかりませんでした
-        </p>
-        <Link href="/">
-          <Button className="h-12 px-8 bg-[#b94a48] hover:bg-[#a13f3d] text-white rounded-none tracking-wide">
+      </header>
+
+      {/* メインコンテンツ */}
+      <main className="flex-1 flex items-center justify-center p-6">
+        <div className="text-center max-w-md">
+          <p className="text-6xl text-[#d4d4d4] mb-6 font-light">404</p>
+          <h1 className="text-xl text-[#1a1a1a] mb-3 tracking-wide">
+            ページが見つかりません
+          </h1>
+          <p className="text-sm text-[#737373] mb-8 leading-relaxed">
+            お探しのページは移動または削除された可能性があります
+          </p>
+          <Link
+            href="/"
+            className="inline-block px-8 py-3 bg-[#1a1a1a] text-white text-sm tracking-wide hover:bg-[#333] transition-colors"
+          >
             ホームに戻る
-          </Button>
-        </Link>
-      </div>
+          </Link>
+        </div>
+      </main>
+
+      {/* フッター */}
+      <footer className="border-t border-[#e5e5e5] bg-white">
+        <div className="container mx-auto px-6 py-4">
+          <p className="text-xs text-[#a3a3a3] text-center">
+            Share House Portal
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }

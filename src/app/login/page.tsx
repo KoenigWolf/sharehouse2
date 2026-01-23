@@ -46,8 +46,8 @@ export default function LoginPage() {
       return;
     }
 
-    if (password.length < 6) {
-      setError("パスワードは6文字以上で入力してください");
+    if (password.length < 10) {
+      setError("パスワードは10文字以上で入力してください");
       setIsLoading(false);
       return;
     }
@@ -69,11 +69,6 @@ export default function LoginPage() {
 
     router.push("/");
     router.refresh();
-  };
-
-  const fillTestAccount = () => {
-    setEmail("test@example.com");
-    setPassword("password123");
   };
 
   const switchMode = (newMode: "login" | "signup") => {
@@ -129,18 +124,6 @@ export default function LoginPage() {
             </button>
           </div>
 
-          {/* テストアカウント（ログインモードのみ） */}
-          {mode === "login" && (
-            <button
-              type="button"
-              onClick={fillTestAccount}
-              className="w-full mb-6 p-4 border border-dashed border-[#d4d4d4] text-left hover:border-[#b94a48] hover:bg-[#faf8f8] transition-colors"
-            >
-              <p className="text-xs text-[#737373]">テストアカウント</p>
-              <p className="text-sm text-[#1a1a1a] mt-1">クリックで自動入力</p>
-            </button>
-          )}
-
           <form onSubmit={mode === "login" ? handleLogin : handleSignup} className="space-y-5">
             {/* 名前（新規登録のみ） */}
             {mode === "signup" && (
@@ -184,12 +167,12 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder={mode === "signup" ? "6文字以上" : ""}
+                placeholder={mode === "signup" ? "10文字以上、大文字・小文字・数字を含む" : ""}
                 required
                 className="h-12 border-[#e5e5e5] rounded-none bg-white focus:border-[#1a1a1a] focus:ring-0"
               />
               {mode === "signup" && (
-                <p className="text-xs text-[#a3a3a3]">6文字以上で入力してください</p>
+                <p className="text-xs text-[#a3a3a3]">10文字以上、大文字・小文字・数字を各1文字以上含めてください</p>
               )}
             </div>
 
