@@ -4,10 +4,11 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { TEA_TIME } from "@/lib/constants/config";
 import { logError } from "@/lib/errors";
-import { t } from "@/lib/i18n";
+import { getServerTranslator } from "@/lib/i18n/server";
 import { isValidUUID } from "@/lib/security";
-import type { Profile } from "@/types/profile";
-import type { TeaTimeMatch } from "@/types/tea-time";
+import type { Profile } from "@/domain/profile";
+import type { TeaTimeMatch } from "@/domain/tea-time";
+import { enforceAllowedOrigin } from "@/lib/security/request";
 
 /**
  * Response types
@@ -56,6 +57,13 @@ export async function getTeaTimeSetting(userId: string) {
  * Update tea time participation setting
  */
 export async function updateTeaTimeSetting(isEnabled: boolean): Promise<UpdateResponse> {
+  const t = await getServerTranslator();
+
+  const originError = await enforceAllowedOrigin(t, "updateTeaTimeSetting");
+  if (originError) {
+    return { error: originError };
+  }
+
   try {
     const supabase = await createClient();
 
@@ -166,6 +174,13 @@ export async function updateMatchStatus(
   matchId: string,
   status: "done" | "skipped"
 ): Promise<UpdateResponse> {
+  const t = await getServerTranslator();
+
+  const originError = await enforceAllowedOrigin(t, "updateMatchStatus");
+  if (originError) {
+    return { error: originError };
+  }
+
   // Validate matchId format
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   if (!uuidRegex.test(matchId)) {

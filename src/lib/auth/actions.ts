@@ -2,9 +2,9 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import { validateSignUp, validateSignIn } from "@/lib/validations/auth";
+import { validateSignUp, validateSignIn } from "@/domain/validation/auth";
 import { logError } from "@/lib/errors";
-import { t } from "@/lib/i18n";
+import { getServerTranslator } from "@/lib/i18n/server";
 import {
   RateLimiters,
   formatRateLimitError,
@@ -12,6 +12,11 @@ import {
   AuditEventType,
   auditLog,
 } from "@/lib/security";
+import { enforceAllowedOrigin, getRequestIp } from "@/lib/security/request";
+import {
+  createDefaultProfileData,
+  resolveFallbackName,
+} from "@/application/auth/profile";
 
 /**
  * Response types for auth actions
@@ -24,21 +29,6 @@ type SignUpResponse =
 type SignInResponse = { success: true } | { error: string };
 
 /**
- * Create default profile data for a new user
- */
-function createDefaultProfile(userId: string, name: string) {
-  return {
-    id: userId,
-    name: name.trim(),
-    room_number: null,
-    bio: null,
-    avatar_url: null,
-    interests: [],
-    move_in_date: null,
-  };
-}
-
-/**
  * Sign up a new user with email and password
  * Includes rate limiting and audit logging
  */
@@ -47,8 +37,15 @@ export async function signUp(
   email: string,
   password: string
 ): Promise<SignUpResponse> {
+  const t = await getServerTranslator();
+
+  const originError = await enforceAllowedOrigin(t, "signUp");
+  if (originError) {
+    return { error: originError };
+  }
+
   // Server-side validation
-  const validation = validateSignUp({ name, email, password });
+  const validation = validateSignUp({ name, email, password }, t);
   if (!validation.success) {
     return { error: validation.error || t("errors.invalidInput") };
   }
@@ -60,10 +57,14 @@ export async function signUp(
   } = validation.data!;
 
   // Rate limiting
-  const rateLimitResult = RateLimiters.auth(validatedEmail);
+  const ipAddress = await getRequestIp();
+  const rateLimitKey = ipAddress
+    ? `${validatedEmail}:${ipAddress}`
+    : validatedEmail;
+  const rateLimitResult = RateLimiters.auth(rateLimitKey);
   if (!rateLimitResult.success) {
-    AuditActions.rateLimited(validatedEmail, "signUp");
-    return { error: formatRateLimitError(rateLimitResult.retryAfter) };
+    AuditActions.rateLimited(validatedEmail, "signUp", ipAddress || undefined);
+    return { error: formatRateLimitError(rateLimitResult.retryAfter, t) };
   }
 
   try {
@@ -91,7 +92,7 @@ export async function signUp(
         action: "User signup failed",
         outcome: "failure",
         errorMessage: error.message,
-        metadata: { email: validatedEmail.slice(0, 3) + "***" },
+        metadata: { email: validatedEmail.slice(0, 3) + "***", ipAddress },
       });
 
       if (error.message.includes("already registered")) {
@@ -117,6 +118,7 @@ export async function signUp(
         userId: data.user.id,
         action: "User signup - confirmation email sent",
         outcome: "success",
+        ipAddress: ipAddress || undefined,
       });
 
       return {
@@ -129,7 +131,7 @@ export async function signUp(
     // Create profile
     const { error: profileError } = await supabase
       .from("profiles")
-      .insert(createDefaultProfile(data.user.id, validatedName));
+      .insert(createDefaultProfileData(data.user.id, validatedName));
 
     if (profileError) {
       logError(profileError, {
@@ -146,6 +148,7 @@ export async function signUp(
       userId: data.user.id,
       action: "User signup completed",
       outcome: "success",
+      ipAddress: ipAddress || undefined,
     });
 
     revalidatePath("/");
@@ -164,8 +167,15 @@ export async function signIn(
   email: string,
   password: string
 ): Promise<SignInResponse> {
+  const t = await getServerTranslator();
+
+  const originError = await enforceAllowedOrigin(t, "signIn");
+  if (originError) {
+    return { error: originError };
+  }
+
   // Server-side validation
-  const validation = validateSignIn({ email, password });
+  const validation = validateSignIn({ email, password }, t);
   if (!validation.success) {
     return { error: validation.error || t("errors.invalidInput") };
   }
@@ -174,10 +184,14 @@ export async function signIn(
     validation.data!;
 
   // Rate limiting - use email as identifier
-  const rateLimitResult = RateLimiters.auth(validatedEmail);
+  const ipAddress = await getRequestIp();
+  const rateLimitKey = ipAddress
+    ? `${validatedEmail}:${ipAddress}`
+    : validatedEmail;
+  const rateLimitResult = RateLimiters.auth(rateLimitKey);
   if (!rateLimitResult.success) {
-    AuditActions.rateLimited(validatedEmail, "signIn");
-    return { error: formatRateLimitError(rateLimitResult.retryAfter) };
+    AuditActions.rateLimited(validatedEmail, "signIn", ipAddress || undefined);
+    return { error: formatRateLimitError(rateLimitResult.retryAfter, t) };
   }
 
   try {
@@ -192,7 +206,7 @@ export async function signIn(
       logError(error, { action: "signIn", metadata: { email: validatedEmail } });
 
       // Audit failed login
-      AuditActions.loginFailure(validatedEmail, error.message);
+      AuditActions.loginFailure(validatedEmail, error.message, ipAddress || undefined);
 
       return { error: t("auth.invalidCredentials") };
     }
@@ -205,14 +219,11 @@ export async function signIn(
       .single();
 
     if (!profile) {
-      const userName =
-        data.user.user_metadata?.name ||
-        data.user.email?.split("@")[0] ||
-        "ユーザー";
+      const userName = resolveFallbackName(data.user, t);
 
       const { error: profileError } = await supabase
         .from("profiles")
-        .insert(createDefaultProfile(data.user.id, userName));
+        .insert(createDefaultProfileData(data.user.id, userName));
 
       if (profileError) {
         logError(profileError, {

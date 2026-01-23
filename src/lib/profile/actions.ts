@@ -7,9 +7,11 @@ import {
   validateFileUpload,
   sanitizeFileName,
   type ProfileUpdateInput,
-} from "@/lib/validations/profile";
+} from "@/domain/validation/profile";
 import { logError } from "@/lib/errors";
-import { t } from "@/lib/i18n";
+import { getServerTranslator } from "@/lib/i18n/server";
+import { RateLimiters, formatRateLimitError } from "@/lib/security";
+import { enforceAllowedOrigin } from "@/lib/security/request";
 
 /**
  * Response types
@@ -21,8 +23,15 @@ type UploadResponse = { success: true; url: string } | { error: string };
  * Update user profile
  */
 export async function updateProfile(data: ProfileUpdateInput): Promise<UpdateResponse> {
+  const t = await getServerTranslator();
+
+  const originError = await enforceAllowedOrigin(t, "updateProfile");
+  if (originError) {
+    return { error: originError };
+  }
+
   // Server-side validation
-  const validation = validateProfileUpdate(data);
+  const validation = validateProfileUpdate(data, t);
   if (!validation.success) {
     return { error: validation.error || t("errors.invalidInput") };
   }
@@ -69,6 +78,13 @@ export async function updateProfile(data: ProfileUpdateInput): Promise<UpdateRes
  * Upload avatar image
  */
 export async function uploadAvatar(formData: FormData): Promise<UploadResponse> {
+  const t = await getServerTranslator();
+
+  const originError = await enforceAllowedOrigin(t, "uploadAvatar");
+  if (originError) {
+    return { error: originError };
+  }
+
   try {
     const supabase = await createClient();
     const {
@@ -81,14 +97,22 @@ export async function uploadAvatar(formData: FormData): Promise<UploadResponse> 
 
     const file = formData.get("avatar") as File;
     if (!file || file.size === 0) {
-      return { error: "ファイルが選択されていません" };
+      return { error: t("errors.fileRequired") };
+    }
+
+    const uploadRateLimit = RateLimiters.upload(user.id);
+    if (!uploadRateLimit.success) {
+      return { error: formatRateLimitError(uploadRateLimit.retryAfter, t) };
     }
 
     // Validate file
-    const fileValidation = validateFileUpload({
+    const fileValidation = validateFileUpload(
+      {
       size: file.size,
       type: file.type,
-    });
+    },
+      t
+    );
     if (!fileValidation.success) {
       return { error: fileValidation.error || t("errors.invalidFileType") };
     }
@@ -194,10 +218,16 @@ export async function getMyProfile() {
  * Create a new profile for the current user
  */
 export async function createProfile(name: string): Promise<UpdateResponse> {
+  const t = await getServerTranslator();
+
+  const originError = await enforceAllowedOrigin(t, "createProfile");
+  if (originError) {
+    return { error: originError };
+  }
+
   if (!name?.trim()) {
     return { error: t("auth.nameRequired") };
   }
-
   try {
     const supabase = await createClient();
     const {
