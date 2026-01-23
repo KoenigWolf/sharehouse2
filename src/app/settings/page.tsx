@@ -2,7 +2,6 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Header } from "@/components/header";
 import { ProfileEditForm } from "@/components/profile-edit-form";
-import { TeaTimeToggle } from "@/components/tea-time-toggle";
 import { Profile } from "@/types/profile";
 import { getTeaTimeSetting } from "@/lib/tea-time/actions";
 
@@ -50,17 +49,11 @@ export default async function SettingsPage() {
   return (
     <div className="min-h-screen bg-[#fafaf8] flex flex-col">
       <Header />
-      <main className="flex-1 container mx-auto px-3 sm:px-4 py-3 sm:py-4 max-w-3xl space-y-4 sm:space-y-6">
-        <ProfileEditForm profile={profile as Profile} />
-
-        {/* ティータイム設定 */}
-        <div className="space-y-3">
-          <h2 className="text-sm text-[#737373] tracking-wide">ティータイム</h2>
-          <TeaTimeToggle initialEnabled={teaTimeSetting?.is_enabled ?? false} />
-          <p className="text-[11px] text-[#a3a3a3]">
-            ONにすると、毎週ランダムに住民とマッチングされます
-          </p>
-        </div>
+      <main className="flex-1 container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-2xl">
+        <ProfileEditForm
+          profile={profile as Profile}
+          initialTeaTimeEnabled={teaTimeSetting?.is_enabled ?? false}
+        />
       </main>
       <footer className="py-6">
         <p className="text-xs text-[#a3a3a3] text-center">Share House</p>

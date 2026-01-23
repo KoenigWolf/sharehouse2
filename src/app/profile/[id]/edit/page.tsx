@@ -2,7 +2,6 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import { Header } from "@/components/header";
 import { ProfileEditForm } from "@/components/profile-edit-form";
-import { TeaTimeToggle } from "@/components/tea-time-toggle";
 import { Profile } from "@/types/profile";
 import { getTeaTimeSetting } from "@/lib/tea-time/actions";
 
@@ -48,16 +47,11 @@ export default async function ProfileEditPage({ params }: ProfileEditPageProps) 
       <Header />
 
       <main className="flex-1">
-        <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-2xl space-y-6">
-          <ProfileEditForm profile={profile as Profile} />
-
-          {/* ティータイム設定 */}
-          <section className="space-y-3">
-            <h2 className="text-xs text-[#a3a3a3] tracking-wide">
-              ティータイム設定
-            </h2>
-            <TeaTimeToggle initialEnabled={teaTimeSetting?.is_enabled ?? false} />
-          </section>
+        <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-2xl">
+          <ProfileEditForm
+            profile={profile as Profile}
+            initialTeaTimeEnabled={teaTimeSetting?.is_enabled ?? false}
+          />
         </div>
       </main>
 

@@ -49,7 +49,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     <div className="min-h-screen bg-[#fafaf8] flex flex-col">
       <Header />
 
-      <main className="flex-1">
+      <main className="flex-1 flex items-center">
         <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-2xl">
           <ProfileDetail
             profile={profile}
