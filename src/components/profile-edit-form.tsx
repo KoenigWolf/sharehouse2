@@ -4,19 +4,24 @@ import { useState, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Switch } from "@/components/ui/switch";
 import { Profile } from "@/types/profile";
 import { updateProfile, uploadAvatar } from "@/lib/profile/actions";
+import { updateTeaTimeSetting } from "@/lib/tea-time/actions";
 import { getInitials } from "@/lib/utils";
 
 interface ProfileEditFormProps {
   profile: Profile;
+  initialTeaTimeEnabled?: boolean;
 }
 
-export function ProfileEditForm({ profile }: ProfileEditFormProps) {
+export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: ProfileEditFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isTeaTimeLoading, setIsTeaTimeLoading] = useState(false);
+  const [teaTimeEnabled, setTeaTimeEnabled] = useState(initialTeaTimeEnabled);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState(profile.avatar_url);
@@ -83,7 +88,7 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
     setSuccess(false);
 
     const interests = formData.interests
-      .split(/[,、]/)
+      .split(/[,、・]/)
       .map((i) => i.trim())
       .filter((i) => i.length > 0);
 
@@ -106,9 +111,22 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
   };
 
   const interestsArray = formData.interests
-    .split(/[,、]/)
+    .split(/[,、・]/)
     .map((i) => i.trim())
     .filter((i) => i.length > 0);
+
+  const handleTeaTimeToggle = async (checked: boolean) => {
+    setIsTeaTimeLoading(true);
+    setTeaTimeEnabled(checked);
+
+    const result = await updateTeaTimeSetting(checked);
+
+    if ("error" in result) {
+      setTeaTimeEnabled(!checked);
+    }
+
+    setIsTeaTimeLoading(false);
+  };
 
   return (
     <motion.div
@@ -278,6 +296,26 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
             </div>
           </div>
 
+          {/* ティータイム設定 */}
+          <div className="bg-white border border-[#e5e5e5] p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-[#737373] tracking-wide">ティータイム</p>
+                <p className="text-[10px] text-[#a3a3a3] mt-1">
+                  {teaTimeEnabled
+                    ? "ランダムマッチングに参加中"
+                    : "マッチング対象外"}
+                </p>
+              </div>
+              <Switch
+                checked={teaTimeEnabled}
+                onCheckedChange={handleTeaTimeToggle}
+                disabled={isTeaTimeLoading}
+                className="data-[state=checked]:bg-[#1a1a1a]"
+              />
+            </div>
+          </div>
+
           {/* 写真アップロードのヒント */}
           <p className="text-[10px] text-[#a3a3a3] text-center">
             写真はプレビューをクリックして変更
@@ -398,11 +436,11 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
                   onChange={(e) =>
                     setFormData({ ...formData, interests: e.target.value })
                   }
-                  placeholder="料理, 映画, ランニング"
+                  placeholder="料理、映画、ランニング"
                   className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
                 />
                 <p className="text-[10px] text-[#a3a3a3]">
-                  カンマ区切りで入力すると、共通の趣味がある住民を見つけやすくなります
+                  「、」「・」「,」で区切ると、タグとして表示されます
                 </p>
               </div>
 
