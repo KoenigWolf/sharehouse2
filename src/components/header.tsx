@@ -24,19 +24,19 @@ export function Header() {
 
   return (
     <header className="border-b border-[#e5e5e5] bg-white">
-      <div className="container mx-auto px-4 h-12 flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <Link href="/" className="text-sm font-medium tracking-wider text-[#1a1a1a]">
+      <div className="container mx-auto px-3 sm:px-4 h-12 flex items-center justify-between">
+        <div className="flex items-center gap-3 sm:gap-6">
+          <Link href="/" className="text-xs sm:text-sm font-medium tracking-wider text-[#1a1a1a]">
             SHARE HOUSE
           </Link>
-          <nav className="flex gap-4">
+          <nav className="flex gap-2 sm:gap-4">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`text-xs tracking-wide transition-colors ${
+                  className={`text-[11px] sm:text-xs tracking-wide transition-colors ${
                     isActive
                       ? "text-[#b94a48]"
                       : "text-[#737373] hover:text-[#1a1a1a]"
@@ -48,10 +48,10 @@ export function Header() {
             })}
           </nav>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <Link
             href="/settings"
-            className={`text-xs tracking-wide transition-colors ${
+            className={`text-[11px] sm:text-xs tracking-wide transition-colors ${
               isSettingsActive
                 ? "text-[#b94a48]"
                 : "text-[#737373] hover:text-[#1a1a1a]"
@@ -61,7 +61,7 @@ export function Header() {
           </Link>
           <button
             onClick={handleLogout}
-            className="text-xs text-[#a3a3a3] hover:text-[#1a1a1a] transition-colors"
+            className="text-[11px] sm:text-xs text-[#a3a3a3] hover:text-[#1a1a1a] transition-colors"
           >
             ログアウト
           </button>
