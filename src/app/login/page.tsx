@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { signIn, signUp } from "@/lib/auth/actions";
 import { AUTH } from "@/lib/constants/config";
 import { useI18n } from "@/hooks/use-i18n";
+import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
   const [mode, setMode] = useState<"login" | "signup">("login");
@@ -15,6 +16,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLineLoading, setIsLineLoading] = useState(false);
   const router = useRouter();
   const t = useI18n();
 
@@ -80,6 +82,24 @@ export default function LoginPage() {
     setMode(newMode);
     setError(null);
     setSuccess(null);
+  };
+
+  const handleLineLogin = async () => {
+    setError(null);
+    setIsLineLoading(true);
+
+    const supabase = createClient();
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      provider: "line",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+
+    if (oauthError) {
+      setError(t("auth.lineLoginFailed"));
+      setIsLineLoading(false);
+    }
   };
 
   return (
@@ -295,6 +315,26 @@ export default function LoginPage() {
                 )}
               </button>
             </form>
+
+            <div className="mt-6">
+              <div className="flex items-center gap-3 text-[#a3a3a3] text-xs">
+                <span className="flex-1 h-px bg-[#e5e5e5]" />
+                <span>{t("auth.orContinueWith")}</span>
+                <span className="flex-1 h-px bg-[#e5e5e5]" />
+              </div>
+              <button
+                type="button"
+                onClick={handleLineLogin}
+                disabled={isLineLoading}
+                className="mt-4 w-full h-12 border border-[#e5e5e5] text-[#1a1a1a] text-sm tracking-wide hover:border-[#1a1a1a] disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+              >
+                {isLineLoading
+                  ? t("common.processing")
+                  : mode === "signup"
+                    ? t("auth.signupWithLine")
+                    : t("auth.loginWithLine")}
+              </button>
+            </div>
 
             {/* 補足テキスト */}
             <AnimatePresence>
