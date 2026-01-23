@@ -23,7 +23,7 @@ export function ResidentCard({ profile, isCurrentUser = false }: ResidentCardPro
   return (
     <Link href={`/profile/${profile.id}`}>
       <div
-        className={`bg-white border p-6 transition-colors cursor-pointer relative ${
+        className={`bg-white border transition-colors cursor-pointer relative group ${
           isCurrentUser
             ? "border-[#b94a48] hover:border-[#a13f3d]"
             : "border-[#e5e5e5] hover:border-[#b94a48]"
@@ -31,35 +31,43 @@ export function ResidentCard({ profile, isCurrentUser = false }: ResidentCardPro
       >
         {/* 自分バッジ */}
         {isCurrentUser && (
-          <div className="absolute top-0 right-0 bg-[#b94a48] text-white text-[10px] px-2 py-0.5 tracking-wide">
+          <div className="absolute top-0 right-0 z-10 bg-[#b94a48] text-white text-[10px] px-2 py-0.5 tracking-wide">
             あなた
           </div>
         )}
 
-        <div className="flex flex-col items-center text-center">
-          <Avatar className="w-20 h-20 rounded-none">
-            <AvatarImage src={profile.avatar_url || undefined} className="object-cover" />
-            <AvatarFallback className="bg-[#f5f5f3] text-[#737373] text-lg rounded-none">
+        {/* アバター部分 */}
+        <div className="aspect-square bg-[#f5f5f3] flex items-center justify-center overflow-hidden">
+          <Avatar className="w-full h-full rounded-none">
+            <AvatarImage
+              src={profile.avatar_url || undefined}
+              className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+            />
+            <AvatarFallback className="bg-[#f5f5f3] text-[#a3a3a3] text-3xl rounded-none w-full h-full">
               {getInitials(profile.name)}
             </AvatarFallback>
           </Avatar>
+        </div>
 
-          <h3 className="mt-4 text-[#1a1a1a] tracking-wide">
-            {profile.name}
-          </h3>
-
-          {profile.room_number && (
-            <p className="text-xs text-[#737373] mt-1">
-              {profile.room_number}号室
-            </p>
-          )}
+        {/* 情報部分 */}
+        <div className="p-4">
+          <div className="flex items-baseline justify-between gap-2">
+            <h3 className="text-[#1a1a1a] tracking-wide truncate">
+              {profile.name}
+            </h3>
+            {profile.room_number && (
+              <span className="text-xs text-[#a3a3a3] shrink-0">
+                {profile.room_number}
+              </span>
+            )}
+          </div>
 
           {profile.interests && profile.interests.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-4 justify-center">
+            <div className="flex flex-wrap gap-1.5 mt-3">
               {profile.interests.slice(0, 2).map((interest, i) => (
                 <span
                   key={i}
-                  className="text-xs px-2 py-1 bg-[#f5f5f3] text-[#737373]"
+                  className="text-[11px] px-2 py-0.5 bg-[#f5f5f3] text-[#737373]"
                 >
                   {interest}
                 </span>
