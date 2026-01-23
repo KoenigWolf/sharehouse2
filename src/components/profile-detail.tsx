@@ -70,7 +70,7 @@ export function ProfileDetail({
         {/* Horizontal layout */}
         <div className="flex flex-col sm:flex-row">
           {/* Avatar */}
-          <div className="sm:w-2/5 aspect-square sm:aspect-auto bg-[#f5f5f3] flex items-center justify-center overflow-hidden">
+          <div className="sm:w-1/3 aspect-square sm:aspect-auto bg-[#f5f5f3] flex items-center justify-center overflow-hidden">
             <Avatar className="w-full h-full rounded-none">
               <AvatarImage
                 src={profile.avatar_url || undefined}
