@@ -1,7 +1,7 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Header } from "@/components/header";
-import { TeaTimeToggle } from "@/components/tea-time-toggle";
 import { TeaTimeMatchCard } from "@/components/tea-time-match-card";
 import { getTeaTimeSetting, getMyMatches } from "@/lib/tea-time/actions";
 
@@ -15,9 +15,12 @@ export default async function TeaTimePage() {
     redirect("/login");
   }
 
-  const setting = await getTeaTimeSetting(user.id);
-  const matches = await getMyMatches();
+  const [setting, matches] = await Promise.all([
+    getTeaTimeSetting(user.id),
+    getMyMatches(),
+  ]);
 
+  const isEnabled = setting?.is_enabled ?? false;
   const scheduledMatches = matches.filter((m) => m.status === "scheduled");
   const pastMatches = matches.filter((m) => m.status !== "scheduled");
 
@@ -30,10 +33,25 @@ export default async function TeaTimePage() {
           <span className="text-xs text-[#a3a3a3]">ランダムマッチ</span>
         </div>
 
-        {/* 参加設定 */}
-        <div className="mb-4">
-          <TeaTimeToggle initialEnabled={setting?.is_enabled ?? false} />
-        </div>
+        {/* 参加状況 */}
+        <Link href="/settings" className="block mb-4">
+          <div className="bg-white border border-[#e5e5e5] p-4 hover:border-[#b94a48] transition-colors">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-xl">☕</span>
+                <div>
+                  <p className="text-sm text-[#1a1a1a]">
+                    {isEnabled ? "参加中" : "不参加"}
+                  </p>
+                  <p className="text-[11px] text-[#a3a3a3]">
+                    {isEnabled ? "マッチング対象です" : "マイページで参加設定できます"}
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs text-[#a3a3a3]">設定 →</span>
+            </div>
+          </div>
+        </Link>
 
         {/* 新しいマッチ */}
         {scheduledMatches.length > 0 && (
@@ -63,7 +81,13 @@ export default async function TeaTimePage() {
         {matches.length === 0 && (
           <div className="text-center py-8">
             <p className="text-sm text-[#737373]">まだマッチがありません</p>
-            <p className="text-xs text-[#a3a3a3] mt-1">参加をONにしてお待ちください</p>
+            {isEnabled ? (
+              <p className="text-xs text-[#a3a3a3] mt-1">次のマッチングをお待ちください</p>
+            ) : (
+              <Link href="/settings" className="text-xs text-[#b94a48] hover:underline mt-1 inline-block">
+                マイページで参加をONにする →
+              </Link>
+            )}
           </div>
         )}
       </main>

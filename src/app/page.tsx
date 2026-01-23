@@ -22,9 +22,23 @@ export default async function Home() {
     getLatestScheduledMatch(),
   ]);
 
-  const dbProfiles = profilesResult.data as Profile[] | null;
-  const profiles = dbProfiles && dbProfiles.length > 0 ? dbProfiles : mockProfiles;
-  const isUsingMockData = !dbProfiles || dbProfiles.length === 0;
+  const dbProfiles = (profilesResult.data as Profile[]) || [];
+
+  // 登録済みユーザーの部屋番号を取得
+  const registeredRoomNumbers = new Set(
+    dbProfiles
+      .filter((p) => p.room_number)
+      .map((p) => p.room_number)
+  );
+
+  // 登録済みユーザーがいない部屋のモックデータを取得
+  const remainingMockProfiles = mockProfiles.filter(
+    (mock) => !registeredRoomNumbers.has(mock.room_number)
+  );
+
+  // 登録済みユーザー + 空き部屋のモックデータを結合
+  const profiles = [...dbProfiles, ...remainingMockProfiles];
+  const mockCount = remainingMockProfiles.length;
 
   return (
     <div className="min-h-screen bg-[#fafaf8]">
@@ -37,15 +51,17 @@ export default async function Home() {
           </div>
         )}
 
-        {/* 開発用モックデータ通知 */}
-        {isUsingMockData && (
+        {/* 登録状況の表示 */}
+        {mockCount > 0 && (
           <div className="mb-3 px-3 py-2 border border-dashed border-[#d4d4d4] bg-[#fafaf8] inline-block">
-            <p className="text-[11px] text-[#737373]">開発モード: サンプルデータ表示中</p>
+            <p className="text-[11px] text-[#737373]">
+              登録済み {dbProfiles.length}人 / 未登録 {mockCount}部屋（サンプル表示）
+            </p>
           </div>
         )}
 
         <ResidentsGrid
-          profiles={profiles || []}
+          profiles={profiles}
           currentUserId={user.id}
         />
       </main>
