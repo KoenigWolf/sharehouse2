@@ -2,7 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import { Header } from "@/components/header";
 import { ProfileEditForm } from "@/components/profile-edit-form";
+import { TeaTimeToggle } from "@/components/tea-time-toggle";
 import { Profile } from "@/types/profile";
+import { getTeaTimeSetting } from "@/lib/tea-time/actions";
 
 interface ProfileEditPageProps {
   params: Promise<{ id: string }>;
@@ -30,11 +32,12 @@ export default async function ProfileEditPage({ params }: ProfileEditPageProps) 
     redirect(`/profile/${id}`);
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", id)
-    .single();
+  const [profileResult, teaTimeSetting] = await Promise.all([
+    supabase.from("profiles").select("*").eq("id", id).single(),
+    getTeaTimeSetting(id),
+  ]);
+
+  const profile = profileResult.data;
 
   if (!profile) {
     notFound();
@@ -43,8 +46,17 @@ export default async function ProfileEditPage({ params }: ProfileEditPageProps) 
   return (
     <div className="min-h-screen bg-[#fafaf8]">
       <Header />
-      <main className="container mx-auto px-6 py-10 max-w-2xl">
+      <main className="container mx-auto px-6 py-10 max-w-2xl space-y-6">
         <ProfileEditForm profile={profile as Profile} />
+
+        {/* ティータイム設定 */}
+        <div className="space-y-3">
+          <h2 className="text-sm text-[#737373] tracking-wide">ティータイム</h2>
+          <TeaTimeToggle initialEnabled={teaTimeSetting?.is_enabled ?? false} />
+          <p className="text-[11px] text-[#a3a3a3]">
+            ONにすると、毎週ランダムに住民とマッチングされます
+          </p>
+        </div>
       </main>
     </div>
   );
