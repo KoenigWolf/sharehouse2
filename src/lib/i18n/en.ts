@@ -2,7 +2,9 @@
  * English translations
  */
 
-export const en = {
+import type { Translations } from "./ja";
+
+export const en: Translations = {
   common: {
     loading: "Loading...",
     saving: "Saving...",
@@ -233,6 +235,4 @@ export const en = {
     goHome: "Back to Share House home",
     openMyPage: "Open My Page",
   },
-} as const;
-
-export type Translations = typeof en;
+};

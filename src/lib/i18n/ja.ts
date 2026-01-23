@@ -2,6 +2,10 @@
  * Japanese translations
  */
 
+type TranslationTree<T> = {
+  [K in keyof T]: T[K] extends object ? TranslationTree<T[K]> : string;
+};
+
 export const ja = {
   // Common
   common: {
@@ -240,4 +244,4 @@ export const ja = {
   },
 } as const;
 
-export type Translations = typeof ja;
+export type Translations = TranslationTree<typeof ja>;
