@@ -9,7 +9,8 @@
       "Bash(npm run build:*)",
       "Bash(npm run lint:*)",
       "WebFetch(domain:www.ryohin-keikaku.jp)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(ls:*)"
     ]
   }
 }
