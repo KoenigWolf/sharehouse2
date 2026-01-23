@@ -8,6 +8,7 @@
 - 全住民のプロフィールカードをグリッド表示
 - 部屋番号・名前順でソート可能
 - 未登録の部屋にはサンプルデータを表示
+ - 日本語 / 英語の表示切り替えに対応（Accept-Language / Cookie）
 
 ### プロフィール管理
 - 名前、部屋番号、自己紹介、趣味・関心、入居日を編集
@@ -62,7 +63,10 @@ npm install
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+NEXT_PUBLIC_SITE_URL=https://your-app.vercel.app
 ```
+
+`NEXT_PUBLIC_SITE_URL` はサーバーアクションのオリジン検証に使用します（ローカルは `http://localhost:3000` が許可済み）。
 
 ### 5. データベースのセットアップ
 
@@ -242,13 +246,15 @@ src/
 │   ├── profile-detail.tsx # プロフィール詳細
 │   ├── profile-edit-form.tsx # プロフィール編集フォーム
 │   └── tea-time-*.tsx     # ティータイム関連
+├── domain/                # ドメイン層（型・バリデーション）
+├── application/           # アプリケーション層（ユースケース補助）
 ├── lib/
 │   ├── supabase/          # Supabaseクライアント
 │   ├── auth/actions.ts    # 認証アクション
 │   ├── profile/actions.ts # プロフィールアクション
 │   ├── tea-time/actions.ts # ティータイムアクション
 │   └── mock-data.ts       # サンプルデータ
-└── types/                 # 型定義
+└── hooks/                 # UI用カスタムフック
 ```
 
 ## ページ一覧
@@ -276,7 +282,20 @@ npm start
 
 # Lint実行
 npm run lint
+
+# 型チェック
+npm run type-check
+
+# テスト実行
+npm run test:run
+
+# Lint + TypeScript + Test + Build
+npm run check-all
 ```
+
+## ビルド時の注意
+
+`next/font` が Google Fonts を取得するため、ビルド時にネットワークアクセスが必要です。オフライン環境では `npm run build` が失敗します。
 
 ## デザインガイドライン
 
