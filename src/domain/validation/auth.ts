@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { PROFILE, AUTH } from "@/lib/constants/config";
 import { sanitizeEmail } from "@/lib/security/validation";
+import type { TranslationKey, Translator } from "@/lib/i18n";
 
 /**
  * Authentication validation schemas
@@ -10,9 +11,9 @@ import { sanitizeEmail } from "@/lib/security/validation";
 // Email validation with sanitization
 export const emailSchema = z
   .string()
-  .min(1, "メールアドレスを入力してください")
-  .email("有効なメールアドレスを入力してください")
-  .max(255, "メールアドレスが長すぎます")
+  .min(1, "auth.emailRequired")
+  .email("validation.emailInvalid")
+  .max(255, "validation.emailTooLong")
   .transform(sanitizeEmail);
 
 /**
@@ -25,23 +26,23 @@ export const emailSchema = z
  */
 export const passwordSchema = z
   .string()
-  .min(AUTH.passwordMinLength, `パスワードは${AUTH.passwordMinLength}文字以上で入力してください`)
-  .max(AUTH.passwordMaxLength, "パスワードが長すぎます")
+  .min(AUTH.passwordMinLength, "auth.passwordMinLength")
+  .max(AUTH.passwordMaxLength, "validation.passwordTooLong")
   .refine(
     (password) => /[A-Z]/.test(password),
-    "パスワードに大文字を1文字以上含めてください"
+    "validation.passwordUppercase"
   )
   .refine(
     (password) => /[a-z]/.test(password),
-    "パスワードに小文字を1文字以上含めてください"
+    "validation.passwordLowercase"
   )
   .refine(
     (password) => /[0-9]/.test(password),
-    "パスワードに数字を1文字以上含めてください"
+    "validation.passwordNumber"
   )
   .refine(
     (password) => !/\s/.test(password),
-    "パスワードに空白を含めることはできません"
+    "validation.passwordNoWhitespace"
   );
 
 /**
@@ -50,13 +51,13 @@ export const passwordSchema = z
  */
 export const passwordLoginSchema = z
   .string()
-  .min(1, "パスワードを入力してください");
+  .min(1, "auth.passwordRequired");
 
 // Name validation
 export const nameSchema = z
   .string()
-  .min(1, "名前を入力してください")
-  .max(PROFILE.nameMaxLength, `名前は${PROFILE.nameMaxLength}文字以内で入力してください`)
+  .min(1, "auth.nameRequired")
+  .max(PROFILE.nameMaxLength, "validation.nameMaxLength")
   .transform((val) => val.trim());
 
 // Sign up schema
@@ -76,10 +77,35 @@ export const signInSchema = z.object({
 export type SignUpInput = z.infer<typeof signUpSchema>;
 export type SignInInput = z.infer<typeof signInSchema>;
 
+const VALIDATION_PARAMS: Partial<Record<TranslationKey, Record<string, number>>> = {
+  "auth.passwordMinLength": { min: AUTH.passwordMinLength },
+  "validation.nameMaxLength": { max: PROFILE.nameMaxLength },
+};
+
+function formatValidationError(
+  issue: z.ZodIssue,
+  t: Translator
+): string {
+  const key = issue.message as TranslationKey;
+  if (!key.includes(".")) {
+    return t("errors.invalidInput");
+  }
+  const params = VALIDATION_PARAMS[key];
+
+  if (params) {
+    return t(key, params);
+  }
+
+  return t(key);
+}
+
 /**
  * Validate sign up input
  */
-export function validateSignUp(data: unknown): {
+export function validateSignUp(
+  data: unknown,
+  t: Translator
+): {
   success: boolean;
   data?: SignUpInput;
   error?: string;
@@ -88,13 +114,20 @@ export function validateSignUp(data: unknown): {
   if (result.success) {
     return { success: true, data: result.data };
   }
-  return { success: false, error: result.error.issues[0]?.message || "入力が無効です" };
+  const issue = result.error.issues[0];
+  return {
+    success: false,
+    error: issue ? formatValidationError(issue, t) : t("errors.invalidInput"),
+  };
 }
 
 /**
  * Validate sign in input
  */
-export function validateSignIn(data: unknown): {
+export function validateSignIn(
+  data: unknown,
+  t: Translator
+): {
   success: boolean;
   data?: SignInInput;
   error?: string;
@@ -103,5 +136,9 @@ export function validateSignIn(data: unknown): {
   if (result.success) {
     return { success: true, data: result.data };
   }
-  return { success: false, error: result.error.issues[0]?.message || "入力が無効です" };
+  const issue = result.error.issues[0];
+  return {
+    success: false,
+    error: issue ? formatValidationError(issue, t) : t("errors.invalidInput"),
+  };
 }

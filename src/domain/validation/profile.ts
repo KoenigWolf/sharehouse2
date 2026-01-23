@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { PROFILE, FILE_UPLOAD } from "@/lib/constants/config";
 import { sanitizeForStorage, stripHtml } from "@/lib/security/validation";
+import type { TranslationKey, Translator } from "@/lib/i18n";
 
 /**
  * Profile validation schemas with security sanitization
@@ -9,8 +10,8 @@ import { sanitizeForStorage, stripHtml } from "@/lib/security/validation";
 // Room number validation - strict alphanumeric only
 export const roomNumberSchema = z
   .string()
-  .max(PROFILE.roomNumberMaxLength, `部屋番号は${PROFILE.roomNumberMaxLength}文字以内で入力してください`)
-  .regex(/^[0-9A-Za-z-]*$/, "部屋番号には英数字とハイフンのみ使用できます")
+  .max(PROFILE.roomNumberMaxLength, "validation.roomNumberMaxLength")
+  .regex(/^[0-9A-Za-z-]*$/, "validation.roomNumberFormat")
   .optional()
   .nullable()
   .transform((val) => {
@@ -22,7 +23,7 @@ export const roomNumberSchema = z
 // Bio validation with HTML stripping and sanitization
 export const bioSchema = z
   .string()
-  .max(PROFILE.bioMaxLength, `自己紹介は${PROFILE.bioMaxLength}文字以内で入力してください`)
+  .max(PROFILE.bioMaxLength, "validation.bioMaxLength")
   .optional()
   .nullable()
   .transform((val) => {
@@ -35,7 +36,7 @@ export const bioSchema = z
 // Interests validation with sanitization
 export const interestsSchema = z
   .array(z.string().trim())
-  .max(20, "趣味・関心は20個以内で入力してください")
+  .max(20, "validation.interestsMaxCount")
   .default([])
   .transform((arr) =>
     arr
@@ -46,7 +47,7 @@ export const interestsSchema = z
 // Move-in date validation
 export const moveInDateSchema = z
   .string()
-  .regex(/^\d{4}-\d{2}-\d{2}$/, "日付の形式が無効です")
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "validation.dateFormat")
   .optional()
   .nullable()
   .refine(
@@ -55,15 +56,15 @@ export const moveInDateSchema = z
       const date = new Date(val);
       return !isNaN(date.getTime());
     },
-    { message: "有効な日付を入力してください" }
+    { message: "validation.dateInvalid" }
   );
 
 // Profile update schema with comprehensive sanitization
 export const profileUpdateSchema = z.object({
   name: z
     .string()
-    .min(1, "名前を入力してください")
-    .max(PROFILE.nameMaxLength, `名前は${PROFILE.nameMaxLength}文字以内で入力してください`)
+    .min(1, "auth.nameRequired")
+    .max(PROFILE.nameMaxLength, "validation.nameMaxLength")
     .transform((val) => sanitizeForStorage(stripHtml(val.trim()))),
   room_number: roomNumberSchema,
   bio: bioSchema,
@@ -73,9 +74,9 @@ export const profileUpdateSchema = z.object({
 
 // File upload validation
 export const fileUploadSchema = z.object({
-  size: z.number().max(FILE_UPLOAD.maxSizeBytes, `ファイルサイズは${FILE_UPLOAD.maxSizeMB}MB以下にしてください`),
+  size: z.number().max(FILE_UPLOAD.maxSizeBytes, "validation.fileTooLarge"),
   type: z.enum(FILE_UPLOAD.allowedTypes as unknown as [string, ...string[]], {
-    message: "JPG、PNG、またはWebP形式の画像をアップロードしてください",
+    message: "errors.invalidFileType",
   }),
 });
 
@@ -83,10 +84,37 @@ export const fileUploadSchema = z.object({
 export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;
 export type FileUploadInput = z.infer<typeof fileUploadSchema>;
 
+const VALIDATION_PARAMS: Partial<Record<TranslationKey, Record<string, number>>> = {
+  "validation.nameMaxLength": { max: PROFILE.nameMaxLength },
+  "validation.roomNumberMaxLength": { max: PROFILE.roomNumberMaxLength },
+  "validation.bioMaxLength": { max: PROFILE.bioMaxLength },
+  "validation.fileTooLarge": { max: FILE_UPLOAD.maxSizeMB },
+};
+
+function formatValidationError(
+  issue: z.ZodIssue,
+  t: Translator
+): string {
+  const key = issue.message as TranslationKey;
+  if (!key.includes(".")) {
+    return t("errors.invalidInput");
+  }
+  const params = VALIDATION_PARAMS[key];
+
+  if (params) {
+    return t(key, params);
+  }
+
+  return t(key);
+}
+
 /**
  * Validate profile update input
  */
-export function validateProfileUpdate(data: unknown): {
+export function validateProfileUpdate(
+  data: unknown,
+  t: Translator
+): {
   success: boolean;
   data?: ProfileUpdateInput;
   error?: string;
@@ -95,13 +123,20 @@ export function validateProfileUpdate(data: unknown): {
   if (result.success) {
     return { success: true, data: result.data };
   }
-  return { success: false, error: result.error.issues[0]?.message || "入力が無効です" };
+  const issue = result.error.issues[0];
+  return {
+    success: false,
+    error: issue ? formatValidationError(issue, t) : t("errors.invalidInput"),
+  };
 }
 
 /**
  * Validate file upload
  */
-export function validateFileUpload(file: { size: number; type: string }): {
+export function validateFileUpload(
+  file: { size: number; type: string },
+  t: Translator
+): {
   success: boolean;
   error?: string;
 } {
@@ -109,7 +144,11 @@ export function validateFileUpload(file: { size: number; type: string }): {
   if (result.success) {
     return { success: true };
   }
-  return { success: false, error: result.error.issues[0]?.message || "ファイルが無効です" };
+  const issue = result.error.issues[0];
+  return {
+    success: false,
+    error: issue ? formatValidationError(issue, t) : t("errors.invalidInput"),
+  };
 }
 
 /**
