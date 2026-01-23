@@ -67,6 +67,10 @@ export const ja = {
     passwordHint: "10文字以上、大文字・小文字・数字を含む",
     signupHint: "登録後、プロフィールページで詳細情報を編集できます",
     defaultName: "ユーザー",
+    orContinueWith: "または",
+    loginWithLine: "LINEでログイン",
+    signupWithLine: "LINEで新規登録",
+    lineLoginFailed: "LINEログインに失敗しました",
   },
 
   // Profile

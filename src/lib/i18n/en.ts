@@ -64,6 +64,10 @@ export const en: Translations = {
     signupHint:
       "After registration, you can edit details on your profile page.",
     defaultName: "User",
+    orContinueWith: "or",
+    loginWithLine: "Continue with LINE",
+    signupWithLine: "Sign up with LINE",
+    lineLoginFailed: "LINE login failed",
   },
 
   profile: {
