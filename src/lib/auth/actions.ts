@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { validateSignUp, validateSignIn } from "@/lib/validations/auth";
-import { logError, ErrorCode } from "@/lib/errors";
+import { logError } from "@/lib/errors";
 import { t } from "@/lib/i18n";
 
 /**

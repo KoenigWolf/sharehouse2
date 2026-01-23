@@ -27,8 +27,9 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
   if (id.startsWith("mock-")) {
     profile = mockProfiles.find((p) => p.id === id) || null;
-    // モックユーザーはランダムで参加状態を設定
-    teaTimeEnabled = Math.random() > 0.5;
+    // モックユーザーは部屋番号に基づいて参加状態を決定（奇数部屋が参加）
+    const roomNum = parseInt(profile?.room_number || "0", 10);
+    teaTimeEnabled = roomNum % 2 === 1;
   } else {
     const [profileResult, teaTimeSetting] = await Promise.all([
       supabase.from("profiles").select("*").eq("id", id).single(),
