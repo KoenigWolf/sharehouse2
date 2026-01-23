@@ -27,7 +27,6 @@ export const PROFILE = {
     card: 2,
     preview: 3,
   },
-  passwordMinLength: 6,
   nameMaxLength: 100,
   bioMaxLength: 500,
   roomNumberMaxLength: 10,
@@ -42,7 +41,10 @@ export const SHARE_HOUSE = {
 // Authentication configuration
 export const AUTH = {
   sessionExpirationHours: 24 * 7, // 1 week
-  passwordMinLength: 6,
+  passwordMinLength: 10, // OWASP recommends 10+ characters
+  passwordMaxLength: 128,
+  maxLoginAttempts: 5,
+  lockoutDurationMinutes: 15,
 } as const;
 
 // Pagination configuration
@@ -51,10 +53,18 @@ export const PAGINATION = {
   maxPageSize: 100,
 } as const;
 
-// API rate limiting
+// Security: Rate limiting configuration
 export const RATE_LIMIT = {
-  maxRequestsPerMinute: 60,
-  maxUploadsPerHour: 10,
+  auth: {
+    maxAttempts: 5,
+    windowMs: 60 * 1000, // 1 minute
+  },
+  api: {
+    maxRequestsPerMinute: 60,
+  },
+  upload: {
+    maxUploadsPerHour: 10,
+  },
 } as const;
 
 // Cache configuration

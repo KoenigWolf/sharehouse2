@@ -1,33 +1,47 @@
 import { z } from "zod";
 import { PROFILE, FILE_UPLOAD } from "@/lib/constants/config";
+import { sanitizeForStorage, stripHtml } from "@/lib/security/validation";
 
 /**
- * Profile validation schemas
+ * Profile validation schemas with security sanitization
  */
 
-// Room number validation
+// Room number validation - strict alphanumeric only
 export const roomNumberSchema = z
   .string()
   .max(PROFILE.roomNumberMaxLength, `部屋番号は${PROFILE.roomNumberMaxLength}文字以内で入力してください`)
   .regex(/^[0-9A-Za-z-]*$/, "部屋番号には英数字とハイフンのみ使用できます")
   .optional()
   .nullable()
-  .transform((val) => val?.trim() || null);
+  .transform((val) => {
+    if (!val) return null;
+    const trimmed = val.trim();
+    return trimmed.length > 0 ? trimmed : null;
+  });
 
-// Bio validation
+// Bio validation with HTML stripping and sanitization
 export const bioSchema = z
   .string()
   .max(PROFILE.bioMaxLength, `自己紹介は${PROFILE.bioMaxLength}文字以内で入力してください`)
   .optional()
   .nullable()
-  .transform((val) => val?.trim() || null);
+  .transform((val) => {
+    if (!val) return null;
+    // Strip HTML tags and sanitize for storage
+    const sanitized = sanitizeForStorage(stripHtml(val));
+    return sanitized.length > 0 ? sanitized : null;
+  });
 
-// Interests validation
+// Interests validation with sanitization
 export const interestsSchema = z
   .array(z.string().trim())
   .max(20, "趣味・関心は20個以内で入力してください")
   .default([])
-  .transform((arr) => arr.filter((item) => item.length > 0));
+  .transform((arr) =>
+    arr
+      .map((item) => sanitizeForStorage(stripHtml(item)))
+      .filter((item) => item.length > 0 && item.length <= 50)
+  );
 
 // Move-in date validation
 export const moveInDateSchema = z
@@ -44,13 +58,13 @@ export const moveInDateSchema = z
     { message: "有効な日付を入力してください" }
   );
 
-// Profile update schema
+// Profile update schema with comprehensive sanitization
 export const profileUpdateSchema = z.object({
   name: z
     .string()
     .min(1, "名前を入力してください")
     .max(PROFILE.nameMaxLength, `名前は${PROFILE.nameMaxLength}文字以内で入力してください`)
-    .transform((val) => val.trim()),
+    .transform((val) => sanitizeForStorage(stripHtml(val.trim()))),
   room_number: roomNumberSchema,
   bio: bioSchema,
   interests: interestsSchema,
