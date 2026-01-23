@@ -26,16 +26,14 @@ export function TeaTimeToggle({ initialEnabled }: TeaTimeToggleProps) {
   };
 
   return (
-    <div className="bg-white border border-[#e5e5e5] p-6">
+    <div className="bg-white border border-[#e5e5e5] p-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-[#f5f5f3] flex items-center justify-center">
-            <span className="text-2xl">☕</span>
-          </div>
+        <div className="flex items-center gap-3">
+          <span className="text-xl">☕</span>
           <div>
-            <h3 className="text-[#1a1a1a] tracking-wide">ティータイム参加</h3>
-            <p className="text-sm text-[#737373] mt-0.5">
-              {isEnabled ? "参加中 - マッチングの対象です" : "参加していません"}
+            <p className="text-sm text-[#1a1a1a]">参加する</p>
+            <p className="text-[11px] text-[#a3a3a3]">
+              {isEnabled ? "マッチング対象です" : "参加していません"}
             </p>
           </div>
         </div>
@@ -46,15 +44,6 @@ export function TeaTimeToggle({ initialEnabled }: TeaTimeToggleProps) {
           className="data-[state=checked]:bg-[#b94a48]"
         />
       </div>
-
-      {isEnabled && (
-        <div className="mt-4 pt-4 border-t border-[#e5e5e5]">
-          <p className="text-sm text-[#737373]">
-            ランダムに他の住民とマッチングされます。
-            マッチが成立したらお知らせします。
-          </p>
-        </div>
-      )}
     </div>
   );
 }

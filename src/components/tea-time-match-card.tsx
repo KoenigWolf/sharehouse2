@@ -38,83 +38,57 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("ja-JP", {
-      month: "long",
-      day: "numeric",
-    });
+    return date.toLocaleDateString("ja-JP", { month: "short", day: "numeric" });
   };
 
   if (status !== "scheduled") {
     return (
-      <div className="bg-[#f5f5f3] p-4 border border-[#e5e5e5]">
+      <div className="bg-[#f5f5f3] p-3 border border-[#e5e5e5]">
         <div className="flex items-center gap-3">
-          <Avatar className="w-10 h-10 rounded-none">
+          <Avatar className="w-8 h-8 rounded-none">
             <AvatarImage src={match.partner.avatar_url || undefined} />
-            <AvatarFallback className="bg-white text-[#737373] text-sm rounded-none">
+            <AvatarFallback className="bg-white text-[#737373] text-xs rounded-none">
               {getInitials(match.partner.name)}
             </AvatarFallback>
           </Avatar>
-          <div className="flex-1">
-            <p className="text-sm text-[#1a1a1a]">{match.partner.name}</p>
-            <p className="text-xs text-[#737373]">
-              {formatDate(match.matched_at)} -{" "}
-              {status === "done" ? "完了" : "スキップ"}
-            </p>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm text-[#1a1a1a] truncate">{match.partner.name}</p>
           </div>
+          <span className="text-[10px] text-[#a3a3a3]">
+            {formatDate(match.matched_at)} · {status === "done" ? "完了" : "スキップ"}
+          </span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white p-6 border border-[#e5e5e5]">
-      <div className="flex items-center gap-2 mb-4">
-        <span className="text-lg">☕</span>
-        <span className="text-sm text-[#b94a48] tracking-wide">
-          新しいマッチ
-        </span>
-        <span className="text-xs text-[#737373] ml-auto">
-          {formatDate(match.matched_at)}
-        </span>
-      </div>
-
-      <div className="flex items-center gap-4 mb-6 pb-6 border-b border-[#e5e5e5]">
+    <div className="bg-white p-4 border border-[#e5e5e5]">
+      <div className="flex items-center gap-3 mb-3">
         <Link href={`/profile/${match.partner.id}`}>
-          <Avatar className="w-16 h-16 rounded-none">
-            <AvatarImage
-              src={match.partner.avatar_url || undefined}
-              className="object-cover"
-            />
-            <AvatarFallback className="bg-[#f5f5f3] text-[#737373] text-lg rounded-none">
+          <Avatar className="w-12 h-12 rounded-none">
+            <AvatarImage src={match.partner.avatar_url || undefined} className="object-cover" />
+            <AvatarFallback className="bg-[#f5f5f3] text-[#737373] rounded-none">
               {getInitials(match.partner.name)}
             </AvatarFallback>
           </Avatar>
         </Link>
-        <div>
-          <Link
-            href={`/profile/${match.partner.id}`}
-            className="text-[#1a1a1a] hover:text-[#b94a48] transition-colors tracking-wide"
-          >
+        <div className="flex-1 min-w-0">
+          <Link href={`/profile/${match.partner.id}`} className="text-sm text-[#1a1a1a] hover:text-[#b94a48]">
             {match.partner.name}
           </Link>
-          {match.partner.room_number && (
-            <p className="text-sm text-[#737373]">
-              {match.partner.room_number}号室
-            </p>
-          )}
-          {match.partner.bio && (
-            <p className="text-sm text-[#737373] mt-1 line-clamp-1">
-              {match.partner.bio}
-            </p>
-          )}
+          <p className="text-[11px] text-[#a3a3a3]">
+            {match.partner.room_number && `${match.partner.room_number}号室 · `}
+            {formatDate(match.matched_at)}
+          </p>
         </div>
       </div>
-
-      <div className="flex gap-3">
+      <div className="flex gap-2">
         <Button
           onClick={() => handleStatusUpdate("done")}
           disabled={isLoading}
-          className="flex-1 h-10 bg-[#b94a48] hover:bg-[#a13f3d] text-white rounded-none"
+          size="sm"
+          className="flex-1 h-8 bg-[#b94a48] hover:bg-[#a13f3d] text-white rounded-none text-xs"
         >
           お茶した
         </Button>
@@ -122,7 +96,8 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
           onClick={() => handleStatusUpdate("skipped")}
           disabled={isLoading}
           variant="outline"
-          className="flex-1 h-10 border-[#e5e5e5] text-[#737373] hover:border-[#1a1a1a] hover:text-[#1a1a1a] rounded-none"
+          size="sm"
+          className="flex-1 h-8 border-[#e5e5e5] text-[#737373] hover:border-[#1a1a1a] rounded-none text-xs"
         >
           スキップ
         </Button>

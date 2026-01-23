@@ -25,9 +25,22 @@ export function ProfileDetail({ profile, isOwnProfile }: ProfileDetailProps) {
     const date = new Date(dateString);
     return date.toLocaleDateString("ja-JP", {
       year: "numeric",
-      month: "long",
+      month: "short",
       day: "numeric",
     });
+  };
+
+  const calculateResidenceMonths = (dateString: string | null) => {
+    if (!dateString) return null;
+    const moveIn = new Date(dateString);
+    const now = new Date();
+    const months = (now.getFullYear() - moveIn.getFullYear()) * 12 + (now.getMonth() - moveIn.getMonth());
+    if (months < 1) return "入居したばかり";
+    if (months < 12) return `${months}ヶ月`;
+    const years = Math.floor(months / 12);
+    const remainingMonths = months % 12;
+    if (remainingMonths === 0) return `${years}年`;
+    return `${years}年${remainingMonths}ヶ月`;
   };
 
   return (
@@ -35,86 +48,89 @@ export function ProfileDetail({ profile, isOwnProfile }: ProfileDetailProps) {
       {/* 戻るリンク */}
       <Link
         href="/"
-        className="inline-flex items-center gap-2 text-sm text-[#737373] hover:text-[#1a1a1a] mb-8 transition-colors"
+        className="inline-flex items-center gap-1 text-xs text-[#737373] hover:text-[#1a1a1a] mb-3 transition-colors"
       >
         <span>←</span>
-        <span>住民一覧に戻る</span>
+        <span>戻る</span>
       </Link>
 
       <div className="bg-white border border-[#e5e5e5]">
-        {/* ヘッダー部分 */}
-        <div className="p-8 border-b border-[#e5e5e5]">
-          <div className="flex flex-col sm:flex-row gap-6 items-start">
-            <Avatar className="w-24 h-24 rounded-none">
-              <AvatarImage src={profile.avatar_url || undefined} className="object-cover" />
-              <AvatarFallback className="bg-[#f5f5f3] text-[#737373] text-2xl rounded-none">
+        {/* 横並びレイアウト */}
+        <div className="flex flex-col sm:flex-row">
+          {/* アバター */}
+          <div className="sm:w-1/3 aspect-square sm:aspect-auto bg-[#f5f5f3] flex items-center justify-center overflow-hidden">
+            <Avatar className="w-full h-full rounded-none">
+              <AvatarImage
+                src={profile.avatar_url || undefined}
+                className="object-cover w-full h-full"
+              />
+              <AvatarFallback className="bg-[#f5f5f3] text-[#a3a3a3] text-5xl rounded-none w-full h-full">
                 {getInitials(profile.name)}
               </AvatarFallback>
             </Avatar>
+          </div>
 
-            <div className="flex-1">
-              <h1 className="text-2xl text-[#1a1a1a] tracking-wide">
-                {profile.name}
-              </h1>
-              {profile.room_number && (
-                <p className="text-sm text-[#737373] mt-1">
-                  {profile.room_number}号室
-                </p>
-              )}
-
+          {/* 情報 */}
+          <div className="flex-1 p-5">
+            {/* 名前と編集ボタン */}
+            <div className="flex items-start justify-between gap-3 mb-4">
+              <div>
+                <h1 className="text-xl text-[#1a1a1a] tracking-wide">
+                  {profile.name}
+                </h1>
+                {profile.room_number && (
+                  <p className="text-sm text-[#737373]">{profile.room_number}号室</p>
+                )}
+              </div>
               {isOwnProfile && (
-                <Link href={`/profile/${profile.id}/edit`} className="mt-4 inline-block">
+                <Link href={`/profile/${profile.id}/edit`}>
                   <Button
                     variant="outline"
-                    className="rounded-none border-[#e5e5e5] text-[#1a1a1a] hover:border-[#b94a48] hover:text-[#b94a48]"
+                    size="sm"
+                    className="rounded-none border-[#e5e5e5] text-[#737373] hover:border-[#b94a48] hover:text-[#b94a48] h-7 text-xs"
                   >
-                    編集する
+                    編集
                   </Button>
                 </Link>
               )}
             </div>
-          </div>
-        </div>
 
-        {/* 詳細情報 */}
-        <div className="p-8 space-y-8">
-          {profile.bio && (
-            <div>
-              <h2 className="text-xs text-[#737373] tracking-wide mb-3">
-                自己紹介
-              </h2>
-              <p className="text-[#1a1a1a] whitespace-pre-wrap leading-relaxed">
-                {profile.bio}
-              </p>
-            </div>
-          )}
+            {/* 入居情報 */}
+            {profile.move_in_date && (
+              <div className="flex items-center gap-4 py-3 border-y border-[#e5e5e5] mb-4 text-sm">
+                <div>
+                  <p className="text-[10px] text-[#a3a3a3]">入居日</p>
+                  <p className="text-[#1a1a1a]">{formatDate(profile.move_in_date)}</p>
+                </div>
+                <div className="w-px h-6 bg-[#e5e5e5]" />
+                <div>
+                  <p className="text-[10px] text-[#a3a3a3]">居住期間</p>
+                  <p className="text-[#1a1a1a]">{calculateResidenceMonths(profile.move_in_date)}</p>
+                </div>
+              </div>
+            )}
 
-          {profile.interests && profile.interests.length > 0 && (
-            <div>
-              <h2 className="text-xs text-[#737373] tracking-wide mb-3">
-                趣味・関心
-              </h2>
-              <div className="flex flex-wrap gap-2">
+            {/* 自己紹介 */}
+            {profile.bio && (
+              <div className="mb-4">
+                <p className="text-sm text-[#1a1a1a] leading-relaxed">{profile.bio}</p>
+              </div>
+            )}
+
+            {/* 趣味・関心 */}
+            {profile.interests && profile.interests.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
                 {profile.interests.map((interest, index) => (
                   <span
                     key={index}
-                    className="text-sm px-3 py-1 bg-[#f5f5f3] text-[#1a1a1a]"
+                    className="text-xs px-2 py-1 bg-[#f5f5f3] text-[#737373]"
                   >
                     {interest}
                   </span>
                 ))}
               </div>
-            </div>
-          )}
-
-          {profile.move_in_date && (
-            <div>
-              <h2 className="text-xs text-[#737373] tracking-wide mb-3">
-                入居日
-              </h2>
-              <p className="text-[#1a1a1a]">{formatDate(profile.move_in_date)}</p>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>
