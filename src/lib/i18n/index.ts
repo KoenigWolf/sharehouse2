@@ -4,20 +4,30 @@
  */
 
 import { ja, type Translations } from "./ja";
+import { en } from "./en";
 
-// Current locale (can be extended for multi-language support)
-const currentLocale = "ja";
+export const SUPPORTED_LOCALES = ["ja", "en"] as const;
+export type Locale = (typeof SUPPORTED_LOCALES)[number];
+export const DEFAULT_LOCALE: Locale = "ja";
 
-// Translations map
-const translations: Record<string, Translations> = {
+const translations: Record<Locale, Translations> = {
   ja,
+  en,
 };
+
+export function normalizeLocale(input?: string | null): Locale {
+  const normalized = input?.toLowerCase();
+  if (!normalized) return DEFAULT_LOCALE;
+  if (normalized.startsWith("ja")) return "ja";
+  if (normalized.startsWith("en")) return "en";
+  return DEFAULT_LOCALE;
+}
 
 /**
  * Get current translations object
  */
-export function getTranslations(): Translations {
-  return translations[currentLocale] || ja;
+export function getTranslations(locale: Locale = DEFAULT_LOCALE): Translations {
+  return translations[locale] || ja;
 }
 
 /**
@@ -42,13 +52,22 @@ type Join<T extends string[], D extends string> = T extends []
 
 export type TranslationKey = Join<PathsToStringProps<Translations>, ".">;
 
+export type Translator = (
+  key: TranslationKey,
+  params?: Record<string, string | number>
+) => string;
+
 /**
  * Get translation by key path
  * @param key - Dot-notation key path (e.g., "auth.login")
  * @param params - Optional parameters for interpolation
  */
-export function t(key: string, params?: Record<string, string | number>): string {
-  const translations = getTranslations();
+function translate(
+  locale: Locale,
+  key: string,
+  params?: Record<string, string | number>
+): string {
+  const translations = getTranslations(locale);
   const keys = key.split(".");
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -80,6 +99,17 @@ export function t(key: string, params?: Record<string, string | number>): string
   return value;
 }
 
-// Re-export translations
-export { ja };
+export function createTranslator(locale: Locale = DEFAULT_LOCALE): Translator {
+  return (key, params) => translate(locale, key, params);
+}
+
+export function t(
+  key: TranslationKey,
+  params?: Record<string, string | number>,
+  locale: Locale = DEFAULT_LOCALE
+): string {
+  return translate(locale, key, params);
+}
+
+export { en, ja };
 export type { Translations };

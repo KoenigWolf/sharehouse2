@@ -20,6 +20,7 @@ export const ja = {
     sort: "並び替え",
     you: "あなた",
     unregistered: "未登録",
+    processing: "処理中...",
   },
 
   // Navigation
@@ -48,11 +49,20 @@ export const ja = {
     emailRequired: "メールアドレスを入力してください",
     passwordRequired: "パスワードを入力してください",
     nameRequired: "名前を入力してください",
-    passwordMinLength: "パスワードは6文字以上で入力してください",
+    passwordMinLength: "パスワードは{{min}}文字以上で入力してください",
     invalidCredentials: "メールアドレスまたはパスワードが正しくありません",
     emailAlreadyExists: "このメールアドレスは既に登録されています",
     signupFailed: "登録に失敗しました",
     confirmationEmailSent: "確認メールを送信しました。メールのリンクをクリックしてから再度ログインしてください。",
+    namePlaceholder: "山田 太郎",
+    portalLead: "住民同士のつながりを大切にする",
+    portalSublead: "シェアハウスのためのポータルサイト",
+    portalDescriptionLine1: "顔と名前を覚えて、",
+    portalDescriptionLine2: "声をかけやすい関係をつくる。",
+    portalDescriptionLine3: "それがこのポータルの目的です。",
+    passwordHint: "10文字以上、大文字・小文字・数字を含む",
+    signupHint: "登録後、プロフィールページで詳細情報を編集できます",
+    defaultName: "ユーザー",
   },
 
   // Profile
@@ -85,9 +95,18 @@ export const ja = {
     saved: "保存しました",
     nameUnset: "名前未設定",
     justMovedIn: "入居したばかり",
+    residenceMonths: "{{count}}ヶ月",
+    residenceYears: "{{count}}年",
+    residenceYearsMonths: "{{years}}年{{months}}ヶ月",
     room: "号室",
     mockProfileBanner: "この部屋はまだ住民が登録されていません",
     mockProfileSubtext: "サンプルデータを表示しています",
+    editTitle: "プロフィール編集",
+    uploadingPhoto: "アップロード中...",
+    changePhoto: "写真を変更",
+    completionLabel: "完成度",
+    teaTimeStatus: "ティータイム",
+    interestsSeparatorHint: "「、」「・」「,」で区切ると、タグとして表示されます",
   },
 
   // Residents
@@ -103,7 +122,11 @@ export const ja = {
     sortByRoom: "部屋",
     sortByName: "名前",
     sortByMoveIn: "入居",
-    searchPlaceholder: "検索...",
+    searchPlaceholder: "名前・趣味で検索",
+    countLabel: "{{count}}人",
+    countOf: "（{{total}}人中）",
+    registeredLabel: "登録済み {{count}}人",
+    unregisteredLabel: "未登録 {{count}}部屋",
   },
 
   // Tea Time
@@ -128,11 +151,16 @@ export const ja = {
     skip: "スキップ",
     done: "完了",
     skipped: "スキップ",
+    matchNotificationTitle: "Tea Time マッチ",
+    matchPrompt: "今週どこかでお茶しませんか",
+    thisWeeksMatch: "今週のマッチ",
+    nameSuffix: "さん",
   },
 
   // Errors
   errors: {
     unauthorized: "認証が必要です",
+    forbidden: "アクセスできません",
     notFound: "見つかりませんでした",
     serverError: "サーバーエラーが発生しました",
     networkError: "ネットワークエラーが発生しました",
@@ -140,9 +168,49 @@ export const ja = {
     uploadFailed: "アップロードに失敗しました",
     saveFailed: "保存に失敗しました",
     loadFailed: "読み込みに失敗しました",
+    fileRequired: "ファイルを選択してください",
     fileTooLarge: "ファイルサイズは5MB以下にしてください",
     invalidFileType: "JPG、PNG、またはWebP形式の画像をアップロードしてください",
     invalidInput: "入力が無効です",
+    rateLimitSeconds: "リクエストが多すぎます。{{seconds}}秒後に再試行してください。",
+    rateLimitMinutes: "リクエストが多すぎます。{{minutes}}分後に再試行してください。",
+  },
+
+  validation: {
+    emailInvalid: "有効なメールアドレスを入力してください",
+    emailTooLong: "メールアドレスが長すぎます",
+    passwordTooLong: "パスワードが長すぎます",
+    passwordUppercase: "パスワードに大文字を1文字以上含めてください",
+    passwordLowercase: "パスワードに小文字を1文字以上含めてください",
+    passwordNumber: "パスワードに数字を1文字以上含めてください",
+    passwordNoWhitespace: "パスワードに空白を含めることはできません",
+    nameMaxLength: "名前は{{max}}文字以内で入力してください",
+    roomNumberMaxLength: "部屋番号は{{max}}文字以内で入力してください",
+    roomNumberFormat: "部屋番号には英数字とハイフンのみ使用できます",
+    bioMaxLength: "自己紹介は{{max}}文字以内で入力してください",
+    interestsMaxCount: "趣味・関心は20個以内で入力してください",
+    dateFormat: "日付の形式が無効です",
+    dateInvalid: "有効な日付を入力してください",
+    fileTooLarge: "ファイルサイズは{{max}}MB以下にしてください",
+  },
+
+  pages: {
+    notFound: {
+      title: "ページが見つかりません",
+      description: "お探しのページは移動または削除された可能性があります",
+      backHome: "ホームに戻る",
+    },
+    error: {
+      title: "問題が発生しました",
+      description: "一時的なエラーが発生しました。しばらくしてから再度お試しください。",
+      retry: "再試行する",
+      backHome: "ホームに戻る",
+    },
+    globalError: {
+      title: "問題が発生しました",
+      description: "予期しないエラーが発生しました。ページを再読み込みしてください。",
+      reload: "再読み込み",
+    },
   },
 
   // Accessibility
@@ -155,7 +223,7 @@ export const ja = {
     sortByName: "名前順に並び替え",
     sortByMoveIn: "入居日順に並び替え",
     currentlySelected: "現在選択中",
-    viewProfile: "プロフィールを見る",
+    viewProfile: "{{name}}さんのプロフィールを見る",
     logout: "ログアウトする",
     uploadPhoto: "写真をアップロード",
     changePhoto: "写真を変更",
@@ -163,6 +231,12 @@ export const ja = {
     toggleTeaTime: "ティータイム参加を切り替え",
     markAsDone: "完了としてマーク",
     markAsSkipped: "スキップとしてマーク",
+    backToResidents: "住民一覧に戻る",
+    profilePhotoAlt: "{{name}}のプロフィール写真",
+    profileInitials: "{{name}}のイニシャル",
+    interestsList: "趣味・関心",
+    goHome: "Share House ホームに戻る",
+    openMyPage: "マイページを開く",
   },
 } as const;
 
