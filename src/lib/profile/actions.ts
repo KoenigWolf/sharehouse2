@@ -242,6 +242,3 @@ export async function createProfile(name: string): Promise<UpdateResponse> {
     return { error: t("errors.serverError") };
   }
 }
-
-// Re-export type for backward compatibility
-export type { ProfileUpdateInput as UpdateProfileData };
