@@ -20,6 +20,11 @@ export default async function ProfileEditPage({ params }: ProfileEditPageProps) 
     redirect("/login");
   }
 
+  // モックデータは編集不可
+  if (id.startsWith("mock-")) {
+    redirect(`/profile/${id}`);
+  }
+
   // 自分のプロフィール以外は編集不可
   if (user.id !== id) {
     redirect(`/profile/${id}`);
@@ -36,9 +41,9 @@ export default async function ProfileEditPage({ params }: ProfileEditPageProps) 
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-pink-50 via-purple-50 to-cyan-50">
+    <div className="min-h-screen bg-[#fafaf8]">
       <Header />
-      <main className="container mx-auto px-4 py-8 max-w-2xl">
+      <main className="container mx-auto px-6 py-10 max-w-2xl">
         <ProfileEditForm profile={profile as Profile} />
       </main>
     </div>

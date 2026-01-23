@@ -3,6 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import { Header } from "@/components/header";
 import { ProfileDetail } from "@/components/profile-detail";
 import { Profile } from "@/types/profile";
+import { mockProfiles } from "@/lib/mock-data";
 
 interface ProfilePageProps {
   params: Promise<{ id: string }>;
@@ -20,11 +21,18 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     redirect("/login");
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", id)
-    .single();
+  let profile: Profile | null = null;
+
+  if (id.startsWith("mock-")) {
+    profile = mockProfiles.find((p) => p.id === id) || null;
+  } else {
+    const { data } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", id)
+      .single();
+    profile = data as Profile | null;
+  }
 
   if (!profile) {
     notFound();
@@ -33,10 +41,10 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   const isOwnProfile = user.id === profile.id;
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-pink-50 via-purple-50 to-cyan-50">
+    <div className="min-h-screen bg-[#fafaf8]">
       <Header />
-      <main className="container mx-auto px-4 py-8 max-w-2xl">
-        <ProfileDetail profile={profile as Profile} isOwnProfile={isOwnProfile} />
+      <main className="container mx-auto px-4 py-4 max-w-2xl">
+        <ProfileDetail profile={profile} isOwnProfile={isOwnProfile} />
       </main>
     </div>
   );
