@@ -183,7 +183,7 @@ describe("ProfileDetail", () => {
       expect(screen.getByText(/不参加/)).toBeInTheDocument();
     });
 
-    it("applies green color for participating", () => {
+    it("applies muted green color for participating", () => {
       render(
         <ProfileDetail
           profile={mockProfile}
@@ -192,7 +192,7 @@ describe("ProfileDetail", () => {
         />
       );
       const statusText = screen.getByText(/参加中/);
-      expect(statusText).toHaveClass("text-[#16a34a]");
+      expect(statusText).toHaveClass("text-[#6b8b6b]");
     });
 
     it("applies gray color for not participating", () => {

@@ -144,7 +144,7 @@ describe("ResidentCard", () => {
         <ResidentCard profile={mockProfile} isCurrentUser={true} />
       );
       const article = container.querySelector("article");
-      expect(article).toHaveClass("border-[#b94a48]");
+      expect(article).toHaveClass("border-[#1a1a1a]");
     });
 
     it("applies normal border for regular profile", () => {
