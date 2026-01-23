@@ -59,24 +59,24 @@ export const ResidentCard = memo(function ResidentCard({ profile, isCurrentUser 
         </div>
 
         {/* 情報部分 */}
-        <div className="p-4">
-          <div className="flex items-baseline justify-between gap-2">
-            <h3 className="text-[#1a1a1a] tracking-wide truncate">
+        <div className="p-2 sm:p-4">
+          <div className="flex items-baseline justify-between gap-1 sm:gap-2">
+            <h3 className="text-sm sm:text-base text-[#1a1a1a] tracking-wide truncate">
               {profile.name}
             </h3>
             {profile.room_number && (
-              <span className="text-xs text-[#a3a3a3] shrink-0">
+              <span className="text-[10px] sm:text-xs text-[#a3a3a3] shrink-0">
                 {profile.room_number}
               </span>
             )}
           </div>
 
           {profile.interests && profile.interests.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mt-3">
+            <div className="flex flex-wrap gap-1 sm:gap-1.5 mt-2 sm:mt-3">
               {profile.interests.slice(0, 2).map((interest, i) => (
                 <span
                   key={i}
-                  className="text-[11px] px-2 py-0.5 bg-[#f5f5f3] text-[#737373]"
+                  className="text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 bg-[#f5f5f3] text-[#737373]"
                 >
                   {interest}
                 </span>
