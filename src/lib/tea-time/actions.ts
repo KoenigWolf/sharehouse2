@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { TEA_TIME } from "@/lib/constants/config";
 import { logError } from "@/lib/errors";
 import { t } from "@/lib/i18n";
+import { isValidUUID } from "@/lib/security";
 import type { Profile } from "@/types/profile";
 import type { TeaTimeMatch } from "@/types/tea-time";
 
@@ -15,12 +16,11 @@ type UpdateResponse = { success: true } | { error: string };
 
 /**
  * Build OR filter for user matches (safe from injection)
- * Using PostgREST filter syntax with proper escaping
+ * Using PostgREST filter syntax with UUID validation
  */
 function buildUserMatchFilter(userId: string): string {
-  // Supabase handles escaping, but we validate UUID format first
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!uuidRegex.test(userId)) {
+  // Validate UUID format to prevent injection
+  if (!isValidUUID(userId)) {
     throw new Error("Invalid user ID format");
   }
   return `user1_id.eq.${userId},user2_id.eq.${userId}`;

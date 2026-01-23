@@ -5,6 +5,13 @@ import { revalidatePath } from "next/cache";
 import { validateSignUp, validateSignIn } from "@/lib/validations/auth";
 import { logError } from "@/lib/errors";
 import { t } from "@/lib/i18n";
+import {
+  RateLimiters,
+  formatRateLimitError,
+  AuditActions,
+  AuditEventType,
+  auditLog,
+} from "@/lib/security";
 
 /**
  * Response types for auth actions
@@ -33,6 +40,7 @@ function createDefaultProfile(userId: string, name: string) {
 
 /**
  * Sign up a new user with email and password
+ * Includes rate limiting and audit logging
  */
 export async function signUp(
   name: string,
@@ -45,7 +53,18 @@ export async function signUp(
     return { error: validation.error || t("errors.invalidInput") };
   }
 
-  const { name: validatedName, email: validatedEmail, password: validatedPassword } = validation.data!;
+  const {
+    name: validatedName,
+    email: validatedEmail,
+    password: validatedPassword,
+  } = validation.data!;
+
+  // Rate limiting
+  const rateLimitResult = RateLimiters.auth(validatedEmail);
+  if (!rateLimitResult.success) {
+    AuditActions.rateLimited(validatedEmail, "signUp");
+    return { error: formatRateLimitError(rateLimitResult.retryAfter) };
+  }
 
   try {
     const supabase = await createClient();
@@ -65,6 +84,16 @@ export async function signUp(
     if (error) {
       logError(error, { action: "signUp", metadata: { email: validatedEmail } });
 
+      // Audit failed signup
+      auditLog({
+        timestamp: new Date().toISOString(),
+        eventType: AuditEventType.AUTH_SIGNUP,
+        action: "User signup failed",
+        outcome: "failure",
+        errorMessage: error.message,
+        metadata: { email: validatedEmail.slice(0, 3) + "***" },
+      });
+
       if (error.message.includes("already registered")) {
         return { error: t("auth.emailAlreadyExists") };
       }
@@ -82,6 +111,14 @@ export async function signUp(
 
     // If no session, email confirmation is required
     if (!data.session) {
+      auditLog({
+        timestamp: new Date().toISOString(),
+        eventType: AuditEventType.AUTH_SIGNUP,
+        userId: data.user.id,
+        action: "User signup - confirmation email sent",
+        outcome: "success",
+      });
+
       return {
         success: true,
         needsEmailConfirmation: true,
@@ -102,6 +139,15 @@ export async function signUp(
       // Don't fail signup if profile creation fails - it can be created on login
     }
 
+    // Audit successful signup
+    auditLog({
+      timestamp: new Date().toISOString(),
+      eventType: AuditEventType.AUTH_SIGNUP,
+      userId: data.user.id,
+      action: "User signup completed",
+      outcome: "success",
+    });
+
     revalidatePath("/");
     return { success: true };
   } catch (error) {
@@ -112,6 +158,7 @@ export async function signUp(
 
 /**
  * Sign in a user with email and password
+ * Includes rate limiting and audit logging
  */
 export async function signIn(
   email: string,
@@ -123,7 +170,15 @@ export async function signIn(
     return { error: validation.error || t("errors.invalidInput") };
   }
 
-  const { email: validatedEmail, password: validatedPassword } = validation.data!;
+  const { email: validatedEmail, password: validatedPassword } =
+    validation.data!;
+
+  // Rate limiting - use email as identifier
+  const rateLimitResult = RateLimiters.auth(validatedEmail);
+  if (!rateLimitResult.success) {
+    AuditActions.rateLimited(validatedEmail, "signIn");
+    return { error: formatRateLimitError(rateLimitResult.retryAfter) };
+  }
 
   try {
     const supabase = await createClient();
@@ -135,6 +190,10 @@ export async function signIn(
 
     if (error) {
       logError(error, { action: "signIn", metadata: { email: validatedEmail } });
+
+      // Audit failed login
+      AuditActions.loginFailure(validatedEmail, error.message);
+
       return { error: t("auth.invalidCredentials") };
     }
 
@@ -163,6 +222,9 @@ export async function signIn(
         // Don't fail login if profile creation fails
       }
     }
+
+    // Audit successful login
+    AuditActions.loginSuccess(data.user.id);
 
     revalidatePath("/");
     return { success: true };
