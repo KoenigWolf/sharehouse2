@@ -60,8 +60,8 @@ export default function LoginPage() {
       return;
     }
 
-    if (result.needsLogin) {
-      setSuccess("登録が完了しました。ログインしてください");
+    if ("needsEmailConfirmation" in result && result.needsEmailConfirmation) {
+      setSuccess(result.message || "確認メールを送信しました。メールのリンクをクリックしてからログインしてください");
       setMode("login");
       setIsLoading(false);
       return;

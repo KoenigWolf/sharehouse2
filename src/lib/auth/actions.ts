@@ -14,18 +14,34 @@ export async function signUp(name: string, email: string, password: string) {
       data: {
         name: name.trim(),
       },
+      emailRedirectTo: undefined,
     },
   });
 
   if (error) {
+    console.error("SignUp error:", error);
     if (error.message.includes("already registered")) {
       return { error: "このメールアドレスは既に登録されています" };
     }
-    return { error: "登録に失敗しました。入力内容を確認してください" };
+    return { error: `登録に失敗しました: ${error.message}` };
   }
 
   if (!data.user) {
     return { error: "ユーザーの作成に失敗しました" };
+  }
+
+  // メール確認が必要な場合（identitiesが空）
+  if (data.user.identities?.length === 0) {
+    return { error: "このメールアドレスは既に登録されています" };
+  }
+
+  // セッションがない場合（メール確認待ち）
+  if (!data.session) {
+    return {
+      success: true,
+      needsEmailConfirmation: true,
+      message: "確認メールを送信しました。メールのリンクをクリックしてから再度ログインしてください。"
+    };
   }
 
   // プロフィール作成
@@ -41,17 +57,6 @@ export async function signUp(name: string, email: string, password: string) {
 
   if (profileError) {
     console.error("Profile creation error:", profileError);
-    // プロフィール作成失敗してもユーザーは作成されているので続行
-  }
-
-  // 自動ログイン
-  const { error: signInError } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  if (signInError) {
-    return { success: true, needsLogin: true };
   }
 
   revalidatePath("/");
