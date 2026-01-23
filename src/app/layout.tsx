@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "シェアハウスポータル",
-  description: "住民専用ポータルサイト",
+  title: "Share House",
+  description: "住民専用ポータル",
 };
 
 export default function RootLayout({
