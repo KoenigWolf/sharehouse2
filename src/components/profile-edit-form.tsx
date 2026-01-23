@@ -69,9 +69,9 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
 
     const result = await uploadAvatar(formDataUpload);
 
-    if (result.error) {
+    if ("error" in result) {
       setError(result.error);
-    } else if (result.url) {
+    } else if ("url" in result) {
       setAvatarUrl(result.url);
     }
 
@@ -108,7 +108,7 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
 
     setIsLoading(false);
 
-    if (result.error) {
+    if ("error" in result) {
       setError(result.error);
     } else {
       setSuccess(true);

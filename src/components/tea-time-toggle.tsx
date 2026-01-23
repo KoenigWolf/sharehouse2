@@ -18,7 +18,7 @@ export function TeaTimeToggle({ initialEnabled }: TeaTimeToggleProps) {
 
     const result = await updateTeaTimeSetting(checked);
 
-    if (result.error) {
+    if ("error" in result) {
       setIsEnabled(!checked);
     }
 

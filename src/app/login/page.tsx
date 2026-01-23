@@ -24,7 +24,7 @@ export default function LoginPage() {
 
     const result = await signIn(email, password);
 
-    if (result.error) {
+    if ("error" in result) {
       setError(result.error);
       setIsLoading(false);
       return;
@@ -54,7 +54,7 @@ export default function LoginPage() {
 
     const result = await signUp(name.trim(), email, password);
 
-    if (result.error) {
+    if ("error" in result) {
       setError(result.error);
       setIsLoading(false);
       return;

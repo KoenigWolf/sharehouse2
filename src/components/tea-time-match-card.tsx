@@ -30,7 +30,7 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
   const handleStatusUpdate = async (newStatus: "done" | "skipped") => {
     setIsLoading(true);
     const result = await updateMatchStatus(match.id, newStatus);
-    if (!result.error) {
+    if ("success" in result) {
       setStatus(newStatus);
     }
     setIsLoading(false);
