@@ -64,8 +64,6 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
     return result;
   }, [profiles, searchQuery, sortBy, currentUserId]);
 
-  const sortIndex = SORT_OPTIONS.findIndex((opt) => opt.value === sortBy);
-
   if (profiles.length === 0) {
     return (
       <div className="flex-1 flex items-center justify-center">
@@ -104,35 +102,36 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
           </div>
 
           {/* ソート */}
-          <div className="relative">
-            <div className="flex text-sm">
-              {SORT_OPTIONS.map((option) => {
-                const isActive = sortBy === option.value;
-                return (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => handleSortChange(option.value)}
-                    className={`px-4 py-2 tracking-wide transition-colors ${
-                      isActive ? "text-[#1a1a1a]" : "text-[#a3a3a3]"
-                    }`}
+          <div className="flex text-sm">
+            {SORT_OPTIONS.map((option) => {
+              const isActive = sortBy === option.value;
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => handleSortChange(option.value)}
+                  className="relative px-4 py-2 tracking-wide transition-colors group"
+                >
+                  <span
+                    className={
+                      isActive
+                        ? "text-[#1a1a1a]"
+                        : "text-[#a3a3a3] group-hover:text-[#737373]"
+                    }
                   >
                     {option.label}
-                  </button>
-                );
-              })}
-            </div>
-            {/* アンダーライン */}
-            <div className="absolute bottom-0 left-0 right-0 h-px bg-[#e5e5e5]" />
-            <motion.div
-              className="absolute bottom-0 h-px bg-[#1a1a1a]"
-              initial={false}
-              animate={{
-                left: `${(sortIndex / SORT_OPTIONS.length) * 100}%`,
-                width: `${100 / SORT_OPTIONS.length}%`,
-              }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-            />
+                  </span>
+                  {/* アンダーライン */}
+                  {isActive && (
+                    <motion.span
+                      layoutId="sort-underline"
+                      className="absolute bottom-0 left-4 right-4 h-px bg-[#1a1a1a]"
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                    />
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
