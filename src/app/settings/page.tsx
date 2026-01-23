@@ -50,7 +50,7 @@ export default async function SettingsPage() {
   return (
     <div className="min-h-screen bg-[#fafaf8]">
       <Header />
-      <main className="container mx-auto px-4 py-4 max-w-3xl space-y-6">
+      <main className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 max-w-3xl space-y-4 sm:space-y-6">
         <ProfileEditForm profile={profile as Profile} />
 
         {/* ティータイム設定 */}

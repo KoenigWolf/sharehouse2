@@ -27,7 +27,7 @@ export default async function TeaTimePage() {
   return (
     <div className="min-h-screen bg-[#fafaf8]">
       <Header />
-      <main className="container mx-auto px-4 py-4 max-w-lg">
+      <main className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 max-w-lg">
         <div className="flex items-baseline justify-between mb-4">
           <h2 className="text-lg text-[#1a1a1a] tracking-wide">ティータイム</h2>
           <span className="text-xs text-[#a3a3a3]">ランダムマッチ</span>

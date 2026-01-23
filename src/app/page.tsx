@@ -43,7 +43,7 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-[#fafaf8]">
       <Header />
-      <main className="container mx-auto px-4 py-4">
+      <main className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
         {/* ティータイム通知 */}
         {latestMatch && (
           <div className="mb-4">

@@ -47,7 +47,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   return (
     <div className="min-h-screen bg-[#fafaf8]">
       <Header />
-      <main className="container mx-auto px-4 py-4 max-w-2xl">
+      <main className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 max-w-2xl">
         <ProfileDetail
           profile={profile}
           isOwnProfile={isOwnProfile}

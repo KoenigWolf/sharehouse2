@@ -46,7 +46,7 @@ export default async function ProfileEditPage({ params }: ProfileEditPageProps) 
   return (
     <div className="min-h-screen bg-[#fafaf8]">
       <Header />
-      <main className="container mx-auto px-6 py-10 max-w-2xl space-y-6">
+      <main className="container mx-auto px-3 sm:px-6 py-4 sm:py-10 max-w-2xl space-y-4 sm:space-y-6">
         <ProfileEditForm profile={profile as Profile} />
 
         {/* ティータイム設定 */}

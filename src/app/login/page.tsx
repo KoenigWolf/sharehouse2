@@ -92,7 +92,7 @@ export default function LoginPage() {
       </header>
 
       {/* メインコンテンツ */}
-      <main className="flex-1 flex items-center justify-center p-6">
+      <main className="flex-1 flex items-center justify-center p-4 sm:p-6">
         <div className="w-full max-w-sm">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-light text-[#1a1a1a] tracking-wide">
