@@ -5,10 +5,11 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
-import { Profile } from "@/types/profile";
+import { Profile } from "@/domain/profile";
 import { updateProfile, uploadAvatar } from "@/lib/profile/actions";
 import { updateTeaTimeSetting } from "@/lib/tea-time/actions";
 import { getInitials } from "@/lib/utils";
+import { useI18n } from "@/hooks/use-i18n";
 
 interface ProfileEditFormProps {
   profile: Profile;
@@ -17,6 +18,7 @@ interface ProfileEditFormProps {
 
 export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: ProfileEditFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const t = useI18n();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -35,11 +37,14 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
 
   // プロフィール完成度を計算
   const completionItems = [
-    { label: "写真", completed: !!avatarUrl },
-    { label: "名前", completed: !!formData.name.trim() },
-    { label: "部屋番号", completed: !!formData.room_number.trim() },
-    { label: "自己紹介", completed: !!formData.bio.trim() },
-    { label: "趣味", completed: !!formData.interests.trim() },
+    { label: t("profile.completionItems.photo"), completed: !!avatarUrl },
+    { label: t("profile.completionItems.name"), completed: !!formData.name.trim() },
+    {
+      label: t("profile.completionItems.roomNumber"),
+      completed: !!formData.room_number.trim(),
+    },
+    { label: t("profile.completionItems.bio"), completed: !!formData.bio.trim() },
+    { label: t("profile.completionItems.interests"), completed: !!formData.interests.trim() },
   ];
   const completedCount = completionItems.filter((i) => i.completed).length;
   const completionPercentage = Math.round(
@@ -79,7 +84,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
     e.preventDefault();
 
     if (!formData.name.trim()) {
-      setError("名前は必須です");
+      setError(t("auth.nameRequired"));
       return;
     }
 
@@ -138,13 +143,13 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
       {/* ヘッダー */}
       <div className="flex items-center justify-between">
         <h1 className="text-xl text-[#1a1a1a] tracking-wide font-light">
-          プロフィール編集
+          {t("profile.editTitle")}
         </h1>
         <Link
           href={`/profile/${profile.id}`}
           className="text-xs text-[#737373] hover:text-[#1a1a1a] transition-colors"
         >
-          プロフィールを見る →
+          {t("profile.viewPublicProfile")}
         </Link>
       </div>
 
@@ -171,7 +176,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
             transition={{ duration: 0.2 }}
             className="py-3 px-4 bg-[#f8faf8] border-l-2 border-[#a0c9a0]"
           >
-            <p className="text-sm text-[#6b8b6b]">保存しました</p>
+            <p className="text-sm text-[#6b8b6b]">{t("profile.saved")}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -187,7 +192,9 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
           {/* プロフィールカードプレビュー */}
           <div className="bg-white border border-[#e5e5e5]">
             <div className="px-4 py-3 border-b border-[#e5e5e5]">
-              <p className="text-xs text-[#a3a3a3] tracking-wide">プレビュー</p>
+              <p className="text-xs text-[#a3a3a3] tracking-wide">
+                {t("profile.preview")}
+              </p>
             </div>
             <div className="p-4">
               {/* アバター */}
@@ -201,6 +208,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                   <AvatarImage
                     src={avatarUrl || undefined}
                     className="object-cover"
+                    alt={t("a11y.profilePhotoAlt", { name: formData.name || "?" })}
                   />
                   <AvatarFallback className="bg-[#f5f5f3] text-[#a3a3a3] text-4xl rounded-none">
                     {getInitials(formData.name || "?")}
@@ -208,7 +216,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                 </Avatar>
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <span className="text-white text-xs tracking-wide">
-                    {isUploading ? "アップロード中..." : "写真を変更"}
+                    {isUploading ? t("profile.uploadingPhoto") : t("profile.changePhoto")}
                   </span>
                 </div>
                 {isUploading && (
@@ -236,7 +244,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
               {/* 名前・部屋番号 */}
               <div className="flex items-baseline justify-between gap-2 mb-3">
                 <h3 className="text-sm text-[#1a1a1a] tracking-wide truncate">
-                  {formData.name || "名前未設定"}
+                  {formData.name || t("profile.nameUnset")}
                 </h3>
                 {formData.room_number && (
                   <span className="text-[10px] text-[#a3a3a3] shrink-0">
@@ -269,7 +277,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
           {/* 完成度 */}
           <div className="bg-white border border-[#e5e5e5] p-4">
             <div className="flex items-center justify-between mb-3">
-              <p className="text-xs text-[#737373]">完成度</p>
+              <p className="text-xs text-[#737373]">{t("profile.completionLabel")}</p>
               <p className="text-sm text-[#1a1a1a]">{completionPercentage}%</p>
             </div>
             <div className="h-px bg-[#e5e5e5] mb-3">
@@ -300,11 +308,13 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
           <div className="bg-white border border-[#e5e5e5] p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-[#737373] tracking-wide">ティータイム</p>
+                <p className="text-xs text-[#737373] tracking-wide">
+                  {t("profile.teaTimeStatus")}
+                </p>
                 <p className="text-[10px] text-[#a3a3a3] mt-1">
                   {teaTimeEnabled
-                    ? "ランダムマッチングに参加中"
-                    : "マッチング対象外"}
+                    ? t("teaTime.participating")
+                    : t("teaTime.notParticipating")}
                 </p>
               </div>
               <Switch
@@ -317,12 +327,12 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
           </div>
 
           {/* 写真アップロードのヒント */}
-          <p className="text-[10px] text-[#a3a3a3] text-center">
-            写真はプレビューをクリックして変更
-            <br className="sm:hidden" />
-            <span className="hidden sm:inline">・</span>
-            JPG/PNG/WebP, 5MB以下
-          </p>
+        <p className="text-[10px] text-[#a3a3a3] text-center">
+          {t("profile.photoHintMobile")}
+          <br className="sm:hidden" />
+          <span className="hidden sm:inline">・</span>
+          {t("profile.photoFormat")}
+        </p>
         </motion.div>
 
         {/* 右：編集フォーム */}
@@ -337,7 +347,9 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
             className="bg-white border border-[#e5e5e5]"
           >
             <div className="px-4 py-3 border-b border-[#e5e5e5]">
-              <p className="text-xs text-[#a3a3a3] tracking-wide">基本情報</p>
+              <p className="text-xs text-[#a3a3a3] tracking-wide">
+                {t("profile.basicInfo")}
+              </p>
             </div>
 
             <div className="p-4 sm:p-5 space-y-5">
@@ -347,7 +359,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                   htmlFor="name"
                   className="block text-xs text-[#737373] tracking-wide"
                 >
-                  名前
+                  {t("auth.name")}
                 </label>
                 <input
                   id="name"
@@ -356,7 +368,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  placeholder="山田 太郎"
+                  placeholder={t("auth.namePlaceholder")}
                   required
                   className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
                 />
@@ -365,12 +377,12 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
               {/* 部屋番号・入居日 */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label
-                    htmlFor="room_number"
-                    className="block text-xs text-[#737373] tracking-wide"
-                  >
-                    部屋番号
-                  </label>
+                <label
+                  htmlFor="room_number"
+                  className="block text-xs text-[#737373] tracking-wide"
+                >
+                  {t("profile.roomNumber")}
+                </label>
                   <input
                     id="room_number"
                     type="text"
@@ -383,12 +395,12 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                   />
                 </div>
                 <div className="space-y-2">
-                  <label
-                    htmlFor="move_in_date"
-                    className="block text-xs text-[#737373] tracking-wide"
-                  >
-                    入居日
-                  </label>
+                <label
+                  htmlFor="move_in_date"
+                  className="block text-xs text-[#737373] tracking-wide"
+                >
+                  {t("profile.moveInDate")}
+                </label>
                   <input
                     id="move_in_date"
                     type="date"
@@ -407,7 +419,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                   htmlFor="bio"
                   className="block text-xs text-[#737373] tracking-wide"
                 >
-                  自己紹介
+                  {t("profile.bio")}
                 </label>
                 <textarea
                   id="bio"
@@ -415,7 +427,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                   onChange={(e) =>
                     setFormData({ ...formData, bio: e.target.value })
                   }
-                  placeholder="趣味や仕事、シェアハウスでやりたいことなど..."
+                  placeholder={t("profile.bioPlaceholder")}
                   rows={3}
                   className="w-full px-4 py-3 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors resize-none leading-relaxed"
                 />
@@ -427,7 +439,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                   htmlFor="interests"
                   className="block text-xs text-[#737373] tracking-wide"
                 >
-                  趣味・関心
+                  {t("profile.interests")}
                 </label>
                 <input
                   id="interests"
@@ -436,11 +448,11 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                   onChange={(e) =>
                     setFormData({ ...formData, interests: e.target.value })
                   }
-                  placeholder="料理、映画、ランニング"
+                  placeholder={t("profile.interestsPlaceholder")}
                   className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
                 />
                 <p className="text-[10px] text-[#a3a3a3]">
-                  「、」「・」「,」で区切ると、タグとして表示されます
+                  {t("profile.interestsSeparatorHint")}
                 </p>
               </div>
 
@@ -462,7 +474,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                       className="inline-block w-4 h-4 border border-white/30 border-t-white rounded-full"
                     />
                   ) : (
-                    "変更を保存"
+                    t("profile.saveChanges")
                   )}
                 </button>
               </div>

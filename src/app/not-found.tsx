@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { getServerTranslator } from "@/lib/i18n/server";
 
-export default function NotFound() {
+export default async function NotFound() {
+  const t = await getServerTranslator();
+
   return (
     <div className="min-h-screen bg-[#fafaf8] flex flex-col">
       {/* ヘッダー */}
@@ -17,16 +20,16 @@ export default function NotFound() {
         <div className="text-center max-w-md">
           <p className="text-6xl text-[#d4d4d4] mb-6 font-light">404</p>
           <h1 className="text-xl text-[#1a1a1a] mb-3 tracking-wide">
-            ページが見つかりません
+            {t("pages.notFound.title")}
           </h1>
           <p className="text-sm text-[#737373] mb-8 leading-relaxed">
-            お探しのページは移動または削除された可能性があります
+            {t("pages.notFound.description")}
           </p>
           <Link
             href="/"
             className="inline-block px-8 py-3 bg-[#1a1a1a] text-white text-sm tracking-wide hover:bg-[#333] transition-colors"
           >
-            ホームに戻る
+            {t("pages.notFound.backHome")}
           </Link>
         </div>
       </main>

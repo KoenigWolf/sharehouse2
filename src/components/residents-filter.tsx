@@ -2,7 +2,8 @@
 
 import { memo } from "react";
 import { Input } from "@/components/ui/input";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/hooks/use-i18n";
+import type { TranslationKey } from "@/lib/i18n";
 
 type SortOption = "name" | "room_number" | "move_in_date";
 
@@ -16,10 +17,14 @@ interface ResidentsFilterProps {
 /**
  * Sort button configuration
  */
-const SORT_OPTIONS: { value: SortOption; label: string; ariaLabel: string }[] = [
-  { value: "room_number", label: "部屋", ariaLabel: "部屋番号順に並び替え" },
-  { value: "name", label: "名前", ariaLabel: "名前順に並び替え" },
-  { value: "move_in_date", label: "入居", ariaLabel: "入居日順に並び替え" },
+const SORT_OPTIONS: {
+  value: SortOption;
+  labelKey: TranslationKey;
+  ariaKey: TranslationKey;
+}[] = [
+  { value: "room_number", labelKey: "residents.sortByRoom", ariaKey: "a11y.sortByRoom" },
+  { value: "name", labelKey: "residents.sortByName", ariaKey: "a11y.sortByName" },
+  { value: "move_in_date", labelKey: "residents.sortByMoveIn", ariaKey: "a11y.sortByMoveIn" },
 ];
 
 /**
@@ -31,6 +36,8 @@ export const ResidentsFilter = memo(function ResidentsFilter({
   sortBy,
   onSortChange,
 }: ResidentsFilterProps) {
+  const t = useI18n();
+
   return (
     <div className="flex items-center gap-1.5 sm:gap-2" role="search">
       <label htmlFor="resident-search" className="sr-only">
@@ -58,7 +65,7 @@ export const ResidentsFilter = memo(function ResidentsFilter({
               key={option.value}
               type="button"
               onClick={() => onSortChange(option.value)}
-              aria-label={option.ariaLabel}
+              aria-label={t(option.ariaKey)}
               aria-pressed={isSelected}
               className={`text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-1 transition-colors ${
                 isSelected
@@ -66,7 +73,7 @@ export const ResidentsFilter = memo(function ResidentsFilter({
                   : "bg-white text-[#737373] hover:bg-[#f5f5f3]"
               }`}
             >
-              {option.label}
+              {t(option.labelKey)}
             </button>
           );
         })}

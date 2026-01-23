@@ -6,8 +6,10 @@ import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { updateMatchStatus } from "@/lib/tea-time/actions";
 import { getInitials } from "@/lib/utils";
-import { Profile } from "@/types/profile";
-import { TeaTimeMatch } from "@/types/tea-time";
+import { Profile } from "@/domain/profile";
+import { TeaTimeMatch } from "@/domain/tea-time";
+import { useI18n } from "@/hooks/use-i18n";
+import { normalizeLocale } from "@/lib/i18n";
 
 interface TeaTimeMatchCardProps {
   match: TeaTimeMatch & { partner: Profile | null };
@@ -16,6 +18,12 @@ interface TeaTimeMatchCardProps {
 export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
   const [status, setStatus] = useState(match.status);
   const [isLoading, setIsLoading] = useState(false);
+  const t = useI18n();
+  const locale = normalizeLocale(
+    typeof document !== "undefined"
+      ? document.documentElement.lang || navigator.language
+      : undefined
+  );
 
   if (!match.partner) return null;
 
@@ -30,7 +38,11 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("ja-JP", { month: "short", day: "numeric" });
+    const resolvedLocale = locale === "ja" ? "ja-JP" : "en-US";
+    return date.toLocaleDateString(resolvedLocale, {
+      month: "short",
+      day: "numeric",
+    });
   };
 
   // 過去のマッチ（完了・スキップ済み）
@@ -52,7 +64,7 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
           <span className="text-[10px] text-[#a3a3a3]">
             {formatDate(match.matched_at)}
             <span className="mx-1">·</span>
-            {status === "done" ? "完了" : "スキップ"}
+            {status === "done" ? t("teaTime.done") : t("teaTime.skipped")}
           </span>
         </div>
       </div>
@@ -87,7 +99,8 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
             {match.partner.name}
           </Link>
           <p className="text-[10px] text-[#a3a3a3] mt-1">
-            {match.partner.room_number && `${match.partner.room_number}号室`}
+            {match.partner.room_number &&
+              `${match.partner.room_number}${t("profile.room")}`}
             {match.partner.room_number && <span className="mx-1">·</span>}
             {formatDate(match.matched_at)}
           </p>
@@ -100,14 +113,14 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
           disabled={isLoading}
           className="flex-1 h-10 bg-[#1a1a1a] text-white text-xs tracking-wide hover:bg-[#333] disabled:bg-[#a3a3a3] disabled:cursor-not-allowed transition-colors"
         >
-          {isLoading ? "..." : "お茶した"}
+          {isLoading ? t("common.processing") : t("teaTime.hadTea")}
         </button>
         <button
           onClick={() => handleStatusUpdate("skipped")}
           disabled={isLoading}
           className="flex-1 h-10 border border-[#e5e5e5] text-[#737373] text-xs tracking-wide hover:border-[#1a1a1a] hover:text-[#1a1a1a] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          スキップ
+          {t("teaTime.skip")}
         </button>
       </div>
     </motion.div>

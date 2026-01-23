@@ -4,10 +4,12 @@ import { Header } from "@/components/header";
 import { ResidentsGrid } from "@/components/residents-grid";
 import { TeaTimeNotification } from "@/components/tea-time-notification";
 import { getLatestScheduledMatch } from "@/lib/tea-time/actions";
-import { Profile } from "@/types/profile";
+import { Profile } from "@/domain/profile";
 import { mockProfiles } from "@/lib/mock-data";
+import { getServerTranslator } from "@/lib/i18n/server";
 
 export default async function Home() {
+  const t = await getServerTranslator();
   const supabase = await createClient();
   const {
     data: { user },
@@ -54,7 +56,8 @@ export default async function Home() {
           {/* 登録状況 */}
           {mockCount > 0 && (
             <p className="text-xs text-[#a3a3a3] mb-6">
-              登録済み {dbProfiles.length}人 / 未登録 {mockCount}部屋
+              {t("residents.registeredLabel", { count: dbProfiles.length })} /{" "}
+              {t("residents.unregisteredLabel", { count: mockCount })}
             </p>
           )}
 

@@ -5,15 +5,16 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/hooks/use-i18n";
+import type { TranslationKey } from "@/lib/i18n";
 
 /**
  * Navigation items configuration
  */
-const NAV_ITEMS = [
-  { href: "/", label: "住民" },
-  { href: "/tea-time", label: "Tea Time" },
-] as const;
+const NAV_ITEMS: { href: string; labelKey: TranslationKey }[] = [
+  { href: "/", labelKey: "nav.residents" },
+  { href: "/tea-time", labelKey: "nav.teaTime" },
+];
 
 /**
  * Application header with navigation
@@ -21,6 +22,7 @@ const NAV_ITEMS = [
 export const Header = memo(function Header() {
   const router = useRouter();
   const pathname = usePathname();
+  const t = useI18n();
 
   const handleLogout = useCallback(async () => {
     const supabase = createClient();
@@ -40,7 +42,7 @@ export const Header = memo(function Header() {
           <Link
             href="/"
             className="text-base tracking-wider text-[#1a1a1a] font-light"
-            aria-label="Share House ホームに戻る"
+            aria-label={t("a11y.goHome")}
           >
             SHARE HOUSE
           </Link>
@@ -65,7 +67,7 @@ export const Header = memo(function Header() {
                         : "text-[#a3a3a3] group-hover:text-[#737373]"
                     }
                   >
-                    {item.label}
+                    {t(item.labelKey)}
                   </span>
                   {/* Underline */}
                   {isActive && (
@@ -93,7 +95,7 @@ export const Header = memo(function Header() {
                     isActive ? "text-[#1a1a1a]" : "text-[#a3a3a3]"
                   }`}
                 >
-                  {item.label}
+                  {t(item.labelKey)}
                 </Link>
               );
             })}
@@ -107,7 +109,7 @@ export const Header = memo(function Header() {
         >
           <Link
             href="/settings"
-            aria-label="マイページを開く"
+            aria-label={t("a11y.openMyPage")}
             aria-current={isSettingsActive ? "page" : undefined}
             className="relative px-3 sm:px-4 py-2 text-xs sm:text-sm tracking-wide transition-colors group"
           >

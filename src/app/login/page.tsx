@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { signIn, signUp } from "@/lib/auth/actions";
+import { AUTH } from "@/lib/constants/config";
+import { useI18n } from "@/hooks/use-i18n";
 
 export default function LoginPage() {
   const [mode, setMode] = useState<"login" | "signup">("login");
@@ -14,6 +16,7 @@ export default function LoginPage() {
   const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const t = useI18n();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,13 +42,13 @@ export default function LoginPage() {
     setSuccess(null);
 
     if (!name.trim()) {
-      setError("名前を入力してください");
+      setError(t("auth.nameRequired"));
       setIsLoading(false);
       return;
     }
 
-    if (password.length < 10) {
-      setError("パスワードは10文字以上で入力してください");
+    if (password.length < AUTH.passwordMinLength) {
+      setError(t("auth.passwordMinLength", { min: AUTH.passwordMinLength }));
       setIsLoading(false);
       return;
     }
@@ -61,7 +64,7 @@ export default function LoginPage() {
     if ("needsEmailConfirmation" in result && result.needsEmailConfirmation) {
       setSuccess(
         result.message ||
-          "確認メールを送信しました。メールのリンクをクリックしてからログインしてください"
+          t("auth.confirmationEmailSent")
       );
       setMode("login");
       setIsLoading(false);
@@ -90,17 +93,17 @@ export default function LoginPage() {
               SHARE HOUSE
             </h1>
             <p className="text-[#737373] leading-relaxed text-sm">
-              住民同士のつながりを大切にする
+              {t("auth.portalLead")}
               <br />
-              シェアハウスのためのポータルサイト
+              {t("auth.portalSublead")}
             </p>
             <div className="mt-12 pt-12 border-t border-[#e5e5e5]">
               <p className="text-xs text-[#a3a3a3] leading-loose">
-                顔と名前を覚えて、
+                {t("auth.portalDescriptionLine1")}
                 <br />
-                声をかけやすい関係をつくる。
+                {t("auth.portalDescriptionLine2")}
                 <br />
-                それがこのポータルの目的です。
+                {t("auth.portalDescriptionLine3")}
               </p>
             </div>
           </div>
@@ -114,7 +117,9 @@ export default function LoginPage() {
               <h1 className="text-xl font-light text-[#1a1a1a] tracking-wider">
                 SHARE HOUSE
               </h1>
-              <p className="text-xs text-[#a3a3a3] mt-2">住民専用ポータル</p>
+              <p className="text-xs text-[#a3a3a3] mt-2">
+                {t("auth.residentPortal")}
+              </p>
             </div>
 
             {/* モード切り替え */}
@@ -127,7 +132,7 @@ export default function LoginPage() {
                     mode === "login" ? "text-[#1a1a1a]" : "text-[#a3a3a3]"
                   }`}
                 >
-                  ログイン
+                  {t("auth.login")}
                 </button>
                 <button
                   type="button"
@@ -136,7 +141,7 @@ export default function LoginPage() {
                     mode === "signup" ? "text-[#1a1a1a]" : "text-[#a3a3a3]"
                   }`}
                 >
-                  新規登録
+                  {t("auth.signup")}
                 </button>
               </div>
               {/* アンダーライン */}
@@ -172,14 +177,14 @@ export default function LoginPage() {
                         htmlFor="name"
                         className="block text-xs text-[#737373] tracking-wide"
                       >
-                        名前
+                        {t("auth.name")}
                       </label>
                       <input
                         id="name"
                         type="text"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        placeholder="山田 太郎"
+                        placeholder={t("auth.namePlaceholder")}
                         required
                         className="w-full h-12 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
                       />
@@ -193,7 +198,7 @@ export default function LoginPage() {
                   htmlFor="email"
                   className="block text-xs text-[#737373] tracking-wide"
                 >
-                  メールアドレス
+                  {t("auth.email")}
                 </label>
                 <input
                   id="email"
@@ -212,7 +217,7 @@ export default function LoginPage() {
                   htmlFor="password"
                   className="block text-xs text-[#737373] tracking-wide"
                 >
-                  パスワード
+                  {t("auth.password")}
                 </label>
                 <input
                   id="password"
@@ -231,7 +236,7 @@ export default function LoginPage() {
                       exit={{ opacity: 0 }}
                       className="text-xs text-[#a3a3a3] pt-1"
                     >
-                      10文字以上、大文字・小文字・数字を含む
+                      {t("auth.passwordHint")}
                     </motion.p>
                   )}
                 </AnimatePresence>
@@ -281,12 +286,12 @@ export default function LoginPage() {
                       }}
                       className="inline-block w-4 h-4 border border-white/30 border-t-white rounded-full"
                     />
-                    処理中
+                    {t("common.processing")}
                   </span>
                 ) : mode === "login" ? (
-                  "ログイン"
+                  t("auth.login")
                 ) : (
-                  "登録する"
+                  t("auth.register")
                 )}
               </button>
             </form>
@@ -298,13 +303,11 @@ export default function LoginPage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="text-xs text-[#a3a3a3] text-center mt-8 leading-relaxed"
-                >
-                  登録後、プロフィールページで
-                  <br />
-                  詳細情報を編集できます
-                </motion.p>
-              )}
+                className="text-xs text-[#a3a3a3] text-center mt-8 leading-relaxed"
+              >
+                  {t("auth.signupHint")}
+              </motion.p>
+            )}
             </AnimatePresence>
           </div>
         </div>

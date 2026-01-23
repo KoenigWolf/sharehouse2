@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
+import { useI18n } from "@/hooks/use-i18n";
+import { normalizeLocale } from "@/lib/i18n";
 
 export default function GlobalError({
   error,
@@ -9,13 +11,20 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const t = useI18n();
+  const locale = normalizeLocale(
+    typeof document !== "undefined"
+      ? document.documentElement.lang || navigator.language
+      : undefined
+  );
+
   useEffect(() => {
     // エラーをログに記録
     console.error("Global error:", error);
   }, [error]);
 
   return (
-    <html lang="ja">
+    <html lang={locale}>
       <body>
         <div
           style={{
@@ -86,17 +95,17 @@ export default function GlobalError({
                   fontWeight: 400,
                 }}
               >
-                問題が発生しました
+                {t("pages.globalError.title")}
               </h1>
               <p
                 style={{
                   fontSize: "14px",
                   color: "#737373",
                   marginBottom: "32px",
-                  lineHeight: 1.6,
-                }}
-              >
-                予期しないエラーが発生しました。ページを再読み込みしてください。
+                lineHeight: 1.6,
+              }}
+            >
+                {t("pages.globalError.description")}
               </p>
               <button
                 onClick={reset}
@@ -106,11 +115,11 @@ export default function GlobalError({
                   color: "white",
                   fontSize: "14px",
                   letterSpacing: "0.05em",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-              >
-                再読み込み
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+                {t("pages.globalError.reload")}
               </button>
             </div>
           </main>

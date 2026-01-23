@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Profile } from "@/types/profile";
+import { Profile } from "@/domain/profile";
 import { getInitials, formatDate, calculateResidenceDuration } from "@/lib/utils";
-import { t } from "@/lib/i18n";
+import { useI18n } from "@/hooks/use-i18n";
+import { normalizeLocale } from "@/lib/i18n";
 
 interface ProfileDetailProps {
   profile: Profile;
@@ -22,6 +23,13 @@ export function ProfileDetail({
   teaTimeEnabled,
 }: ProfileDetailProps) {
   const isMockProfile = profile.id.startsWith("mock-");
+  const t = useI18n();
+  const locale = normalizeLocale(
+    typeof document !== "undefined"
+      ? document.documentElement.lang || navigator.language
+      : undefined
+  );
+  const localeTag = locale === "ja" ? "ja-JP" : "en-US";
 
   return (
     <motion.article
@@ -33,7 +41,7 @@ export function ProfileDetail({
       <Link
         href="/"
         className="inline-flex items-center gap-1.5 text-xs text-[#737373] hover:text-[#1a1a1a] mb-4 transition-colors"
-        aria-label="住民一覧に戻る"
+        aria-label={t("a11y.backToResidents")}
       >
         <span aria-hidden="true">←</span>
         <span>{t("common.back")}</span>
@@ -74,7 +82,7 @@ export function ProfileDetail({
             <Avatar className="w-full h-full rounded-none">
               <AvatarImage
                 src={profile.avatar_url || undefined}
-                alt={`${profile.name}のプロフィール写真`}
+                alt={t("a11y.profilePhotoAlt", { name: profile.name })}
                 className="object-cover w-full h-full"
               />
               <AvatarFallback className="bg-[#f5f5f3] text-[#a3a3a3] text-5xl sm:text-6xl rounded-none w-full h-full">
@@ -115,7 +123,7 @@ export function ProfileDetail({
                     {t("profile.moveInDate")}
                   </dt>
                   <dd className="text-sm text-[#1a1a1a]">
-                    {formatDate(profile.move_in_date)}
+                    {formatDate(profile.move_in_date, undefined, localeTag)}
                   </dd>
                 </div>
                 <div className="w-px h-8 bg-[#e5e5e5]" aria-hidden="true" />
@@ -124,7 +132,7 @@ export function ProfileDetail({
                     {t("profile.residenceDuration")}
                   </dt>
                   <dd className="text-sm text-[#1a1a1a]">
-                    {calculateResidenceDuration(profile.move_in_date)}
+                    {calculateResidenceDuration(profile.move_in_date, t)}
                   </dd>
                 </div>
               </dl>

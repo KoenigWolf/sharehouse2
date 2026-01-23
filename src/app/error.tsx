@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import { useI18n } from "@/hooks/use-i18n";
 
 export default function Error({
   error,
@@ -10,6 +11,8 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const t = useI18n();
+
   useEffect(() => {
     // エラーをログに記録
     console.error("Application error:", error);
@@ -31,23 +34,23 @@ export default function Error({
         <div className="text-center max-w-md">
           <p className="text-6xl text-[#d4d4d4] mb-6 font-light">Error</p>
           <h1 className="text-xl text-[#1a1a1a] mb-3 tracking-wide">
-            問題が発生しました
+            {t("pages.error.title")}
           </h1>
           <p className="text-sm text-[#737373] mb-8 leading-relaxed">
-            一時的なエラーが発生しました。しばらくしてから再度お試しください。
+            {t("pages.error.description")}
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
               onClick={reset}
               className="px-8 py-3 bg-[#1a1a1a] text-white text-sm tracking-wide hover:bg-[#333] transition-colors"
             >
-              再試行する
+              {t("pages.error.retry")}
             </button>
             <Link
               href="/"
               className="px-8 py-3 border border-[#e5e5e5] text-[#1a1a1a] text-sm tracking-wide hover:bg-[#f5f5f3] transition-colors"
             >
-              ホームに戻る
+              {t("pages.error.backHome")}
             </Link>
           </div>
         </div>

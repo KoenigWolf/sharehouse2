@@ -3,14 +3,16 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Profile } from "@/types/profile";
-import { TeaTimeMatch } from "@/types/tea-time";
+import { Profile } from "@/domain/profile";
+import { TeaTimeMatch } from "@/domain/tea-time";
+import { useI18n } from "@/hooks/use-i18n";
 
 interface TeaTimeNotificationProps {
   match: TeaTimeMatch & { partner: Profile | null };
 }
 
 export function TeaTimeNotification({ match }: TeaTimeNotificationProps) {
+  const t = useI18n();
   if (!match.partner) return null;
 
   const getInitials = (name: string) => {
@@ -33,8 +35,14 @@ export function TeaTimeNotification({ match }: TeaTimeNotificationProps) {
           <div className="flex items-center gap-4">
             {/* Partner Avatar */}
             <Avatar className="w-12 h-12 sm:w-14 sm:h-14 rounded-none shrink-0">
-              <AvatarImage src={match.partner.avatar_url || undefined} />
-              <AvatarFallback className="text-sm bg-[#f5f5f3] rounded-none">
+              <AvatarImage
+                src={match.partner.avatar_url || undefined}
+                alt={t("a11y.profilePhotoAlt", { name: match.partner.name })}
+              />
+              <AvatarFallback
+                className="text-sm bg-[#f5f5f3] rounded-none"
+                aria-label={t("a11y.profileInitials", { name: match.partner.name })}
+              >
                 {getInitials(match.partner.name)}
               </AvatarFallback>
             </Avatar>
@@ -42,14 +50,14 @@ export function TeaTimeNotification({ match }: TeaTimeNotificationProps) {
             {/* Content */}
             <div className="flex-1 min-w-0">
               <p className="text-xs text-[#a3a3a3] tracking-wide">
-                Tea Time マッチ
+                {t("teaTime.matchNotificationTitle")}
               </p>
               <p className="text-sm sm:text-base text-[#1a1a1a] mt-1 truncate">
                 {match.partner.name}
-                <span className="text-[#737373]">さん</span>
+                <span className="text-[#737373]">{t("teaTime.nameSuffix")}</span>
               </p>
               <p className="text-xs text-[#a3a3a3] mt-1">
-                今週どこかでお茶しませんか
+                {t("teaTime.matchPrompt")}
               </p>
             </div>
 

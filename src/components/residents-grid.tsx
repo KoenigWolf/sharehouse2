@@ -3,7 +3,9 @@
 import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ResidentCard } from "@/components/resident-card";
-import { Profile } from "@/types/profile";
+import { Profile } from "@/domain/profile";
+import { useI18n } from "@/hooks/use-i18n";
+import { normalizeLocale } from "@/lib/i18n";
 
 interface ResidentsGridProps {
   profiles: Profile[];
@@ -12,15 +14,24 @@ interface ResidentsGridProps {
 
 type SortOption = "name" | "room_number" | "move_in_date";
 
-const SORT_OPTIONS: { value: SortOption; label: string }[] = [
-  { value: "room_number", label: "部屋番号" },
-  { value: "name", label: "名前" },
-  { value: "move_in_date", label: "入居日" },
-];
-
 export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("room_number");
+  const t = useI18n();
+  const locale = normalizeLocale(
+    typeof document !== "undefined"
+      ? document.documentElement.lang || navigator.language
+      : undefined
+  );
+
+  const sortOptions = useMemo(
+    () => [
+      { value: "room_number" as const, label: t("residents.sortByRoom") },
+      { value: "name" as const, label: t("residents.sortByName") },
+      { value: "move_in_date" as const, label: t("residents.sortByMoveIn") },
+    ],
+    [t]
+  );
 
   const handleSortChange = useCallback((sort: SortOption) => {
     setSortBy(sort);
@@ -45,11 +56,11 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
         case "name":
           if (a.id === currentUserId) return -1;
           if (b.id === currentUserId) return 1;
-          return a.name.localeCompare(b.name, "ja");
+          return a.name.localeCompare(b.name, locale);
         case "room_number":
           const roomA = a.room_number || "999";
           const roomB = b.room_number || "999";
-          return roomA.localeCompare(roomB, "ja", { numeric: true });
+          return roomA.localeCompare(roomB, locale, { numeric: true });
         case "move_in_date":
           if (a.id === currentUserId) return -1;
           if (b.id === currentUserId) return 1;
@@ -62,12 +73,12 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
     });
 
     return result;
-  }, [profiles, searchQuery, sortBy, currentUserId]);
+  }, [profiles, searchQuery, sortBy, currentUserId, locale]);
 
   if (profiles.length === 0) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <p className="text-[#737373] text-sm">まだ住民が登録されていません</p>
+        <p className="text-[#737373] text-sm">{t("residents.noResidents")}</p>
       </div>
     );
   }
@@ -79,11 +90,14 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
         <div className="flex items-end justify-between">
           <div>
             <h2 className="text-xl text-[#1a1a1a] tracking-wide font-light">
-              住民一覧
+              {t("residents.title")}
             </h2>
             <p className="text-xs text-[#a3a3a3] mt-1">
-              {filteredAndSortedProfiles.length}人
-              {searchQuery && ` （${profiles.length}人中）`}
+              {t("residents.countLabel", {
+                count: filteredAndSortedProfiles.length,
+              })}
+              {searchQuery &&
+                ` ${t("residents.countOf", { total: profiles.length })}`}
             </p>
           </div>
         </div>
@@ -94,7 +108,7 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
           <div className="relative">
             <input
               type="search"
-              placeholder="名前・趣味で検索"
+              placeholder={t("residents.searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full sm:w-56 h-10 px-4 bg-white border border-[#e5e5e5] text-sm text-[#1a1a1a] placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
@@ -103,7 +117,7 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
 
           {/* ソート */}
           <div className="flex text-sm">
-            {SORT_OPTIONS.map((option) => {
+            {sortOptions.map((option) => {
               const isActive = sortBy === option.value;
               return (
                 <button
@@ -147,13 +161,13 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
             className="text-center py-16"
           >
             <p className="text-[#737373] text-sm">
-              条件に一致する住民がいません
+              {t("residents.noMatch")}
             </p>
             <button
               onClick={() => setSearchQuery("")}
               className="text-sm text-[#1a1a1a] hover:text-[#737373] mt-4 transition-colors"
             >
-              検索をクリア
+              {t("residents.clearSearch")}
             </button>
           </motion.div>
         ) : (

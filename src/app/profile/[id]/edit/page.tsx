@@ -2,8 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import { Header } from "@/components/header";
 import { ProfileEditForm } from "@/components/profile-edit-form";
-import { Profile } from "@/types/profile";
+import { Profile } from "@/domain/profile";
 import { getTeaTimeSetting } from "@/lib/tea-time/actions";
+import { validateId } from "@/lib/security/validation";
 
 interface ProfileEditPageProps {
   params: Promise<{ id: string }>;
@@ -11,6 +12,12 @@ interface ProfileEditPageProps {
 
 export default async function ProfileEditPage({ params }: ProfileEditPageProps) {
   const { id } = await params;
+  let validatedId = id;
+  try {
+    validatedId = validateId(id, "ID");
+  } catch {
+    notFound();
+  }
   const supabase = await createClient();
 
   const {
@@ -22,18 +29,18 @@ export default async function ProfileEditPage({ params }: ProfileEditPageProps) 
   }
 
   // モックデータは編集不可
-  if (id.startsWith("mock-")) {
-    redirect(`/profile/${id}`);
+  if (validatedId.startsWith("mock-")) {
+    redirect(`/profile/${validatedId}`);
   }
 
   // 自分のプロフィール以外は編集不可
-  if (user.id !== id) {
-    redirect(`/profile/${id}`);
+  if (user.id !== validatedId) {
+    redirect(`/profile/${validatedId}`);
   }
 
   const [profileResult, teaTimeSetting] = await Promise.all([
-    supabase.from("profiles").select("*").eq("id", id).single(),
-    getTeaTimeSetting(id),
+    supabase.from("profiles").select("*").eq("id", validatedId).single(),
+    getTeaTimeSetting(validatedId),
   ]);
 
   const profile = profileResult.data;

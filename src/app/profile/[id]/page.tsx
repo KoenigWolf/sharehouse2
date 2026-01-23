@@ -2,9 +2,10 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import { Header } from "@/components/header";
 import { ProfileDetail } from "@/components/profile-detail";
-import { Profile } from "@/types/profile";
+import { Profile } from "@/domain/profile";
 import { mockProfiles } from "@/lib/mock-data";
 import { getTeaTimeSetting } from "@/lib/tea-time/actions";
+import { validateId } from "@/lib/security/validation";
 
 interface ProfilePageProps {
   params: Promise<{ id: string }>;
@@ -12,6 +13,12 @@ interface ProfilePageProps {
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
   const { id } = await params;
+  let validatedId = id;
+  try {
+    validatedId = validateId(id, "ID");
+  } catch {
+    notFound();
+  }
   const supabase = await createClient();
 
   const {
@@ -25,15 +32,15 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   let profile: Profile | null = null;
   let teaTimeEnabled = false;
 
-  if (id.startsWith("mock-")) {
-    profile = mockProfiles.find((p) => p.id === id) || null;
+  if (validatedId.startsWith("mock-")) {
+    profile = mockProfiles.find((p) => p.id === validatedId) || null;
     // モックユーザーは部屋番号に基づいて参加状態を決定（奇数部屋が参加）
     const roomNum = parseInt(profile?.room_number || "0", 10);
     teaTimeEnabled = roomNum % 2 === 1;
   } else {
     const [profileResult, teaTimeSetting] = await Promise.all([
-      supabase.from("profiles").select("*").eq("id", id).single(),
-      getTeaTimeSetting(id),
+      supabase.from("profiles").select("*").eq("id", validatedId).single(),
+      getTeaTimeSetting(validatedId),
     ]);
     profile = profileResult.data as Profile | null;
     teaTimeEnabled = teaTimeSetting?.is_enabled ?? false;

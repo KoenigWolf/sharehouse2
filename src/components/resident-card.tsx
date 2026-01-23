@@ -3,9 +3,10 @@
 import { memo } from "react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Profile } from "@/types/profile";
+import { Profile } from "@/domain/profile";
 import { getInitials } from "@/lib/utils";
 import { PROFILE } from "@/lib/constants/config";
+import { useI18n } from "@/hooks/use-i18n";
 
 interface ResidentCardProps {
   profile: Profile;
@@ -20,13 +21,14 @@ export const ResidentCard = memo(function ResidentCard({
   isCurrentUser = false,
 }: ResidentCardProps) {
   const isMockProfile = profile.id.startsWith("mock-");
+  const t = useI18n();
   const displayInterests =
     profile.interests?.slice(0, PROFILE.maxInterestsDisplay.card) || [];
 
   return (
     <Link
       href={`/profile/${profile.id}`}
-      aria-label={`${profile.name}さんのプロフィールを見る`}
+      aria-label={t("a11y.viewProfile", { name: profile.name })}
       className="block group"
     >
       <article
@@ -43,12 +45,12 @@ export const ResidentCard = memo(function ResidentCard({
           <Avatar className="w-full h-full rounded-none">
             <AvatarImage
               src={profile.avatar_url || undefined}
-              alt={`${profile.name}のプロフィール写真`}
+              alt={t("a11y.profilePhotoAlt", { name: profile.name })}
               className="object-cover w-full h-full group-hover:scale-[1.02] transition-transform duration-300"
             />
             <AvatarFallback
               className="bg-[#f5f5f3] text-[#a3a3a3] text-2xl sm:text-3xl rounded-none w-full h-full flex items-center justify-center"
-              aria-label={`${profile.name}のイニシャル`}
+              aria-label={t("a11y.profileInitials", { name: profile.name })}
             >
               {getInitials(profile.name)}
             </AvatarFallback>
@@ -57,12 +59,12 @@ export const ResidentCard = memo(function ResidentCard({
           {/* Badges */}
           {isCurrentUser && (
             <span className="absolute top-2 right-2 bg-[#1a1a1a] text-white text-[10px] px-2 py-0.5 tracking-wide">
-              あなた
+              {t("common.you")}
             </span>
           )}
           {isMockProfile && !isCurrentUser && (
             <span className="absolute top-2 left-2 bg-[#f5f5f3] text-[#a3a3a3] text-[10px] px-2 py-0.5 tracking-wide">
-              未登録
+              {t("common.unregistered")}
             </span>
           )}
         </div>
@@ -81,7 +83,10 @@ export const ResidentCard = memo(function ResidentCard({
           </div>
 
           {displayInterests.length > 0 && (
-            <ul className="flex flex-wrap gap-1.5 mt-2 overflow-hidden max-h-[28px]" aria-label="趣味・関心">
+            <ul
+              className="flex flex-wrap gap-1.5 mt-2 overflow-hidden max-h-[28px]"
+              aria-label={t("a11y.interestsList")}
+            >
               {displayInterests.map((interest, i) => (
                 <li
                   key={i}

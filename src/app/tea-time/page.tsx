@@ -4,8 +4,10 @@ import { redirect } from "next/navigation";
 import { Header } from "@/components/header";
 import { TeaTimeMatchCard } from "@/components/tea-time-match-card";
 import { getTeaTimeSetting, getMyMatches } from "@/lib/tea-time/actions";
+import { getServerTranslator } from "@/lib/i18n/server";
 
 export default async function TeaTimePage() {
+  const t = await getServerTranslator();
   const supabase = await createClient();
   const {
     data: { user },
@@ -33,9 +35,9 @@ export default async function TeaTimePage() {
           {/* ヘッダー */}
           <div className="flex items-baseline justify-between mb-6">
             <h1 className="text-xl text-[#1a1a1a] tracking-wide font-light">
-              Tea Time
+              {t("teaTime.title")}
             </h1>
-            <span className="text-xs text-[#a3a3a3]">ランダムマッチング</span>
+            <span className="text-xs text-[#a3a3a3]">{t("teaTime.subtitle")}</span>
           </div>
 
           {/* 参加状況 */}
@@ -44,16 +46,16 @@ export default async function TeaTimePage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-[#1a1a1a]">
-                    {isEnabled ? "参加中" : "不参加"}
+                    {isEnabled ? t("teaTime.participating") : t("teaTime.notParticipating")}
                   </p>
                   <p className="text-[10px] text-[#a3a3a3] mt-1">
                     {isEnabled
-                      ? "マッチング対象です"
-                      : "設定で参加をONにできます"}
+                      ? t("teaTime.matchingTarget")
+                      : t("teaTime.enableInSettings")}
                   </p>
                 </div>
                 <span className="text-xs text-[#a3a3a3] group-hover:text-[#737373] transition-colors">
-                  設定 →
+                  {t("teaTime.goToSettings")} →
                 </span>
               </div>
             </div>
@@ -63,7 +65,7 @@ export default async function TeaTimePage() {
           {scheduledMatches.length > 0 && (
             <section className="mb-6">
               <h2 className="text-xs text-[#a3a3a3] tracking-wide mb-3">
-                今週のマッチ
+                {t("teaTime.thisWeeksMatch")}
               </h2>
               <div className="space-y-3">
                 {scheduledMatches.map((match) => (
@@ -77,7 +79,7 @@ export default async function TeaTimePage() {
           {pastMatches.length > 0 && (
             <section>
               <h2 className="text-xs text-[#a3a3a3] tracking-wide mb-3">
-                履歴
+                {t("teaTime.history")}
               </h2>
               <div className="space-y-2">
                 {pastMatches.map((match) => (
@@ -90,17 +92,17 @@ export default async function TeaTimePage() {
           {/* マッチがない場合 */}
           {matches.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-sm text-[#737373]">まだマッチがありません</p>
+              <p className="text-sm text-[#737373]">{t("teaTime.noMatches")}</p>
               {isEnabled ? (
                 <p className="text-xs text-[#a3a3a3] mt-2">
-                  次のマッチングをお待ちください
+                  {t("teaTime.waitForNextMatch")}
                 </p>
               ) : (
                 <Link
                   href="/settings"
                   className="inline-block mt-3 px-4 py-2 text-xs text-[#737373] border border-[#e5e5e5] hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-colors"
                 >
-                  参加をONにする
+                  {t("teaTime.enableParticipation")}
                 </Link>
               )}
             </div>

@@ -2,10 +2,12 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Header } from "@/components/header";
 import { ProfileEditForm } from "@/components/profile-edit-form";
-import { Profile } from "@/types/profile";
+import { Profile } from "@/domain/profile";
 import { getTeaTimeSetting } from "@/lib/tea-time/actions";
+import { getServerTranslator } from "@/lib/i18n/server";
 
 export default async function SettingsPage() {
+  const t = await getServerTranslator();
   const supabase = await createClient();
 
   const {
@@ -25,7 +27,10 @@ export default async function SettingsPage() {
   let profile = profileResult.data;
 
   if (!profile) {
-    const userName = user.user_metadata?.name || user.email?.split("@")[0] || "ユーザー";
+    const userName =
+      user.user_metadata?.name ||
+      user.email?.split("@")[0] ||
+      t("auth.defaultName");
     const { data: newProfile } = await supabase
       .from("profiles")
       .insert({
