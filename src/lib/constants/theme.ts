@@ -4,9 +4,9 @@
  */
 
 export const colors = {
-  // Brand colors
-  primary: "#b94a48",
-  primaryHover: "#a13f3d",
+  // Brand colors (DESIGN.md: black-based, no red)
+  primary: "#1a1a1a",
+  primaryHover: "#333333",
 
   // Text colors
   text: {
@@ -14,6 +14,7 @@ export const colors = {
     secondary: "#737373",
     tertiary: "#a3a3a3",
     inverse: "#ffffff",
+    placeholder: "#d4d4d4",
   },
 
   // Background colors
@@ -29,14 +30,14 @@ export const colors = {
     secondary: "#d4d4d4",
   },
 
-  // Status colors
+  // Status colors (DESIGN.md: muted, low-saturation)
   status: {
-    success: "#16a34a",
-    successBg: "#f0fdf4",
-    successBorder: "#bbf7d0",
-    error: "#dc2626",
-    errorBg: "#fef2f2",
-    errorBorder: "#fecaca",
+    success: "#6b8b6b",
+    successBg: "#f8faf8",
+    successBorder: "#a0c9a0",
+    error: "#8b6b6b",
+    errorBg: "#faf8f8",
+    errorBorder: "#c9a0a0",
   },
 } as const;
 
@@ -67,7 +68,7 @@ export const components = {
   button: {
     base: "rounded-none transition-colors",
     primary: `bg-[${colors.primary}] hover:bg-[${colors.primaryHover}] text-white`,
-    outline: `border border-[${colors.border.primary}] text-[${colors.text.secondary}] hover:border-[${colors.primary}]`,
+    outline: `border border-[${colors.border.primary}] text-[${colors.text.secondary}] hover:border-[${colors.text.primary}]`,
   },
   input: {
     base: `border-[${colors.border.primary}] rounded-none focus:border-[${colors.text.primary}] focus:ring-0`,
