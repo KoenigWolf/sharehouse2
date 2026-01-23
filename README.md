@@ -23,6 +23,7 @@
 ### 認証
 - メールアドレス・パスワードでの新規登録・ログイン
 - メール確認による本人認証
+- LINEログイン（Supabase OAuth）
 
 ## 技術スタック
 
@@ -193,6 +194,15 @@ npm run dev
 ```
 
 http://localhost:3000 でアクセス
+
+## LINEログイン設定
+
+Supabase Dashboard > Authentication > Providers で LINE を有効化し、
+LINE Developers で発行した Client ID / Client Secret を登録してください。
+
+**Redirect URLs に追加する値:**
+- `https://your-app.vercel.app/auth/callback`
+- `http://localhost:3000/auth/callback`
 
 ## Vercelへのデプロイ
 
