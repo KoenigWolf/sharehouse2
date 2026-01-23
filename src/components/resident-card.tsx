@@ -1,10 +1,11 @@
+"use client";
+
 import { memo } from "react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Profile } from "@/types/profile";
 import { getInitials } from "@/lib/utils";
 import { PROFILE } from "@/lib/constants/config";
-import { t } from "@/lib/i18n";
 
 interface ResidentCardProps {
   profile: Profile;
@@ -19,81 +20,72 @@ export const ResidentCard = memo(function ResidentCard({
   isCurrentUser = false,
 }: ResidentCardProps) {
   const isMockProfile = profile.id.startsWith("mock-");
-  const displayInterests = profile.interests?.slice(0, PROFILE.maxInterestsDisplay.card) || [];
+  const displayInterests =
+    profile.interests?.slice(0, PROFILE.maxInterestsDisplay.card) || [];
 
   return (
     <Link
       href={`/profile/${profile.id}`}
       aria-label={`${profile.name}さんのプロフィールを見る`}
+      className="block group"
     >
       <article
-        className={`bg-white border transition-colors cursor-pointer relative group ${
+        className={`bg-white border transition-all duration-200 ${
           isCurrentUser
-            ? "border-[#b94a48] hover:border-[#a13f3d]"
+            ? "border-[#1a1a1a]"
             : isMockProfile
             ? "border-dashed border-[#d4d4d4] hover:border-[#a3a3a3]"
-            : "border-[#e5e5e5] hover:border-[#b94a48]"
+            : "border-[#e5e5e5] hover:border-[#1a1a1a]"
         }`}
       >
-        {/* Current user badge */}
-        {isCurrentUser && (
-          <span
-            className="absolute top-0 right-0 z-10 bg-[#b94a48] text-white text-[10px] px-2 py-0.5 tracking-wide"
-            aria-label={t("common.you")}
-          >
-            {t("common.you")}
-          </span>
-        )}
-
-        {/* Unregistered badge */}
-        {isMockProfile && !isCurrentUser && (
-          <span
-            className="absolute top-0 left-0 z-10 bg-[#e5e5e5] text-[#737373] text-[10px] px-2 py-0.5 tracking-wide"
-            aria-label={t("common.unregistered")}
-          >
-            {t("common.unregistered")}
-          </span>
-        )}
-
         {/* Avatar section */}
-        <div className="aspect-square bg-[#f5f5f3] flex items-center justify-center overflow-hidden">
+        <div className="aspect-square bg-[#f5f5f3] relative overflow-hidden">
           <Avatar className="w-full h-full rounded-none">
             <AvatarImage
               src={profile.avatar_url || undefined}
               alt={`${profile.name}のプロフィール写真`}
-              className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+              className="object-cover w-full h-full group-hover:scale-[1.02] transition-transform duration-300"
             />
             <AvatarFallback
-              className="bg-[#f5f5f3] text-[#a3a3a3] text-3xl rounded-none w-full h-full"
+              className="bg-[#f5f5f3] text-[#a3a3a3] text-2xl sm:text-3xl rounded-none w-full h-full flex items-center justify-center"
               aria-label={`${profile.name}のイニシャル`}
             >
               {getInitials(profile.name)}
             </AvatarFallback>
           </Avatar>
+
+          {/* Badges */}
+          {isCurrentUser && (
+            <span className="absolute top-2 right-2 bg-[#1a1a1a] text-white text-[10px] px-2 py-0.5 tracking-wide">
+              あなた
+            </span>
+          )}
+          {isMockProfile && !isCurrentUser && (
+            <span className="absolute top-2 left-2 bg-[#f5f5f3] text-[#a3a3a3] text-[10px] px-2 py-0.5 tracking-wide">
+              未登録
+            </span>
+          )}
         </div>
 
-        {/* Info section */}
-        <div className="p-2 sm:p-4">
-          <div className="flex items-baseline justify-between gap-1 sm:gap-2">
-            <h3 className="text-sm sm:text-base text-[#1a1a1a] tracking-wide truncate">
+        {/* Info section - fixed height */}
+        <div className="p-3 sm:p-4 h-[72px] sm:h-[80px] overflow-hidden">
+          <div className="flex items-baseline justify-between gap-2">
+            <h3 className="text-sm text-[#1a1a1a] tracking-wide truncate">
               {profile.name}
             </h3>
             {profile.room_number && (
-              <span className="text-[10px] sm:text-xs text-[#a3a3a3] shrink-0">
+              <span className="text-[10px] text-[#a3a3a3] shrink-0">
                 {profile.room_number}
               </span>
             )}
           </div>
 
           {displayInterests.length > 0 && (
-            <ul
-              className="flex flex-wrap gap-1 sm:gap-1.5 mt-2 sm:mt-3"
-              aria-label="趣味・関心"
-            >
+            <ul className="flex flex-wrap gap-1.5 mt-2 overflow-hidden max-h-[28px]" aria-label="趣味・関心">
               {displayInterests.map((interest, i) => (
                 <li
                   key={i}
-                  className="text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 bg-[#f5f5f3] text-[#737373]"
+                  className="text-[10px] px-2 py-0.5 bg-[#f5f5f3] text-[#737373]"
                 >
                   {interest}
                 </li>
