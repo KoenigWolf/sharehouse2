@@ -16,45 +16,42 @@ export function Header() {
   };
 
   const navItems = [
-    { href: "/", label: "住民一覧" },
-    { href: "/tea-time", label: "ティータイム" },
+    { href: "/", label: "住民" },
+    { href: "/tea-time", label: "Tea Time" },
   ];
 
   return (
     <header className="border-b border-[#e5e5e5] bg-white">
-      <div className="container mx-auto px-6">
-        {/* 上部：ロゴとログアウト */}
-        <div className="h-16 flex items-center justify-between">
-          <Link href="/" className="text-lg tracking-wider text-[#1a1a1a]">
+      <div className="container mx-auto px-4 h-12 flex items-center justify-between">
+        <div className="flex items-center gap-6">
+          <Link href="/" className="text-sm font-medium tracking-wider text-[#1a1a1a]">
             SHARE HOUSE
           </Link>
-          <button
-            onClick={handleLogout}
-            className="text-sm text-[#737373] hover:text-[#1a1a1a] transition-colors"
-          >
-            ログアウト
-          </button>
+          <nav className="flex gap-4">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`text-xs tracking-wide transition-colors ${
+                    isActive
+                      ? "text-[#b94a48]"
+                      : "text-[#737373] hover:text-[#1a1a1a]"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
         </div>
-
-        {/* ナビゲーション */}
-        <nav className="flex gap-8 -mb-px">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`py-3 text-sm tracking-wide border-b-2 transition-colors ${
-                  isActive
-                    ? "border-[#b94a48] text-[#1a1a1a]"
-                    : "border-transparent text-[#737373] hover:text-[#1a1a1a]"
-                }`}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
+        <button
+          onClick={handleLogout}
+          className="text-xs text-[#a3a3a3] hover:text-[#1a1a1a] transition-colors"
+        >
+          ログアウト
+        </button>
       </div>
     </header>
   );
