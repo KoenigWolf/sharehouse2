@@ -48,9 +48,9 @@ export default async function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fafaf8]">
+    <div className="min-h-screen bg-[#fafaf8] flex flex-col">
       <Header />
-      <main className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 max-w-3xl space-y-4 sm:space-y-6">
+      <main className="flex-1 container mx-auto px-3 sm:px-4 py-3 sm:py-4 max-w-3xl space-y-4 sm:space-y-6">
         <ProfileEditForm profile={profile as Profile} />
 
         {/* ティータイム設定 */}
@@ -62,6 +62,9 @@ export default async function SettingsPage() {
           </p>
         </div>
       </main>
+      <footer className="py-6">
+        <p className="text-xs text-[#a3a3a3] text-center">Share House</p>
+      </footer>
     </div>
   );
 }
