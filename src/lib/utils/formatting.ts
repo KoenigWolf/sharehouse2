@@ -3,6 +3,8 @@
  * Extracted from duplicated code across components
  */
 
+import type { Translator } from "@/lib/i18n";
+
 /**
  * Get initials from a name string
  * @param name - Full name string
@@ -24,7 +26,7 @@ export function getInitials(name: string): string {
 }
 
 /**
- * Format date to Japanese locale string
+ * Format date to locale-aware string
  * @param dateString - ISO date string or null
  * @param options - Intl.DateTimeFormat options
  * @returns Formatted date string or null
@@ -35,14 +37,15 @@ export function formatDate(
     year: "numeric",
     month: "short",
     day: "numeric",
-  }
+  },
+  locale = "ja-JP"
 ): string | null {
   if (!dateString) return null;
 
   try {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return null;
-    return date.toLocaleDateString("ja-JP", options);
+    return date.toLocaleDateString(locale, options);
   } catch {
     return null;
   }
@@ -53,11 +56,11 @@ export function formatDate(
  * @param dateString - ISO date string
  * @returns Short formatted date string
  */
-export function formatDateShort(dateString: string): string {
+export function formatDateShort(dateString: string, locale = "ja-JP"): string {
   try {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return "";
-    return date.toLocaleDateString("ja-JP", { month: "short", day: "numeric" });
+    return date.toLocaleDateString(locale, { month: "short", day: "numeric" });
   } catch {
     return "";
   }
@@ -68,8 +71,11 @@ export function formatDateShort(dateString: string): string {
  * @param moveInDate - ISO date string of move-in date
  * @returns Human-readable duration string in Japanese
  */
+import type { Translator } from "@/lib/i18n";
+
 export function calculateResidenceDuration(
-  moveInDate: string | null | undefined
+  moveInDate: string | null | undefined,
+  t: Translator
 ): string | null {
   if (!moveInDate) return null;
 
@@ -82,14 +88,19 @@ export function calculateResidenceDuration(
       (now.getFullYear() - moveIn.getFullYear()) * 12 +
       (now.getMonth() - moveIn.getMonth());
 
-    if (months < 1) return "入居したばかり";
-    if (months < 12) return `${months}ヶ月`;
+    if (months < 1) return t("profile.justMovedIn");
+    if (months < 12) return t("profile.residenceMonths", { count: months });
 
     const years = Math.floor(months / 12);
     const remainingMonths = months % 12;
 
-    if (remainingMonths === 0) return `${years}年`;
-    return `${years}年${remainingMonths}ヶ月`;
+    if (remainingMonths === 0) {
+      return t("profile.residenceYears", { count: years });
+    }
+    return t("profile.residenceYearsMonths", {
+      years,
+      months: remainingMonths,
+    });
   } catch {
     return null;
   }

@@ -5,6 +5,7 @@
  */
 
 import { RATE_LIMIT } from "@/lib/constants/config";
+import type { Translator } from "@/lib/i18n";
 
 interface RateLimitEntry {
   count: number;
@@ -176,12 +177,21 @@ export function getRateLimitHeaders(result: RateLimitResult): Record<string, str
 /**
  * Format rate limit error message
  */
-export function formatRateLimitError(retryAfter: number): string {
+export function formatRateLimitError(
+  retryAfter: number,
+  t?: Translator
+): string {
+  if (!t) {
+    return retryAfter < 60
+      ? `リクエストが多すぎます。${retryAfter}秒後に再試行してください。`
+      : `リクエストが多すぎます。${Math.ceil(retryAfter / 60)}分後に再試行してください。`;
+  }
+
   if (retryAfter < 60) {
-    return `リクエストが多すぎます。${retryAfter}秒後に再試行してください。`;
+    return t("errors.rateLimitSeconds", { seconds: retryAfter });
   }
   const minutes = Math.ceil(retryAfter / 60);
-  return `リクエストが多すぎます。${minutes}分後に再試行してください。`;
+  return t("errors.rateLimitMinutes", { minutes });
 }
 
 /**

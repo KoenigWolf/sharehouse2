@@ -4,6 +4,7 @@
  */
 
 import { t } from "@/lib/i18n";
+import { AUTH } from "@/lib/constants/config";
 
 /**
  * Application error codes
@@ -61,13 +62,15 @@ export function getErrorMessage(code: ErrorCodeType): string {
     [ErrorCode.UNAUTHORIZED]: t("errors.unauthorized"),
     [ErrorCode.INVALID_CREDENTIALS]: t("auth.invalidCredentials"),
     [ErrorCode.EMAIL_ALREADY_EXISTS]: t("auth.emailAlreadyExists"),
-    [ErrorCode.WEAK_PASSWORD]: t("auth.passwordMinLength"),
+    [ErrorCode.WEAK_PASSWORD]: t("auth.passwordMinLength", {
+      min: AUTH.passwordMinLength,
+    }),
     [ErrorCode.EMAIL_NOT_CONFIRMED]: t("auth.confirmationEmailSent"),
     [ErrorCode.INVALID_INPUT]: t("errors.invalidInput"),
     [ErrorCode.REQUIRED_FIELD]: t("errors.invalidInput"),
     [ErrorCode.INVALID_FORMAT]: t("errors.invalidInput"),
     [ErrorCode.NOT_FOUND]: t("errors.notFound"),
-    [ErrorCode.FORBIDDEN]: t("errors.unauthorized"),
+    [ErrorCode.FORBIDDEN]: t("errors.forbidden"),
     [ErrorCode.CONFLICT]: t("errors.saveFailed"),
     [ErrorCode.INTERNAL_ERROR]: t("errors.serverError"),
     [ErrorCode.DATABASE_ERROR]: t("errors.serverError"),

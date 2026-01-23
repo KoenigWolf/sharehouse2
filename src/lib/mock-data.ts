@@ -1,4 +1,4 @@
-import { Profile } from "@/types/profile";
+import { Profile } from "@/domain/profile";
 
 /**
  * DESIGN.md準拠のミニマルなアバター生成

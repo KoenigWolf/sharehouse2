@@ -58,8 +58,8 @@ export function validateId(id: unknown, fieldName = "ID"): string {
   }
 
   if (isMockId(id)) {
-    // Mock IDs follow pattern: mock-{room_number}
-    if (!/^mock-\d{3}$/.test(id)) {
+    // Mock IDs follow pattern: mock-{number}
+    if (!/^mock-\d{1,3}$/.test(id)) {
       throw new Error(`無効な${fieldName}形式です`);
     }
     return id;
