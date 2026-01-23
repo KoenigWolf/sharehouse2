@@ -33,15 +33,19 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // 未認証ユーザーはログインページへリダイレクト（ログインページ自体は除外）
-  if (!user && !request.nextUrl.pathname.startsWith("/login")) {
+  const pathname = request.nextUrl.pathname;
+  const isAuthCallback = pathname.startsWith("/auth/callback");
+  const isLoginPage = pathname.startsWith("/login");
+
+  // 未認証ユーザーはログインページへリダイレクト（ログイン/コールバックは除外）
+  if (!user && !isLoginPage && !isAuthCallback) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
 
   // 認証済みユーザーがログインページにアクセスした場合はホームへリダイレクト
-  if (user && request.nextUrl.pathname.startsWith("/login")) {
+  if (user && isLoginPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/";
     return NextResponse.redirect(url);
