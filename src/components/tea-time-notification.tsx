@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Profile } from "@/types/profile";
 import { TeaTimeMatch } from "@/types/tea-time";
@@ -22,35 +23,55 @@ export function TeaTimeNotification({ match }: TeaTimeNotificationProps) {
   };
 
   return (
-    <Link href="/tea-time">
-      <div className="bg-white border border-[#e5e5e5] p-3 sm:p-4 hover:border-[#b94a48] transition-colors cursor-pointer">
-        <div className="flex items-center gap-3 sm:gap-4">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#f5f5f3] flex items-center justify-center shrink-0">
-            <span className="text-lg sm:text-xl">☕</span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-xs sm:text-sm text-[#b94a48] tracking-wide">
-              新しいティータイムマッチ
-            </p>
-            <div className="flex items-center gap-2 mt-1">
-              <Avatar className="w-5 h-5 rounded-none shrink-0">
-                <AvatarImage src={match.partner.avatar_url || undefined} />
-                <AvatarFallback className="text-[10px] bg-[#f5f5f3] rounded-none">
-                  {getInitials(match.partner.name)}
-                </AvatarFallback>
-              </Avatar>
-              <span className="text-xs sm:text-sm text-[#737373] truncate">
-                {match.partner.name}さんとマッチ
-              </span>
+    <motion.div
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <Link href="/tea-time" className="block group">
+        <div className="bg-white border border-[#e5e5e5] p-4 sm:p-5 hover:border-[#1a1a1a] transition-colors">
+          <div className="flex items-center gap-4">
+            {/* Partner Avatar */}
+            <Avatar className="w-12 h-12 sm:w-14 sm:h-14 rounded-none shrink-0">
+              <AvatarImage src={match.partner.avatar_url || undefined} />
+              <AvatarFallback className="text-sm bg-[#f5f5f3] rounded-none">
+                {getInitials(match.partner.name)}
+              </AvatarFallback>
+            </Avatar>
+
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-[#a3a3a3] tracking-wide">
+                Tea Time マッチ
+              </p>
+              <p className="text-sm sm:text-base text-[#1a1a1a] mt-1 truncate">
+                {match.partner.name}
+                <span className="text-[#737373]">さん</span>
+              </p>
+              <p className="text-xs text-[#a3a3a3] mt-1">
+                今週どこかでお茶しませんか
+              </p>
+            </div>
+
+            {/* Arrow */}
+            <div className="text-[#d4d4d4] group-hover:text-[#a3a3a3] transition-colors shrink-0">
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
             </div>
           </div>
-          <div className="text-[#737373] shrink-0">
-            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
-            </svg>
-          </div>
         </div>
-      </div>
-    </Link>
+      </Link>
+    </motion.div>
   );
 }
