@@ -26,9 +26,7 @@ export default async function Home() {
 
   // 登録済みユーザーの部屋番号を取得
   const registeredRoomNumbers = new Set(
-    dbProfiles
-      .filter((p) => p.room_number)
-      .map((p) => p.room_number)
+    dbProfiles.filter((p) => p.room_number).map((p) => p.room_number)
   );
 
   // 登録済みユーザーがいない部屋のモックデータを取得
@@ -41,30 +39,34 @@ export default async function Home() {
   const mockCount = remainingMockProfiles.length;
 
   return (
-    <div className="min-h-screen bg-[#fafaf8]">
+    <div className="min-h-screen bg-[#fafaf8] flex flex-col">
       <Header />
-      <main className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
-        {/* ティータイム通知 */}
-        {latestMatch && (
-          <div className="mb-4">
-            <TeaTimeNotification match={latestMatch} />
-          </div>
-        )}
 
-        {/* 登録状況の表示 */}
-        {mockCount > 0 && (
-          <div className="mb-3 px-3 py-2 border border-dashed border-[#d4d4d4] bg-[#fafaf8] inline-block">
-            <p className="text-[11px] text-[#737373]">
-              登録済み {dbProfiles.length}人 / 未登録 {mockCount}部屋（サンプル表示）
+      <main className="flex-1">
+        <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
+          {/* ティータイム通知 */}
+          {latestMatch && (
+            <div className="mb-6">
+              <TeaTimeNotification match={latestMatch} />
+            </div>
+          )}
+
+          {/* 登録状況 */}
+          {mockCount > 0 && (
+            <p className="text-xs text-[#a3a3a3] mb-6">
+              登録済み {dbProfiles.length}人 / 未登録 {mockCount}部屋
             </p>
-          </div>
-        )}
+          )}
 
-        <ResidentsGrid
-          profiles={profiles}
-          currentUserId={user.id}
-        />
+          {/* 住民グリッド */}
+          <ResidentsGrid profiles={profiles} currentUserId={user.id} />
+        </div>
       </main>
+
+      {/* フッター */}
+      <footer className="py-6 mt-auto">
+        <p className="text-xs text-[#a3a3a3] text-center">Share House Portal</p>
+      </footer>
     </div>
   );
 }

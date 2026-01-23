@@ -44,20 +44,26 @@ export default async function ProfileEditPage({ params }: ProfileEditPageProps) 
   }
 
   return (
-    <div className="min-h-screen bg-[#fafaf8]">
+    <div className="min-h-screen bg-[#fafaf8] flex flex-col">
       <Header />
-      <main className="container mx-auto px-3 sm:px-6 py-4 sm:py-10 max-w-2xl space-y-4 sm:space-y-6">
-        <ProfileEditForm profile={profile as Profile} />
 
-        {/* ティータイム設定 */}
-        <div className="space-y-3">
-          <h2 className="text-sm text-[#737373] tracking-wide">ティータイム</h2>
-          <TeaTimeToggle initialEnabled={teaTimeSetting?.is_enabled ?? false} />
-          <p className="text-[11px] text-[#a3a3a3]">
-            ONにすると、毎週ランダムに住民とマッチングされます
-          </p>
+      <main className="flex-1">
+        <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-2xl space-y-6">
+          <ProfileEditForm profile={profile as Profile} />
+
+          {/* ティータイム設定 */}
+          <section className="space-y-3">
+            <h2 className="text-xs text-[#a3a3a3] tracking-wide">
+              ティータイム設定
+            </h2>
+            <TeaTimeToggle initialEnabled={teaTimeSetting?.is_enabled ?? false} />
+          </section>
         </div>
       </main>
+
+      <footer className="py-6 mt-auto">
+        <p className="text-xs text-[#a3a3a3] text-center">Share House Portal</p>
+      </footer>
     </div>
   );
 }

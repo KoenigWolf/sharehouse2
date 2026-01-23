@@ -46,15 +46,22 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   const isOwnProfile = user.id === profile.id;
 
   return (
-    <div className="min-h-screen bg-[#fafaf8]">
+    <div className="min-h-screen bg-[#fafaf8] flex flex-col">
       <Header />
-      <main className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 max-w-2xl">
-        <ProfileDetail
-          profile={profile}
-          isOwnProfile={isOwnProfile}
-          teaTimeEnabled={teaTimeEnabled}
-        />
+
+      <main className="flex-1">
+        <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-2xl">
+          <ProfileDetail
+            profile={profile}
+            isOwnProfile={isOwnProfile}
+            teaTimeEnabled={teaTimeEnabled}
+          />
+        </div>
       </main>
+
+      <footer className="py-6 mt-auto">
+        <p className="text-xs text-[#a3a3a3] text-center">Share House Portal</p>
+      </footer>
     </div>
   );
 }
