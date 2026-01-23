@@ -347,7 +347,9 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
 
           {/* 写真アップロードのヒント */}
           <p className="text-[11px] text-[#a3a3a3] mt-3 text-center">
-            写真は左のプレビューをクリックして変更できます（JPG/PNG/WebP, 5MB以下）
+            <span className="hidden md:inline">写真は左のプレビューをクリックして変更できます</span>
+            <span className="md:hidden">写真は上のプレビューをクリックして変更できます</span>
+            （JPG/PNG/WebP, 5MB以下）
           </p>
         </div>
       </div>

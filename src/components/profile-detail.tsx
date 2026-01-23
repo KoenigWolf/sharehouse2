@@ -49,7 +49,7 @@ export function ProfileDetail({ profile, isOwnProfile, teaTimeEnabled }: Profile
       {/* 戻るリンク */}
       <Link
         href="/"
-        className="inline-flex items-center gap-1 text-xs text-[#737373] hover:text-[#1a1a1a] mb-3 transition-colors"
+        className="inline-flex items-center gap-1 text-[11px] sm:text-xs text-[#737373] hover:text-[#1a1a1a] mb-2 sm:mb-3 transition-colors"
       >
         <span>←</span>
         <span>戻る</span>
@@ -84,7 +84,7 @@ export function ProfileDetail({ profile, isOwnProfile, teaTimeEnabled }: Profile
           </div>
 
           {/* 情報 */}
-          <div className="flex-1 p-5">
+          <div className="flex-1 p-4 sm:p-5">
             {/* 名前と編集ボタン */}
             <div className="flex items-start justify-between gap-3 mb-4">
               <div>
