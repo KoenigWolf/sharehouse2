@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { ProfileDetail } from "@/components/profile-detail";
-import { Profile } from "@/types/profile";
+import { Profile } from "@/domain/profile";
 
 const mockProfile: Profile = {
   id: "user-123",

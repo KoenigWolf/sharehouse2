@@ -7,8 +7,11 @@ import {
   signInSchema,
   validateSignUp,
   validateSignIn,
-} from "@/lib/validations/auth";
+} from "@/domain/validation/auth";
 import { PROFILE } from "@/lib/constants/config";
+import { createTranslator } from "@/lib/i18n";
+
+const t = createTranslator("ja");
 
 describe("emailSchema", () => {
   it("accepts valid email", () => {
@@ -216,7 +219,7 @@ describe("validateSignUp", () => {
       name: "山田 太郎",
       email: "test@example.com",
       password: "Password123",
-    });
+    }, t);
     expect(result.success).toBe(true);
     expect(result.data).toBeDefined();
   });
@@ -226,7 +229,7 @@ describe("validateSignUp", () => {
       name: "",
       email: "test@example.com",
       password: "Password123",
-    });
+    }, t);
     expect(result.success).toBe(false);
     expect(result.error).toBeDefined();
   });
@@ -236,7 +239,7 @@ describe("validateSignUp", () => {
       name: "  山田 太郎  ",
       email: "test@example.com",
       password: "Password123",
-    });
+    }, t);
     expect(result.success).toBe(true);
     expect(result.data?.name).toBe("山田 太郎");
   });
@@ -247,7 +250,7 @@ describe("validateSignIn", () => {
     const result = validateSignIn({
       email: "test@example.com",
       password: "password123",
-    });
+    }, t);
     expect(result.success).toBe(true);
     expect(result.data).toBeDefined();
   });
@@ -255,7 +258,7 @@ describe("validateSignIn", () => {
   it("returns error for missing email", () => {
     const result = validateSignIn({
       password: "password123",
-    });
+    }, t);
     expect(result.success).toBe(false);
     expect(result.error).toBeDefined();
   });
@@ -263,7 +266,7 @@ describe("validateSignIn", () => {
   it("returns error for missing password", () => {
     const result = validateSignIn({
       email: "test@example.com",
-    });
+    }, t);
     expect(result.success).toBe(false);
     expect(result.error).toBeDefined();
   });

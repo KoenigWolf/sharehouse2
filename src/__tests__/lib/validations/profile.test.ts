@@ -9,8 +9,11 @@ import {
   validateProfileUpdate,
   validateFileUpload,
   sanitizeFileName,
-} from "@/lib/validations/profile";
+} from "@/domain/validation/profile";
 import { PROFILE, FILE_UPLOAD } from "@/lib/constants/config";
+import { createTranslator } from "@/lib/i18n";
+
+const t = createTranslator("ja");
 
 describe("roomNumberSchema", () => {
   it("accepts valid room number", () => {
@@ -267,7 +270,7 @@ describe("validateProfileUpdate", () => {
       bio: "こんにちは",
       interests: ["料理"],
       move_in_date: "2024-01-15",
-    });
+    }, t);
     expect(result.success).toBe(true);
     expect(result.data).toBeDefined();
   });
@@ -279,7 +282,7 @@ describe("validateProfileUpdate", () => {
       bio: "こんにちは",
       interests: [],
       move_in_date: null,
-    });
+    }, t);
     expect(result.success).toBe(false);
     expect(result.error).toBeDefined();
   });
@@ -290,7 +293,7 @@ describe("validateFileUpload", () => {
     const result = validateFileUpload({
       size: 1024 * 1024,
       type: "image/jpeg",
-    });
+    }, t);
     expect(result.success).toBe(true);
   });
 
@@ -298,7 +301,7 @@ describe("validateFileUpload", () => {
     const result = validateFileUpload({
       size: FILE_UPLOAD.maxSizeBytes + 1,
       type: "image/jpeg",
-    });
+    }, t);
     expect(result.success).toBe(false);
     expect(result.error).toBeDefined();
   });
@@ -307,7 +310,7 @@ describe("validateFileUpload", () => {
     const result = validateFileUpload({
       size: 1024,
       type: "image/gif",
-    });
+    }, t);
     expect(result.success).toBe(false);
     expect(result.error).toBeDefined();
   });

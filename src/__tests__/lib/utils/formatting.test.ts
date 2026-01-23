@@ -8,6 +8,9 @@ import {
   parseInterests,
   formatInterests,
 } from "@/lib/utils/formatting";
+import { createTranslator } from "@/lib/i18n";
+
+const t = createTranslator("ja");
 
 describe("getInitials", () => {
   it("returns initials from a single name", () => {
@@ -119,31 +122,31 @@ describe("calculateResidenceDuration", () => {
   });
 
   it("returns '入居したばかり' for less than 1 month", () => {
-    expect(calculateResidenceDuration("2024-06-01")).toBe("入居したばかり");
+    expect(calculateResidenceDuration("2024-06-01", t)).toBe("入居したばかり");
   });
 
   it("returns months for less than 1 year", () => {
-    expect(calculateResidenceDuration("2024-01-15")).toBe("5ヶ月");
+    expect(calculateResidenceDuration("2024-01-15", t)).toBe("5ヶ月");
   });
 
   it("returns years only when months are exactly divisible", () => {
-    expect(calculateResidenceDuration("2023-06-15")).toBe("1年");
+    expect(calculateResidenceDuration("2023-06-15", t)).toBe("1年");
   });
 
   it("returns years and months for mixed duration", () => {
-    expect(calculateResidenceDuration("2023-01-15")).toBe("1年5ヶ月");
+    expect(calculateResidenceDuration("2023-01-15", t)).toBe("1年5ヶ月");
   });
 
   it("returns null for null input", () => {
-    expect(calculateResidenceDuration(null)).toBeNull();
+    expect(calculateResidenceDuration(null, t)).toBeNull();
   });
 
   it("returns null for undefined input", () => {
-    expect(calculateResidenceDuration(undefined)).toBeNull();
+    expect(calculateResidenceDuration(undefined, t)).toBeNull();
   });
 
   it("returns null for invalid date", () => {
-    expect(calculateResidenceDuration("invalid")).toBeNull();
+    expect(calculateResidenceDuration("invalid", t)).toBeNull();
   });
 });
 

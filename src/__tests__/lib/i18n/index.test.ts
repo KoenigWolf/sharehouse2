@@ -1,14 +1,21 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { t, getTranslations, ja } from "@/lib/i18n";
+import { createTranslator, getTranslations, ja, en } from "@/lib/i18n";
 
 describe("getTranslations", () => {
   it("returns Japanese translations by default", () => {
     const translations = getTranslations();
     expect(translations).toBe(ja);
   });
+
+  it("returns English translations when requested", () => {
+    const translations = getTranslations("en");
+    expect(translations).toBe(en);
+  });
 });
 
 describe("t (translation function)", () => {
+  const t = createTranslator("ja");
+  const tUnsafe = t as (key: string, params?: Record<string, string | number>) => string;
   let consoleSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
@@ -81,25 +88,25 @@ describe("t (translation function)", () => {
 
   describe("missing key handling", () => {
     it("returns key when translation not found", () => {
-      const result = t("nonexistent.key");
+      const result = tUnsafe("nonexistent.key");
       expect(result).toBe("nonexistent.key");
     });
 
     it("logs warning for missing key", () => {
-      t("nonexistent.key");
+      tUnsafe("nonexistent.key");
       expect(consoleSpy).toHaveBeenCalledWith(
         "Translation key not found: nonexistent.key"
       );
     });
 
     it("returns key when partial path exists but final key missing", () => {
-      const result = t("common.nonexistent");
+      const result = tUnsafe("common.nonexistent");
       expect(result).toBe("common.nonexistent");
     });
 
     it("logs warning when value is not a string (nested object)", () => {
       // Trying to get a non-leaf value
-      const result = t("common");
+      const result = tUnsafe("common");
       expect(result).toBe("common");
       expect(consoleSpy).toHaveBeenCalled();
     });
@@ -107,33 +114,29 @@ describe("t (translation function)", () => {
 
   describe("parameter interpolation", () => {
     it("replaces single parameter", () => {
-      // First add a translation with parameter for testing
-      // Since we can't modify translations, we'll test the interpolation logic
-      const testKey = "auth.passwordMinLength";
-      const result = t(testKey);
-      // This key doesn't have interpolation, but tests the function doesn't break
-      expect(result).toBe("パスワードは6文字以上で入力してください");
+      const result = t("auth.passwordMinLength", { min: 10 });
+      expect(result).toBe("パスワードは10文字以上で入力してください");
     });
   });
 
   describe("edge cases", () => {
     it("handles empty string key", () => {
-      const result = t("");
+      const result = tUnsafe("");
       expect(result).toBe("");
     });
 
     it("handles key with only dots", () => {
-      const result = t("...");
+      const result = tUnsafe("...");
       expect(result).toBe("...");
     });
 
     it("handles key with leading dot", () => {
-      const result = t(".common.loading");
+      const result = tUnsafe(".common.loading");
       expect(result).toBe(".common.loading");
     });
 
     it("handles key with trailing dot", () => {
-      const result = t("common.loading.");
+      const result = tUnsafe("common.loading.");
       expect(result).toBe("common.loading.");
     });
   });
