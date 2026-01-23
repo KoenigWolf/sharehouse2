@@ -1,111 +1,97 @@
 import { Profile } from "@/types/profile";
 
-// モダンなイラスト風アバター生成
-const generateModernAvatar = (
-  hairStyle: "short" | "medium" | "long" | "bob",
+/**
+ * DESIGN.md準拠のミニマルなアバター生成
+ * - 背景: 生成り系の落ち着いた色（#f5f5f3, #fafaf8）
+ * - 人物: シンプルな線画風
+ * - 色: 低彩度、静かなトーン
+ */
+const generateMinimalAvatar = (
+  variant: "a" | "b" | "c" | "d",
   hairColor: string,
-  skinTone: string,
-  bgColor: string,
-  accentColor: string
+  clothesColor: string
 ) => {
-  const hairPaths: Record<string, string> = {
-    short: `
-      <ellipse cx="50" cy="28" rx="22" ry="16" fill="${hairColor}"/>
-      <rect x="28" y="26" width="44" height="8" fill="${hairColor}"/>
-    `,
-    medium: `
-      <ellipse cx="50" cy="28" rx="24" ry="18" fill="${hairColor}"/>
-      <rect x="26" y="26" width="48" height="20" fill="${hairColor}" rx="4"/>
-    `,
-    long: `
-      <ellipse cx="50" cy="28" rx="26" ry="18" fill="${hairColor}"/>
-      <path d="M24 30 Q20 50 24 75 L32 75 Q30 55 32 35 Z" fill="${hairColor}"/>
-      <path d="M76 30 Q80 50 76 75 L68 75 Q70 55 68 35 Z" fill="${hairColor}"/>
-    `,
-    bob: `
-      <ellipse cx="50" cy="28" rx="26" ry="18" fill="${hairColor}"/>
-      <path d="M24 30 Q22 45 28 58 L36 55 Q32 45 34 35 Z" fill="${hairColor}"/>
-      <path d="M76 30 Q78 45 72 58 L64 55 Q68 45 66 35 Z" fill="${hairColor}"/>
-    `,
+  // 背景パターン（生成り系、わずかな違い）
+  const bgColors: Record<string, string> = {
+    a: "#f5f5f3",
+    b: "#f8f8f6",
+    c: "#f3f3f1",
+    d: "#fafaf8",
   };
 
+  const bg = bgColors[variant];
+  const skinTone = "#f0e6dc"; // 統一された肌色（温かみのあるベージュ）
+
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-    <defs>
-      <linearGradient id="bg_${hairStyle}_${hairColor.slice(1)}" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" style="stop-color:${bgColor}"/>
-        <stop offset="100%" style="stop-color:${accentColor}"/>
-      </linearGradient>
-    </defs>
-    <rect width="100" height="100" fill="url(#bg_${hairStyle}_${hairColor.slice(1)})"/>
+    <!-- 背景 -->
+    <rect width="100" height="100" fill="${bg}"/>
 
     <!-- 首 -->
-    <rect x="42" y="68" width="16" height="12" fill="${skinTone}" rx="2"/>
+    <rect x="44" y="66" width="12" height="10" fill="${skinTone}"/>
 
-    <!-- 服 -->
-    <ellipse cx="50" cy="95" rx="28" ry="18" fill="${hairColor}" opacity="0.9"/>
+    <!-- 服（シンプルな形） -->
+    <path d="M30 100 Q30 78 50 76 Q70 78 70 100 Z" fill="${clothesColor}"/>
 
     <!-- 顔 -->
-    <ellipse cx="50" cy="48" rx="22" ry="26" fill="${skinTone}"/>
+    <ellipse cx="50" cy="48" rx="20" ry="24" fill="${skinTone}"/>
 
-    <!-- 髪 -->
-    ${hairPaths[hairStyle]}
+    <!-- 髪（シンプル） -->
+    ${
+      variant === "a" || variant === "c"
+        ? `<ellipse cx="50" cy="30" rx="21" ry="14" fill="${hairColor}"/>
+         <rect x="29" y="28" width="42" height="12" fill="${hairColor}"/>`
+        : variant === "b"
+          ? `<ellipse cx="50" cy="30" rx="22" ry="14" fill="${hairColor}"/>
+         <path d="M28 32 Q26 50 30 65 L36 62 Q34 48 36 36 Z" fill="${hairColor}"/>
+         <path d="M72 32 Q74 50 70 65 L64 62 Q66 48 64 36 Z" fill="${hairColor}"/>`
+          : `<ellipse cx="50" cy="30" rx="22" ry="14" fill="${hairColor}"/>
+         <path d="M28 32 Q26 45 32 55 L38 52 Q34 44 36 36 Z" fill="${hairColor}"/>
+         <path d="M72 32 Q74 45 68 55 L62 52 Q66 44 64 36 Z" fill="${hairColor}"/>`
+    }
 
-    <!-- 眉 -->
-    <path d="M38 40 Q42 38 46 40" stroke="#5c5c5c" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-    <path d="M54 40 Q58 38 62 40" stroke="#5c5c5c" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <!-- 目（シンプルな点） -->
+    <circle cx="42" cy="48" r="2.5" fill="#4a4a4a"/>
+    <circle cx="58" cy="48" r="2.5" fill="#4a4a4a"/>
 
-    <!-- 目 -->
-    <ellipse cx="42" cy="46" rx="3" ry="3.5" fill="#2d2d2d"/>
-    <ellipse cx="58" cy="46" rx="3" ry="3.5" fill="#2d2d2d"/>
-    <circle cx="43" cy="45" r="1" fill="#fff"/>
-    <circle cx="59" cy="45" r="1" fill="#fff"/>
-
-    <!-- 鼻 -->
-    <path d="M50 50 L50 56" stroke="${skinTone}" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
-
-    <!-- 口 -->
-    <path d="M45 62 Q50 66 55 62" stroke="#c97878" stroke-width="2" fill="none" stroke-linecap="round"/>
-
-    <!-- チーク -->
-    <ellipse cx="34" cy="54" rx="5" ry="3" fill="#ffb4a2" opacity="0.4"/>
-    <ellipse cx="66" cy="54" rx="5" ry="3" fill="#ffb4a2" opacity="0.4"/>
+    <!-- 口（控えめな線） -->
+    <path d="M46 58 Q50 61 54 58" stroke="#c9a090" stroke-width="1.5" fill="none" stroke-linecap="round"/>
   </svg>`;
 
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 };
 
-// アバターパターン
+// DESIGN.md準拠のカラーパレット（低彩度）
 const avatarConfigs: Array<{
-  hairStyle: "short" | "medium" | "long" | "bob";
+  variant: "a" | "b" | "c" | "d";
   hairColor: string;
-  skinTone: string;
-  bgColor: string;
-  accentColor: string;
+  clothesColor: string;
 }> = [
-  { hairStyle: "long", hairColor: "#3d2314", skinTone: "#fce4d6", bgColor: "#e8f4f8", accentColor: "#d4e8f0" },
-  { hairStyle: "short", hairColor: "#1a1a1a", skinTone: "#f5dcc8", bgColor: "#e8f0e8", accentColor: "#d4e8d4" },
-  { hairStyle: "bob", hairColor: "#4a3020", skinTone: "#fce4d6", bgColor: "#f8f0f4", accentColor: "#f0e4ec" },
-  { hairStyle: "short", hairColor: "#2d2d2d", skinTone: "#f0d4bc", bgColor: "#f4f4e8", accentColor: "#e8e8d8" },
-  { hairStyle: "long", hairColor: "#5c3d2e", skinTone: "#fce4d6", bgColor: "#f0e8f4", accentColor: "#e4dce8" },
-  { hairStyle: "short", hairColor: "#1a1a1a", skinTone: "#f5dcc8", bgColor: "#f8f4e8", accentColor: "#f0ecd8" },
-  { hairStyle: "medium", hairColor: "#3d2820", skinTone: "#fce4d6", bgColor: "#f8e8ec", accentColor: "#f0dce4" },
-  { hairStyle: "short", hairColor: "#2d2d2d", skinTone: "#f0d4bc", bgColor: "#e8f0f4", accentColor: "#dce8f0" },
-  { hairStyle: "long", hairColor: "#4a3020", skinTone: "#fce4d6", bgColor: "#f0f8f0", accentColor: "#e4f0e4" },
-  { hairStyle: "short", hairColor: "#1a1a1a", skinTone: "#f5dcc8", bgColor: "#f8f0e8", accentColor: "#f0e8dc" },
-  { hairStyle: "bob", hairColor: "#3d2314", skinTone: "#fce4d6", bgColor: "#ece8f4", accentColor: "#e0dcec" },
-  { hairStyle: "short", hairColor: "#2d2d2d", skinTone: "#f0d4bc", bgColor: "#f4f8e8", accentColor: "#ecf0dc" },
-  { hairStyle: "medium", hairColor: "#5c3d2e", skinTone: "#fce4d6", bgColor: "#f8e4f0", accentColor: "#f0d8e8" },
-  { hairStyle: "short", hairColor: "#1a1a1a", skinTone: "#f5dcc8", bgColor: "#e8f8f4", accentColor: "#dcf0ec" },
-  { hairStyle: "long", hairColor: "#3d2820", skinTone: "#fce4d6", bgColor: "#f8f8e8", accentColor: "#f0f0dc" },
-  { hairStyle: "short", hairColor: "#2d2d2d", skinTone: "#f0d4bc", bgColor: "#e4f0f8", accentColor: "#d8e8f4" },
-  { hairStyle: "bob", hairColor: "#4a3020", skinTone: "#fce4d6", bgColor: "#f8e8f4", accentColor: "#f0dcea" },
-  { hairStyle: "short", hairColor: "#1a1a1a", skinTone: "#f5dcc8", bgColor: "#f0f4e8", accentColor: "#e8ecdc" },
-  { hairStyle: "medium", hairColor: "#3d2314", skinTone: "#fce4d6", bgColor: "#e8f8e8", accentColor: "#dcf0dc" },
-  { hairStyle: "short", hairColor: "#2d2d2d", skinTone: "#f0d4bc", bgColor: "#f8f0f0", accentColor: "#f0e4e4" },
+  // 髪色: 暗めの茶〜黒系（#3d3530, #4a4540, #2d2a28）
+  // 服: 落ち着いたグレー・ベージュ系（#d4d4d4, #c9c5c0, #b8b4b0）
+  { variant: "b", hairColor: "#3d3530", clothesColor: "#d4d4d4" },
+  { variant: "a", hairColor: "#2d2a28", clothesColor: "#c9c5c0" },
+  { variant: "d", hairColor: "#4a4540", clothesColor: "#d8d4d0" },
+  { variant: "a", hairColor: "#3a3632", clothesColor: "#ccc8c4" },
+  { variant: "b", hairColor: "#454140", clothesColor: "#d0ccc8" },
+  { variant: "a", hairColor: "#2d2a28", clothesColor: "#dcd8d4" },
+  { variant: "c", hairColor: "#3d3530", clothesColor: "#c5c1bc" },
+  { variant: "a", hairColor: "#4a4540", clothesColor: "#d4d0cc" },
+  { variant: "b", hairColor: "#3a3632", clothesColor: "#ccc8c4" },
+  { variant: "a", hairColor: "#2d2a28", clothesColor: "#d8d4d0" },
+  { variant: "d", hairColor: "#454140", clothesColor: "#c9c5c0" },
+  { variant: "a", hairColor: "#3d3530", clothesColor: "#d0ccc8" },
+  { variant: "c", hairColor: "#3a3632", clothesColor: "#dcd8d4" },
+  { variant: "a", hairColor: "#2d2a28", clothesColor: "#c5c1bc" },
+  { variant: "b", hairColor: "#4a4540", clothesColor: "#d4d0cc" },
+  { variant: "a", hairColor: "#454140", clothesColor: "#ccc8c4" },
+  { variant: "d", hairColor: "#3d3530", clothesColor: "#d8d4d0" },
+  { variant: "a", hairColor: "#3a3632", clothesColor: "#c9c5c0" },
+  { variant: "c", hairColor: "#2d2a28", clothesColor: "#d0ccc8" },
+  { variant: "a", hairColor: "#4a4540", clothesColor: "#dcd8d4" },
 ];
 
 const avatars = avatarConfigs.map((config) =>
-  generateModernAvatar(config.hairStyle, config.hairColor, config.skinTone, config.bgColor, config.accentColor)
+  generateMinimalAvatar(config.variant, config.hairColor, config.clothesColor)
 );
 
 export const mockProfiles: Profile[] = [
