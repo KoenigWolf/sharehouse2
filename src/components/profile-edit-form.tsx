@@ -372,12 +372,12 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                   }
                   placeholder={t("auth.namePlaceholder")}
                   required
-                  className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
+                  className="w-full h-12 sm:h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-base sm:text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
                 />
               </div>
 
               {/* 部屋番号・入居日 */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 xs:grid-cols-2 gap-4">
                 <div className="space-y-2">
                 <label
                   htmlFor="room_number"
@@ -393,7 +393,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                       setFormData({ ...formData, room_number: e.target.value })
                     }
                     placeholder="301"
-                    className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
+                    className="w-full h-12 sm:h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-base sm:text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
                   />
                 </div>
                 <div className="space-y-2">
@@ -410,7 +410,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                     onChange={(e) =>
                       setFormData({ ...formData, move_in_date: e.target.value })
                     }
-                    className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
+                    className="w-full h-12 sm:h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-base sm:text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
                   />
                 </div>
               </div>
@@ -429,7 +429,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                   onChange={(e) =>
                     setFormData({ ...formData, mbti: e.target.value as MBTIType | "" })
                   }
-                  className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors"
+                  className="w-full h-12 sm:h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-base sm:text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors"
                 >
                   <option value="">{t("profile.mbtiPlaceholder")}</option>
                   {MBTI_TYPES.map((type) => (
@@ -476,19 +476,19 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                     setFormData({ ...formData, interests: e.target.value })
                   }
                   placeholder={t("profile.interestsPlaceholder")}
-                  className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
+                  className="w-full h-12 sm:h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-base sm:text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
                 />
-                <p className="text-[10px] text-[#a3a3a3]">
+                <p className="text-[10px] sm:text-[11px] text-[#a3a3a3]">
                   {t("profile.interestsSeparatorHint")}
                 </p>
               </div>
 
               {/* 保存ボタン */}
-              <div className="pt-2">
+              <div className="pt-3 sm:pt-2">
                 <button
                   type="submit"
                   disabled={isLoading || isUploading}
-                  className="w-full h-11 bg-[#1a1a1a] text-white text-sm tracking-wide hover:bg-[#333] disabled:bg-[#a3a3a3] disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+                  className="w-full h-12 sm:h-11 bg-[#1a1a1a] text-white text-base sm:text-sm tracking-wide hover:bg-[#333] active:scale-[0.99] disabled:bg-[#a3a3a3] disabled:cursor-not-allowed transition-all flex items-center justify-center"
                 >
                   {isLoading ? (
                     <motion.span
@@ -498,7 +498,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                         repeat: Infinity,
                         ease: "linear",
                       }}
-                      className="inline-block w-4 h-4 border border-white/30 border-t-white rounded-full"
+                      className="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
                     />
                   ) : (
                     t("profile.saveChanges")

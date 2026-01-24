@@ -84,15 +84,15 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 sm:space-y-6">
       {/* ヘッダー: タイトル + 検索 + ソート */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3 sm:gap-4">
         <div className="flex items-end justify-between">
           <div>
-            <h2 className="text-xl text-[#1a1a1a] tracking-wide font-light">
+            <h2 className="text-lg sm:text-xl text-[#1a1a1a] tracking-wide font-light">
               {t("residents.title")}
             </h2>
-            <p className="text-xs text-[#a3a3a3] mt-1">
+            <p className="text-[11px] sm:text-xs text-[#a3a3a3] mt-1">
               {t("residents.countLabel", {
                 count: filteredAndSortedProfiles.length,
               })}
@@ -103,7 +103,7 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
         </div>
 
         {/* フィルターバー */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#e5e5e5]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-4 border-b border-[#e5e5e5]">
           {/* 検索 */}
           <div className="relative">
             <input
@@ -111,12 +111,12 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
               placeholder={t("residents.searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full sm:w-56 h-10 px-4 bg-white border border-[#e5e5e5] text-sm text-[#1a1a1a] placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
+              className="w-full sm:w-56 h-11 sm:h-10 px-4 bg-white border border-[#e5e5e5] text-base sm:text-sm text-[#1a1a1a] placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
             />
           </div>
 
-          {/* ソート */}
-          <div className="flex text-sm">
+          {/* ソート - モバイルでは横スクロール可能 */}
+          <div className="flex overflow-x-auto scrollbar-hide -mx-1 px-1">
             {sortOptions.map((option) => {
               const isActive = sortBy === option.value;
               return (
@@ -124,14 +124,14 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
                   key={option.value}
                   type="button"
                   onClick={() => handleSortChange(option.value)}
-                  className="relative px-4 py-2 tracking-wide transition-colors group"
+                  className="relative px-3 sm:px-4 py-2.5 sm:py-2 tracking-wide transition-colors group whitespace-nowrap active:opacity-70"
                 >
                   <span
-                    className={
+                    className={`text-sm ${
                       isActive
-                        ? "text-[#1a1a1a]"
+                        ? "text-[#1a1a1a] font-medium"
                         : "text-[#a3a3a3] group-hover:text-[#737373]"
-                    }
+                    }`}
                   >
                     {option.label}
                   </span>
@@ -139,7 +139,7 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
                   {isActive && (
                     <motion.span
                       layoutId="sort-underline"
-                      className="absolute bottom-0 left-4 right-4 h-px bg-[#1a1a1a]"
+                      className="absolute bottom-0 left-3 right-3 sm:left-4 sm:right-4 h-px bg-[#1a1a1a]"
                       transition={{ duration: 0.3, ease: "easeInOut" }}
                     />
                   )}
@@ -158,14 +158,14 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="text-center py-16"
+            className="text-center py-12 sm:py-16"
           >
             <p className="text-[#737373] text-sm">
               {t("residents.noMatch")}
             </p>
             <button
               onClick={() => setSearchQuery("")}
-              className="text-sm text-[#1a1a1a] hover:text-[#737373] mt-4 transition-colors"
+              className="mt-4 px-5 py-3 text-sm text-[#1a1a1a] border border-[#e5e5e5] hover:border-[#1a1a1a] active:scale-[0.98] transition-all"
             >
               {t("residents.clearSearch")}
             </button>
@@ -176,7 +176,7 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4"
           >
             {filteredAndSortedProfiles.map((profile, index) => (
               <motion.div

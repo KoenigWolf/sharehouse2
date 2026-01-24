@@ -15,6 +15,7 @@ interface ResidentCardProps {
 
 /**
  * Resident card component displaying profile preview
+ * Optimized for mobile touch interactions
  */
 export const ResidentCard = memo(function ResidentCard({
   profile,
@@ -29,10 +30,10 @@ export const ResidentCard = memo(function ResidentCard({
     <Link
       href={`/profile/${profile.id}`}
       aria-label={t("a11y.viewProfile", { name: profile.name })}
-      className="block group"
+      className="block group select-none"
     >
       <article
-        className={`bg-white border transition-all duration-200 ${
+        className={`bg-white border transition-all duration-200 active:scale-[0.98] active:opacity-95 ${
           isCurrentUser
             ? "border-[#1a1a1a]"
             : isMockProfile
@@ -49,7 +50,7 @@ export const ResidentCard = memo(function ResidentCard({
               className="object-cover w-full h-full group-hover:scale-[1.02] transition-transform duration-300"
             />
             <AvatarFallback
-              className="bg-[#f5f5f3] text-[#a3a3a3] text-2xl sm:text-3xl rounded-none w-full h-full flex items-center justify-center"
+              className="bg-[#f5f5f3] text-[#a3a3a3] text-3xl sm:text-4xl rounded-none w-full h-full flex items-center justify-center"
               aria-label={t("a11y.profileInitials", { name: profile.name })}
             >
               {getInitials(profile.name)}
@@ -58,25 +59,25 @@ export const ResidentCard = memo(function ResidentCard({
 
           {/* Badges */}
           {isCurrentUser && (
-            <span className="absolute top-2 right-2 bg-[#1a1a1a] text-white text-[10px] px-2 py-0.5 tracking-wide">
+            <span className="absolute top-2 right-2 bg-[#1a1a1a] text-white text-[10px] sm:text-[11px] px-2 py-1 tracking-wide">
               {t("common.you")}
             </span>
           )}
           {isMockProfile && !isCurrentUser && (
-            <span className="absolute top-2 left-2 bg-[#f5f5f3] text-[#a3a3a3] text-[10px] px-2 py-0.5 tracking-wide">
+            <span className="absolute top-2 left-2 bg-[#f5f5f3] text-[#a3a3a3] text-[10px] sm:text-[11px] px-2 py-1 tracking-wide">
               {t("common.unregistered")}
             </span>
           )}
         </div>
 
-        {/* Info section - fixed height */}
-        <div className="p-3 sm:p-4 h-[72px] sm:h-[80px] overflow-hidden">
+        {/* Info section - responsive height */}
+        <div className="p-3 sm:p-4 min-h-[68px] sm:min-h-[80px]">
           <div className="flex items-baseline justify-between gap-2">
-            <h3 className="text-sm text-[#1a1a1a] tracking-wide truncate">
+            <h3 className="text-sm sm:text-base text-[#1a1a1a] tracking-wide truncate font-normal">
               {profile.name}
             </h3>
             {profile.room_number && (
-              <span className="text-[10px] text-[#a3a3a3] shrink-0">
+              <span className="text-[10px] sm:text-[11px] text-[#a3a3a3] shrink-0">
                 {profile.room_number}
               </span>
             )}
@@ -84,13 +85,13 @@ export const ResidentCard = memo(function ResidentCard({
 
           {displayInterests.length > 0 && (
             <ul
-              className="flex flex-wrap gap-1.5 mt-2 overflow-hidden max-h-[28px]"
+              className="flex flex-wrap gap-1 sm:gap-1.5 mt-2 overflow-hidden max-h-[26px] sm:max-h-[28px]"
               aria-label={t("a11y.interestsList")}
             >
               {displayInterests.map((interest, i) => (
                 <li
                   key={i}
-                  className="text-[10px] px-2 py-0.5 bg-[#f5f5f3] text-[#737373]"
+                  className="text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 bg-[#f5f5f3] text-[#737373]"
                 >
                   {interest}
                 </li>
