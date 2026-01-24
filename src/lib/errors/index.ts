@@ -142,17 +142,26 @@ export function logError(
   }
 ): void {
   const timestamp = new Date().toISOString();
+
+  // Serialize error properly
+  let errorData: Record<string, unknown>;
+  if (error instanceof Error) {
+    errorData = {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+    };
+  } else if (error && typeof error === "object") {
+    // Handle Supabase errors and other plain objects
+    errorData = { ...error } as Record<string, unknown>;
+  } else {
+    errorData = { message: String(error) };
+  }
+
   const errorInfo = {
     timestamp,
     ...context,
-    error:
-      error instanceof Error
-        ? {
-            name: error.name,
-            message: error.message,
-            stack: error.stack,
-          }
-        : { message: String(error) },
+    error: errorData,
   };
 
   // In production, this could be sent to a logging service
