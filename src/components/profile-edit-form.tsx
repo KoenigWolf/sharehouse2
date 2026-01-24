@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
-import { Profile } from "@/domain/profile";
+import { Profile, MBTI_TYPES, MBTIType } from "@/domain/profile";
 import { updateProfile, uploadAvatar } from "@/lib/profile/actions";
 import { updateTeaTimeSetting } from "@/lib/tea-time/actions";
 import { getInitials } from "@/lib/utils";
@@ -32,6 +32,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
     room_number: profile.room_number || "",
     bio: profile.bio || "",
     interests: profile.interests?.join(", ") || "",
+    mbti: profile.mbti || ("" as MBTIType | ""),
     move_in_date: profile.move_in_date || "",
   });
 
@@ -102,6 +103,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
       room_number: formData.room_number.trim() || null,
       bio: formData.bio.trim() || null,
       interests,
+      mbti: formData.mbti || null,
       move_in_date: formData.move_in_date || null,
     });
 
@@ -411,6 +413,31 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                     className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
                   />
                 </div>
+              </div>
+
+              {/* MBTI */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="mbti"
+                  className="block text-xs text-[#737373] tracking-wide"
+                >
+                  {t("profile.mbti")}
+                </label>
+                <select
+                  id="mbti"
+                  value={formData.mbti}
+                  onChange={(e) =>
+                    setFormData({ ...formData, mbti: e.target.value as MBTIType | "" })
+                  }
+                  className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors"
+                >
+                  <option value="">{t("profile.mbtiPlaceholder")}</option>
+                  {MBTI_TYPES.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {/* 自己紹介 */}

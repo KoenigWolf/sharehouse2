@@ -55,6 +55,7 @@ export async function updateProfile(data: ProfileUpdateInput): Promise<UpdateRes
         room_number: validatedData.room_number,
         bio: validatedData.bio,
         interests: validatedData.interests,
+        mbti: validatedData.mbti,
         move_in_date: validatedData.move_in_date,
         updated_at: new Date().toISOString(),
       })
@@ -257,6 +258,7 @@ export async function createProfile(name: string): Promise<UpdateResponse> {
       bio: null,
       avatar_url: null,
       interests: [],
+      mbti: null,
       move_in_date: null,
     });
 

@@ -147,11 +147,16 @@ export function ProfileDetail({
               </section>
             )}
 
-            {/* Interests */}
-            {profile.interests && profile.interests.length > 0 && (
+            {/* MBTI & Interests */}
+            {(profile.mbti || (profile.interests && profile.interests.length > 0)) && (
               <section className="mb-5" aria-label={t("profile.interests")}>
                 <ul className="flex flex-wrap gap-2">
-                  {profile.interests.map((interest, index) => (
+                  {profile.mbti && (
+                    <li className="text-xs px-3 py-1.5 bg-[#f5f5f3] text-[#1a1a1a] font-medium">
+                      {profile.mbti}
+                    </li>
+                  )}
+                  {profile.interests?.map((interest, index) => (
                     <li
                       key={index}
                       className="text-xs px-3 py-1.5 bg-[#f5f5f3] text-[#737373]"

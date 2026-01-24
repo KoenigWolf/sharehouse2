@@ -2,6 +2,7 @@ import { z } from "zod";
 import { PROFILE, FILE_UPLOAD } from "@/lib/constants/config";
 import { sanitizeForStorage, stripHtml } from "@/lib/security/validation";
 import type { TranslationKey, Translator } from "@/lib/i18n";
+import { MBTI_TYPES } from "@/domain/profile";
 
 /**
  * Profile validation schemas with security sanitization
@@ -59,6 +60,12 @@ export const moveInDateSchema = z
     { message: "validation.dateInvalid" }
   );
 
+// MBTI validation
+export const mbtiSchema = z
+  .enum(MBTI_TYPES, { message: "validation.invalidMBTI" })
+  .optional()
+  .nullable();
+
 // Profile update schema with comprehensive sanitization
 export const profileUpdateSchema = z.object({
   name: z
@@ -69,6 +76,7 @@ export const profileUpdateSchema = z.object({
   room_number: roomNumberSchema,
   bio: bioSchema,
   interests: interestsSchema,
+  mbti: mbtiSchema,
   move_in_date: moveInDateSchema,
 });
 

@@ -84,6 +84,8 @@ export const en: Translations = {
     interests: "Interests",
     interestsPlaceholder: "Cooking, Movies, Running",
     interestsHint: "Split by commas to show as tags",
+    mbti: "MBTI",
+    mbtiPlaceholder: "Select your type",
     photoHintDesktop: "Click the preview on the left to change the photo",
     photoHintMobile: "Click the preview above to change the photo",
     photoFormat: "(JPG/PNG/WebP, up to 5MB)",

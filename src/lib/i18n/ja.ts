@@ -88,6 +88,8 @@ export const ja = {
     interests: "趣味・関心",
     interestsPlaceholder: "料理, 映画, ランニング",
     interestsHint: "カンマで区切って入力（共通の趣味がある住民を見つけやすくなります）",
+    mbti: "MBTI",
+    mbtiPlaceholder: "選択してください",
     photoHintDesktop: "写真は左のプレビューをクリックして変更できます",
     photoHintMobile: "写真は上のプレビューをクリックして変更できます",
     photoFormat: "（JPG/PNG/WebP, 5MB以下）",
