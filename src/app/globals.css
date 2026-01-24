@@ -46,6 +46,18 @@
   --radius-4xl: calc(var(--radius) + 16px);
 }
 
+/* ============================================
+ * Cross-browser compatibility
+ * ============================================ */
+
+/* Safari flexbox gap fallback (iOS < 14.1) */
+@supports not (gap: 1rem) {
+  .gap-1 > * + * { margin-left: 0.25rem; }
+  .gap-2 > * + * { margin-left: 0.5rem; }
+  .gap-3 > * + * { margin-left: 0.75rem; }
+  .gap-4 > * + * { margin-left: 1rem; }
+}
+
 :root {
   --radius: 0.25rem;
   --background: #fafaf8;
@@ -82,37 +94,38 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Hex fallbacks for browsers without oklch() support */
+  --background: #1a1a1a;
+  --foreground: #fafafa;
+  --card: #262626;
+  --card-foreground: #fafafa;
+  --popover: #262626;
+  --popover-foreground: #fafafa;
+  --primary: #e5e5e5;
+  --primary-foreground: #262626;
+  --secondary: #3a3a3a;
+  --secondary-foreground: #fafafa;
+  --muted: #3a3a3a;
+  --muted-foreground: #a3a3a3;
+  --accent: #3a3a3a;
+  --accent-foreground: #fafafa;
+  --destructive: #dc2626;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #737373;
+  --chart-1: #3b82f6;
+  --chart-2: #22c55e;
+  --chart-3: #eab308;
+  --chart-4: #a855f7;
+  --chart-5: #ef4444;
+  --sidebar: #262626;
+  --sidebar-foreground: #fafafa;
+  --sidebar-primary: #3b82f6;
+  --sidebar-primary-foreground: #fafafa;
+  --sidebar-accent: #3a3a3a;
+  --sidebar-accent-foreground: #fafafa;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #737373;
 }
 
 @layer base {
@@ -121,5 +134,119 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* iOS Safari: Prevent zoom on input focus */
+    -webkit-text-size-adjust: 100%;
   }
+}
+
+/* ============================================
+ * Form elements - Safari / iOS compatibility
+ * ============================================ */
+
+/* Normalize date input appearance across browsers */
+input[type="date"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  min-height: 2.75rem;
+}
+
+/* Safari date input icon positioning */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* Remove Safari default styling for inputs */
+input,
+textarea,
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border-radius: 0;
+}
+
+/* Restore select dropdown arrow */
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23737373' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.5rem;
+}
+
+/* iOS Safari: Prevent zoom on input focus (font-size >= 16px) */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  input,
+  textarea,
+  select {
+    font-size: max(16px, 1em);
+  }
+}
+
+/* ============================================
+ * Scrolling - Cross-browser compatibility
+ * ============================================ */
+
+/* Smooth scrolling with reduced motion preference */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* iOS Safari: Momentum scrolling */
+.overflow-auto,
+.overflow-y-auto,
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ============================================
+ * Button and touch - Mobile compatibility
+ * ============================================ */
+
+/* Remove tap highlight on mobile */
+button,
+a,
+[role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Improve touch targets for mobile */
+@media (pointer: coarse) {
+  button,
+  [role="button"],
+  a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* ============================================
+ * Image rendering - Cross-browser
+ * ============================================ */
+
+img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* ============================================
+ * Focus styles - Accessibility
+ * ============================================ */
+
+/* Visible focus for keyboard navigation */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Remove default focus outline for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
 }

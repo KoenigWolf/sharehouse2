@@ -2,6 +2,14 @@
   "name": "sharehouse2-temp",
   "version": "0.1.0",
   "private": true,
+  "browserslist": [
+    ">0.3%",
+    "last 2 versions",
+    "Firefox ESR",
+    "not dead",
+    "iOS >= 14",
+    "Safari >= 14"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -42,6 +50,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^5.1.2",
+    "autoprefixer": "^10.4.23",
     "eslint": "^9",
     "eslint-config-next": "16.1.4",
     "jsdom": "^27.0.1",
