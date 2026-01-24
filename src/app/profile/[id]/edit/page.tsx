@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import { Header } from "@/components/header";
+import { MobileNav } from "@/components/mobile-nav";
 import { ProfileEditForm } from "@/components/profile-edit-form";
 import { Profile } from "@/domain/profile";
 import { getTeaTimeSetting } from "@/lib/tea-time/actions";
@@ -53,8 +54,8 @@ export default async function ProfileEditPage({ params }: ProfileEditPageProps) 
     <div className="min-h-screen bg-[#fafaf8] flex flex-col">
       <Header />
 
-      <main className="flex-1">
-        <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-2xl">
+      <main className="flex-1 pb-20 sm:pb-0">
+        <div className="container mx-auto px-4 sm:px-6 py-5 sm:py-8 max-w-2xl">
           <ProfileEditForm
             profile={profile as Profile}
             initialTeaTimeEnabled={teaTimeSetting?.is_enabled ?? false}
@@ -62,9 +63,13 @@ export default async function ProfileEditPage({ params }: ProfileEditPageProps) 
         </div>
       </main>
 
-      <footer className="py-6 mt-auto">
+      {/* フッター (デスクトップのみ) */}
+      <footer className="hidden sm:block py-6 mt-auto">
         <p className="text-xs text-[#a3a3a3] text-center">Share House Portal</p>
       </footer>
+
+      {/* モバイルナビゲーション */}
+      <MobileNav />
     </div>
   );
 }

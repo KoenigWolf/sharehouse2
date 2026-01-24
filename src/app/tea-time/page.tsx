@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Header } from "@/components/header";
+import { MobileNav } from "@/components/mobile-nav";
 import { TeaTimeMatchCard } from "@/components/tea-time-match-card";
 import { getTeaTimeSetting, getMyMatches } from "@/lib/tea-time/actions";
 import { getServerTranslator } from "@/lib/i18n/server";
@@ -30,10 +31,10 @@ export default async function TeaTimePage() {
     <div className="min-h-screen bg-[#fafaf8] flex flex-col">
       <Header />
 
-      <main className="flex-1">
-        <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-lg">
+      <main className="flex-1 pb-20 sm:pb-0">
+        <div className="container mx-auto px-4 sm:px-6 py-5 sm:py-8 max-w-lg">
           {/* ヘッダー */}
-          <div className="flex items-baseline justify-between mb-6">
+          <div className="flex items-baseline justify-between mb-5 sm:mb-6">
             <h1 className="text-xl text-[#1a1a1a] tracking-wide font-light">
               {t("teaTime.title")}
             </h1>
@@ -41,7 +42,7 @@ export default async function TeaTimePage() {
           </div>
 
           {/* 参加状況 */}
-          <Link href="/settings" className="block mb-6 group">
+          <Link href="/settings" className="block mb-5 sm:mb-6 group active:scale-[0.99] transition-transform">
             <div className="bg-white border border-[#e5e5e5] p-4 hover:border-[#1a1a1a] transition-colors">
               <div className="flex items-center justify-between">
                 <div>
@@ -63,7 +64,7 @@ export default async function TeaTimePage() {
 
           {/* 新しいマッチ */}
           {scheduledMatches.length > 0 && (
-            <section className="mb-6">
+            <section className="mb-5 sm:mb-6">
               <h2 className="text-xs text-[#a3a3a3] tracking-wide mb-3">
                 {t("teaTime.thisWeeksMatch")}
               </h2>
@@ -100,7 +101,7 @@ export default async function TeaTimePage() {
               ) : (
                 <Link
                   href="/settings"
-                  className="inline-block mt-3 px-4 py-2 text-xs text-[#737373] border border-[#e5e5e5] hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-colors"
+                  className="inline-block mt-3 px-5 py-3 text-xs text-[#737373] border border-[#e5e5e5] hover:border-[#1a1a1a] hover:text-[#1a1a1a] active:scale-[0.98] transition-all"
                 >
                   {t("teaTime.enableParticipation")}
                 </Link>
@@ -110,9 +111,13 @@ export default async function TeaTimePage() {
         </div>
       </main>
 
-      <footer className="py-6 mt-auto">
+      {/* フッター (デスクトップのみ) */}
+      <footer className="hidden sm:block py-6 mt-auto">
         <p className="text-xs text-[#a3a3a3] text-center">Share House Portal</p>
       </footer>
+
+      {/* モバイルナビゲーション */}
+      <MobileNav />
     </div>
   );
 }

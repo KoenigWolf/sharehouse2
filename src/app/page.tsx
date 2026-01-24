@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Header } from "@/components/header";
+import { MobileNav } from "@/components/mobile-nav";
 import { ResidentsGrid } from "@/components/residents-grid";
 import { TeaTimeNotification } from "@/components/tea-time-notification";
 import { getLatestScheduledMatch } from "@/lib/tea-time/actions";
@@ -44,18 +45,18 @@ export default async function Home() {
     <div className="min-h-screen bg-[#fafaf8] flex flex-col">
       <Header />
 
-      <main className="flex-1">
-        <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <main className="flex-1 pb-20 sm:pb-0">
+        <div className="container mx-auto px-4 sm:px-6 py-5 sm:py-8">
           {/* ティータイム通知 */}
           {latestMatch && (
-            <div className="mb-6">
+            <div className="mb-5 sm:mb-6">
               <TeaTimeNotification match={latestMatch} />
             </div>
           )}
 
           {/* 登録状況 */}
           {mockCount > 0 && (
-            <p className="text-xs text-[#a3a3a3] mb-6">
+            <p className="text-xs text-[#a3a3a3] mb-5 sm:mb-6">
               {t("residents.registeredLabel", { count: dbProfiles.length })} /{" "}
               {t("residents.unregisteredLabel", { count: mockCount })}
             </p>
@@ -66,10 +67,13 @@ export default async function Home() {
         </div>
       </main>
 
-      {/* フッター */}
-      <footer className="py-6 mt-auto">
+      {/* フッター (デスクトップのみ) */}
+      <footer className="hidden sm:block py-6 mt-auto">
         <p className="text-xs text-[#a3a3a3] text-center">Share House Portal</p>
       </footer>
+
+      {/* モバイルナビゲーション */}
+      <MobileNav />
     </div>
   );
 }
