@@ -73,6 +73,18 @@ const nextConfig: NextConfig = {
   },
 
   /**
+   * Image optimization for Supabase Storage
+   */
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
+      },
+    ],
+  },
+
+  /**
    * Powered by header removed for security
    */
   poweredByHeader: false,
