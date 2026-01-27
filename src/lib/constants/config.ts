@@ -40,7 +40,7 @@ export const SHARE_HOUSE = {
 
 // Authentication configuration
 export const AUTH = {
-  sessionExpirationHours: 24 * 7, // 1 week
+  sessionExpirationHours: 24, // 24時間（セキュリティ向上のため1週間から短縮）
   passwordMinLength: 10, // OWASP recommends 10+ characters
   passwordMaxLength: 128,
   maxLoginAttempts: 5,
