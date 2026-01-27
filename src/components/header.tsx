@@ -41,12 +41,14 @@ export const Header = memo(function Header() {
         <div className="flex items-center gap-8">
           <Link
             href="/"
-            className="text-base tracking-wider text-[#1a1a1a] font-light"
+            className="text-sm sm:text-base tracking-wider text-[#1a1a1a] font-light"
             aria-label={t("a11y.goHome")}
           >
-            SHARE HOUSE
+            <span className="hidden xs:inline">SHARE HOUSE</span>
+            <span className="xs:hidden">HOUSE</span>
           </Link>
 
+          {/* Desktop nav only */}
           <nav
             aria-label={t("a11y.mainNavigation")}
             className="hidden sm:flex"
@@ -81,31 +83,12 @@ export const Header = memo(function Header() {
               );
             })}
           </nav>
-
-          {/* Mobile nav */}
-          <nav aria-label={t("a11y.mainNavigation")} className="flex sm:hidden gap-4">
-            {NAV_ITEMS.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  aria-current={isActive ? "page" : undefined}
-                  className={`text-xs tracking-wide transition-colors ${
-                    isActive ? "text-[#1a1a1a]" : "text-[#a3a3a3]"
-                  }`}
-                >
-                  {t(item.labelKey)}
-                </Link>
-              );
-            })}
-          </nav>
         </div>
 
         {/* User menu */}
         <nav
           aria-label={t("a11y.userMenu")}
-          className="flex items-center"
+          className="flex items-center gap-1"
         >
           <Link
             href="/settings"
@@ -116,7 +99,7 @@ export const Header = memo(function Header() {
             <span
               className={
                 isSettingsActive
-                  ? "text-[#1a1a1a]"
+                  ? "text-[#1a1a1a] font-medium"
                   : "text-[#a3a3a3] group-hover:text-[#737373]"
               }
             >
@@ -132,7 +115,7 @@ export const Header = memo(function Header() {
           </Link>
 
           {/* Separator */}
-          <span className="w-px h-3 bg-[#e5e5e5]" aria-hidden="true" />
+          <span className="w-px h-4 bg-[#e5e5e5]" aria-hidden="true" />
 
           <button
             type="button"
