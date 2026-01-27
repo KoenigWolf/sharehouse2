@@ -6,6 +6,7 @@ import { ResidentCard } from "@/components/resident-card";
 import { Profile } from "@/domain/profile";
 import { useI18n } from "@/hooks/use-i18n";
 import { normalizeLocale } from "@/lib/i18n";
+import { useDebounce } from "@/hooks/use-debounce";
 
 interface ResidentsGridProps {
   profiles: Profile[];
@@ -16,6 +17,7 @@ type SortOption = "name" | "room_number" | "move_in_date";
 
 export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 300); // 300msのdebounce
   const [sortBy, setSortBy] = useState<SortOption>("room_number");
   const t = useI18n();
   const locale = normalizeLocale(
@@ -40,8 +42,8 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
   const filteredAndSortedProfiles = useMemo(() => {
     let result = [...profiles];
 
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
+    if (debouncedSearchQuery.trim()) {
+      const query = debouncedSearchQuery.toLowerCase();
       result = result.filter(
         (profile) =>
           profile.name.toLowerCase().includes(query) ||
@@ -73,7 +75,7 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
     });
 
     return result;
-  }, [profiles, searchQuery, sortBy, currentUserId, locale]);
+  }, [profiles, debouncedSearchQuery, sortBy, currentUserId, locale]);
 
   if (profiles.length === 0) {
     return (
