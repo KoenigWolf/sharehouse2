@@ -307,26 +307,118 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
           </div>
 
           {/* ティータイム設定 */}
-          <div className="bg-white border border-[#e5e5e5] p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-[#737373] tracking-wide">
-                  {t("profile.teaTimeStatus")}
-                </p>
-                <p className="text-[10px] text-[#a3a3a3] mt-1">
-                  {teaTimeEnabled
-                    ? t("teaTime.participating")
-                    : t("teaTime.notParticipating")}
-                </p>
+          <motion.div
+            animate={{
+              backgroundColor: teaTimeEnabled ? "#f8faf8" : "#ffffff",
+              borderColor: teaTimeEnabled ? "#a0c9a0" : "#e5e5e5",
+            }}
+            transition={{ duration: 0.3 }}
+            className="bg-white border p-5 sm:p-4"
+          >
+            <button
+              type="button"
+              onClick={() => !isTeaTimeLoading && handleTeaTimeToggle(!teaTimeEnabled)}
+              disabled={isTeaTimeLoading}
+              className="w-full text-left group disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <motion.div
+                      animate={{
+                        scale: teaTimeEnabled ? 1 : 0.9,
+                        opacity: teaTimeEnabled ? 1 : 0.4,
+                      }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <svg
+                        className="w-4 h-4 sm:w-3.5 sm:h-3.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        style={{ color: teaTimeEnabled ? "#6b8b6b" : "#a3a3a3" }}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M3 6h18M3 12h18M3 18h18"
+                        />
+                      </svg>
+                    </motion.div>
+                    <p className={`text-sm sm:text-xs tracking-wide transition-colors ${
+                      teaTimeEnabled ? "text-[#6b8b6b] font-medium" : "text-[#737373]"
+                    }`}>
+                      {t("profile.teaTimeStatus")}
+                    </p>
+                  </div>
+
+                  <motion.p
+                    animate={{
+                      color: teaTimeEnabled ? "#6b8b6b" : "#a3a3a3",
+                    }}
+                    transition={{ duration: 0.3 }}
+                    className="text-xs sm:text-[10px] leading-relaxed"
+                  >
+                    {teaTimeEnabled
+                      ? t("teaTime.participating")
+                      : t("teaTime.notParticipating")}
+                  </motion.p>
+
+                  {teaTimeEnabled && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      transition={{ duration: 0.2, delay: 0.1 }}
+                      className="text-[10px] text-[#8ba88b] mt-2"
+                    >
+                      {t("teaTime.matchingTarget")}
+                    </motion.p>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-3 shrink-0">
+                  <AnimatePresence mode="wait">
+                    {isTeaTimeLoading ? (
+                      <motion.div
+                        key="loading"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <motion.span
+                          animate={{ rotate: 360 }}
+                          transition={{
+                            duration: 1,
+                            repeat: Infinity,
+                            ease: "linear",
+                          }}
+                          className="inline-block w-5 h-5 border border-[#d4d4d4] border-t-[#1a1a1a] rounded-full"
+                        />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="switch"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Switch
+                          checked={teaTimeEnabled}
+                          onCheckedChange={handleTeaTimeToggle}
+                          disabled={isTeaTimeLoading}
+                          className="data-[state=checked]:bg-[#6b8b6b] scale-110 sm:scale-100"
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
-              <Switch
-                checked={teaTimeEnabled}
-                onCheckedChange={handleTeaTimeToggle}
-                disabled={isTeaTimeLoading}
-                className="data-[state=checked]:bg-[#1a1a1a]"
-              />
-            </div>
-          </div>
+            </button>
+          </motion.div>
 
           {/* 写真アップロードのヒント */}
         <p className="text-[10px] text-[#a3a3a3] text-center">
