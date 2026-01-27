@@ -7,13 +7,16 @@
 プロジェクト全体を解析した結果、以下の改善点が特定されました。
 各項目は優先度（🔴高・🟡中・🟢低）、実装時間、影響度で分類されています。
 
-**関連ドキュメント:**
-- [README.md](./README.md) - プロジェクト概要・セットアップ
-- [CODING_GUIDELINES.md](./CODING_GUIDELINES.md) - コーディング規約
-- [DESIGN_GUIDELINES.md](./DESIGN_GUIDELINES.md) - デザイン・UI/UX指針
-
 このドキュメントは技術的負債と改善項目を追跡します。
-実装時は必ず上記ガイドラインに従ってください。
+実装時は [CODING_GUIDELINES.md](./CODING_GUIDELINES.md) と [DESIGN_GUIDELINES.md](./DESIGN_GUIDELINES.md) に従ってください。
+
+## クイックサマリー
+
+- Phase 1 (高優先度): セキュリティ・パフォーマンス（5項目中4項目完了）
+- Phase 2 (中優先度): アクセシビリティ・型安全性・エラー処理（20項目未着手）
+- Phase 3 (低優先度): テスト・ドキュメント・監視（18項目未着手）
+
+詳細は以下の進捗トラッカーを参照。
 
 ---
 
