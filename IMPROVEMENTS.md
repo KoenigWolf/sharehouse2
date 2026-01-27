@@ -12,7 +12,7 @@
 
 ## クイックサマリー
 
-- Phase 1 (高優先度): セキュリティ・パフォーマンス（5項目中4項目完了）
+- Phase 1 (高優先度): セキュリティ・パフォーマンス（5項目完了 ✅）
 - Phase 2 (中優先度): アクセシビリティ・型安全性・エラー処理（20項目未着手）
 - Phase 3 (低優先度): テスト・ドキュメント・監視（18項目未着手）
 
@@ -26,13 +26,13 @@
 
 - [x] 1.1 セッション有効期限の短縮 ✅
 - [x] 1.2 検索機能にDebounce適用 ✅
-- [ ] 1.3 CSPポリシーの改善
+- [x] 1.3 CSPポリシーの改善 ✅
 - [x] 1.4 キャッシュ戦略の統一 ✅
 - [x] 1.5 UUID検証の重複削除 ✅
 
 ### フェーズ2: 1-2週間（コード品質）
 
-- [ ] 2.1 Next.js Image コンポーネント導入
+- [x] 2.1 Next.js Image コンポーネント導入 ✅
 - [ ] 2.2 アクセシビリティ改善
 - [ ] 2.3 エラーハンドリング強化
 - [ ] 2.4 型安全性の向上
@@ -184,6 +184,13 @@ export function middleware(request: NextRequest) {
 4. ビルド・テスト
 
 注意: Tailwind CSS 4 が完全対応していない場合、この改善は保留
+
+#### 実装ログ（2026-01-28）
+- ✅ `src/middleware.ts`: nonce生成機能を追加
+- ✅ `next.config.ts`: 旧CSP設定を削除（middlewareに移行）
+- ✅ `src/app/layout.tsx`: nonceをhtml/bodyタグに適用
+- ✅ ビルド成功: Tailwind CSS 4はnonce対応を確認
+- セキュリティ向上: `'unsafe-inline'` `'unsafe-eval'` を削除し、nonce-based CSPに移行
 
 ---
 
@@ -411,6 +418,23 @@ export function getOptimizedImageUrl(
 - Next.js Image は `position: relative` を親要素に要求
 - Radix UI Avatar との互換性に注意
 - 大規模変更なので慎重に実施
+
+#### 実装ログ（2026-01-28）
+- ✅ `src/lib/utils/image.ts`: 画像最適化ユーティリティを作成
+  - `getOptimizedImageUrl`: Supabaseの画像変換機能を活用（WebP変換、サイズ指定）
+  - `getResponsiveImageSizes`: コンテキスト別のレスポンシブ画像サイズ
+- ✅ `src/components/ui/avatar.tsx`: `OptimizedAvatarImage`コンポーネントを追加
+  - Next.js Imageの`fill`プロパティを使用し、Radix UI Avatarと互換性を維持
+  - `priority`オプションでLCP最適化（詳細ページ）
+  - `sizes`属性でレスポンシブ画像を最適化
+- ✅ 全5コンポーネントで置き換え完了:
+  - `resident-card.tsx`: カードビュー（遅延読み込み）
+  - `profile-detail.tsx`: 詳細ビュー（優先読み込み）
+  - `profile-edit-form.tsx`: 編集ビュー
+  - `tea-time-match-card.tsx`: マッチカード
+  - `tea-time-notification.tsx`: 通知
+- ✅ ビルド成功、全テスト通過（344 tests）
+- パフォーマンス向上: 自動WebP変換、遅延読み込み、レスポンシブ画像により LCP 30-50%改善見込み
 
 ---
 
