@@ -4,7 +4,7 @@
  */
 
 export const colors = {
-  // Brand colors (DESIGN.md: black-based, no red)
+  // Brand colors (DESIGN_GUIDELINES.md: black-based, no red)
   primary: "#1a1a1a",
   primaryHover: "#333333",
 
@@ -30,7 +30,7 @@ export const colors = {
     secondary: "#d4d4d4",
   },
 
-  // Status colors (DESIGN.md: muted, low-saturation)
+  // Status colors (DESIGN_GUIDELINES.md: muted, low-saturation)
   status: {
     success: "#6b8b6b",
     successBg: "#f8faf8",

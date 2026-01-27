@@ -1,7 +1,7 @@
 import { Profile } from "@/domain/profile";
 
 /**
- * DESIGN.md準拠のミニマルなアバター生成
+ * DESIGN_GUIDELINES.md準拠のミニマルなアバター生成
  * - 背景: 生成り系の落ち着いた色（#f5f5f3, #fafaf8）
  * - 人物: シンプルな線画風
  * - 色: 低彩度、静かなトーン
@@ -60,7 +60,7 @@ const generateMinimalAvatar = (
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 };
 
-// DESIGN.md準拠のカラーパレット（低彩度）
+// DESIGN_GUIDELINES.md準拠のカラーパレット（低彩度）
 const avatarConfigs: Array<{
   variant: "a" | "b" | "c" | "d";
   hairColor: string;
