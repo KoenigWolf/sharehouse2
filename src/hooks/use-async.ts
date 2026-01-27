@@ -65,6 +65,9 @@ export function useOptimisticAction<T, R>(
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const onSuccess = options?.onSuccess;
+  const onError = options?.onError;
+
   const execute = useCallback(
     async (data: T): Promise<boolean> => {
       setIsLoading(true);
@@ -75,24 +78,24 @@ export function useOptimisticAction<T, R>(
 
         if (result.error) {
           setError(result.error);
-          options?.onError?.(result.error);
+          onError?.(result.error);
           setIsLoading(false);
           return false;
         }
 
-        options?.onSuccess?.(result);
+        onSuccess?.(result);
         setIsLoading(false);
         return true;
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : "エラーが発生しました";
         setError(errorMessage);
-        options?.onError?.(errorMessage);
+        onError?.(errorMessage);
         setIsLoading(false);
         return false;
       }
     },
-    [action, options]
+    [action, onSuccess, onError]
   );
 
   return {
