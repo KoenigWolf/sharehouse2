@@ -1,4 +1,14 @@
-# DESIGN.md
+# デザインガイドライン
+
+Share House Portal - Design Guidelines
+
+このドキュメントは、Share House Portalのデザイン思想・UI/UX方針・実装パターンをまとめたガイドラインです。
+新規ページや機能の実装時は、必ずこのガイドラインを参照してください。
+
+**関連ドキュメント:**
+- [README.md](./README.md) - プロジェクト概要・セットアップ
+- [CODING_GUIDELINES.md](./CODING_GUIDELINES.md) - コーディング規約
+- [IMPROVEMENTS.md](./IMPROVEMENTS.md) - 改善ロードマップ
 
 ---
 
@@ -612,7 +622,7 @@ leading-loose    : 詩的な説明文
 
 ## 最後に
 
-この DESIGN.md は
+このデザインガイドラインは
 「守るための制約」ではなく「迷わないための道具」である。
 
 新しいUI・機能を追加する際は、
