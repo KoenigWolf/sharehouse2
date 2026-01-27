@@ -267,6 +267,8 @@ export default function LoginPage() {
               <AnimatePresence>
                 {error && (
                   <motion.div
+                    role="alert"
+                    aria-live="polite"
                     initial={{ opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
@@ -280,6 +282,8 @@ export default function LoginPage() {
               <AnimatePresence>
                 {success && (
                   <motion.div
+                    role="status"
+                    aria-live="polite"
                     initial={{ opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
@@ -294,6 +298,16 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isLoading}
+                aria-busy={isLoading}
+                aria-label={
+                  isLoading
+                    ? mode === "login"
+                      ? t("a11y.loggingIn")
+                      : t("a11y.signingUp")
+                    : mode === "login"
+                    ? t("auth.login")
+                    : t("auth.register")
+                }
                 className="w-full h-12 bg-[#1a1a1a] text-white text-sm tracking-wide hover:bg-[#333] disabled:bg-[#a3a3a3] disabled:cursor-not-allowed transition-colors"
               >
                 {isLoading ? (

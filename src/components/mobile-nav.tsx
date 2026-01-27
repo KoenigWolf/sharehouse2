@@ -58,11 +58,11 @@ export const MobileNav = memo(function MobileNav() {
               key={item.href}
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className="relative flex flex-col items-center justify-center flex-1 h-full px-2 py-2 transition-colors active:bg-[#f5f5f3]"
+              className="relative flex flex-col items-center justify-center flex-1 h-full px-4 py-3 transition-colors active:bg-[#f5f5f3]"
             >
               <div className="relative">
                 <Icon
-                  size={22}
+                  size={24}
                   strokeWidth={active ? 2 : 1.5}
                   className={`transition-colors ${
                     active ? "text-[#1a1a1a]" : "text-[#a3a3a3]"

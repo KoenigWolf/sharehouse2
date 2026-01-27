@@ -166,6 +166,8 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
         {error && (
           <motion.div
             key="error"
+            role="alert"
+            aria-live="polite"
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
@@ -586,6 +588,8 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                 <button
                   type="submit"
                   disabled={isLoading || isUploading}
+                  aria-busy={isLoading}
+                  aria-label={isLoading ? t("a11y.saving") : t("profile.saveChanges")}
                   className="w-full h-12 sm:h-11 bg-[#1a1a1a] text-white text-base sm:text-sm tracking-wide hover:bg-[#333] active:scale-[0.99] disabled:bg-[#a3a3a3] disabled:cursor-not-allowed transition-all flex items-center justify-center"
                 >
                   {isLoading ? (
