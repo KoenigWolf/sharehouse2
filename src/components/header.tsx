@@ -44,8 +44,8 @@ export const Header = memo(function Header() {
             className="text-sm sm:text-base tracking-wider text-[#1a1a1a] font-light"
             aria-label={t("a11y.goHome")}
           >
-            <span className="hidden xs:inline">SHARE HOUSE</span>
-            <span className="xs:hidden">HOUSE</span>
+            <span className="hidden sm:inline">SHARE HOUSE</span>
+            <span className="sm:hidden">HOUSE</span>
           </Link>
 
           {/* Desktop nav only */}
