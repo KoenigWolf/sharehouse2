@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Profile, MBTI_TYPES, MBTI_LABELS, MBTIType } from "@/domain/profile";
 import { updateProfile, uploadAvatar } from "@/lib/profile/actions";
@@ -213,9 +213,9 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                 className="relative w-full aspect-square bg-[#f5f5f3] group mb-4"
               >
                 <Avatar className="w-full h-full rounded-none">
-                  <AvatarImage
-                    src={avatarUrl || undefined}
-                    className="object-cover"
+                  <OptimizedAvatarImage
+                    src={avatarUrl}
+                    context="edit"
                     alt={t("a11y.profilePhotoAlt", { name: formData.name || "?" })}
                   />
                   <AvatarFallback className="bg-[#f5f5f3] text-[#a3a3a3] text-4xl rounded-none">

@@ -2,7 +2,7 @@
 
 import { memo } from "react";
 import Link from "next/link";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { Profile } from "@/domain/profile";
 import { getInitials } from "@/lib/utils";
 import { PROFILE } from "@/lib/constants/config";
@@ -44,10 +44,11 @@ export const ResidentCard = memo(function ResidentCard({
         {/* Avatar section */}
         <div className="aspect-square bg-[#f5f5f3] relative overflow-hidden">
           <Avatar className="w-full h-full rounded-none">
-            <AvatarImage
-              src={profile.avatar_url || undefined}
+            <OptimizedAvatarImage
+              src={profile.avatar_url}
               alt={t("a11y.profilePhotoAlt", { name: profile.name })}
-              className="object-cover w-full h-full group-hover:scale-[1.02] transition-transform duration-300"
+              context="card"
+              className="w-full h-full group-hover:scale-[1.02] transition-transform duration-300"
             />
             <AvatarFallback
               className="bg-[#f5f5f3] text-[#a3a3a3] text-3xl sm:text-4xl rounded-none w-full h-full flex items-center justify-center"

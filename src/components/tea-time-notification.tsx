@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { Profile } from "@/domain/profile";
 import { TeaTimeMatch } from "@/domain/tea-time";
 import { useI18n } from "@/hooks/use-i18n";
@@ -35,8 +35,9 @@ export function TeaTimeNotification({ match }: TeaTimeNotificationProps) {
           <div className="flex items-center gap-4">
             {/* Partner Avatar */}
             <Avatar className="w-12 h-12 sm:w-14 sm:h-14 rounded-none shrink-0">
-              <AvatarImage
-                src={match.partner.avatar_url || undefined}
+              <OptimizedAvatarImage
+                src={match.partner.avatar_url}
+                context="card"
                 alt={t("a11y.profilePhotoAlt", { name: match.partner.name })}
               />
               <AvatarFallback

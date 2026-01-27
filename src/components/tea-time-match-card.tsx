@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { updateMatchStatus } from "@/lib/tea-time/actions";
 import { getInitials } from "@/lib/utils";
 import { Profile } from "@/domain/profile";
@@ -51,7 +51,11 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
       <div className="bg-[#f5f5f3] p-3 border border-[#e5e5e5]">
         <div className="flex items-center gap-3">
           <Avatar className="w-8 h-8 rounded-none">
-            <AvatarImage src={match.partner.avatar_url || undefined} />
+            <OptimizedAvatarImage
+              src={match.partner.avatar_url}
+              context="card"
+              alt={t("a11y.profilePhotoAlt", { name: match.partner.name })}
+            />
             <AvatarFallback className="bg-white text-[#a3a3a3] text-xs rounded-none">
               {getInitials(match.partner.name)}
             </AvatarFallback>
@@ -82,9 +86,10 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
       <div className="flex items-center gap-4 mb-4">
         <Link href={`/profile/${match.partner.id}`}>
           <Avatar className="w-14 h-14 rounded-none">
-            <AvatarImage
-              src={match.partner.avatar_url || undefined}
-              className="object-cover"
+            <OptimizedAvatarImage
+              src={match.partner.avatar_url}
+              context="card"
+              alt={t("a11y.profilePhotoAlt", { name: match.partner.name })}
             />
             <AvatarFallback className="bg-[#f5f5f3] text-[#a3a3a3] text-lg rounded-none">
               {getInitials(match.partner.name)}

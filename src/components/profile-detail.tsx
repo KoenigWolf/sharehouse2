@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { Profile, MBTI_LABELS } from "@/domain/profile";
 import { getInitials, formatDate, calculateResidenceDuration } from "@/lib/utils";
 import { useI18n } from "@/hooks/use-i18n";
@@ -80,10 +80,11 @@ export function ProfileDetail({
           {/* Avatar */}
           <div className="sm:w-1/3 aspect-square sm:aspect-auto bg-[#f5f5f3] flex items-center justify-center overflow-hidden">
             <Avatar className="w-full h-full rounded-none">
-              <AvatarImage
-                src={profile.avatar_url || undefined}
+              <OptimizedAvatarImage
+                src={profile.avatar_url}
                 alt={t("a11y.profilePhotoAlt", { name: profile.name })}
-                className="object-cover w-full h-full"
+                context="detail"
+                priority
               />
               <AvatarFallback className="bg-[#f5f5f3] text-[#a3a3a3] text-5xl sm:text-6xl rounded-none w-full h-full">
                 {getInitials(profile.name)}
