@@ -65,6 +65,11 @@ export const ja = {
     portalDescriptionLine2: "声をかけやすい関係をつくる。",
     portalDescriptionLine3: "それがこのポータルの目的です。",
     passwordHint: "10文字以上、大文字・小文字・数字を含む",
+    passwordStrength: {
+      weak: "弱い",
+      fair: "普通",
+      strong: "強い",
+    },
     signupHint: "登録後、プロフィールページで詳細情報を編集できます",
     defaultName: "ユーザー",
     orContinueWith: "または",

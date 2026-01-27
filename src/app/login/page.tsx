@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import type { Provider } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,6 +8,18 @@ import { signIn, signUp } from "@/lib/auth/actions";
 import { AUTH } from "@/lib/constants/config";
 import { useI18n } from "@/hooks/use-i18n";
 import { createClient } from "@/lib/supabase/client";
+
+function getPasswordStrength(password: string): number {
+  if (!password) return 0;
+  let score = 0;
+  if (password.length >= 10) score++;
+  if (password.length >= 14) score++;
+  if (/[A-Z]/.test(password)) score++;
+  if (/[a-z]/.test(password)) score++;
+  if (/[0-9]/.test(password)) score++;
+  if (/[^A-Za-z0-9]/.test(password)) score++;
+  return Math.min(Math.round((score / 6) * 3), 3); // 0-3
+}
 
 export default function LoginPage() {
   const [mode, setMode] = useState<"login" | "signup">("login");
@@ -251,14 +263,19 @@ export default function LoginPage() {
                 />
                 <AnimatePresence>
                   {mode === "signup" && (
-                    <motion.p
+                    <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="text-xs text-[#a3a3a3] pt-1"
+                      className="pt-1 space-y-2"
                     >
-                      {t("auth.passwordHint")}
-                    </motion.p>
+                      <p className="text-xs text-[#a3a3a3]">
+                        {t("auth.passwordHint")}
+                      </p>
+                      {password.length > 0 && (
+                        <PasswordStrengthMeter password={password} />
+                      )}
+                    </motion.div>
                   )}
                 </AnimatePresence>
               </div>
@@ -372,6 +389,38 @@ export default function LoginPage() {
       <footer className="py-6">
         <p className="text-xs text-[#a3a3a3] text-center">Share House Portal</p>
       </footer>
+    </div>
+  );
+}
+
+function PasswordStrengthMeter({ password }: { password: string }) {
+  const t = useI18n();
+  const strength = useMemo(() => getPasswordStrength(password), [password]);
+
+  const labels = [
+    t("auth.passwordStrength.weak"),
+    t("auth.passwordStrength.weak"),
+    t("auth.passwordStrength.fair"),
+    t("auth.passwordStrength.strong"),
+  ];
+  const colors = ["#c9a0a0", "#c9a0a0", "#c9b980", "#a0c9a0"];
+
+  return (
+    <div className="space-y-1">
+      <div className="flex gap-1">
+        {[0, 1, 2].map((i) => (
+          <div
+            key={i}
+            className="h-0.5 flex-1 transition-colors duration-300"
+            style={{
+              backgroundColor: i < strength ? colors[strength] : "#e5e5e5",
+            }}
+          />
+        ))}
+      </div>
+      <p className="text-[10px]" style={{ color: colors[strength] }}>
+        {labels[strength]}
+      </p>
     </div>
   );
 }

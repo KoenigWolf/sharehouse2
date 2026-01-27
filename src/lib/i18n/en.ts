@@ -61,6 +61,11 @@ export const en: Translations = {
     portalDescriptionLine2: "make it easier to say hello.",
     portalDescriptionLine3: "That is the purpose of this portal.",
     passwordHint: "10+ characters with uppercase, lowercase, and a number",
+    passwordStrength: {
+      weak: "Weak",
+      fair: "Fair",
+      strong: "Strong",
+    },
     signupHint:
       "After registration, you can edit details on your profile page.",
     defaultName: "User",
