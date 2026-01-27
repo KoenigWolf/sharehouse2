@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { revalidatePath } from "next/cache";
+import { CacheStrategy } from "@/lib/utils/cache";
 import {
   validateProfileUpdate,
   validateFileUpload,
@@ -30,7 +30,6 @@ export async function updateProfile(data: ProfileUpdateInput): Promise<UpdateRes
     return { error: originError };
   }
 
-  // Server-side validation
   const validation = validateProfileUpdate(data, t);
   if (!validation.success) {
     return { error: validation.error || t("errors.invalidInput") };
@@ -66,8 +65,7 @@ export async function updateProfile(data: ProfileUpdateInput): Promise<UpdateRes
       return { error: t("errors.saveFailed") };
     }
 
-    revalidatePath("/");
-    revalidatePath(`/profile/${user.id}`);
+    CacheStrategy.afterProfileUpdate();
     return { success: true };
   } catch (error) {
     logError(error, { action: "updateProfile" });
@@ -174,8 +172,7 @@ export async function uploadAvatar(formData: FormData): Promise<UploadResponse> 
       return { error: t("errors.saveFailed") };
     }
 
-    revalidatePath("/");
-    revalidatePath(`/profile/${user.id}`);
+    CacheStrategy.afterAvatarUpdate();
     return { success: true, url: urlData.publicUrl };
   } catch (error) {
     logError(error, { action: "uploadAvatar" });
@@ -267,7 +264,7 @@ export async function createProfile(name: string): Promise<UpdateResponse> {
       return { error: t("errors.saveFailed") };
     }
 
-    revalidatePath("/");
+    CacheStrategy.afterAuth();
     return { success: true };
   } catch (error) {
     logError(error, { action: "createProfile" });

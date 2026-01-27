@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { revalidatePath } from "next/cache";
+import { CacheStrategy } from "@/lib/utils/cache";
 import { TEA_TIME } from "@/lib/constants/config";
 import { logError } from "@/lib/errors";
 import { getServerTranslator } from "@/lib/i18n/server";
@@ -91,9 +91,7 @@ export async function updateTeaTimeSetting(isEnabled: boolean): Promise<UpdateRe
       return { error: t("errors.saveFailed") };
     }
 
-    revalidatePath("/");
-    revalidatePath("/tea-time");
-    revalidatePath("/settings");
+    CacheStrategy.afterTeaTimeUpdate();
 
     return { success: true };
   } catch (error) {
@@ -118,7 +116,6 @@ export async function getMyMatches(): Promise<(TeaTimeMatch & { partner: Profile
       return [];
     }
 
-    // Get matches for current user
     const { data: matches, error } = await supabase
       .from("tea_time_matches")
       .select("*")
@@ -135,25 +132,21 @@ export async function getMyMatches(): Promise<(TeaTimeMatch & { partner: Profile
       return [];
     }
 
-    // Collect all partner IDs for batch fetching
     const partnerIds = matches.map((match) =>
       match.user1_id === user.id ? match.user2_id : match.user1_id
     );
     const uniquePartnerIds = [...new Set(partnerIds)];
 
-    // Batch fetch all partner profiles
     const { data: partners } = await supabase
       .from("profiles")
       .select("*")
       .in("id", uniquePartnerIds);
 
-    // Create a map for quick lookup
     const partnerMap = new Map<string, Profile>();
     partners?.forEach((partner) => {
       partnerMap.set(partner.id, partner as Profile);
     });
 
-    // Combine matches with partner profiles
     return matches.map((match) => {
       const partnerId = match.user1_id === user.id ? match.user2_id : match.user1_id;
       return {
@@ -182,12 +175,10 @@ export async function updateMatchStatus(
   }
 
   // Validate matchId format
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!uuidRegex.test(matchId)) {
+  if (!isValidUUID(matchId)) {
     return { error: t("errors.invalidInput") };
   }
 
-  // Validate status
   if (!["done", "skipped"].includes(status)) {
     return { error: t("errors.invalidInput") };
   }
@@ -224,8 +215,7 @@ export async function updateMatchStatus(
       return { error: t("errors.saveFailed") };
     }
 
-    revalidatePath("/");
-    revalidatePath("/tea-time");
+    CacheStrategy.afterMatchUpdate();
 
     return { success: true };
   } catch (error) {

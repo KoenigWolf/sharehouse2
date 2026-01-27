@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { revalidatePath } from "next/cache";
+import { CacheStrategy } from "@/lib/utils/cache";
 import { validateSignUp, validateSignIn } from "@/domain/validation/auth";
 import { logError } from "@/lib/errors";
 import { getServerTranslator } from "@/lib/i18n/server";
@@ -44,7 +44,6 @@ export async function signUp(
     return { error: originError };
   }
 
-  // Server-side validation
   const validation = validateSignUp({ name, email, password }, t);
   if (!validation.success) {
     return { error: validation.error || t("errors.invalidInput") };
@@ -56,7 +55,6 @@ export async function signUp(
     password: validatedPassword,
   } = validation.data!;
 
-  // Rate limiting
   const ipAddress = await getRequestIp();
   const rateLimitKey = ipAddress
     ? `${validatedEmail}:${ipAddress}`
@@ -151,7 +149,7 @@ export async function signUp(
       ipAddress: ipAddress || undefined,
     });
 
-    revalidatePath("/");
+    CacheStrategy.afterAuth();
     return { success: true };
   } catch (error) {
     logError(error, { action: "signUp" });
@@ -174,7 +172,6 @@ export async function signIn(
     return { error: originError };
   }
 
-  // Server-side validation
   const validation = validateSignIn({ email, password }, t);
   if (!validation.success) {
     return { error: validation.error || t("errors.invalidInput") };
@@ -183,7 +180,6 @@ export async function signIn(
   const { email: validatedEmail, password: validatedPassword } =
     validation.data!;
 
-  // Rate limiting - use email as identifier
   const ipAddress = await getRequestIp();
   const rateLimitKey = ipAddress
     ? `${validatedEmail}:${ipAddress}`
@@ -237,7 +233,7 @@ export async function signIn(
     // Audit successful login
     AuditActions.loginSuccess(data.user.id);
 
-    revalidatePath("/");
+    CacheStrategy.afterAuth();
     return { success: true };
   } catch (error) {
     logError(error, { action: "signIn" });
