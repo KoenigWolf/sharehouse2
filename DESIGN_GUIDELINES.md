@@ -5,10 +5,17 @@ Share House Portal - Design Guidelines
 このドキュメントは、Share House Portalのデザイン思想・UI/UX方針・実装パターンをまとめたガイドラインです。
 新規ページや機能の実装時は、必ずこのガイドラインを参照してください。
 
-**関連ドキュメント:**
-- [README.md](./README.md) - プロジェクト概要・セットアップ
-- [CODING_GUIDELINES.md](./CODING_GUIDELINES.md) - コーディング規約
-- [IMPROVEMENTS.md](./IMPROVEMENTS.md) - 改善ロードマップ
+関連ドキュメント: [README.md](./README.md) / [CODING_GUIDELINES.md](./CODING_GUIDELINES.md) / [IMPROVEMENTS.md](./IMPROVEMENTS.md)
+
+## 目次（よく参照する項目）
+
+- 設計思想（4行〜）: 前提・技術スタック・UI/UX方針
+- 基本思想（208行〜）: デザインは主張しない・理由のない装飾は禁止
+- カラーパレット（291行〜）: 背景・テキスト・ボーダー・フィードバック色
+- 入力フォーム（363行〜）: 基本スタイル・ラベル・注意事項
+- ボタン（389行〜）: プライマリ・セカンダリのスタイル
+- アニメーション（441行〜）: duration 0.2〜0.3秒・派手な動き禁止
+- 実装前チェックリスト（623行〜）: カラーパレット・装飾・余白の確認
 
 ---
 

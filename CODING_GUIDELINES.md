@@ -5,12 +5,18 @@ Share House Portal - Coding Guidelines
 このドキュメントは、Share House Portalプロジェクトのコード品質を維持するためのガイドラインです。
 Claude Codeは、コード作成・修正時に必ずこのガイドラインに従ってください。
 
-**関連ドキュメント:**
-- [README.md](./README.md) - プロジェクト概要・セットアップ
-- [DESIGN_GUIDELINES.md](./DESIGN_GUIDELINES.md) - デザイン・UI/UX指針
-- [IMPROVEMENTS.md](./IMPROVEMENTS.md) - 改善ロードマップ
+関連ドキュメント: [README.md](./README.md) / [DESIGN_GUIDELINES.md](./DESIGN_GUIDELINES.md) / [IMPROVEMENTS.md](./IMPROVEMENTS.md)
 
 最終更新: 2026-01-28
+
+## 目次（よく参照する項目）
+
+- コメントのガイドライン（22行〜）: WHY vs WHAT の判断基準
+- 命名規則（168行〜）: Boolean/配列/関数の命名ルール
+- 関数設計（223行〜）: 単一責任・早期リターン・関数の長さ
+- コンポーネント設計（301行〜）: データ取得とUIの分離・Props型定義
+- 型安全性（404行〜）: any禁止・Optional chaining
+- エラーハンドリング（512行〜）: 明確なエラーメッセージ・適切な伝播
 
 ---
 
