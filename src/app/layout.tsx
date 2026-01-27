@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { getServerLocale } from "@/lib/i18n/server";
+import { headers } from "next/headers";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -24,11 +25,14 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = await getServerLocale();
+  const headersList = await headers();
+  const nonce = headersList.get("x-nonce") || undefined;
 
   return (
-    <html lang={locale}>
+    <html lang={locale} nonce={nonce}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        nonce={nonce}
       >
         {children}
       </body>
