@@ -1,7 +1,14 @@
 # コーディングガイドライン
 
+Share House Portal - Coding Guidelines
+
 このドキュメントは、Share House Portalプロジェクトのコード品質を維持するためのガイドラインです。
 Claude Codeは、コード作成・修正時に必ずこのガイドラインに従ってください。
+
+**関連ドキュメント:**
+- [README.md](./README.md) - プロジェクト概要・セットアップ
+- [DESIGN_GUIDELINES.md](./DESIGN_GUIDELINES.md) - デザイン・UI/UX指針
+- [IMPROVEMENTS.md](./IMPROVEMENTS.md) - 改善ロードマップ
 
 最終更新: 2026-01-28
 
