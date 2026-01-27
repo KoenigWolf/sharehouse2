@@ -37,7 +37,6 @@ export const Header = memo(function Header() {
   return (
     <header className="border-b border-[#e5e5e5] bg-white" role="banner">
       <div className="container mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-        {/* Logo and main navigation */}
         <div className="flex items-center gap-8">
           <Link
             href="/"
@@ -52,7 +51,6 @@ export const Header = memo(function Header() {
             <span className="hidden sm:inline">SHARE HOUSE</span>
           </Link>
 
-          {/* Desktop nav only */}
           <nav
             aria-label={t("a11y.mainNavigation")}
             className="hidden sm:flex"
@@ -75,7 +73,6 @@ export const Header = memo(function Header() {
                   >
                     {t(item.labelKey)}
                   </span>
-                  {/* Underline */}
                   {isActive && (
                     <motion.span
                       layoutId="nav-underline"
@@ -89,12 +86,10 @@ export const Header = memo(function Header() {
           </nav>
         </div>
 
-        {/* User menu */}
         <nav
           aria-label={t("a11y.userMenu")}
           className="flex items-center gap-1"
         >
-          {/* My Page - Desktop only (mobile has bottom nav) */}
           <Link
             href="/settings"
             aria-label={t("a11y.openMyPage")}
@@ -119,7 +114,6 @@ export const Header = memo(function Header() {
             )}
           </Link>
 
-          {/* Separator - Desktop only */}
           <span className="hidden sm:block w-px h-4 bg-[#e5e5e5]" aria-hidden="true" />
 
           <button

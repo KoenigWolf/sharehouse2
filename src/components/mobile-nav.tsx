@@ -29,7 +29,6 @@ const NAV_ITEMS: {
 
 /**
  * Mobile bottom navigation bar
- * Shows only on mobile devices (hidden on sm: and above)
  */
 export const MobileNav = memo(function MobileNav() {
   const pathname = usePathname();
