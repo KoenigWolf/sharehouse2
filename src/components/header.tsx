@@ -90,11 +90,12 @@ export const Header = memo(function Header() {
           aria-label={t("a11y.userMenu")}
           className="flex items-center gap-1"
         >
+          {/* My Page - Desktop only (mobile has bottom nav) */}
           <Link
             href="/settings"
             aria-label={t("a11y.openMyPage")}
             aria-current={isSettingsActive ? "page" : undefined}
-            className="relative px-3 sm:px-4 py-2 text-xs sm:text-sm tracking-wide transition-colors group"
+            className="hidden sm:flex relative px-4 py-2 text-sm tracking-wide transition-colors group"
           >
             <span
               className={
@@ -108,14 +109,14 @@ export const Header = memo(function Header() {
             {isSettingsActive && (
               <motion.span
                 layoutId="user-nav-underline"
-                className="absolute bottom-0 left-3 right-3 sm:left-4 sm:right-4 h-px bg-[#1a1a1a]"
+                className="absolute bottom-0 left-4 right-4 h-px bg-[#1a1a1a]"
                 transition={{ duration: 0.3, ease: "easeInOut" }}
               />
             )}
           </Link>
 
-          {/* Separator */}
-          <span className="w-px h-4 bg-[#e5e5e5]" aria-hidden="true" />
+          {/* Separator - Desktop only */}
+          <span className="hidden sm:block w-px h-4 bg-[#e5e5e5]" aria-hidden="true" />
 
           <button
             type="button"
