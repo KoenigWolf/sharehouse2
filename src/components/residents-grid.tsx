@@ -116,36 +116,40 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
           </div>
 
           {/* ソート - モバイルでは横スクロール可能 */}
-          <div className="flex overflow-x-auto scrollbar-hide -mx-1 px-1">
-            {sortOptions.map((option) => {
-              const isActive = sortBy === option.value;
-              return (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => handleSortChange(option.value)}
-                  className="relative px-3 sm:px-4 py-2.5 sm:py-2 tracking-wide transition-colors group whitespace-nowrap active:opacity-70"
-                >
-                  <span
-                    className={`text-sm ${
-                      isActive
-                        ? "text-[#1a1a1a] font-medium"
-                        : "text-[#a3a3a3] group-hover:text-[#737373]"
-                    }`}
+          <div className="relative sm:flex sm:gap-0">
+            <div className="flex overflow-x-auto scrollbar-hide sm:overflow-visible -mx-1 px-1 sm:mx-0 sm:px-0 snap-x snap-mandatory sm:snap-none">
+              {sortOptions.map((option) => {
+                const isActive = sortBy === option.value;
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => handleSortChange(option.value)}
+                    className="relative px-4 sm:px-4 py-2.5 sm:py-2 tracking-wide transition-colors group whitespace-nowrap active:opacity-70 snap-center sm:snap-align-none flex-shrink-0"
                   >
-                    {option.label}
-                  </span>
-                  {/* アンダーライン */}
-                  {isActive && (
-                    <motion.span
-                      layoutId="sort-underline"
-                      className="absolute bottom-0 left-3 right-3 sm:left-4 sm:right-4 h-px bg-[#1a1a1a]"
-                      transition={{ duration: 0.3, ease: "easeInOut" }}
-                    />
-                  )}
-                </button>
-              );
-            })}
+                    <span
+                      className={`text-sm ${
+                        isActive
+                          ? "text-[#1a1a1a] font-medium"
+                          : "text-[#a3a3a3] group-hover:text-[#737373]"
+                      }`}
+                    >
+                      {option.label}
+                    </span>
+                    {/* アンダーライン */}
+                    {isActive && (
+                      <motion.span
+                        layoutId="sort-underline"
+                        className="absolute bottom-0 left-3 right-3 sm:left-4 sm:right-4 h-px bg-[#1a1a1a]"
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                      />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            {/* スクロールヒント - モバイルのみ */}
+            <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#fafaf8] to-transparent pointer-events-none" />
           </div>
         </div>
       </div>
