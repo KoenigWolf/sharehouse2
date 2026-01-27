@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { useI18n } from "@/hooks/use-i18n";
+import { logError } from "@/lib/errors";
 
 export default function Error({
   error,
@@ -14,8 +15,10 @@ export default function Error({
   const t = useI18n();
 
   useEffect(() => {
-    // エラーをログに記録
-    console.error("Application error:", error);
+    logError(error, {
+      action: "error-boundary",
+      metadata: { digest: error.digest },
+    });
   }, [error]);
 
   return (

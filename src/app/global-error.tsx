@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useI18n } from "@/hooks/use-i18n";
 import { normalizeLocale } from "@/lib/i18n";
+import { logError } from "@/lib/errors";
 
 export default function GlobalError({
   error,
@@ -19,8 +20,10 @@ export default function GlobalError({
   );
 
   useEffect(() => {
-    // エラーをログに記録
-    console.error("Global error:", error);
+    logError(error, {
+      action: "global-error-boundary",
+      metadata: { digest: error.digest },
+    });
   }, [error]);
 
   return (

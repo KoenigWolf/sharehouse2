@@ -1,4 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
+import { logError } from "@/lib/errors";
 
 interface Participant {
   user_id: string;
@@ -52,7 +53,7 @@ export async function runMatching(supabase: SupabaseClient): Promise<number> {
     .insert(matchRecords);
 
   if (insertError) {
-    console.error("Failed to insert matches:", insertError);
+    logError(insertError, { action: "createTeaTimeMatches" });
     return 0;
   }
 
