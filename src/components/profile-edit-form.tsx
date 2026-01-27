@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Avatar, AvatarFallback, OptimizedAvatarImage } from "@/components/ui/avatar";
@@ -42,17 +42,28 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
     move_in_date: profile.move_in_date || "",
   });
 
-  // プロフィール完成度を計算
-  const completionItems = [
-    { label: t("profile.completionItems.photo"), completed: !!avatarUrl },
-    { label: t("profile.completionItems.name"), completed: !!formData.name.trim() },
-    {
-      label: t("profile.completionItems.roomNumber"),
-      completed: !!formData.room_number.trim(),
-    },
-    { label: t("profile.completionItems.bio"), completed: !!formData.bio.trim() },
-    { label: t("profile.completionItems.interests"), completed: !!formData.interests.trim() },
-  ];
+  const interestsArray = useMemo(
+    () =>
+      formData.interests
+        .split(/[,、・]/)
+        .map((i) => i.trim())
+        .filter((i) => i.length > 0),
+    [formData.interests]
+  );
+
+  const completionItems = useMemo(
+    () => [
+      { label: t("profile.completionItems.photo"), completed: !!avatarUrl },
+      { label: t("profile.completionItems.name"), completed: !!formData.name.trim() },
+      {
+        label: t("profile.completionItems.roomNumber"),
+        completed: !!formData.room_number.trim(),
+      },
+      { label: t("profile.completionItems.bio"), completed: !!formData.bio.trim() },
+      { label: t("profile.completionItems.interests"), completed: !!formData.interests.trim() },
+    ],
+    [avatarUrl, formData.name, formData.room_number, formData.bio, formData.interests, t]
+  );
   const completedCount = completionItems.filter((i) => i.completed).length;
   const completionPercentage = Math.round(
     (completedCount / completionItems.length) * 100
@@ -87,7 +98,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.name.trim()) {
@@ -99,16 +110,11 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
     setError("");
     setSuccess(false);
 
-    const interests = formData.interests
-      .split(/[,、・]/)
-      .map((i) => i.trim())
-      .filter((i) => i.length > 0);
-
     const result = await updateProfile({
       name: formData.name.trim(),
       room_number: formData.room_number.trim() || null,
       bio: formData.bio.trim() || null,
-      interests,
+      interests: interestsArray,
       mbti: formData.mbti || null,
       move_in_date: formData.move_in_date || null,
     });
@@ -121,12 +127,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     }
-  };
-
-  const interestsArray = formData.interests
-    .split(/[,、・]/)
-    .map((i) => i.trim())
-    .filter((i) => i.length > 0);
+  }, [formData, interestsArray, t]);
 
   const handleTeaTimeToggle = async (checked: boolean) => {
     setIsTeaTimeLoading(true);
