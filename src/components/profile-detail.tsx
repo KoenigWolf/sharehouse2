@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Profile } from "@/domain/profile";
+import { Profile, MBTI_LABELS } from "@/domain/profile";
 import { getInitials, formatDate, calculateResidenceDuration } from "@/lib/utils";
 import { useI18n } from "@/hooks/use-i18n";
 import { normalizeLocale } from "@/lib/i18n";
@@ -154,6 +154,9 @@ export function ProfileDetail({
                   {profile.mbti && (
                     <li className="text-xs px-3 py-1.5 bg-[#f5f5f3] text-[#1a1a1a] font-medium">
                       {profile.mbti}
+                      <span className="text-[#737373] font-normal ml-1.5">
+                        {MBTI_LABELS[profile.mbti][locale === "ja" ? "ja" : "en"]}
+                      </span>
                     </li>
                   )}
                   {profile.interests?.map((interest, index) => (

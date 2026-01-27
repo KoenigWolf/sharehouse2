@@ -5,11 +5,12 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
-import { Profile, MBTI_TYPES, MBTIType } from "@/domain/profile";
+import { Profile, MBTI_TYPES, MBTI_LABELS, MBTIType } from "@/domain/profile";
 import { updateProfile, uploadAvatar } from "@/lib/profile/actions";
 import { updateTeaTimeSetting } from "@/lib/tea-time/actions";
 import { getInitials } from "@/lib/utils";
 import { useI18n } from "@/hooks/use-i18n";
+import { normalizeLocale } from "@/lib/i18n";
 
 interface ProfileEditFormProps {
   profile: Profile;
@@ -19,6 +20,11 @@ interface ProfileEditFormProps {
 export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: ProfileEditFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const t = useI18n();
+  const locale = normalizeLocale(
+    typeof document !== "undefined"
+      ? document.documentElement.lang || navigator.language
+      : undefined
+  );
 
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -526,7 +532,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                   <option value="">{t("profile.mbtiPlaceholder")}</option>
                   {MBTI_TYPES.map((type) => (
                     <option key={type} value={type}>
-                      {type}
+                      {type} - {MBTI_LABELS[type][locale === "ja" ? "ja" : "en"]}
                     </option>
                   ))}
                 </select>
