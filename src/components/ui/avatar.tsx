@@ -2,8 +2,10 @@
 
 import * as React from "react"
 import * as AvatarPrimitive from "@radix-ui/react-avatar"
+import Image from "next/image"
 
 import { cn } from "@/lib/utils"
+import { getOptimizedImageUrl, getResponsiveImageSizes } from "@/lib/utils/image"
 
 function Avatar({
   className,
@@ -99,6 +101,43 @@ function AvatarGroupCount({
   )
 }
 
+interface OptimizedAvatarImageProps {
+  src: string | null | undefined;
+  alt: string;
+  priority?: boolean;
+  context?: "card" | "detail" | "edit";
+  className?: string;
+}
+
+/**
+ * Optimized avatar image using Next.js Image
+ * Provides automatic WebP conversion, lazy loading, and responsive images
+ */
+function OptimizedAvatarImage({
+  src,
+  alt,
+  priority = false,
+  context = "card",
+  className,
+}: OptimizedAvatarImageProps) {
+  const optimizedSrc = getOptimizedImageUrl(src);
+
+  if (!optimizedSrc) {
+    return null;
+  }
+
+  return (
+    <Image
+      src={optimizedSrc}
+      alt={alt}
+      fill
+      className={cn("object-cover", className)}
+      priority={priority}
+      sizes={getResponsiveImageSizes(context)}
+    />
+  );
+}
+
 export {
   Avatar,
   AvatarImage,
@@ -106,4 +145,5 @@ export {
   AvatarBadge,
   AvatarGroup,
   AvatarGroupCount,
+  OptimizedAvatarImage,
 }
