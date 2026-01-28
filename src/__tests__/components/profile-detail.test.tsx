@@ -11,6 +11,7 @@ const mockProfile: Profile = {
   bio: "こんにちは、山田です。シェアハウスでの生活を楽しんでいます。",
   interests: ["料理", "映画", "ランニング"],
   mbti: null,
+  is_admin: false,
   move_in_date: "2024-01-15",
   created_at: "2024-01-01T00:00:00Z",
   updated_at: "2024-01-01T00:00:00Z",
