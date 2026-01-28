@@ -292,6 +292,14 @@ export const en: Translations = {
     countOf: "(of {{total}})",
     registeredLabel: "{{count}} registered",
     unregisteredLabel: "{{count}} rooms unregistered",
+    // View modes
+    viewGrid: "Grid view",
+    viewFloor: "Floor view",
+    viewList: "List view",
+    // Filters
+    filterAll: "All",
+    floorLabel: "Floor {{floor}}",
+    registeredShort: "registered",
   },
 
   teaTime: {

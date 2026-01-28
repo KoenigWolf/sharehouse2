@@ -314,6 +314,14 @@ export const ja = {
     countOf: "（{{total}}人中）",
     registeredLabel: "登録済み {{count}}人",
     unregisteredLabel: "未登録 {{count}}部屋",
+    // 表示モード
+    viewGrid: "グリッド表示",
+    viewFloor: "階層別表示",
+    viewList: "リスト表示",
+    // フィルター
+    filterAll: "すべて",
+    floorLabel: "{{floor}}階",
+    registeredShort: "登録",
   },
 
   // Tea Time
