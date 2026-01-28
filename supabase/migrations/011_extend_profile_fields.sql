@@ -24,7 +24,6 @@ alter table public.profiles add column if not exists alcohol text;
 alter table public.profiles add column if not exists smoking text;
 alter table public.profiles add column if not exists pets text;
 alter table public.profiles add column if not exists guest_frequency text;
-alter table public.profiles add column if not exists overnight_guests text;
 
 -- 共同生活への姿勢
 alter table public.profiles add column if not exists social_stance text;
@@ -36,3 +35,10 @@ alter table public.profiles add column if not exists shared_meals text;
 -- 性格・趣味
 alter table public.profiles add column if not exists personality_type text;
 alter table public.profiles add column if not exists weekend_activities text;
+
+-- SNSリンク
+alter table public.profiles add column if not exists sns_x text;
+alter table public.profiles add column if not exists sns_instagram text;
+alter table public.profiles add column if not exists sns_facebook text;
+alter table public.profiles add column if not exists sns_linkedin text;
+alter table public.profiles add column if not exists sns_github text;
