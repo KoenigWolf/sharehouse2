@@ -11,6 +11,7 @@ import { useI18n } from "@/hooks/use-i18n";
 interface ResidentCardProps {
   profile: Profile;
   isCurrentUser?: boolean;
+  floorAccent?: string;
 }
 
 /**
@@ -20,11 +21,18 @@ interface ResidentCardProps {
 export const ResidentCard = memo(function ResidentCard({
   profile,
   isCurrentUser = false,
+  floorAccent,
 }: ResidentCardProps) {
   const isMockProfile = profile.id.startsWith("mock-");
   const t = useI18n();
   const displayInterests =
     profile.interests?.slice(0, PROFILE.maxInterestsDisplay.card) || [];
+
+  // 職業の表示テキストを取得
+  const occupationKey = profile.occupation
+    ? (`profileOptions.occupation.${profile.occupation}` as Parameters<typeof t>[0])
+    : null;
+  const occupationLabel = occupationKey ? t(occupationKey) : null;
 
   return (
     <Link
@@ -40,6 +48,7 @@ export const ResidentCard = memo(function ResidentCard({
             ? "border-dashed border-[#d4d4d4] hover:border-[#a3a3a3]"
             : "border-[#e5e5e5] hover:border-[#1a1a1a]"
         }`}
+        style={floorAccent && !isCurrentUser && !isMockProfile ? { borderBottomColor: floorAccent, borderBottomWidth: "2px" } : undefined}
       >
         {/* Avatar section */}
         <div className="aspect-square bg-[#f5f5f3] relative overflow-hidden">
@@ -66,10 +75,17 @@ export const ResidentCard = memo(function ResidentCard({
               {t("common.unregistered")}
             </span>
           )}
+
+          {/* MBTI badge */}
+          {profile.mbti && !isMockProfile && (
+            <span className="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm text-[#737373] text-[10px] sm:text-[11px] px-1.5 py-0.5 tracking-wide">
+              {profile.mbti}
+            </span>
+          )}
         </div>
 
-        {/* Info section - responsive height */}
-        <div className="p-3 sm:p-4 min-h-[68px] sm:min-h-[80px]">
+        {/* Info section */}
+        <div className="p-3 sm:p-4 min-h-[72px] sm:min-h-[84px]">
           <div className="flex items-baseline justify-between gap-2">
             <h3 className="text-sm sm:text-base text-[#1a1a1a] tracking-wide truncate font-normal">
               {profile.name}
@@ -80,6 +96,19 @@ export const ResidentCard = memo(function ResidentCard({
               </span>
             )}
           </div>
+
+          {/* 職業・業界 */}
+          {(occupationLabel || profile.industry) && !isMockProfile && (
+            <p className="text-[10px] sm:text-[11px] text-[#737373] mt-1 truncate">
+              {occupationLabel}
+              {occupationLabel && profile.industry && " · "}
+              {profile.industry && (
+                <span className="text-[#a3a3a3]">
+                  {t(`profileOptions.industry.${profile.industry}` as Parameters<typeof t>[0])}
+                </span>
+              )}
+            </p>
+          )}
 
           {displayInterests.length > 0 && (
             <ul
