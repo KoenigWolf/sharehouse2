@@ -124,6 +124,172 @@ export const ja = {
     completionLabel: "完成度",
     teaTimeStatus: "ティータイム",
     interestsSeparatorHint: "「、」「・」「,」で区切ると、タグとして表示されます",
+    // 拡張プロフィールセクション
+    sectionBasicInfo: "基本情報",
+    sectionWork: "仕事・学歴",
+    sectionLifestyle: "ライフスタイル",
+    sectionCommunal: "共同生活への姿勢",
+    sectionPersonality: "性格・趣味",
+    // 基本情報
+    nickname: "ニックネーム",
+    nicknamePlaceholder: "呼ばれたい名前",
+    ageRange: "年代",
+    gender: "性別",
+    nationality: "国籍",
+    nationalityPlaceholder: "国名を入力",
+    languages: "使用言語",
+    hometown: "出身地",
+    hometownPlaceholder: "都道府県や国名",
+    // 仕事・学歴
+    occupation: "職業",
+    industry: "業界・職種",
+    industryPlaceholder: "業界や職種を入力",
+    workLocation: "勤務地エリア",
+    workLocationPlaceholder: "エリア名",
+    workStyle: "勤務形態",
+    // ライフスタイル
+    dailyRhythm: "生活リズム",
+    homeFrequency: "在宅頻度",
+    alcohol: "お酒",
+    smoking: "タバコ",
+    pets: "ペット",
+    guestFrequency: "来客頻度",
+    overnightGuests: "友人・恋人の宿泊",
+    // 共同生活への姿勢
+    socialStance: "交流スタンス",
+    sharedSpaceUsage: "共有スペースの使い方",
+    sharedSpaceUsagePlaceholder: "リビングでよく過ごす、静かに使いたい など",
+    cleaningAttitude: "掃除・家事への姿勢",
+    cookingFrequency: "料理頻度",
+    sharedMeals: "シェアごはん",
+    // 性格・趣味
+    personalityType: "性格タイプ",
+    personalityTypePlaceholder: "社交的、マイペース など",
+    weekendActivities: "休日の過ごし方",
+    weekendActivitiesPlaceholder: "カフェ巡り、家でゆっくり など",
+    other: "その他",
+    otherPlaceholder: "具体的に入力...",
+    selectPlaceholder: "選択してください",
+  },
+
+  // プロフィール選択肢
+  profileOptions: {
+    // 年代
+    ageRange: {
+      "10s": "10代",
+      early20s: "20代前半",
+      late20s: "20代後半",
+      early30s: "30代前半",
+      late30s: "30代後半",
+      "40s": "40代",
+      "50plus": "50代以上",
+    },
+    // 性別
+    gender: {
+      male: "男性",
+      female: "女性",
+      other: "その他",
+      noAnswer: "回答しない",
+    },
+    // 職業
+    occupation: {
+      employee: "会社員",
+      freelance: "フリーランス",
+      student: "学生",
+      executive: "経営者",
+      other: "その他",
+    },
+    // 業界
+    industry: {
+      it: "IT・テクノロジー",
+      finance: "金融",
+      medical: "医療・ヘルスケア",
+      education: "教育",
+      creative: "クリエイティブ",
+      other: "その他",
+    },
+    // 勤務形態
+    workStyle: {
+      office: "フル出社",
+      remote: "フルリモート",
+      hybrid: "ハイブリッド",
+    },
+    // 生活リズム
+    dailyRhythm: {
+      morning: "朝型",
+      night: "夜型",
+      irregular: "不規則",
+    },
+    // 在宅頻度
+    homeFrequency: {
+      everyday: "ほぼ毎日",
+      weekdaysOnly: "平日のみ",
+      weekendsOnly: "週末のみ",
+      oftenAway: "出張多め",
+    },
+    // お酒
+    alcohol: {
+      drink: "飲む",
+      sometimes: "たまに",
+      noDrink: "飲まない",
+    },
+    // タバコ
+    smoking: {
+      smoke: "吸う",
+      noSmoke: "吸わない",
+    },
+    // ペット
+    pets: {
+      wantPets: "飼いたい",
+      noPets: "飼わない",
+      either: "どちらでも",
+    },
+    // 来客頻度
+    guestFrequency: {
+      often: "よくある",
+      sometimes: "たまに",
+      rarely: "ほとんどない",
+    },
+    // 宿泊
+    overnightGuests: {
+      ok: "OK",
+      negotiable: "要相談",
+      ng: "NG",
+    },
+    // 交流スタンス
+    socialStance: {
+      active: "積極的に交流したい",
+      moderate: "程よく",
+      quiet: "静かに暮らしたい",
+    },
+    // 掃除への姿勢
+    cleaningAttitude: {
+      strict: "きっちり派",
+      moderate: "ほどほど派",
+      relaxed: "おおらか派",
+    },
+    // 料理頻度
+    cookingFrequency: {
+      daily: "毎日",
+      fewTimesWeek: "週数回",
+      sometimes: "たまに",
+      never: "しない",
+    },
+    // シェアごはん
+    sharedMeals: {
+      wantToJoin: "参加したい",
+      sometimes: "たまに",
+      rarely: "あまり",
+      noJoin: "参加しない",
+    },
+    // 使用言語
+    languages: {
+      japanese: "日本語",
+      english: "英語",
+      chinese: "中国語",
+      korean: "韓国語",
+      other: "その他",
+    },
   },
 
   // Residents
