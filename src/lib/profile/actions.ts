@@ -78,7 +78,6 @@ export async function updateProfile(data: ProfileUpdateInput): Promise<UpdateRes
         smoking: validatedData.smoking,
         pets: validatedData.pets,
         guest_frequency: validatedData.guest_frequency,
-        overnight_guests: validatedData.overnight_guests,
         social_stance: validatedData.social_stance,
         shared_space_usage: validatedData.shared_space_usage,
         cleaning_attitude: validatedData.cleaning_attitude,
@@ -86,6 +85,12 @@ export async function updateProfile(data: ProfileUpdateInput): Promise<UpdateRes
         shared_meals: validatedData.shared_meals,
         personality_type: validatedData.personality_type,
         weekend_activities: validatedData.weekend_activities,
+        // SNS
+        sns_x: validatedData.sns_x,
+        sns_instagram: validatedData.sns_instagram,
+        sns_facebook: validatedData.sns_facebook,
+        sns_linkedin: validatedData.sns_linkedin,
+        sns_github: validatedData.sns_github,
         updated_at: new Date().toISOString(),
       })
       .eq("id", user.id);
