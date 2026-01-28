@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { useI18n } from "@/hooks/use-i18n";
 import { WifiInfoForm } from "@/components/wifi-info-form";
@@ -15,12 +15,9 @@ interface WifiInfoListProps {
 /**
  * WiFi情報一覧コンポーネント
  *
- * エリアごとのWiFi情報をカード形式で表示する。
+ * 階ごとにタブで切り替えてWiFi情報を表示する。
  * パスワードはデフォルトでマスクされ、目アイコンで切り替え可能。
  * 管理者にはCRUD操作（追加・編集・削除）のUIを表示する。
- *
- * @param props.wifiInfos - WiFi情報の配列
- * @param props.isAdmin - 管理者かどうか
  */
 export function WifiInfoList({ wifiInfos, isAdmin }: WifiInfoListProps) {
   const t = useI18n();
@@ -30,6 +27,29 @@ export function WifiInfoList({ wifiInfos, isAdmin }: WifiInfoListProps) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [error, setError] = useState("");
+
+  // 階のリストを取得（ソート済み）
+  const floors = useMemo(() => {
+    const floorSet = new Set<number>();
+    wifiInfos.forEach((wifi) => {
+      if (wifi.floor !== null) {
+        floorSet.add(wifi.floor);
+      }
+    });
+    return Array.from(floorSet).sort((a, b) => a - b);
+  }, [wifiInfos]);
+
+  const [activeFloor, setActiveFloor] = useState<number | null>(
+    floors.length > 0 ? floors[0] : null
+  );
+
+  // 選択中の階のWi-Fi情報をフィルタ
+  const filteredWifiInfos = useMemo(() => {
+    if (activeFloor === null) {
+      return wifiInfos;
+    }
+    return wifiInfos.filter((wifi) => wifi.floor === activeFloor);
+  }, [wifiInfos, activeFloor]);
 
   const togglePassword = useCallback((id: string) => {
     setVisiblePasswords((prev) => {
@@ -72,13 +92,33 @@ export function WifiInfoList({ wifiInfos, isAdmin }: WifiInfoListProps) {
   return (
     <div className="space-y-4">
       {error && (
-        <div className="py-3 px-4 border border-red-200 bg-red-50 text-sm text-red-600">
+        <div className="py-3 px-4 border-l-2 border-[#c9a0a0] bg-[#faf8f8] text-sm text-[#8b6b6b]">
           {error}
         </div>
       )}
 
+      {/* 階タブ */}
+      {floors.length > 1 && (
+        <div className="flex gap-2 mb-4">
+          {floors.map((floor) => (
+            <button
+              key={floor}
+              type="button"
+              onClick={() => setActiveFloor(floor)}
+              className={`px-4 py-2 text-sm tracking-wide transition-colors ${
+                activeFloor === floor
+                  ? "bg-[#1a1a1a] text-white"
+                  : "bg-white border border-[#e5e5e5] text-[#737373] hover:border-[#1a1a1a] hover:text-[#1a1a1a]"
+              }`}
+            >
+              {floor}F
+            </button>
+          ))}
+        </div>
+      )}
+
       <AnimatePresence mode="popLayout">
-        {wifiInfos.map((wifi, index) => (
+        {filteredWifiInfos.map((wifi, index) => (
           <m.div
             key={wifi.id}
             initial={{ opacity: 0, y: 8 }}
@@ -155,7 +195,7 @@ export function WifiInfoList({ wifiInfos, isAdmin }: WifiInfoListProps) {
                     <button
                       type="button"
                       onClick={() => handleDelete(wifi.id)}
-                      className="px-3 py-1.5 text-xs text-red-400 border border-red-200 hover:border-red-400 hover:text-red-600 transition-colors"
+                      className="px-3 py-1.5 text-xs text-[#8b6b6b] border border-[#c9a0a0] hover:border-[#8b6b6b] transition-colors"
                     >
                       {t("common.delete")}
                     </button>
@@ -196,7 +236,6 @@ export function WifiInfoList({ wifiInfos, isAdmin }: WifiInfoListProps) {
   );
 }
 
-/** 目アイコン（表示） */
 function EyeIcon() {
   return (
     <svg
@@ -215,7 +254,6 @@ function EyeIcon() {
   );
 }
 
-/** 目アイコン（非表示） */
 function EyeOffIcon() {
   return (
     <svg

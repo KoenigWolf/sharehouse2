@@ -2,6 +2,7 @@ import { z } from "zod";
 import { sanitizeForStorage } from "@/lib/security/validation";
 
 export const wifiInfoSchema = z.object({
+  floor: z.number().int().min(1).max(99).optional(),
   area_name: z
     .string()
     .min(1)

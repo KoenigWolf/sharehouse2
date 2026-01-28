@@ -1,5 +1,6 @@
 export interface WifiInfo {
   id: string;
+  floor: number | null;
   area_name: string;
   ssid: string;
   password: string;
@@ -10,6 +11,7 @@ export interface WifiInfo {
 }
 
 export interface WifiInfoInput {
+  floor?: number;
   area_name: string;
   ssid: string;
   password: string;
