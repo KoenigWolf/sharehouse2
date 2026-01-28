@@ -419,6 +419,9 @@ export const en: Translations = {
     uploadSuccess: "Uploaded",
     roomPhotosSection: "Room Photos",
     viewGallery: "View everyone's room photos →",
+    clickToEnlarge: "* Click to enlarge",
+    prevPhoto: "Previous photo",
+    nextPhoto: "Next photo",
   },
 
   wifi: {

@@ -443,6 +443,9 @@ export const ja = {
     uploadSuccess: "アップロードしました",
     roomPhotosSection: "部屋の写真",
     viewGallery: "みんなの部屋写真を見る →",
+    clickToEnlarge: "※ クリックで拡大表示",
+    prevPhoto: "前の写真",
+    nextPhoto: "次の写真",
   },
 
   // Wi-Fi
