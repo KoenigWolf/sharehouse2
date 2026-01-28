@@ -25,6 +25,7 @@ export const ja = {
     you: "あなた",
     unregistered: "未登録",
     processing: "処理中...",
+    copy: "コピー",
   },
 
   // Navigation
@@ -505,10 +506,22 @@ export const ja = {
   // Info page
   info: {
     title: "シェアハウス情報",
+    subtitle: "生活に必要な情報をまとめています",
     wifiTab: "Wi-Fi",
     garbageTab: "ゴミ出し",
     tabWifi: "Wi-Fi",
     tabGarbage: "ゴミ出し",
+    tabBuilding: "施設情報",
+    wifiNote: "SSIDは隠蔽されているため、各自のデバイスから手動で検索してください。自室に別途Wi-Fiルーターを設置すると混線するため、極力設置は避けてください。",
+    securityType: "セキュリティ: WPA2",
+    wifiPassword: "Wi-Fi パスワード",
+  },
+
+  // Shared info
+  sharedInfo: {
+    mailbox: "郵便受け",
+    address: "住所",
+    note: "※",
   },
 
   // Push notifications

@@ -22,6 +22,7 @@ export const en: Translations = {
     you: "You",
     unregistered: "Unregistered",
     processing: "Processing...",
+    copy: "Copy",
   },
 
   nav: {
@@ -478,10 +479,21 @@ export const en: Translations = {
 
   info: {
     title: "Share House Info",
+    subtitle: "Essential information for daily life",
     wifiTab: "Wi-Fi",
     garbageTab: "Garbage",
     tabWifi: "Wi-Fi",
     tabGarbage: "Garbage",
+    tabBuilding: "Building",
+    wifiNote: "SSIDs are hidden, so please manually search from your device. Please avoid setting up additional Wi-Fi routers in your room as it may cause interference.",
+    securityType: "Security: WPA2",
+    wifiPassword: "Wi-Fi Password",
+  },
+
+  sharedInfo: {
+    mailbox: "Mailbox",
+    address: "Address",
+    note: "*",
   },
 
   push: {

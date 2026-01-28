@@ -5,6 +5,7 @@ import { Footer } from "@/components/footer";
 import { MobileNav } from "@/components/mobile-nav";
 import { getWifiInfo } from "@/lib/wifi/actions";
 import { getGarbageSchedule, getUpcomingDuties } from "@/lib/garbage/actions";
+import { getSharedInfo } from "@/lib/shared-info/actions";
 import { isCurrentUserAdmin } from "@/lib/admin/check";
 import { InfoPageContent } from "@/components/info-page-content";
 
@@ -19,10 +20,11 @@ export default async function InfoPage() {
     redirect("/login");
   }
 
-  const [wifiInfos, schedule, duties, isAdmin] = await Promise.all([
+  const [wifiInfos, schedule, duties, sharedInfos, isAdmin] = await Promise.all([
     getWifiInfo(),
     getGarbageSchedule(),
     getUpcomingDuties(),
+    getSharedInfo(),
     isCurrentUserAdmin(),
   ]);
 
@@ -36,6 +38,7 @@ export default async function InfoPage() {
             wifiInfos={wifiInfos}
             schedule={schedule}
             duties={duties}
+            sharedInfos={sharedInfos}
             isAdmin={isAdmin}
             currentUserId={user.id}
           />
