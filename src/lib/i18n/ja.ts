@@ -35,6 +35,8 @@ export const ja = {
     myPage: "マイページ",
     settings: "設定",
     logout: "ログアウト",
+    gallery: "ギャラリー",
+    info: "情報",
   },
 
   // Auth
@@ -192,6 +194,8 @@ export const ja = {
     invalidCharacters: "{{field}}に無効な文字が含まれています",
     rateLimitSeconds: "リクエストが多すぎます。{{seconds}}秒後に再試行してください。",
     rateLimitMinutes: "リクエストが多すぎます。{{minutes}}分後に再試行してください。",
+    maxPhotosReached: "写真は最大5枚までアップロードできます",
+    deleteFailed: "削除に失敗しました",
   },
 
   validation: {
@@ -229,6 +233,102 @@ export const ja = {
       description: "予期しないエラーが発生しました。ページを再読み込みしてください。",
       reload: "再読み込み",
     },
+  },
+
+  // Room Photos
+  roomPhotos: {
+    title: "ギャラリー",
+    subtitle: "住民の部屋写真",
+    gallery: "部屋写真ギャラリー",
+    noPhotos: "まだ写真がありません",
+    noPhotosHint: "住民がマイページから写真をアップロードできます",
+    photoAlt: "部屋の写真",
+    unknownUser: "不明なユーザー",
+    upload: "写真をアップロード",
+    delete: "写真を削除",
+    deleteConfirm: "この写真を削除しますか？",
+    caption: "キャプション",
+    captionPlaceholder: "写真の説明...",
+    maxPhotos: "最大5枚",
+    uploadSuccess: "アップロードしました",
+    roomPhotosSection: "部屋の写真",
+  },
+
+  // Wi-Fi
+  wifi: {
+    title: "Wi-Fi情報",
+    areaName: "エリア名",
+    areaNamePlaceholder: "1F共有スペース",
+    ssid: "SSID",
+    ssidPlaceholder: "ShareHouse-WiFi",
+    password: "パスワード",
+    passwordPlaceholder: "パスワードを入力",
+    showPassword: "パスワードを表示",
+    hidePassword: "パスワードを隠す",
+    noInfo: "Wi-Fi情報がまだ登録されていません",
+    noWifiInfo: "Wi-Fi情報がまだ登録されていません",
+    addNew: "Wi-Fi情報を追加",
+    add: "追加",
+    displayOrder: "表示順",
+    adminOnly: "管理者のみ編集可能",
+    confirmDelete: "このWi-Fi情報を削除しますか？",
+  },
+
+  // Garbage
+  garbage: {
+    title: "ゴミ出し",
+    schedule: "スケジュール",
+    duties: "当番",
+    upcomingDuties: "今後の当番",
+    weeklySchedule: "週間スケジュール",
+    noDuties: "当番の予定はありません",
+    noSchedule: "スケジュールがまだ登録されていません",
+    garbageType: "ゴミの種類",
+    garbageTypePlaceholder: "燃えるゴミ",
+    dayOfWeek: "曜日",
+    notes: "備考",
+    notesPlaceholder: "補足メモ",
+    completed: "完了",
+    markComplete: "完了にする",
+    unknownUser: "不明なユーザー",
+    you: "あなた",
+    addSchedule: "スケジュールを追加",
+    addScheduleEntry: "スケジュールを追加",
+    add: "追加",
+    generateRotation: "ローテーション生成",
+    generating: "生成中...",
+    startDate: "開始日",
+    weeks: "週数",
+    generate: "生成",
+    generated: "{{count}}件の当番を生成しました",
+    generateSuccess: "{{count}}件の当番を生成しました",
+    dutyReminder: "明日のゴミ出し当番",
+    dutyReminderBody: "明日は「{{type}}」のゴミ出し当番です",
+    adminPanel: "管理パネル",
+    scheduleManagement: "スケジュール管理",
+    dutyRotation: "当番ローテーション",
+    confirmDelete: "このスケジュールを削除しますか？",
+    deleteSuccess: "削除しました",
+    saveSuccess: "保存しました",
+  },
+
+  // Info page
+  info: {
+    title: "シェアハウス情報",
+    wifiTab: "Wi-Fi",
+    garbageTab: "ゴミ出し",
+    tabWifi: "Wi-Fi",
+    tabGarbage: "ゴミ出し",
+  },
+
+  // Push notifications
+  push: {
+    enable: "プッシュ通知を有効にする",
+    disable: "プッシュ通知を無効にする",
+    enabled: "通知ON",
+    disabled: "通知OFF",
+    notSupported: "このブラウザはプッシュ通知に対応していません",
+    permissionDenied: "通知の許可が拒否されています",
   },
 
   // Accessibility
