@@ -35,6 +35,23 @@ export const AuditEventType = {
   // Tea Time events
   TEA_TIME_SETTING_CHANGE: "TEA_TIME_SETTING_CHANGE",
   TEA_TIME_MATCH_UPDATE: "TEA_TIME_MATCH_UPDATE",
+
+  // Room Photos events
+  ROOM_PHOTO_UPLOAD: "ROOM_PHOTO_UPLOAD",
+  ROOM_PHOTO_DELETE: "ROOM_PHOTO_DELETE",
+
+  // Wi-Fi events
+  WIFI_CREATE: "WIFI_CREATE",
+  WIFI_UPDATE: "WIFI_UPDATE",
+  WIFI_DELETE: "WIFI_DELETE",
+
+  // Garbage events
+  GARBAGE_SCHEDULE_CREATE: "GARBAGE_SCHEDULE_CREATE",
+  GARBAGE_SCHEDULE_UPDATE: "GARBAGE_SCHEDULE_UPDATE",
+  GARBAGE_SCHEDULE_DELETE: "GARBAGE_SCHEDULE_DELETE",
+  GARBAGE_DUTY_ASSIGN: "GARBAGE_DUTY_ASSIGN",
+  GARBAGE_DUTY_COMPLETE: "GARBAGE_DUTY_COMPLETE",
+  GARBAGE_ROTATION_GENERATE: "GARBAGE_ROTATION_GENERATE",
 } as const;
 
 export type AuditEventTypeValue =
@@ -90,6 +107,17 @@ function getSeverity(eventType: AuditEventTypeValue): AuditSeverityValue {
     [AuditEventType.SECURITY_UNAUTHORIZED_ACCESS]: AuditSeverity.CRITICAL,
     [AuditEventType.TEA_TIME_SETTING_CHANGE]: AuditSeverity.INFO,
     [AuditEventType.TEA_TIME_MATCH_UPDATE]: AuditSeverity.INFO,
+    [AuditEventType.ROOM_PHOTO_UPLOAD]: AuditSeverity.INFO,
+    [AuditEventType.ROOM_PHOTO_DELETE]: AuditSeverity.INFO,
+    [AuditEventType.WIFI_CREATE]: AuditSeverity.INFO,
+    [AuditEventType.WIFI_UPDATE]: AuditSeverity.INFO,
+    [AuditEventType.WIFI_DELETE]: AuditSeverity.WARNING,
+    [AuditEventType.GARBAGE_SCHEDULE_CREATE]: AuditSeverity.INFO,
+    [AuditEventType.GARBAGE_SCHEDULE_UPDATE]: AuditSeverity.INFO,
+    [AuditEventType.GARBAGE_SCHEDULE_DELETE]: AuditSeverity.WARNING,
+    [AuditEventType.GARBAGE_DUTY_ASSIGN]: AuditSeverity.INFO,
+    [AuditEventType.GARBAGE_DUTY_COMPLETE]: AuditSeverity.INFO,
+    [AuditEventType.GARBAGE_ROTATION_GENERATE]: AuditSeverity.WARNING,
   };
 
   return severityMap[eventType] || AuditSeverity.INFO;
