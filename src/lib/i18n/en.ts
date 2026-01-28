@@ -150,7 +150,6 @@ export const en: Translations = {
     smoking: "Smoking",
     pets: "Pets",
     guestFrequency: "Guest Frequency",
-    overnightGuests: "Overnight Guests",
     // Communal
     socialStance: "Social Style",
     sharedSpaceUsage: "Shared Space Usage",
@@ -166,15 +165,26 @@ export const en: Translations = {
     other: "Other",
     otherPlaceholder: "Please specify...",
     selectPlaceholder: "Select an option",
+    // SNS
+    sectionSns: "Social",
+    snsX: "X (Twitter)",
+    snsXPlaceholder: "@username or URL",
+    snsInstagram: "Instagram",
+    snsInstagramPlaceholder: "@username or URL",
+    snsFacebook: "Facebook",
+    snsFacebookPlaceholder: "Username or URL",
+    snsLinkedin: "LinkedIn",
+    snsLinkedinPlaceholder: "Username or URL",
+    snsGithub: "GitHub",
+    snsGithubPlaceholder: "Username or URL",
+    snsHint: "Enter username or URL",
   },
 
   profileOptions: {
     ageRange: {
       "10s": "Teens",
-      early20s: "Early 20s",
-      late20s: "Late 20s",
-      early30s: "Early 30s",
-      late30s: "Late 30s",
+      "20s": "20s",
+      "30s": "30s",
       "40s": "40s",
       "50plus": "50+",
     },
@@ -233,11 +243,6 @@ export const en: Translations = {
       often: "Often",
       sometimes: "Sometimes",
       rarely: "Rarely",
-    },
-    overnightGuests: {
-      ok: "OK",
-      negotiable: "Negotiable",
-      ng: "No",
     },
     socialStance: {
       active: "Active socializing",

@@ -154,7 +154,6 @@ export const ja = {
     smoking: "タバコ",
     pets: "ペット",
     guestFrequency: "来客頻度",
-    overnightGuests: "友人・恋人の宿泊",
     // 共同生活への姿勢
     socialStance: "交流スタンス",
     sharedSpaceUsage: "共有スペースの使い方",
@@ -170,6 +169,19 @@ export const ja = {
     other: "その他",
     otherPlaceholder: "具体的に入力...",
     selectPlaceholder: "選択してください",
+    // SNS
+    sectionSns: "SNS",
+    snsX: "X (Twitter)",
+    snsXPlaceholder: "@username または URL",
+    snsInstagram: "Instagram",
+    snsInstagramPlaceholder: "@username または URL",
+    snsFacebook: "Facebook",
+    snsFacebookPlaceholder: "ユーザー名 または URL",
+    snsLinkedin: "LinkedIn",
+    snsLinkedinPlaceholder: "ユーザー名 または URL",
+    snsGithub: "GitHub",
+    snsGithubPlaceholder: "ユーザー名 または URL",
+    snsHint: "ユーザー名または URLを入力",
   },
 
   // プロフィール選択肢
@@ -177,10 +189,8 @@ export const ja = {
     // 年代
     ageRange: {
       "10s": "10代",
-      early20s: "20代前半",
-      late20s: "20代後半",
-      early30s: "30代前半",
-      late30s: "30代後半",
+      "20s": "20代",
+      "30s": "30代",
       "40s": "40代",
       "50plus": "50代以上",
     },
@@ -249,12 +259,6 @@ export const ja = {
       often: "よくある",
       sometimes: "たまに",
       rarely: "ほとんどない",
-    },
-    // 宿泊
-    overnightGuests: {
-      ok: "OK",
-      negotiable: "要相談",
-      ng: "NG",
     },
     // 交流スタンス
     socialStance: {
