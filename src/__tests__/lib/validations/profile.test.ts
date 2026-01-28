@@ -210,6 +210,130 @@ describe("profileUpdateSchema", () => {
       expect(result.data.name).toBe("山田 太郎");
     }
   });
+
+  it("accepts extended profile fields", () => {
+    const result = profileUpdateSchema.safeParse({
+      ...validData,
+      nickname: "タロちゃん",
+      age_range: "early30s",
+      gender: "male",
+      nationality: "日本",
+      languages: ["japanese", "english"],
+      hometown: "東京都",
+      occupation: "employee",
+      industry: "it",
+      work_location: "渋谷",
+      work_style: "hybrid",
+      daily_rhythm: "morning",
+      home_frequency: "everyday",
+      alcohol: "sometimes",
+      smoking: "noSmoke",
+      pets: "either",
+      guest_frequency: "rarely",
+      overnight_guests: "negotiable",
+      social_stance: "moderate",
+      shared_space_usage: "リビングでよく読書します",
+      cleaning_attitude: "moderate",
+      cooking_frequency: "fewTimesWeek",
+      shared_meals: "sometimes",
+      personality_type: "おだやか",
+      weekend_activities: "カフェ巡り",
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.nickname).toBe("タロちゃん");
+      expect(result.data.age_range).toBe("early30s");
+      expect(result.data.languages).toEqual(["japanese", "english"]);
+    }
+  });
+
+  it("accepts null for extended profile fields", () => {
+    const result = profileUpdateSchema.safeParse({
+      ...validData,
+      nickname: null,
+      age_range: null,
+      gender: null,
+      occupation: null,
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.nickname).toBeNull();
+      expect(result.data.age_range).toBeNull();
+    }
+  });
+
+  it("accepts data without extended fields (backward compatible)", () => {
+    const result = profileUpdateSchema.safeParse(validData);
+    expect(result.success).toBe(true);
+  });
+
+  it("sanitizes extended text fields", () => {
+    const result = profileUpdateSchema.safeParse({
+      ...validData,
+      nickname: "  <script>alert('xss')</script>タロちゃん  ",
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.nickname).not.toContain("<script>");
+      expect(result.data.nickname).toContain("タロちゃん");
+    }
+  });
+
+  it("transforms empty extended text fields to null", () => {
+    const result = profileUpdateSchema.safeParse({
+      ...validData,
+      nickname: "   ",
+      hometown: "",
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.nickname).toBeNull();
+      expect(result.data.hometown).toBeNull();
+    }
+  });
+
+  it("rejects text field exceeding max length", () => {
+    const result = profileUpdateSchema.safeParse({
+      ...validData,
+      nickname: "あ".repeat(101),
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts long text field up to 500 chars", () => {
+    const result = profileUpdateSchema.safeParse({
+      ...validData,
+      shared_space_usage: "あ".repeat(500),
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects long text field exceeding 500 chars", () => {
+    const result = profileUpdateSchema.safeParse({
+      ...validData,
+      shared_space_usage: "あ".repeat(501),
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("filters empty strings from languages array", () => {
+    const result = profileUpdateSchema.safeParse({
+      ...validData,
+      languages: ["japanese", "", "english", "  "],
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.languages).toEqual(["japanese", "english"]);
+    }
+  });
+
+  it("limits languages array to 10 items", () => {
+    const result = profileUpdateSchema.safeParse({
+      ...validData,
+      languages: Array(11).fill("japanese"),
+    });
+    expect(result.success).toBe(false);
+  });
 });
 
 describe("fileUploadSchema", () => {
