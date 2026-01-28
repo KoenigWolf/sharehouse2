@@ -6,6 +6,43 @@ export const MBTI_TYPES = [
   "ISTP", "ISFP", "ESTP", "ESFP",
 ] as const;
 
+// Profile option constants
+export const AGE_RANGES = ["10s", "early20s", "late20s", "early30s", "late30s", "40s", "50plus"] as const;
+export const GENDERS = ["male", "female", "other", "noAnswer"] as const;
+export const OCCUPATIONS = ["employee", "freelance", "student", "executive", "other"] as const;
+export const INDUSTRIES = ["it", "finance", "medical", "education", "creative", "other"] as const;
+export const WORK_STYLES = ["office", "remote", "hybrid"] as const;
+export const DAILY_RHYTHMS = ["morning", "night", "irregular"] as const;
+export const HOME_FREQUENCIES = ["everyday", "weekdaysOnly", "weekendsOnly", "oftenAway"] as const;
+export const ALCOHOL_OPTIONS = ["drink", "sometimes", "noDrink"] as const;
+export const SMOKING_OPTIONS = ["smoke", "noSmoke"] as const;
+export const PET_OPTIONS = ["wantPets", "noPets", "either"] as const;
+export const GUEST_FREQUENCIES = ["often", "sometimes", "rarely"] as const;
+export const OVERNIGHT_OPTIONS = ["ok", "negotiable", "ng"] as const;
+export const SOCIAL_STANCES = ["active", "moderate", "quiet"] as const;
+export const CLEANING_ATTITUDES = ["strict", "moderate", "relaxed"] as const;
+export const COOKING_FREQUENCIES = ["daily", "fewTimesWeek", "sometimes", "never"] as const;
+export const SHARED_MEAL_OPTIONS = ["wantToJoin", "sometimes", "rarely", "noJoin"] as const;
+export const LANGUAGES = ["japanese", "english", "chinese", "korean", "other"] as const;
+
+export type AgeRange = typeof AGE_RANGES[number];
+export type Gender = typeof GENDERS[number];
+export type Occupation = typeof OCCUPATIONS[number];
+export type Industry = typeof INDUSTRIES[number];
+export type WorkStyle = typeof WORK_STYLES[number];
+export type DailyRhythm = typeof DAILY_RHYTHMS[number];
+export type HomeFrequency = typeof HOME_FREQUENCIES[number];
+export type AlcoholOption = typeof ALCOHOL_OPTIONS[number];
+export type SmokingOption = typeof SMOKING_OPTIONS[number];
+export type PetOption = typeof PET_OPTIONS[number];
+export type GuestFrequency = typeof GUEST_FREQUENCIES[number];
+export type OvernightOption = typeof OVERNIGHT_OPTIONS[number];
+export type SocialStance = typeof SOCIAL_STANCES[number];
+export type CleaningAttitude = typeof CLEANING_ATTITUDES[number];
+export type CookingFrequency = typeof COOKING_FREQUENCIES[number];
+export type SharedMealOption = typeof SHARED_MEAL_OPTIONS[number];
+export type Language = typeof LANGUAGES[number];
+
 export type MBTIType = typeof MBTI_TYPES[number];
 
 // MBTI type labels (nickname/archetype)
@@ -40,4 +77,33 @@ export interface Profile {
   is_admin: boolean;
   created_at: string;
   updated_at: string;
+  // 基本情報（既存データとの互換性のためオプショナル）
+  nickname?: string | null;
+  age_range?: string | null;
+  gender?: string | null;
+  nationality?: string | null;
+  languages?: string[];
+  hometown?: string | null;
+  // 仕事・学歴
+  occupation?: string | null;
+  industry?: string | null;
+  work_location?: string | null;
+  work_style?: string | null;
+  // ライフスタイル
+  daily_rhythm?: string | null;
+  home_frequency?: string | null;
+  alcohol?: string | null;
+  smoking?: string | null;
+  pets?: string | null;
+  guest_frequency?: string | null;
+  overnight_guests?: string | null;
+  // 共同生活への姿勢
+  social_stance?: string | null;
+  shared_space_usage?: string | null;
+  cleaning_attitude?: string | null;
+  cooking_frequency?: string | null;
+  shared_meals?: string | null;
+  // 性格・趣味
+  personality_type?: string | null;
+  weekend_activities?: string | null;
 }

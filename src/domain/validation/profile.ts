@@ -66,6 +66,41 @@ export const mbtiSchema = z
   .optional()
   .nullable();
 
+// Generic text field schema for new profile fields (nullable, max 100 chars)
+const textFieldSchema = z
+  .string()
+  .max(100)
+  .optional()
+  .nullable()
+  .transform((val) => {
+    if (!val) return null;
+    const sanitized = sanitizeForStorage(stripHtml(val.trim()));
+    return sanitized.length > 0 ? sanitized : null;
+  });
+
+// Longer text field schema (for descriptions, max 500 chars)
+const longTextFieldSchema = z
+  .string()
+  .max(500)
+  .optional()
+  .nullable()
+  .transform((val) => {
+    if (!val) return null;
+    const sanitized = sanitizeForStorage(stripHtml(val.trim()));
+    return sanitized.length > 0 ? sanitized : null;
+  });
+
+// Languages array schema (max 10 items)
+const languagesSchema = z
+  .array(z.string().trim())
+  .max(10)
+  .default([])
+  .transform((arr) =>
+    arr
+      .map((item) => sanitizeForStorage(stripHtml(item)))
+      .filter((item) => item.length > 0 && item.length <= 50)
+  );
+
 // Profile update schema with comprehensive sanitization
 export const profileUpdateSchema = z.object({
   name: z
@@ -78,6 +113,35 @@ export const profileUpdateSchema = z.object({
   interests: interestsSchema,
   mbti: mbtiSchema,
   move_in_date: moveInDateSchema,
+  // 基本情報（すべてオプショナル）
+  nickname: textFieldSchema.optional(),
+  age_range: textFieldSchema.optional(),
+  gender: textFieldSchema.optional(),
+  nationality: textFieldSchema.optional(),
+  languages: languagesSchema.optional(),
+  hometown: textFieldSchema.optional(),
+  // 仕事・学歴
+  occupation: textFieldSchema.optional(),
+  industry: textFieldSchema.optional(),
+  work_location: textFieldSchema.optional(),
+  work_style: textFieldSchema.optional(),
+  // ライフスタイル
+  daily_rhythm: textFieldSchema.optional(),
+  home_frequency: textFieldSchema.optional(),
+  alcohol: textFieldSchema.optional(),
+  smoking: textFieldSchema.optional(),
+  pets: textFieldSchema.optional(),
+  guest_frequency: textFieldSchema.optional(),
+  overnight_guests: textFieldSchema.optional(),
+  // 共同生活への姿勢
+  social_stance: textFieldSchema.optional(),
+  shared_space_usage: longTextFieldSchema.optional(),
+  cleaning_attitude: textFieldSchema.optional(),
+  cooking_frequency: textFieldSchema.optional(),
+  shared_meals: textFieldSchema.optional(),
+  // 性格・趣味
+  personality_type: textFieldSchema.optional(),
+  weekend_activities: longTextFieldSchema.optional(),
 });
 
 // File upload validation
