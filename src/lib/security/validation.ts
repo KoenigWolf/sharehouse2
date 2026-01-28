@@ -4,6 +4,7 @@
  */
 
 import { z } from "zod";
+import { t } from "@/lib/i18n";
 
 /**
  * UUID v4 validation regex
@@ -25,7 +26,7 @@ export function isValidUUID(id: string): boolean {
  * Zod schema for UUID validation
  */
 export const uuidSchema = z.string().refine(isValidUUID, {
-  message: "無効なID形式です",
+  message: t("errors.invalidIdFormat"),
 });
 
 /**
@@ -37,7 +38,7 @@ export const uuidSchema = z.string().refine(isValidUUID, {
  */
 export function validateUUID(id: unknown, fieldName = "ID"): string {
   if (typeof id !== "string" || !isValidUUID(id)) {
-    throw new Error(`無効な${fieldName}形式です`);
+    throw new Error(t("errors.invalidFieldFormat", { field: fieldName }));
   }
   return id;
 }
@@ -54,13 +55,13 @@ export function isMockId(id: string): boolean {
  */
 export function validateId(id: unknown, fieldName = "ID"): string {
   if (typeof id !== "string") {
-    throw new Error(`無効な${fieldName}形式です`);
+    throw new Error(t("errors.invalidFieldFormat", { field: fieldName }));
   }
 
   if (isMockId(id)) {
     // Mock IDs follow pattern: mock-{number}
     if (!/^mock-\d{1,3}$/.test(id)) {
-      throw new Error(`無効な${fieldName}形式です`);
+      throw new Error(t("errors.invalidFieldFormat", { field: fieldName }));
     }
     return id;
   }
@@ -159,7 +160,7 @@ export function hasSqlInjectionPattern(input: string): boolean {
  */
 export function validateNoInjection(input: string, fieldName = "入力"): string {
   if (hasSqlInjectionPattern(input)) {
-    throw new Error(`${fieldName}に無効な文字が含まれています`);
+    throw new Error(t("errors.invalidCharacters", { field: fieldName }));
   }
   return input;
 }

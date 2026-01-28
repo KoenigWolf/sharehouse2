@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { CacheStrategy } from "@/lib/utils/cache";
 import { TEA_TIME } from "@/lib/constants/config";
 import { logError } from "@/lib/errors";
+import { t } from "@/lib/i18n";
 import { getServerTranslator } from "@/lib/i18n/server";
 import { isValidUUID } from "@/lib/security";
 import type { Profile } from "@/domain/profile";
@@ -28,7 +29,7 @@ type UpdateResponse = { success: true } | { error: string };
 function buildUserMatchFilter(userId: string): string {
   // Validate UUID format to prevent injection
   if (!isValidUUID(userId)) {
-    throw new Error("Invalid user ID format");
+    throw new Error(t("errors.invalidIdFormat"));
   }
   return `user1_id.eq.${userId},user2_id.eq.${userId}`;
 }
