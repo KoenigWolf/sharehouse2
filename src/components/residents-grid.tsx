@@ -7,10 +7,14 @@ import { Profile } from "@/domain/profile";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
 import type { Translator } from "@/lib/i18n";
 import { useDebounce } from "@/hooks/use-debounce";
+import Link from "next/link";
+import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
+import { getInitials } from "@/lib/utils";
 
 interface ResidentsGridProps {
   profiles: Profile[];
   currentUserId: string;
+  teaTimeParticipants?: string[];
 }
 
 type SortOption = "name" | "room_number" | "move_in_date";
@@ -24,27 +28,39 @@ function getFloorFromRoom(roomNumber: string | null): string {
   return `${firstDigit}F`;
 }
 
+// 新入居者判定（3ヶ月以内）
+function isNewResident(moveInDate: string | null): boolean {
+  if (!moveInDate) return false;
+  const moveIn = new Date(moveInDate);
+  const threeMonthsAgo = new Date();
+  threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+  return moveIn > threeMonthsAgo;
+}
+
 // 階層ごとのカラーテーマ
-const floorColors: Record<string, { bg: string; border: string; text: string; accent: string }> = {
-  "2F": { bg: "bg-[#f8faf8]", border: "border-[#a0c9a0]", text: "text-[#6b8b6b]", accent: "#a0c9a0" },
-  "3F": { bg: "bg-[#f8f9fa]", border: "border-[#a0b4c9]", text: "text-[#6b7a8b]", accent: "#a0b4c9" },
-  "4F": { bg: "bg-[#faf8fa]", border: "border-[#c9a0c4]", text: "text-[#8b6b87]", accent: "#c9a0c4" },
-  "5F": { bg: "bg-[#fafaf8]", border: "border-[#c9c0a0]", text: "text-[#8b836b]", accent: "#c9c0a0" },
-  "?": { bg: "bg-[#f5f5f3]", border: "border-[#d4d4d4]", text: "text-[#a3a3a3]", accent: "#d4d4d4" },
+const floorColors: Record<string, { bg: string; border: string; text: string; accent: string; fill: string }> = {
+  "2F": { bg: "bg-[#f8faf8]", border: "border-[#a0c9a0]", text: "text-[#6b8b6b]", accent: "#a0c9a0", fill: "#a0c9a0" },
+  "3F": { bg: "bg-[#f8f9fa]", border: "border-[#a0b4c9]", text: "text-[#6b7a8b]", accent: "#a0b4c9", fill: "#a0b4c9" },
+  "4F": { bg: "bg-[#faf8fa]", border: "border-[#c9a0c4]", text: "text-[#8b6b87]", accent: "#c9a0c4", fill: "#c9a0c4" },
+  "5F": { bg: "bg-[#fafaf8]", border: "border-[#c9c0a0]", text: "text-[#8b836b]", accent: "#c9c0a0", fill: "#c9c0a0" },
+  "?": { bg: "bg-[#f5f5f3]", border: "border-[#d4d4d4]", text: "text-[#a3a3a3]", accent: "#d4d4d4", fill: "#d4d4d4" },
 };
 
 /**
  * 住人一覧グリッドコンポーネント
- *
- * 検索フィルタリング（300ms debounce）とソート（部屋番号/名前/入居日）機能付き。
- * 表示モード: グリッド / 階層別 / リスト
+ * 統計ダッシュボード付き
  */
-export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
+export function ResidentsGrid({
+  profiles,
+  currentUserId,
+  teaTimeParticipants = [],
+}: ResidentsGridProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const [sortBy, setSortBy] = useState<SortOption>("room_number");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [floorFilter, setFloorFilter] = useState<FloorFilter>("all");
+  const [showStats, setShowStats] = useState(true);
   const t = useI18n();
   const locale = useLocale();
 
@@ -68,22 +84,35 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
 
   const floors: FloorFilter[] = ["all", "2F", "3F", "4F", "5F"];
 
-  // 階層別統計
-  const floorStats = useMemo(() => {
-    const stats: Record<string, { total: number; registered: number }> = {
+  // 統計計算
+  const stats = useMemo(() => {
+    const registered = profiles.filter((p) => !p.id.startsWith("mock-"));
+    const newResidents = registered.filter((p) => isNewResident(p.move_in_date));
+    const teaTimeCount = registered.filter((p) => teaTimeParticipants.includes(p.id)).length;
+
+    const floorStats: Record<string, { total: number; registered: number }> = {
       "2F": { total: 5, registered: 0 },
       "3F": { total: 5, registered: 0 },
       "4F": { total: 5, registered: 0 },
       "5F": { total: 5, registered: 0 },
     };
-    profiles.forEach((p) => {
+
+    registered.forEach((p) => {
       const floor = getFloorFromRoom(p.room_number);
-      if (stats[floor] && !p.id.startsWith("mock-")) {
-        stats[floor].registered++;
+      if (floorStats[floor]) {
+        floorStats[floor].registered++;
       }
     });
-    return stats;
-  }, [profiles]);
+
+    return {
+      total: 20,
+      registered: registered.length,
+      unregistered: 20 - registered.length,
+      newResidents: newResidents.length,
+      teaTimeCount,
+      floorStats,
+    };
+  }, [profiles, teaTimeParticipants]);
 
   const handleSortChange = useCallback((sort: SortOption) => {
     setSortBy(sort);
@@ -106,11 +135,13 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
       result = result.filter(
         (profile) =>
           profile.name.toLowerCase().includes(query) ||
+          profile.nickname?.toLowerCase().includes(query) ||
           profile.interests?.some((interest) =>
             interest.toLowerCase().includes(query)
           ) ||
           profile.occupation?.toLowerCase().includes(query) ||
-          profile.industry?.toLowerCase().includes(query)
+          profile.industry?.toLowerCase().includes(query) ||
+          profile.mbti?.toLowerCase().includes(query)
       );
     }
 
@@ -155,6 +186,9 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
     return groups;
   }, [filteredAndSortedProfiles]);
 
+  // Tea Time参加者のSet
+  const teaTimeSet = useMemo(() => new Set(teaTimeParticipants), [teaTimeParticipants]);
+
   if (profiles.length === 0) {
     return (
       <div className="flex-1 flex items-center justify-center">
@@ -165,7 +199,105 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
 
   return (
     <div className="space-y-5 sm:space-y-6">
-      {/* ヘッダー: タイトル + 統計 */}
+      {/* 統計ダッシュボード */}
+      <AnimatePresence>
+        {showStats && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div className="bg-white border border-[#e5e5e5] p-4 sm:p-5 mb-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm text-[#1a1a1a] tracking-wide">{t("residents.statsTitle")}</h3>
+                <button
+                  type="button"
+                  onClick={() => setShowStats(false)}
+                  className="text-[#a3a3a3] hover:text-[#737373] transition-colors p-1"
+                  aria-label={t("common.close")}
+                >
+                  <CloseIcon />
+                </button>
+              </div>
+
+              {/* 主要統計 */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4">
+                <StatCard
+                  label={t("residents.statsRegistered")}
+                  value={stats.registered}
+                  subValue={`/ ${stats.total}`}
+                  color="#1a1a1a"
+                />
+                <StatCard
+                  label={t("residents.statsNew")}
+                  value={stats.newResidents}
+                  subValue={t("residents.statsNewSub")}
+                  color="#6b8b6b"
+                />
+                <StatCard
+                  label={t("residents.statsTeaTime")}
+                  value={stats.teaTimeCount}
+                  subValue={t("residents.statsParticipants")}
+                  color="#5c7a6b"
+                />
+                <StatCard
+                  label={t("residents.statsUnregistered")}
+                  value={stats.unregistered}
+                  subValue={t("residents.statsRooms")}
+                  color="#a3a3a3"
+                />
+              </div>
+
+              {/* 階層別占有率 */}
+              <div className="space-y-2">
+                <p className="text-[10px] text-[#a3a3a3] tracking-wide">{t("residents.floorOccupancy")}</p>
+                <div className="flex gap-2">
+                  {(["5F", "4F", "3F", "2F"] as const).map((floor) => {
+                    const floorStat = stats.floorStats[floor];
+                    const percentage = (floorStat.registered / floorStat.total) * 100;
+                    const colors = floorColors[floor];
+                    return (
+                      <div key={floor} className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className={`text-[10px] ${colors.text}`}>{floor}</span>
+                          <span className="text-[10px] text-[#a3a3a3]">
+                            {floorStat.registered}/{floorStat.total}
+                          </span>
+                        </div>
+                        <div className="h-1.5 bg-[#f5f5f3] overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${percentage}%` }}
+                            transition={{ duration: 0.5, delay: 0.1 }}
+                            style={{ backgroundColor: colors.fill }}
+                            className="h-full"
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 統計を閉じた時の復元ボタン */}
+      {!showStats && (
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          type="button"
+          onClick={() => setShowStats(true)}
+          className="text-[10px] text-[#a3a3a3] hover:text-[#737373] transition-colors mb-2"
+        >
+          {t("residents.showStats")} ↓
+        </motion.button>
+      )}
+
+      {/* ヘッダー: タイトル + 表示モード */}
       <div className="flex flex-col gap-4">
         <div className="flex items-end justify-between">
           <div>
@@ -205,12 +337,12 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
           </div>
         </div>
 
-        {/* 階層統計バー */}
+        {/* 階層フィルター */}
         <div className="flex gap-2 sm:gap-3 overflow-x-auto scrollbar-hide -mx-1 px-1 pb-1">
           {floors.map((floor) => {
             const isAll = floor === "all";
             const isActive = floorFilter === floor;
-            const stats = isAll ? null : floorStats[floor];
+            const floorStat = isAll ? null : stats.floorStats[floor];
             const colors = isAll ? null : floorColors[floor];
 
             return (
@@ -218,7 +350,7 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
                 key={floor}
                 type="button"
                 onClick={() => setFloorFilter(floor)}
-                className={`flex-shrink-0 px-3 sm:px-4 py-2 sm:py-2.5 border transition-all ${
+                className={`shrink-0 px-3 sm:px-4 py-2 sm:py-2.5 border transition-all ${
                   isActive
                     ? isAll
                       ? "bg-[#1a1a1a] border-[#1a1a1a] text-white"
@@ -229,9 +361,9 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
                 <span className="text-xs sm:text-sm tracking-wide">
                   {isAll ? t("residents.filterAll") : floor}
                 </span>
-                {stats && (
+                {floorStat && (
                   <span className={`ml-1.5 text-[10px] sm:text-xs ${isActive ? "" : "text-[#a3a3a3]"}`}>
-                    {stats.registered}/{stats.total}
+                    {floorStat.registered}/{floorStat.total}
                   </span>
                 )}
               </button>
@@ -251,6 +383,15 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full sm:w-64 h-11 sm:h-10 pl-10 pr-4 bg-white border border-[#e5e5e5] text-base sm:text-sm text-[#1a1a1a] placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
             />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a3a3a3] hover:text-[#737373]"
+              >
+                <CloseIcon />
+              </button>
+            )}
           </div>
 
           {/* ソート */}
@@ -263,7 +404,7 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
                     key={option.value}
                     type="button"
                     onClick={() => handleSortChange(option.value)}
-                    className="relative px-4 sm:px-4 py-2.5 sm:py-2 tracking-wide transition-colors group whitespace-nowrap active:opacity-70 snap-center sm:snap-align-none flex-shrink-0"
+                    className="relative px-4 sm:px-4 py-2.5 sm:py-2 tracking-wide transition-colors group whitespace-nowrap active:opacity-70 snap-center sm:snap-align-none shrink-0"
                   >
                     <span
                       className={`text-sm ${
@@ -285,7 +426,7 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
                 );
               })}
             </div>
-            <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#fafaf8] to-transparent pointer-events-none" />
+            <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-[#fafaf8] to-transparent pointer-events-none" />
           </div>
         </div>
       </div>
@@ -300,8 +441,12 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
             exit={{ opacity: 0 }}
             className="text-center py-12 sm:py-16"
           >
+            <div className="w-16 h-16 mx-auto mb-4 bg-[#f5f5f3] flex items-center justify-center">
+              <SearchIcon className="w-8 h-8 text-[#d4d4d4]" />
+            </div>
             <p className="text-[#737373] text-sm">{t("residents.noMatch")}</p>
             <button
+              type="button"
               onClick={() => {
                 setSearchQuery("");
                 setFloorFilter("all");
@@ -316,7 +461,8 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
             key="floor-view"
             groupedByFloor={groupedByFloor}
             currentUserId={currentUserId}
-            floorStats={floorStats}
+            floorStats={stats.floorStats}
+            teaTimeSet={teaTimeSet}
             t={t}
           />
         ) : viewMode === "list" ? (
@@ -324,6 +470,7 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
             key="list-view"
             profiles={filteredAndSortedProfiles}
             currentUserId={currentUserId}
+            teaTimeSet={teaTimeSet}
             t={t}
           />
         ) : (
@@ -331,9 +478,33 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
             key="grid-view"
             profiles={filteredAndSortedProfiles}
             currentUserId={currentUserId}
+            teaTimeSet={teaTimeSet}
           />
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+// 統計カード
+function StatCard({
+  label,
+  value,
+  subValue,
+  color,
+}: {
+  label: string;
+  value: number;
+  subValue: string;
+  color: string;
+}) {
+  return (
+    <div className="text-center">
+      <p className="text-[10px] text-[#a3a3a3] mb-1 tracking-wide">{label}</p>
+      <p className="text-2xl sm:text-3xl font-light" style={{ color }}>
+        {value}
+        <span className="text-sm text-[#a3a3a3] ml-1">{subValue}</span>
+      </p>
     </div>
   );
 }
@@ -342,9 +513,11 @@ export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
 function GridView({
   profiles,
   currentUserId,
+  teaTimeSet,
 }: {
   profiles: Profile[];
   currentUserId: string;
+  teaTimeSet: Set<string>;
 }) {
   return (
     <motion.div
@@ -358,11 +531,13 @@ function GridView({
           key={profile.id}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2, delay: index * 0.02 }}
+          transition={{ duration: 0.2, delay: Math.min(index * 0.02, 0.3) }}
         >
           <ResidentCard
             profile={profile}
             isCurrentUser={profile.id === currentUserId}
+            showTeaTime={true}
+            teaTimeEnabled={teaTimeSet.has(profile.id)}
           />
         </motion.div>
       ))}
@@ -375,11 +550,13 @@ function FloorView({
   groupedByFloor,
   currentUserId,
   floorStats,
+  teaTimeSet,
   t,
 }: {
   groupedByFloor: Record<string, Profile[]>;
   currentUserId: string;
   floorStats: Record<string, { total: number; registered: number }>;
+  teaTimeSet: Set<string>;
   t: Translator;
 }) {
   const floorsOrder = ["5F", "4F", "3F", "2F"];
@@ -391,10 +568,10 @@ function FloorView({
       exit={{ opacity: 0 }}
       className="space-y-8"
     >
-      {floorsOrder.map((floor) => {
+      {floorsOrder.map((floor, floorIndex) => {
         const profiles = groupedByFloor[floor] || [];
         const colors = floorColors[floor];
-        const stats = floorStats[floor];
+        const floorStat = floorStats[floor];
 
         if (profiles.length === 0) return null;
 
@@ -403,22 +580,33 @@ function FloorView({
             key={floor}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.3, delay: floorIndex * 0.1 }}
           >
             {/* 階層ヘッダー */}
             <div className={`flex items-center gap-3 mb-4 pb-3 border-b-2 ${colors.border}`}>
               <div
-                className={`w-10 h-10 flex items-center justify-center ${colors.bg} border ${colors.border}`}
+                className={`w-12 h-12 flex items-center justify-center ${colors.bg} border ${colors.border}`}
               >
-                <span className={`text-sm font-medium ${colors.text}`}>{floor}</span>
+                <span className={`text-base font-medium ${colors.text}`}>{floor}</span>
               </div>
-              <div>
+              <div className="flex-1">
                 <h3 className={`text-base ${colors.text} tracking-wide`}>
                   {t("residents.floorLabel", { floor: floor.replace("F", "") })}
                 </h3>
-                <p className="text-[10px] text-[#a3a3a3]">
-                  {stats.registered}/{stats.total} {t("residents.registeredShort")}
-                </p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-[10px] text-[#a3a3a3]">
+                    {floorStat.registered}/{floorStat.total} {t("residents.registeredShort")}
+                  </span>
+                  <div className="flex-1 max-w-20 h-1 bg-[#f5f5f3]">
+                    <div
+                      className="h-full transition-all duration-500"
+                      style={{
+                        width: `${(floorStat.registered / floorStat.total) * 100}%`,
+                        backgroundColor: colors.fill,
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -435,6 +623,8 @@ function FloorView({
                     profile={profile}
                     isCurrentUser={profile.id === currentUserId}
                     floorAccent={colors.accent}
+                    showTeaTime={true}
+                    teaTimeEnabled={teaTimeSet.has(profile.id)}
                   />
                 </motion.div>
               ))}
@@ -450,10 +640,12 @@ function FloorView({
 function ListView({
   profiles,
   currentUserId,
+  teaTimeSet,
   t,
 }: {
   profiles: Profile[];
   currentUserId: string;
+  teaTimeSet: Set<string>;
   t: Translator;
 }) {
   return (
@@ -468,11 +660,12 @@ function ListView({
           key={profile.id}
           initial={{ opacity: 0, x: -8 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.2, delay: index * 0.02 }}
+          transition={{ duration: 0.2, delay: Math.min(index * 0.02, 0.2) }}
         >
           <ResidentListItem
             profile={profile}
             isCurrentUser={profile.id === currentUserId}
+            isTeaTimeParticipant={teaTimeSet.has(profile.id)}
             t={t}
           />
         </motion.div>
@@ -482,22 +675,21 @@ function ListView({
 }
 
 // リストアイテム
-import Link from "next/link";
-import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
-import { getInitials } from "@/lib/utils";
-
 function ResidentListItem({
   profile,
   isCurrentUser,
+  isTeaTimeParticipant,
   t,
 }: {
   profile: Profile;
   isCurrentUser: boolean;
+  isTeaTimeParticipant: boolean;
   t: Translator;
 }) {
   const isMockProfile = profile.id.startsWith("mock-");
   const floor = getFloorFromRoom(profile.room_number);
   const colors = floorColors[floor] || floorColors["?"];
+  const isNew = isNewResident(profile.move_in_date);
 
   return (
     <Link
@@ -515,7 +707,7 @@ function ResidentListItem({
         }`}
       >
         {/* アバター */}
-        <div className="relative flex-shrink-0">
+        <div className="relative shrink-0">
           <Avatar className="w-12 h-12 sm:w-14 sm:h-14 rounded-none">
             <OptimizedAvatarImage
               src={profile.avatar_url}
@@ -535,15 +727,25 @@ function ResidentListItem({
 
         {/* 情報 */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <h3 className="text-sm sm:text-base text-[#1a1a1a] truncate">
-              {profile.name}
+              {profile.nickname || profile.name}
             </h3>
             {profile.room_number && (
               <span
                 className={`text-[10px] sm:text-xs px-1.5 py-0.5 ${colors.bg} ${colors.text}`}
               >
                 {profile.room_number}
+              </span>
+            )}
+            {isNew && !isMockProfile && (
+              <span className="text-[10px] px-1.5 py-0.5 bg-[#f8faf8] text-[#6b8b6b] border border-[#a0c9a0]">
+                NEW
+              </span>
+            )}
+            {isTeaTimeParticipant && !isMockProfile && (
+              <span className="text-[10px] px-1.5 py-0.5 bg-[#5c7a6b] text-white flex items-center gap-0.5">
+                <TeaCupIcon />
               </span>
             )}
             {isMockProfile && (
@@ -554,7 +756,9 @@ function ResidentListItem({
           </div>
 
           <div className="flex items-center gap-3 mt-1 text-[11px] sm:text-xs text-[#737373]">
-            {profile.occupation && <span>{profile.occupation}</span>}
+            {profile.occupation && (
+              <span>{t(`profileOptions.occupation.${profile.occupation}` as Parameters<typeof t>[0])}</span>
+            )}
             {profile.mbti && <span className="text-[#a3a3a3]">{profile.mbti}</span>}
             {profile.interests && profile.interests.length > 0 && (
               <span className="truncate text-[#a3a3a3]">
@@ -565,16 +769,8 @@ function ResidentListItem({
         </div>
 
         {/* 矢印 */}
-        <div className="text-[#d4d4d4] group-hover:text-[#a3a3a3] transition-colors">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path
-              d="M6 4L10 8L6 12"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+        <div className="text-[#d4d4d4] group-hover:text-[#a3a3a3] transition-colors shrink-0">
+          <ChevronRightIcon />
         </div>
       </article>
     </Link>
@@ -627,6 +823,47 @@ function SearchIcon({ className }: { className?: string }) {
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className={className}>
       <circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.5" />
       <path d="M10.5 10.5L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path d="M3 3L11 11M11 3L3 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function ChevronRightIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path
+        d="M6 4L10 8L6 12"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function TeaCupIcon() {
+  return (
+    <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
+      <path
+        d="M2 6h10v5a3 3 0 01-3 3H5a3 3 0 01-3-3V6z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        fill="none"
+      />
+      <path
+        d="M12 7h1a2 2 0 110 4h-1"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        fill="none"
+      />
     </svg>
   );
 }
