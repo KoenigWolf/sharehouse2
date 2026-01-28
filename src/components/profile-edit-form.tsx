@@ -5,7 +5,7 @@ import Link from "next/link";
 import { m, AnimatePresence } from "framer-motion";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
-import { Profile, MBTI_TYPES, MBTI_LABELS, MBTIType } from "@/domain/profile";
+import { Profile, MBTI_TYPES, MBTI_LABELS, MBTIType, ROOM_NUMBERS } from "@/domain/profile";
 import { updateProfile, uploadAvatar } from "@/lib/profile/actions";
 import { updateTeaTimeSetting } from "@/lib/tea-time/actions";
 import { getInitials } from "@/lib/utils";
@@ -16,17 +16,268 @@ interface ProfileEditFormProps {
   initialTeaTimeEnabled?: boolean;
 }
 
-/**
- * プロフィール編集フォームコンポーネント
- *
- * 左カラムにリアルタイムプレビュー（アバター・名前・趣味タグ）・
- * プロフィール完成度メーター・ティータイム参加トグルを表示し、
- * 右カラムに編集フォーム（名前・部屋番号・入居日・MBTI・自己紹介・趣味）を配置する。
- * アバターアップロードはFormData経由のサーバーアクションで処理する。
- *
- * @param props.profile - 編集対象のプロフィールデータ
- * @param props.initialTeaTimeEnabled - ティータイム参加の初期状態（デフォルト: false）
- */
+// Section category types with icons and colors
+type SectionType = "basic" | "extended" | "work" | "lifestyle" | "communal" | "personality" | "sns";
+
+const sectionConfig: Record<SectionType, { color: string; bgColor: string; borderColor: string; icon: React.ReactNode }> = {
+  basic: {
+    color: "text-[#1a1a1a]",
+    bgColor: "bg-white",
+    borderColor: "border-[#e5e5e5]",
+    icon: (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+      </svg>
+    ),
+  },
+  extended: {
+    color: "text-[#8b7355]",
+    bgColor: "bg-[#faf9f7]",
+    borderColor: "border-[#e8e4df]",
+    icon: (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z" />
+      </svg>
+    ),
+  },
+  work: {
+    color: "text-[#5c6b7a]",
+    bgColor: "bg-[#f8f9fa]",
+    borderColor: "border-[#dfe3e8]",
+    icon: (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" />
+      </svg>
+    ),
+  },
+  lifestyle: {
+    color: "text-[#7a6b5c]",
+    bgColor: "bg-[#faf9f8]",
+    borderColor: "border-[#e8e4df]",
+    icon: (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+      </svg>
+    ),
+  },
+  communal: {
+    color: "text-[#5c7a6b]",
+    bgColor: "bg-[#f8faf9]",
+    borderColor: "border-[#dfe8e3]",
+    icon: (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+      </svg>
+    ),
+  },
+  personality: {
+    color: "text-[#7a5c6b]",
+    bgColor: "bg-[#faf8f9]",
+    borderColor: "border-[#e8dfe3]",
+    icon: (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
+      </svg>
+    ),
+  },
+  sns: {
+    color: "text-[#5c6b7a]",
+    bgColor: "bg-[#f8f9fa]",
+    borderColor: "border-[#dfe3e8]",
+    icon: (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+      </svg>
+    ),
+  },
+};
+
+// Collapsible Section Component
+function FormSection({
+  id,
+  title,
+  sectionType,
+  isExpanded,
+  onToggle,
+  filledCount,
+  totalCount,
+  children,
+}: {
+  id: string;
+  title: string;
+  sectionType: SectionType;
+  isExpanded: boolean;
+  onToggle: () => void;
+  filledCount?: number;
+  totalCount?: number;
+  children: React.ReactNode;
+}) {
+  const config = sectionConfig[sectionType];
+  const showProgress = filledCount !== undefined && totalCount !== undefined && totalCount > 0;
+
+  return (
+    <m.div
+      initial={false}
+      animate={{ backgroundColor: isExpanded ? config.bgColor.replace("bg-", "") : "#ffffff" }}
+      className={`border ${config.borderColor} overflow-hidden`}
+    >
+      <button
+        type="button"
+        onClick={onToggle}
+        className={`w-full px-5 py-4 flex items-center justify-between hover:bg-[#fafaf8] transition-colors ${config.bgColor}`}
+      >
+        <div className="flex items-center gap-3">
+          <span className={config.color}>{config.icon}</span>
+          <span className={`text-sm tracking-wide ${config.color}`}>{title}</span>
+        </div>
+        <div className="flex items-center gap-3">
+          {showProgress && (
+            <span className="text-[10px] text-[#a3a3a3]">
+              {filledCount}/{totalCount}
+            </span>
+          )}
+          <m.span
+            animate={{ rotate: isExpanded ? 180 : 0 }}
+            transition={{ duration: 0.2 }}
+            className="text-[#a3a3a3]"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+            </svg>
+          </m.span>
+        </div>
+      </button>
+      <AnimatePresence initial={false}>
+        {isExpanded && (
+          <m.div
+            key={id}
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <div className="p-5 pt-2 space-y-4 border-t border-[#f0f0f0]">
+              {children}
+            </div>
+          </m.div>
+        )}
+      </AnimatePresence>
+    </m.div>
+  );
+}
+
+// Input Field Component
+function InputField({
+  id,
+  label,
+  value,
+  onChange,
+  placeholder,
+  type = "text",
+  required = false,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  type?: "text" | "date";
+  required?: boolean;
+}) {
+  return (
+    <div className="space-y-2">
+      <label htmlFor={id} className="block text-xs text-[#737373] tracking-wide">
+        {label}
+        {required && <span className="text-[#c9a0a0] ml-0.5">*</span>}
+      </label>
+      <input
+        id={id}
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        required={required}
+        className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
+      />
+    </div>
+  );
+}
+
+// Select Field Component
+function SelectField({
+  id,
+  label,
+  value,
+  onChange,
+  options,
+  placeholder,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: { value: string; label: string }[];
+  placeholder?: string;
+}) {
+  return (
+    <div className="space-y-2">
+      <label htmlFor={id} className="block text-xs text-[#737373] tracking-wide">
+        {label}
+      </label>
+      <select
+        id={id}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors"
+      >
+        {placeholder && <option value="">{placeholder}</option>}
+        {options.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+// Textarea Field Component
+function TextareaField({
+  id,
+  label,
+  value,
+  onChange,
+  placeholder,
+  rows = 3,
+  hint,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  rows?: number;
+  hint?: string;
+}) {
+  return (
+    <div className="space-y-2">
+      <label htmlFor={id} className="block text-xs text-[#737373] tracking-wide">
+        {label}
+      </label>
+      <textarea
+        id={id}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        rows={rows}
+        className="w-full px-4 py-3 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors resize-none leading-relaxed"
+      />
+      {hint && <p className="text-[10px] text-[#a3a3a3]">{hint}</p>}
+    </div>
+  );
+}
+
 export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: ProfileEditFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const t = useI18n();
@@ -46,35 +297,29 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
     interests: profile.interests?.join(", ") || "",
     mbti: profile.mbti || ("" as MBTIType | ""),
     move_in_date: profile.move_in_date || "",
-    // 基本情報
     nickname: profile.nickname || "",
     age_range: profile.age_range || "",
     gender: profile.gender || "",
     nationality: profile.nationality || "",
     languages: profile.languages || [],
     hometown: profile.hometown || "",
-    // 仕事・学歴
     occupation: profile.occupation || "",
     industry: profile.industry || "",
     work_location: profile.work_location || "",
     work_style: profile.work_style || "",
-    // ライフスタイル
     daily_rhythm: profile.daily_rhythm || "",
     home_frequency: profile.home_frequency || "",
     alcohol: profile.alcohol || "",
     smoking: profile.smoking || "",
     pets: profile.pets || "",
     guest_frequency: profile.guest_frequency || "",
-    // 共同生活への姿勢
     social_stance: profile.social_stance || "",
     shared_space_usage: profile.shared_space_usage || "",
     cleaning_attitude: profile.cleaning_attitude || "",
     cooking_frequency: profile.cooking_frequency || "",
     shared_meals: profile.shared_meals || "",
-    // 性格・趣味
     personality_type: profile.personality_type || "",
     weekend_activities: profile.weekend_activities || "",
-    // SNS
     sns_x: profile.sns_x || "",
     sns_instagram: profile.sns_instagram || "",
     sns_facebook: profile.sns_facebook || "",
@@ -92,23 +337,53 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
     [formData.interests]
   );
 
+  // Section field counts
+  const sectionFieldCounts = useMemo(() => ({
+    extended: {
+      filled: [formData.nickname, formData.age_range, formData.gender, formData.hometown, formData.nationality].filter(Boolean).length,
+      total: 5,
+    },
+    work: {
+      filled: [formData.occupation, formData.work_style, formData.industry, formData.work_location].filter(Boolean).length,
+      total: 4,
+    },
+    lifestyle: {
+      filled: [formData.daily_rhythm, formData.alcohol, formData.smoking, formData.home_frequency, formData.guest_frequency, formData.pets].filter(Boolean).length,
+      total: 6,
+    },
+    communal: {
+      filled: [formData.social_stance, formData.cleaning_attitude, formData.cooking_frequency, formData.shared_meals, formData.shared_space_usage].filter(Boolean).length,
+      total: 5,
+    },
+    personality: {
+      filled: [formData.personality_type, formData.weekend_activities].filter(Boolean).length,
+      total: 2,
+    },
+    sns: {
+      filled: [formData.sns_x, formData.sns_instagram, formData.sns_facebook, formData.sns_linkedin, formData.sns_github].filter(Boolean).length,
+      total: 5,
+    },
+  }), [formData]);
+
+  // Overall completion
   const completionItems = useMemo(
     () => [
       { label: t("profile.completionItems.photo"), completed: !!avatarUrl },
       { label: t("profile.completionItems.name"), completed: !!formData.name.trim() },
-      {
-        label: t("profile.completionItems.roomNumber"),
-        completed: !!formData.room_number.trim(),
-      },
+      { label: t("profile.completionItems.roomNumber"), completed: !!formData.room_number.trim() },
       { label: t("profile.completionItems.bio"), completed: !!formData.bio.trim() },
       { label: t("profile.completionItems.interests"), completed: !!formData.interests.trim() },
     ],
     [avatarUrl, formData.name, formData.room_number, formData.bio, formData.interests, t]
   );
   const completedCount = completionItems.filter((i) => i.completed).length;
-  const completionPercentage = Math.round(
-    (completedCount / completionItems.length) * 100
-  );
+  const completionPercentage = Math.round((completedCount / completionItems.length) * 100);
+
+  const toggleSection = useCallback((section: string) => {
+    setExpandedSections((prev) =>
+      prev.includes(section) ? prev.filter((s) => s !== section) : [...prev, section]
+    );
+  }, []);
 
   const handleAvatarClick = () => {
     fileInputRef.current?.click();
@@ -158,35 +433,29 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
       interests: interestsArray,
       mbti: formData.mbti || null,
       move_in_date: formData.move_in_date || null,
-      // 基本情報
       nickname: formData.nickname.trim() || null,
       age_range: formData.age_range || null,
       gender: formData.gender || null,
       nationality: formData.nationality.trim() || null,
       languages: formData.languages,
       hometown: formData.hometown.trim() || null,
-      // 仕事・学歴
       occupation: formData.occupation || null,
       industry: formData.industry.trim() || null,
       work_location: formData.work_location.trim() || null,
       work_style: formData.work_style || null,
-      // ライフスタイル
       daily_rhythm: formData.daily_rhythm || null,
       home_frequency: formData.home_frequency || null,
       alcohol: formData.alcohol || null,
       smoking: formData.smoking || null,
       pets: formData.pets || null,
       guest_frequency: formData.guest_frequency || null,
-      // 共同生活への姿勢
       social_stance: formData.social_stance || null,
       shared_space_usage: formData.shared_space_usage.trim() || null,
       cleaning_attitude: formData.cleaning_attitude || null,
       cooking_frequency: formData.cooking_frequency || null,
       shared_meals: formData.shared_meals || null,
-      // 性格・趣味
       personality_type: formData.personality_type.trim() || null,
       weekend_activities: formData.weekend_activities.trim() || null,
-      // SNS
       sns_x: formData.sns_x.trim() || null,
       sns_instagram: formData.sns_instagram.trim() || null,
       sns_facebook: formData.sns_facebook.trim() || null,
@@ -217,27 +486,33 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
     setIsTeaTimeLoading(false);
   };
 
+  const updateField = useCallback((field: string, value: string | string[]) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  }, []);
+
   return (
     <m.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="space-y-5"
+      className="max-w-3xl mx-auto"
     >
-      {/* ヘッダー */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl text-[#1a1a1a] tracking-wide font-light">
-          {t("profile.editTitle")}
-        </h1>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
         <Link
           href={`/profile/${profile.id}`}
-          className="text-xs text-[#737373] hover:text-[#1a1a1a] transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs text-[#737373] hover:text-[#1a1a1a] transition-colors"
         >
-          {t("profile.viewPublicProfile")}
+          <span aria-hidden="true">←</span>
+          <span>{t("common.back")}</span>
         </Link>
+        <h1 className="text-lg text-[#1a1a1a] tracking-wide font-light">
+          {t("profile.editTitle")}
+        </h1>
+        <div className="w-16" />
       </div>
 
-      {/* メッセージ */}
+      {/* Messages */}
       <AnimatePresence mode="wait">
         {error && (
           <m.div
@@ -248,7 +523,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="py-3 px-4 bg-[#faf8f8] border-l-2 border-[#c9a0a0]"
+            className="mb-6 py-3 px-4 bg-[#faf8f8] border-l-2 border-[#c9a0a0]"
           >
             <p className="text-sm text-[#8b6b6b]">{error}</p>
           </m.div>
@@ -260,38 +535,31 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="py-3 px-4 bg-[#f8faf8] border-l-2 border-[#a0c9a0]"
+            className="mb-6 py-3 px-4 bg-[#f8faf8] border-l-2 border-[#a0c9a0]"
           >
             <p className="text-sm text-[#6b8b6b]">{t("profile.saved")}</p>
           </m.div>
         )}
       </AnimatePresence>
 
-      <div className="grid gap-5 md:grid-cols-5">
-        {/* 左：プレビュー */}
-        <m.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
-          className="md:col-span-2 md:self-start md:sticky md:top-4 space-y-4"
-        >
-          {/* プロフィールカードプレビュー */}
-          <div className="bg-white border border-[#e5e5e5]">
-            <div className="px-4 py-3 border-b border-[#e5e5e5]">
-              <p className="text-xs text-[#a3a3a3] tracking-wide">
-                {t("profile.preview")}
-              </p>
-            </div>
-            <div className="p-4">
-              {/* アバター */}
-              <div className="w-full max-w-[240px] mx-auto mb-4">
-                <button
-                  type="button"
-                  onClick={handleAvatarClick}
-                  disabled={isUploading}
-                  className="relative w-full aspect-square bg-[#f5f5f3] group block"
-                >
-                  <Avatar className="absolute inset-0 size-full rounded-none">
+      {/* Hero Section - Avatar & Core Info */}
+      <m.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+        className="bg-white border border-[#e5e5e5] mb-6"
+      >
+        <div className="p-6 sm:p-8">
+          <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-center sm:items-start">
+            {/* Avatar */}
+            <div className="shrink-0">
+              <button
+                type="button"
+                onClick={handleAvatarClick}
+                disabled={isUploading}
+                className="relative w-36 h-36 sm:w-44 sm:h-44 bg-[#f5f5f3] group block overflow-hidden"
+              >
+                <Avatar className="absolute inset-0 size-full rounded-none">
                   <OptimizedAvatarImage
                     src={avatarUrl}
                     context="edit"
@@ -309,17 +577,12 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                   <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
                     <m.span
                       animate={{ rotate: 360 }}
-                      transition={{
-                        duration: 1,
-                        repeat: Infinity,
-                        ease: "linear",
-                      }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                       className="inline-block w-6 h-6 border border-[#d4d4d4] border-t-[#1a1a1a] rounded-full"
                     />
                   </div>
                 )}
-                </button>
-              </div>
+              </button>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -327,684 +590,601 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                 onChange={handleAvatarChange}
                 className="hidden"
               />
+              <p className="text-[10px] text-[#a3a3a3] text-center mt-2">
+                {t("profile.photoFormat")}
+              </p>
+            </div>
 
-              {/* 名前・部屋番号 */}
-              <div className="flex items-baseline justify-between gap-2 mb-3">
-                <h3 className="text-sm text-[#1a1a1a] tracking-wide truncate">
-                  {formData.name || t("profile.nameUnset")}
-                </h3>
-                {formData.room_number && (
-                  <span className="text-[10px] text-[#a3a3a3] shrink-0">
-                    {formData.room_number}
-                  </span>
-                )}
-              </div>
-
-              {/* 趣味タグ */}
-              {interestsArray.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
-                  {interestsArray.slice(0, 3).map((interest, i) => (
+            {/* Info Side */}
+            <div className="flex-1 w-full text-center sm:text-left">
+              {/* Completion Meter */}
+              <div className="mb-4 p-3 bg-[#fafaf8] border border-[#f0f0f0]">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-[10px] text-[#737373] tracking-wide">{t("profile.completionLabel")}</p>
+                  <p className="text-sm font-medium text-[#1a1a1a]">{completionPercentage}%</p>
+                </div>
+                <div className="h-1 bg-[#e5e5e5] overflow-hidden">
+                  <m.div
+                    className="h-full bg-[#1a1a1a]"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${completionPercentage}%` }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                  />
+                </div>
+                <div className="flex flex-wrap gap-1.5 mt-2 justify-center sm:justify-start">
+                  {completionItems.map((item) => (
                     <span
-                      key={i}
-                      className="text-[10px] px-2 py-0.5 bg-[#f5f5f3] text-[#737373]"
+                      key={item.label}
+                      className={`text-[10px] px-2 py-0.5 ${
+                        item.completed
+                          ? "bg-[#f0f8f0] text-[#6b8b6b]"
+                          : "bg-[#f5f5f3] text-[#a3a3a3]"
+                      }`}
                     >
-                      {interest}
+                      {item.completed && "✓ "}{item.label}
                     </span>
                   ))}
-                  {interestsArray.length > 3 && (
-                    <span className="text-[10px] text-[#a3a3a3]">
-                      +{interestsArray.length - 3}
-                    </span>
-                  )}
                 </div>
-              )}
-            </div>
-          </div>
+              </div>
 
-          {/* 完成度 */}
-          <div className="bg-white border border-[#e5e5e5] p-4">
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-xs text-[#737373]">{t("profile.completionLabel")}</p>
-              <p className="text-sm text-[#1a1a1a]">{completionPercentage}%</p>
-            </div>
-            <div className="h-px bg-[#e5e5e5] mb-3">
+              {/* Tea Time Toggle */}
               <m.div
-                className="h-full bg-[#1a1a1a]"
-                initial={{ width: 0 }}
-                animate={{ width: `${completionPercentage}%` }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
-              />
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {completionItems.map((item) => (
-                <span
-                  key={item.label}
-                  className={`text-[10px] px-2 py-0.5 ${
-                    item.completed
-                      ? "bg-[#f8faf8] text-[#6b8b6b]"
-                      : "bg-[#f5f5f3] text-[#a3a3a3]"
-                  }`}
+                animate={{
+                  backgroundColor: teaTimeEnabled ? "#f0f8f4" : "#fafaf8",
+                  borderColor: teaTimeEnabled ? "#a0c9a0" : "#e5e5e5",
+                }}
+                transition={{ duration: 0.3 }}
+                className="p-3 border"
+              >
+                <button
+                  type="button"
+                  onClick={() => !isTeaTimeLoading && handleTeaTimeToggle(!teaTimeEnabled)}
+                  disabled={isTeaTimeLoading}
+                  className="w-full text-left group disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {item.label}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* ティータイム設定 */}
-          <m.div
-            animate={{
-              backgroundColor: teaTimeEnabled ? "#f8faf8" : "#ffffff",
-              borderColor: teaTimeEnabled ? "#a0c9a0" : "#e5e5e5",
-            }}
-            transition={{ duration: 0.3 }}
-            className="bg-white border p-5 sm:p-4"
-          >
-            <button
-              type="button"
-              onClick={() => !isTeaTimeLoading && handleTeaTimeToggle(!teaTimeEnabled)}
-              disabled={isTeaTimeLoading}
-              className="w-full text-left group disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <m.div
-                      animate={{
-                        scale: teaTimeEnabled ? 1 : 0.9,
-                        opacity: teaTimeEnabled ? 1 : 0.4,
-                      }}
-                      transition={{ duration: 0.2 }}
-                    >
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
                       <svg
-                        className="w-4 h-4 sm:w-3.5 sm:h-3.5"
+                        className={`w-4 h-4 ${teaTimeEnabled ? "text-[#6b8b6b]" : "text-[#a3a3a3]"}`}
                         fill="none"
-                        stroke="currentColor"
                         viewBox="0 0 24 24"
-                        style={{ color: teaTimeEnabled ? "#6b8b6b" : "#a3a3a3" }}
+                        stroke="currentColor"
+                        strokeWidth={1.5}
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M3 6h18M3 12h18M3 18h18"
-                        />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z" />
                       </svg>
-                    </m.div>
-                    <p className={`text-sm sm:text-xs tracking-wide transition-colors ${
-                      teaTimeEnabled ? "text-[#6b8b6b] font-medium" : "text-[#737373]"
-                    }`}>
-                      {t("profile.teaTimeStatus")}
-                    </p>
-                  </div>
-
-                  <m.p
-                    animate={{
-                      color: teaTimeEnabled ? "#6b8b6b" : "#a3a3a3",
-                    }}
-                    transition={{ duration: 0.3 }}
-                    className="text-xs sm:text-[10px] leading-relaxed"
-                  >
-                    {teaTimeEnabled
-                      ? t("teaTime.participating")
-                      : t("teaTime.notParticipating")}
-                  </m.p>
-
-                  {teaTimeEnabled && (
-                    <m.p
-                      initial={{ opacity: 0, y: -4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -4 }}
-                      transition={{ duration: 0.2, delay: 0.1 }}
-                      className="text-[10px] text-[#8ba88b] mt-2"
-                    >
-                      {t("teaTime.matchingTarget")}
-                    </m.p>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-3 shrink-0">
-                  <AnimatePresence mode="wait">
-                    {isTeaTimeLoading ? (
-                      <m.div
-                        key="loading"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        transition={{ duration: 0.2 }}
-                      >
+                      <div>
+                        <p className={`text-xs tracking-wide ${teaTimeEnabled ? "text-[#6b8b6b] font-medium" : "text-[#737373]"}`}>
+                          {t("teaTime.title")}
+                        </p>
+                        <p className={`text-[10px] ${teaTimeEnabled ? "text-[#8ba88b]" : "text-[#a3a3a3]"}`}>
+                          {teaTimeEnabled ? t("teaTime.participating") : t("teaTime.notParticipating")}
+                        </p>
+                      </div>
+                    </div>
+                    <AnimatePresence mode="wait">
+                      {isTeaTimeLoading ? (
                         <m.span
+                          key="loading"
                           animate={{ rotate: 360 }}
-                          transition={{
-                            duration: 1,
-                            repeat: Infinity,
-                            ease: "linear",
-                          }}
+                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                           className="inline-block w-5 h-5 border border-[#d4d4d4] border-t-[#1a1a1a] rounded-full"
                         />
-                      </m.div>
-                    ) : (
-                      <m.div
-                        key="switch"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        transition={{ duration: 0.2 }}
-                      >
+                      ) : (
                         <Switch
                           checked={teaTimeEnabled}
                           onCheckedChange={handleTeaTimeToggle}
                           disabled={isTeaTimeLoading}
-                          className="data-[state=checked]:bg-[#6b8b6b] scale-110 sm:scale-100"
+                          className="data-[state=checked]:bg-[#6b8b6b]"
                         />
-                      </m.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
-            </button>
-          </m.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </button>
+              </m.div>
+            </div>
+          </div>
+        </div>
+      </m.div>
 
-          {/* 写真アップロードのヒント */}
-        <p className="text-[10px] text-[#a3a3a3] text-center">
-          {t("profile.photoHintMobile")}
-          <br className="sm:hidden" />
-          <span className="hidden sm:inline">・</span>
-          {t("profile.photoFormat")}
-        </p>
-        </m.div>
-
-        {/* 右：編集フォーム */}
+      {/* Form Sections */}
+      <form onSubmit={handleSubmit} className="space-y-3">
+        {/* Basic Info (Always visible) */}
         <m.div
-          initial={{ opacity: 0, y: 8 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.15 }}
-          className="md:col-span-3"
         >
-          <form
-            onSubmit={handleSubmit}
-            className="bg-white border border-[#e5e5e5]"
+          <FormSection
+            id="basic"
+            title={t("profile.basicInfo")}
+            sectionType="basic"
+            isExpanded={expandedSections.includes("basic")}
+            onToggle={() => toggleSection("basic")}
           >
-            <div className="px-4 py-3 border-b border-[#e5e5e5]">
-              <p className="text-xs text-[#a3a3a3] tracking-wide">
-                {t("profile.basicInfo")}
-              </p>
+            <InputField
+              id="name"
+              label={t("auth.name")}
+              value={formData.name}
+              onChange={(v) => updateField("name", v)}
+              placeholder={t("auth.namePlaceholder")}
+              required
+            />
+            <div className="grid grid-cols-2 gap-4">
+              <SelectField
+                id="room_number"
+                label={t("profile.roomNumber")}
+                value={formData.room_number}
+                onChange={(v) => updateField("room_number", v)}
+                options={ROOM_NUMBERS.map((r) => ({ value: r, label: r }))}
+                placeholder={t("profile.selectPlaceholder")}
+              />
+              <InputField
+                id="move_in_date"
+                label={t("profile.moveInDate")}
+                value={formData.move_in_date}
+                onChange={(v) => updateField("move_in_date", v)}
+                type="date"
+              />
             </div>
-
-            <div className="p-4 sm:p-5 space-y-5">
-              {/* 名前 */}
-              <div className="space-y-2">
-                <label
-                  htmlFor="name"
-                  className="block text-xs text-[#737373] tracking-wide"
-                >
-                  {t("auth.name")}
-                </label>
-                <input
-                  id="name"
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  placeholder={t("auth.namePlaceholder")}
-                  required
-                  className="w-full h-12 sm:h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-base sm:text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
-                />
+            <SelectField
+              id="mbti"
+              label={t("profile.mbti")}
+              value={formData.mbti}
+              onChange={(v) => updateField("mbti", v)}
+              options={MBTI_TYPES.map((type) => ({
+                value: type,
+                label: `${type} - ${MBTI_LABELS[type][locale === "ja" ? "ja" : "en"]}`,
+              }))}
+              placeholder={t("profile.mbtiPlaceholder")}
+            />
+            <TextareaField
+              id="bio"
+              label={t("profile.bio")}
+              value={formData.bio}
+              onChange={(v) => updateField("bio", v)}
+              placeholder={t("profile.bioPlaceholder")}
+            />
+            <InputField
+              id="interests"
+              label={t("profile.interests")}
+              value={formData.interests}
+              onChange={(v) => updateField("interests", v)}
+              placeholder={t("profile.interestsPlaceholder")}
+            />
+            {interestsArray.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {interestsArray.map((interest, i) => (
+                  <span key={i} className="text-[10px] px-2 py-0.5 bg-[#f5f5f3] text-[#737373]">
+                    {interest}
+                  </span>
+                ))}
               </div>
-
-              {/* 部屋番号・入居日 */}
-              <div className="grid grid-cols-1 xs:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                <label
-                  htmlFor="room_number"
-                  className="block text-xs text-[#737373] tracking-wide"
-                >
-                  {t("profile.roomNumber")}
-                </label>
-                  <input
-                    id="room_number"
-                    type="text"
-                    value={formData.room_number}
-                    onChange={(e) =>
-                      setFormData({ ...formData, room_number: e.target.value })
-                    }
-                    placeholder="301"
-                    className="w-full h-12 sm:h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-base sm:text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
-                  />
-                </div>
-                <div className="space-y-2">
-                <label
-                  htmlFor="move_in_date"
-                  className="block text-xs text-[#737373] tracking-wide"
-                >
-                  {t("profile.moveInDate")}
-                </label>
-                  <input
-                    id="move_in_date"
-                    type="date"
-                    value={formData.move_in_date}
-                    onChange={(e) =>
-                      setFormData({ ...formData, move_in_date: e.target.value })
-                    }
-                    className="w-full h-12 sm:h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-base sm:text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
-                  />
-                </div>
-              </div>
-
-              {/* MBTI */}
-              <div className="space-y-2">
-                <label
-                  htmlFor="mbti"
-                  className="block text-xs text-[#737373] tracking-wide"
-                >
-                  {t("profile.mbti")}
-                </label>
-                <select
-                  id="mbti"
-                  value={formData.mbti}
-                  onChange={(e) =>
-                    setFormData({ ...formData, mbti: e.target.value as MBTIType | "" })
-                  }
-                  className="w-full h-12 sm:h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-base sm:text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors"
-                >
-                  <option value="">{t("profile.mbtiPlaceholder")}</option>
-                  {MBTI_TYPES.map((type) => (
-                    <option key={type} value={type}>
-                      {type} - {MBTI_LABELS[type][locale === "ja" ? "ja" : "en"]}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* 自己紹介 */}
-              <div className="space-y-2">
-                <label
-                  htmlFor="bio"
-                  className="block text-xs text-[#737373] tracking-wide"
-                >
-                  {t("profile.bio")}
-                </label>
-                <textarea
-                  id="bio"
-                  value={formData.bio}
-                  onChange={(e) =>
-                    setFormData({ ...formData, bio: e.target.value })
-                  }
-                  placeholder={t("profile.bioPlaceholder")}
-                  rows={3}
-                  className="w-full px-4 py-3 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors resize-none leading-relaxed"
-                />
-              </div>
-
-              {/* 趣味・関心 */}
-              <div className="space-y-2">
-                <label
-                  htmlFor="interests"
-                  className="block text-xs text-[#737373] tracking-wide"
-                >
-                  {t("profile.interests")}
-                </label>
-                <input
-                  id="interests"
-                  type="text"
-                  value={formData.interests}
-                  onChange={(e) =>
-                    setFormData({ ...formData, interests: e.target.value })
-                  }
-                  placeholder={t("profile.interestsPlaceholder")}
-                  className="w-full h-12 sm:h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-base sm:text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
-                />
-                <p className="text-[10px] sm:text-[11px] text-[#a3a3a3]">
-                  {t("profile.interestsSeparatorHint")}
-                </p>
-              </div>
-            </div>
-
-            {/* 拡張プロフィールセクション */}
-            {/* 基本情報（拡張） */}
-            <div className="border-t border-[#e5e5e5]">
-              <button
-                type="button"
-                onClick={() => setExpandedSections(prev =>
-                  prev.includes("extended") ? prev.filter(s => s !== "extended") : [...prev, "extended"]
-                )}
-                className="w-full px-4 py-3 flex items-center justify-between hover:bg-[#fafaf8] transition-colors"
-              >
-                <span className="text-xs text-[#737373] tracking-wide">{t("profile.sectionBasicInfo")}</span>
-                <span className="text-xs text-[#a3a3a3]">{expandedSections.includes("extended") ? "−" : "+"}</span>
-              </button>
-              {expandedSections.includes("extended") && (
-                <div className="p-4 sm:p-5 pt-0 space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label htmlFor="nickname" className="block text-xs text-[#737373]">{t("profile.nickname")}</label>
-                      <input id="nickname" type="text" value={formData.nickname} onChange={(e) => setFormData({ ...formData, nickname: e.target.value })} placeholder={t("profile.nicknamePlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="age_range" className="block text-xs text-[#737373]">{t("profile.ageRange")}</label>
-                      <select id="age_range" value={formData.age_range} onChange={(e) => setFormData({ ...formData, age_range: e.target.value })} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
-                        <option value="">{t("profile.selectPlaceholder")}</option>
-                        <option value="10s">{t("profileOptions.ageRange.10s")}</option>
-                        <option value="20s">{t("profileOptions.ageRange.20s")}</option>
-                        <option value="30s">{t("profileOptions.ageRange.30s")}</option>
-                        <option value="40s">{t("profileOptions.ageRange.40s")}</option>
-                        <option value="50plus">{t("profileOptions.ageRange.50plus")}</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label htmlFor="gender" className="block text-xs text-[#737373]">{t("profile.gender")}</label>
-                      <select id="gender" value={formData.gender} onChange={(e) => setFormData({ ...formData, gender: e.target.value })} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
-                        <option value="">{t("profile.selectPlaceholder")}</option>
-                        <option value="male">{t("profileOptions.gender.male")}</option>
-                        <option value="female">{t("profileOptions.gender.female")}</option>
-                        <option value="other">{t("profileOptions.gender.other")}</option>
-                        <option value="noAnswer">{t("profileOptions.gender.noAnswer")}</option>
-                      </select>
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="hometown" className="block text-xs text-[#737373]">{t("profile.hometown")}</label>
-                      <input id="hometown" type="text" value={formData.hometown} onChange={(e) => setFormData({ ...formData, hometown: e.target.value })} placeholder={t("profile.hometownPlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label htmlFor="nationality" className="block text-xs text-[#737373]">{t("profile.nationality")}</label>
-                    <input id="nationality" type="text" value={formData.nationality} onChange={(e) => setFormData({ ...formData, nationality: e.target.value })} placeholder={t("profile.nationalityPlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* 仕事・学歴 */}
-            <div className="border-t border-[#e5e5e5]">
-              <button
-                type="button"
-                onClick={() => setExpandedSections(prev =>
-                  prev.includes("work") ? prev.filter(s => s !== "work") : [...prev, "work"]
-                )}
-                className="w-full px-4 py-3 flex items-center justify-between hover:bg-[#fafaf8] transition-colors"
-              >
-                <span className="text-xs text-[#737373] tracking-wide">{t("profile.sectionWork")}</span>
-                <span className="text-xs text-[#a3a3a3]">{expandedSections.includes("work") ? "−" : "+"}</span>
-              </button>
-              {expandedSections.includes("work") && (
-                <div className="p-4 sm:p-5 pt-0 space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label htmlFor="occupation" className="block text-xs text-[#737373]">{t("profile.occupation")}</label>
-                      <select id="occupation" value={formData.occupation} onChange={(e) => setFormData({ ...formData, occupation: e.target.value })} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
-                        <option value="">{t("profile.selectPlaceholder")}</option>
-                        <option value="employee">{t("profileOptions.occupation.employee")}</option>
-                        <option value="freelance">{t("profileOptions.occupation.freelance")}</option>
-                        <option value="student">{t("profileOptions.occupation.student")}</option>
-                        <option value="executive">{t("profileOptions.occupation.executive")}</option>
-                        <option value="other">{t("profileOptions.occupation.other")}</option>
-                      </select>
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="work_style" className="block text-xs text-[#737373]">{t("profile.workStyle")}</label>
-                      <select id="work_style" value={formData.work_style} onChange={(e) => setFormData({ ...formData, work_style: e.target.value })} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
-                        <option value="">{t("profile.selectPlaceholder")}</option>
-                        <option value="office">{t("profileOptions.workStyle.office")}</option>
-                        <option value="remote">{t("profileOptions.workStyle.remote")}</option>
-                        <option value="hybrid">{t("profileOptions.workStyle.hybrid")}</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label htmlFor="industry" className="block text-xs text-[#737373]">{t("profile.industry")}</label>
-                      <input id="industry" type="text" value={formData.industry} onChange={(e) => setFormData({ ...formData, industry: e.target.value })} placeholder={t("profile.industryPlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="work_location" className="block text-xs text-[#737373]">{t("profile.workLocation")}</label>
-                      <input id="work_location" type="text" value={formData.work_location} onChange={(e) => setFormData({ ...formData, work_location: e.target.value })} placeholder={t("profile.workLocationPlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* ライフスタイル */}
-            <div className="border-t border-[#e5e5e5]">
-              <button
-                type="button"
-                onClick={() => setExpandedSections(prev =>
-                  prev.includes("lifestyle") ? prev.filter(s => s !== "lifestyle") : [...prev, "lifestyle"]
-                )}
-                className="w-full px-4 py-3 flex items-center justify-between hover:bg-[#fafaf8] transition-colors"
-              >
-                <span className="text-xs text-[#737373] tracking-wide">{t("profile.sectionLifestyle")}</span>
-                <span className="text-xs text-[#a3a3a3]">{expandedSections.includes("lifestyle") ? "−" : "+"}</span>
-              </button>
-              {expandedSections.includes("lifestyle") && (
-                <div className="p-4 sm:p-5 pt-0 space-y-4">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                      <label htmlFor="daily_rhythm" className="block text-xs text-[#737373]">{t("profile.dailyRhythm")}</label>
-                      <select id="daily_rhythm" value={formData.daily_rhythm} onChange={(e) => setFormData({ ...formData, daily_rhythm: e.target.value })} className="w-full h-11 px-3 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
-                        <option value="">{t("profile.selectPlaceholder")}</option>
-                        <option value="morning">{t("profileOptions.dailyRhythm.morning")}</option>
-                        <option value="night">{t("profileOptions.dailyRhythm.night")}</option>
-                        <option value="irregular">{t("profileOptions.dailyRhythm.irregular")}</option>
-                      </select>
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="alcohol" className="block text-xs text-[#737373]">{t("profile.alcohol")}</label>
-                      <select id="alcohol" value={formData.alcohol} onChange={(e) => setFormData({ ...formData, alcohol: e.target.value })} className="w-full h-11 px-3 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
-                        <option value="">{t("profile.selectPlaceholder")}</option>
-                        <option value="drink">{t("profileOptions.alcohol.drink")}</option>
-                        <option value="sometimes">{t("profileOptions.alcohol.sometimes")}</option>
-                        <option value="noDrink">{t("profileOptions.alcohol.noDrink")}</option>
-                      </select>
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="smoking" className="block text-xs text-[#737373]">{t("profile.smoking")}</label>
-                      <select id="smoking" value={formData.smoking} onChange={(e) => setFormData({ ...formData, smoking: e.target.value })} className="w-full h-11 px-3 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
-                        <option value="">{t("profile.selectPlaceholder")}</option>
-                        <option value="smoke">{t("profileOptions.smoking.smoke")}</option>
-                        <option value="noSmoke">{t("profileOptions.smoking.noSmoke")}</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                      <label htmlFor="home_frequency" className="block text-xs text-[#737373]">{t("profile.homeFrequency")}</label>
-                      <select id="home_frequency" value={formData.home_frequency} onChange={(e) => setFormData({ ...formData, home_frequency: e.target.value })} className="w-full h-11 px-3 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
-                        <option value="">{t("profile.selectPlaceholder")}</option>
-                        <option value="everyday">{t("profileOptions.homeFrequency.everyday")}</option>
-                        <option value="weekdaysOnly">{t("profileOptions.homeFrequency.weekdaysOnly")}</option>
-                        <option value="weekendsOnly">{t("profileOptions.homeFrequency.weekendsOnly")}</option>
-                        <option value="oftenAway">{t("profileOptions.homeFrequency.oftenAway")}</option>
-                      </select>
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="guest_frequency" className="block text-xs text-[#737373]">{t("profile.guestFrequency")}</label>
-                      <select id="guest_frequency" value={formData.guest_frequency} onChange={(e) => setFormData({ ...formData, guest_frequency: e.target.value })} className="w-full h-11 px-3 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
-                        <option value="">{t("profile.selectPlaceholder")}</option>
-                        <option value="often">{t("profileOptions.guestFrequency.often")}</option>
-                        <option value="sometimes">{t("profileOptions.guestFrequency.sometimes")}</option>
-                        <option value="rarely">{t("profileOptions.guestFrequency.rarely")}</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label htmlFor="pets" className="block text-xs text-[#737373]">{t("profile.pets")}</label>
-                    <select id="pets" value={formData.pets} onChange={(e) => setFormData({ ...formData, pets: e.target.value })} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
-                      <option value="">{t("profile.selectPlaceholder")}</option>
-                      <option value="wantPets">{t("profileOptions.pets.wantPets")}</option>
-                      <option value="noPets">{t("profileOptions.pets.noPets")}</option>
-                      <option value="either">{t("profileOptions.pets.either")}</option>
-                    </select>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* 共同生活への姿勢 */}
-            <div className="border-t border-[#e5e5e5]">
-              <button
-                type="button"
-                onClick={() => setExpandedSections(prev =>
-                  prev.includes("communal") ? prev.filter(s => s !== "communal") : [...prev, "communal"]
-                )}
-                className="w-full px-4 py-3 flex items-center justify-between hover:bg-[#fafaf8] transition-colors"
-              >
-                <span className="text-xs text-[#737373] tracking-wide">{t("profile.sectionCommunal")}</span>
-                <span className="text-xs text-[#a3a3a3]">{expandedSections.includes("communal") ? "−" : "+"}</span>
-              </button>
-              {expandedSections.includes("communal") && (
-                <div className="p-4 sm:p-5 pt-0 space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label htmlFor="social_stance" className="block text-xs text-[#737373]">{t("profile.socialStance")}</label>
-                      <select id="social_stance" value={formData.social_stance} onChange={(e) => setFormData({ ...formData, social_stance: e.target.value })} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
-                        <option value="">{t("profile.selectPlaceholder")}</option>
-                        <option value="active">{t("profileOptions.socialStance.active")}</option>
-                        <option value="moderate">{t("profileOptions.socialStance.moderate")}</option>
-                        <option value="quiet">{t("profileOptions.socialStance.quiet")}</option>
-                      </select>
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="cleaning_attitude" className="block text-xs text-[#737373]">{t("profile.cleaningAttitude")}</label>
-                      <select id="cleaning_attitude" value={formData.cleaning_attitude} onChange={(e) => setFormData({ ...formData, cleaning_attitude: e.target.value })} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
-                        <option value="">{t("profile.selectPlaceholder")}</option>
-                        <option value="strict">{t("profileOptions.cleaningAttitude.strict")}</option>
-                        <option value="moderate">{t("profileOptions.cleaningAttitude.moderate")}</option>
-                        <option value="relaxed">{t("profileOptions.cleaningAttitude.relaxed")}</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label htmlFor="cooking_frequency" className="block text-xs text-[#737373]">{t("profile.cookingFrequency")}</label>
-                      <select id="cooking_frequency" value={formData.cooking_frequency} onChange={(e) => setFormData({ ...formData, cooking_frequency: e.target.value })} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
-                        <option value="">{t("profile.selectPlaceholder")}</option>
-                        <option value="daily">{t("profileOptions.cookingFrequency.daily")}</option>
-                        <option value="fewTimesWeek">{t("profileOptions.cookingFrequency.fewTimesWeek")}</option>
-                        <option value="sometimes">{t("profileOptions.cookingFrequency.sometimes")}</option>
-                        <option value="never">{t("profileOptions.cookingFrequency.never")}</option>
-                      </select>
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="shared_meals" className="block text-xs text-[#737373]">{t("profile.sharedMeals")}</label>
-                      <select id="shared_meals" value={formData.shared_meals} onChange={(e) => setFormData({ ...formData, shared_meals: e.target.value })} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
-                        <option value="">{t("profile.selectPlaceholder")}</option>
-                        <option value="wantToJoin">{t("profileOptions.sharedMeals.wantToJoin")}</option>
-                        <option value="sometimes">{t("profileOptions.sharedMeals.sometimes")}</option>
-                        <option value="rarely">{t("profileOptions.sharedMeals.rarely")}</option>
-                        <option value="noJoin">{t("profileOptions.sharedMeals.noJoin")}</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label htmlFor="shared_space_usage" className="block text-xs text-[#737373]">{t("profile.sharedSpaceUsage")}</label>
-                    <input id="shared_space_usage" type="text" value={formData.shared_space_usage} onChange={(e) => setFormData({ ...formData, shared_space_usage: e.target.value })} placeholder={t("profile.sharedSpaceUsagePlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* 性格・趣味 */}
-            <div className="border-t border-[#e5e5e5]">
-              <button
-                type="button"
-                onClick={() => setExpandedSections(prev =>
-                  prev.includes("personality") ? prev.filter(s => s !== "personality") : [...prev, "personality"]
-                )}
-                className="w-full px-4 py-3 flex items-center justify-between hover:bg-[#fafaf8] transition-colors"
-              >
-                <span className="text-xs text-[#737373] tracking-wide">{t("profile.sectionPersonality")}</span>
-                <span className="text-xs text-[#a3a3a3]">{expandedSections.includes("personality") ? "−" : "+"}</span>
-              </button>
-              {expandedSections.includes("personality") && (
-                <div className="p-4 sm:p-5 pt-0 space-y-4">
-                  <div className="space-y-2">
-                    <label htmlFor="personality_type" className="block text-xs text-[#737373]">{t("profile.personalityType")}</label>
-                    <input id="personality_type" type="text" value={formData.personality_type} onChange={(e) => setFormData({ ...formData, personality_type: e.target.value })} placeholder={t("profile.personalityTypePlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
-                  </div>
-                  <div className="space-y-2">
-                    <label htmlFor="weekend_activities" className="block text-xs text-[#737373]">{t("profile.weekendActivities")}</label>
-                    <input id="weekend_activities" type="text" value={formData.weekend_activities} onChange={(e) => setFormData({ ...formData, weekend_activities: e.target.value })} placeholder={t("profile.weekendActivitiesPlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* SNS */}
-            <div className="border-t border-[#e5e5e5]">
-              <button
-                type="button"
-                onClick={() => setExpandedSections(prev =>
-                  prev.includes("sns") ? prev.filter(s => s !== "sns") : [...prev, "sns"]
-                )}
-                className="w-full px-4 py-3 flex items-center justify-between hover:bg-[#fafaf8] transition-colors"
-              >
-                <span className="text-xs text-[#737373] tracking-wide">{t("profile.sectionSns")}</span>
-                <span className="text-xs text-[#a3a3a3]">{expandedSections.includes("sns") ? "−" : "+"}</span>
-              </button>
-              {expandedSections.includes("sns") && (
-                <div className="p-4 sm:p-5 pt-0 space-y-4">
-                  <p className="text-[10px] text-[#a3a3a3] mb-2">{t("profile.snsHint")}</p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label htmlFor="sns_x" className="block text-xs text-[#737373]">{t("profile.snsX")}</label>
-                      <input id="sns_x" type="text" value={formData.sns_x} onChange={(e) => setFormData({ ...formData, sns_x: e.target.value })} placeholder={t("profile.snsXPlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="sns_instagram" className="block text-xs text-[#737373]">{t("profile.snsInstagram")}</label>
-                      <input id="sns_instagram" type="text" value={formData.sns_instagram} onChange={(e) => setFormData({ ...formData, sns_instagram: e.target.value })} placeholder={t("profile.snsInstagramPlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label htmlFor="sns_facebook" className="block text-xs text-[#737373]">{t("profile.snsFacebook")}</label>
-                      <input id="sns_facebook" type="text" value={formData.sns_facebook} onChange={(e) => setFormData({ ...formData, sns_facebook: e.target.value })} placeholder={t("profile.snsFacebookPlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="sns_linkedin" className="block text-xs text-[#737373]">{t("profile.snsLinkedin")}</label>
-                      <input id="sns_linkedin" type="text" value={formData.sns_linkedin} onChange={(e) => setFormData({ ...formData, sns_linkedin: e.target.value })} placeholder={t("profile.snsLinkedinPlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label htmlFor="sns_github" className="block text-xs text-[#737373]">{t("profile.snsGithub")}</label>
-                    <input id="sns_github" type="text" value={formData.sns_github} onChange={(e) => setFormData({ ...formData, sns_github: e.target.value })} placeholder={t("profile.snsGithubPlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* 保存ボタン */}
-            <div className="p-4 sm:p-5 border-t border-[#e5e5e5]">
-              <div className="pt-3 sm:pt-2">
-                <button
-                  type="submit"
-                  disabled={isLoading || isUploading}
-                  aria-busy={isLoading}
-                  aria-label={isLoading ? t("a11y.saving") : t("profile.saveChanges")}
-                  className="w-full h-12 sm:h-11 bg-[#1a1a1a] text-white text-base sm:text-sm tracking-wide hover:bg-[#333] active:scale-[0.99] disabled:bg-[#a3a3a3] disabled:cursor-not-allowed transition-all flex items-center justify-center"
-                >
-                  {isLoading ? (
-                    <m.span
-                      animate={{ rotate: 360 }}
-                      transition={{
-                        duration: 1,
-                        repeat: Infinity,
-                        ease: "linear",
-                      }}
-                      className="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
-                    />
-                  ) : (
-                    t("profile.saveChanges")
-                  )}
-                </button>
-              </div>
-            </div>
-          </form>
+            )}
+          </FormSection>
         </m.div>
-      </div>
+
+        {/* Extended Profile */}
+        <m.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
+        >
+          <FormSection
+            id="extended"
+            title={t("profile.sectionBasicInfo")}
+            sectionType="extended"
+            isExpanded={expandedSections.includes("extended")}
+            onToggle={() => toggleSection("extended")}
+            filledCount={sectionFieldCounts.extended.filled}
+            totalCount={sectionFieldCounts.extended.total}
+          >
+            <div className="grid grid-cols-2 gap-4">
+              <InputField
+                id="nickname"
+                label={t("profile.nickname")}
+                value={formData.nickname}
+                onChange={(v) => updateField("nickname", v)}
+                placeholder={t("profile.nicknamePlaceholder")}
+              />
+              <SelectField
+                id="age_range"
+                label={t("profile.ageRange")}
+                value={formData.age_range}
+                onChange={(v) => updateField("age_range", v)}
+                options={[
+                  { value: "10s", label: t("profileOptions.ageRange.10s") },
+                  { value: "20s", label: t("profileOptions.ageRange.20s") },
+                  { value: "30s", label: t("profileOptions.ageRange.30s") },
+                  { value: "40s", label: t("profileOptions.ageRange.40s") },
+                  { value: "50plus", label: t("profileOptions.ageRange.50plus") },
+                ]}
+                placeholder={t("profile.selectPlaceholder")}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <SelectField
+                id="gender"
+                label={t("profile.gender")}
+                value={formData.gender}
+                onChange={(v) => updateField("gender", v)}
+                options={[
+                  { value: "male", label: t("profileOptions.gender.male") },
+                  { value: "female", label: t("profileOptions.gender.female") },
+                  { value: "other", label: t("profileOptions.gender.other") },
+                  { value: "noAnswer", label: t("profileOptions.gender.noAnswer") },
+                ]}
+                placeholder={t("profile.selectPlaceholder")}
+              />
+              <InputField
+                id="hometown"
+                label={t("profile.hometown")}
+                value={formData.hometown}
+                onChange={(v) => updateField("hometown", v)}
+                placeholder={t("profile.hometownPlaceholder")}
+              />
+            </div>
+            <InputField
+              id="nationality"
+              label={t("profile.nationality")}
+              value={formData.nationality}
+              onChange={(v) => updateField("nationality", v)}
+              placeholder={t("profile.nationalityPlaceholder")}
+            />
+          </FormSection>
+        </m.div>
+
+        {/* Work */}
+        <m.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.25 }}
+        >
+          <FormSection
+            id="work"
+            title={t("profile.sectionWork")}
+            sectionType="work"
+            isExpanded={expandedSections.includes("work")}
+            onToggle={() => toggleSection("work")}
+            filledCount={sectionFieldCounts.work.filled}
+            totalCount={sectionFieldCounts.work.total}
+          >
+            <div className="grid grid-cols-2 gap-4">
+              <SelectField
+                id="occupation"
+                label={t("profile.occupation")}
+                value={formData.occupation}
+                onChange={(v) => updateField("occupation", v)}
+                options={[
+                  { value: "employee", label: t("profileOptions.occupation.employee") },
+                  { value: "freelance", label: t("profileOptions.occupation.freelance") },
+                  { value: "student", label: t("profileOptions.occupation.student") },
+                  { value: "executive", label: t("profileOptions.occupation.executive") },
+                  { value: "other", label: t("profileOptions.occupation.other") },
+                ]}
+                placeholder={t("profile.selectPlaceholder")}
+              />
+              <SelectField
+                id="work_style"
+                label={t("profile.workStyle")}
+                value={formData.work_style}
+                onChange={(v) => updateField("work_style", v)}
+                options={[
+                  { value: "office", label: t("profileOptions.workStyle.office") },
+                  { value: "remote", label: t("profileOptions.workStyle.remote") },
+                  { value: "hybrid", label: t("profileOptions.workStyle.hybrid") },
+                ]}
+                placeholder={t("profile.selectPlaceholder")}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <InputField
+                id="industry"
+                label={t("profile.industry")}
+                value={formData.industry}
+                onChange={(v) => updateField("industry", v)}
+                placeholder={t("profile.industryPlaceholder")}
+              />
+              <InputField
+                id="work_location"
+                label={t("profile.workLocation")}
+                value={formData.work_location}
+                onChange={(v) => updateField("work_location", v)}
+                placeholder={t("profile.workLocationPlaceholder")}
+              />
+            </div>
+          </FormSection>
+        </m.div>
+
+        {/* Lifestyle */}
+        <m.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.3 }}
+        >
+          <FormSection
+            id="lifestyle"
+            title={t("profile.sectionLifestyle")}
+            sectionType="lifestyle"
+            isExpanded={expandedSections.includes("lifestyle")}
+            onToggle={() => toggleSection("lifestyle")}
+            filledCount={sectionFieldCounts.lifestyle.filled}
+            totalCount={sectionFieldCounts.lifestyle.total}
+          >
+            <div className="grid grid-cols-3 gap-4">
+              <SelectField
+                id="daily_rhythm"
+                label={t("profile.dailyRhythm")}
+                value={formData.daily_rhythm}
+                onChange={(v) => updateField("daily_rhythm", v)}
+                options={[
+                  { value: "morning", label: t("profileOptions.dailyRhythm.morning") },
+                  { value: "night", label: t("profileOptions.dailyRhythm.night") },
+                  { value: "irregular", label: t("profileOptions.dailyRhythm.irregular") },
+                ]}
+                placeholder={t("profile.selectPlaceholder")}
+              />
+              <SelectField
+                id="alcohol"
+                label={t("profile.alcohol")}
+                value={formData.alcohol}
+                onChange={(v) => updateField("alcohol", v)}
+                options={[
+                  { value: "drink", label: t("profileOptions.alcohol.drink") },
+                  { value: "sometimes", label: t("profileOptions.alcohol.sometimes") },
+                  { value: "noDrink", label: t("profileOptions.alcohol.noDrink") },
+                ]}
+                placeholder={t("profile.selectPlaceholder")}
+              />
+              <SelectField
+                id="smoking"
+                label={t("profile.smoking")}
+                value={formData.smoking}
+                onChange={(v) => updateField("smoking", v)}
+                options={[
+                  { value: "smoke", label: t("profileOptions.smoking.smoke") },
+                  { value: "noSmoke", label: t("profileOptions.smoking.noSmoke") },
+                ]}
+                placeholder={t("profile.selectPlaceholder")}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <SelectField
+                id="home_frequency"
+                label={t("profile.homeFrequency")}
+                value={formData.home_frequency}
+                onChange={(v) => updateField("home_frequency", v)}
+                options={[
+                  { value: "everyday", label: t("profileOptions.homeFrequency.everyday") },
+                  { value: "weekdaysOnly", label: t("profileOptions.homeFrequency.weekdaysOnly") },
+                  { value: "weekendsOnly", label: t("profileOptions.homeFrequency.weekendsOnly") },
+                  { value: "oftenAway", label: t("profileOptions.homeFrequency.oftenAway") },
+                ]}
+                placeholder={t("profile.selectPlaceholder")}
+              />
+              <SelectField
+                id="guest_frequency"
+                label={t("profile.guestFrequency")}
+                value={formData.guest_frequency}
+                onChange={(v) => updateField("guest_frequency", v)}
+                options={[
+                  { value: "often", label: t("profileOptions.guestFrequency.often") },
+                  { value: "sometimes", label: t("profileOptions.guestFrequency.sometimes") },
+                  { value: "rarely", label: t("profileOptions.guestFrequency.rarely") },
+                ]}
+                placeholder={t("profile.selectPlaceholder")}
+              />
+            </div>
+            <SelectField
+              id="pets"
+              label={t("profile.pets")}
+              value={formData.pets}
+              onChange={(v) => updateField("pets", v)}
+              options={[
+                { value: "wantPets", label: t("profileOptions.pets.wantPets") },
+                { value: "noPets", label: t("profileOptions.pets.noPets") },
+                { value: "either", label: t("profileOptions.pets.either") },
+              ]}
+              placeholder={t("profile.selectPlaceholder")}
+            />
+          </FormSection>
+        </m.div>
+
+        {/* Communal */}
+        <m.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.35 }}
+        >
+          <FormSection
+            id="communal"
+            title={t("profile.sectionCommunal")}
+            sectionType="communal"
+            isExpanded={expandedSections.includes("communal")}
+            onToggle={() => toggleSection("communal")}
+            filledCount={sectionFieldCounts.communal.filled}
+            totalCount={sectionFieldCounts.communal.total}
+          >
+            <div className="grid grid-cols-2 gap-4">
+              <SelectField
+                id="social_stance"
+                label={t("profile.socialStance")}
+                value={formData.social_stance}
+                onChange={(v) => updateField("social_stance", v)}
+                options={[
+                  { value: "active", label: t("profileOptions.socialStance.active") },
+                  { value: "moderate", label: t("profileOptions.socialStance.moderate") },
+                  { value: "quiet", label: t("profileOptions.socialStance.quiet") },
+                ]}
+                placeholder={t("profile.selectPlaceholder")}
+              />
+              <SelectField
+                id="cleaning_attitude"
+                label={t("profile.cleaningAttitude")}
+                value={formData.cleaning_attitude}
+                onChange={(v) => updateField("cleaning_attitude", v)}
+                options={[
+                  { value: "strict", label: t("profileOptions.cleaningAttitude.strict") },
+                  { value: "moderate", label: t("profileOptions.cleaningAttitude.moderate") },
+                  { value: "relaxed", label: t("profileOptions.cleaningAttitude.relaxed") },
+                ]}
+                placeholder={t("profile.selectPlaceholder")}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <SelectField
+                id="cooking_frequency"
+                label={t("profile.cookingFrequency")}
+                value={formData.cooking_frequency}
+                onChange={(v) => updateField("cooking_frequency", v)}
+                options={[
+                  { value: "daily", label: t("profileOptions.cookingFrequency.daily") },
+                  { value: "fewTimesWeek", label: t("profileOptions.cookingFrequency.fewTimesWeek") },
+                  { value: "sometimes", label: t("profileOptions.cookingFrequency.sometimes") },
+                  { value: "never", label: t("profileOptions.cookingFrequency.never") },
+                ]}
+                placeholder={t("profile.selectPlaceholder")}
+              />
+              <SelectField
+                id="shared_meals"
+                label={t("profile.sharedMeals")}
+                value={formData.shared_meals}
+                onChange={(v) => updateField("shared_meals", v)}
+                options={[
+                  { value: "wantToJoin", label: t("profileOptions.sharedMeals.wantToJoin") },
+                  { value: "sometimes", label: t("profileOptions.sharedMeals.sometimes") },
+                  { value: "rarely", label: t("profileOptions.sharedMeals.rarely") },
+                  { value: "noJoin", label: t("profileOptions.sharedMeals.noJoin") },
+                ]}
+                placeholder={t("profile.selectPlaceholder")}
+              />
+            </div>
+            <InputField
+              id="shared_space_usage"
+              label={t("profile.sharedSpaceUsage")}
+              value={formData.shared_space_usage}
+              onChange={(v) => updateField("shared_space_usage", v)}
+              placeholder={t("profile.sharedSpaceUsagePlaceholder")}
+            />
+          </FormSection>
+        </m.div>
+
+        {/* Personality */}
+        <m.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.4 }}
+        >
+          <FormSection
+            id="personality"
+            title={t("profile.sectionPersonality")}
+            sectionType="personality"
+            isExpanded={expandedSections.includes("personality")}
+            onToggle={() => toggleSection("personality")}
+            filledCount={sectionFieldCounts.personality.filled}
+            totalCount={sectionFieldCounts.personality.total}
+          >
+            <InputField
+              id="personality_type"
+              label={t("profile.personalityType")}
+              value={formData.personality_type}
+              onChange={(v) => updateField("personality_type", v)}
+              placeholder={t("profile.personalityTypePlaceholder")}
+            />
+            <InputField
+              id="weekend_activities"
+              label={t("profile.weekendActivities")}
+              value={formData.weekend_activities}
+              onChange={(v) => updateField("weekend_activities", v)}
+              placeholder={t("profile.weekendActivitiesPlaceholder")}
+            />
+          </FormSection>
+        </m.div>
+
+        {/* SNS */}
+        <m.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.45 }}
+        >
+          <FormSection
+            id="sns"
+            title={t("profile.sectionSns")}
+            sectionType="sns"
+            isExpanded={expandedSections.includes("sns")}
+            onToggle={() => toggleSection("sns")}
+            filledCount={sectionFieldCounts.sns.filled}
+            totalCount={sectionFieldCounts.sns.total}
+          >
+            <p className="text-[10px] text-[#a3a3a3] -mt-2 mb-2">{t("profile.snsHint")}</p>
+            <div className="grid grid-cols-2 gap-4">
+              <InputField
+                id="sns_x"
+                label={t("profile.snsX")}
+                value={formData.sns_x}
+                onChange={(v) => updateField("sns_x", v)}
+                placeholder={t("profile.snsXPlaceholder")}
+              />
+              <InputField
+                id="sns_instagram"
+                label={t("profile.snsInstagram")}
+                value={formData.sns_instagram}
+                onChange={(v) => updateField("sns_instagram", v)}
+                placeholder={t("profile.snsInstagramPlaceholder")}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <InputField
+                id="sns_facebook"
+                label={t("profile.snsFacebook")}
+                value={formData.sns_facebook}
+                onChange={(v) => updateField("sns_facebook", v)}
+                placeholder={t("profile.snsFacebookPlaceholder")}
+              />
+              <InputField
+                id="sns_linkedin"
+                label={t("profile.snsLinkedin")}
+                value={formData.sns_linkedin}
+                onChange={(v) => updateField("sns_linkedin", v)}
+                placeholder={t("profile.snsLinkedinPlaceholder")}
+              />
+            </div>
+            <InputField
+              id="sns_github"
+              label={t("profile.snsGithub")}
+              value={formData.sns_github}
+              onChange={(v) => updateField("sns_github", v)}
+              placeholder={t("profile.snsGithubPlaceholder")}
+            />
+          </FormSection>
+        </m.div>
+
+        {/* Save Button */}
+        <m.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.5 }}
+          className="pt-4"
+        >
+          <button
+            type="submit"
+            disabled={isLoading || isUploading}
+            aria-busy={isLoading}
+            aria-label={isLoading ? t("a11y.saving") : t("profile.saveChanges")}
+            className="w-full h-12 bg-[#1a1a1a] text-white text-sm tracking-wide hover:bg-[#333] active:scale-[0.99] disabled:bg-[#a3a3a3] disabled:cursor-not-allowed transition-all flex items-center justify-center"
+          >
+            {isLoading ? (
+              <m.span
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                className="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+              />
+            ) : (
+              t("profile.saveChanges")
+            )}
+          </button>
+        </m.div>
+      </form>
     </m.div>
   );
 }
