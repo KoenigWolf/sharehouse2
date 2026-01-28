@@ -2,7 +2,7 @@
 
 import { memo } from "react";
 import Link from "next/link";
-import { Avatar, AvatarFallback, OptimizedAvatarImage } from "@/components/ui/avatar";
+import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { Profile } from "@/domain/profile";
 import { getInitials } from "@/lib/utils";
 import { PROFILE } from "@/lib/constants/config";
@@ -49,13 +49,10 @@ export const ResidentCard = memo(function ResidentCard({
               alt={t("a11y.profilePhotoAlt", { name: profile.name })}
               context="card"
               className="w-full h-full group-hover:scale-[1.02] transition-transform duration-300"
+              fallback={getInitials(profile.name)}
+              fallbackClassName="bg-[#f5f5f3] text-[#a3a3a3] text-3xl sm:text-4xl rounded-none w-full h-full flex items-center justify-center"
+              fallbackAriaLabel={t("a11y.profileInitials", { name: profile.name })}
             />
-            <AvatarFallback
-              className="bg-[#f5f5f3] text-[#a3a3a3] text-3xl sm:text-4xl rounded-none w-full h-full flex items-center justify-center"
-              aria-label={t("a11y.profileInitials", { name: profile.name })}
-            >
-              {getInitials(profile.name)}
-            </AvatarFallback>
           </Avatar>
 
           {/* Badges */}

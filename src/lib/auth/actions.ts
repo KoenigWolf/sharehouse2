@@ -29,8 +29,16 @@ type SignUpResponse =
 type SignInResponse = { success: true } | { error: string };
 
 /**
- * Sign up a new user with email and password
- * Includes rate limiting and audit logging
+ * メールとパスワードで新規ユーザーを登録する
+ *
+ * オリジン検証 → バリデーション → レート制限チェック → Supabase Auth登録 →
+ * プロフィール自動作成 → 監査ログ記録の順に処理する。
+ * メール確認が必要な場合は needsEmailConfirmation を返す。
+ *
+ * @param name - ユーザー名
+ * @param email - メールアドレス
+ * @param password - パスワード
+ * @returns 成功時 `{ success: true }` または確認メール送信済み、失敗時 `{ error }`
  */
 export async function signUp(
   name: string,
@@ -158,8 +166,14 @@ export async function signUp(
 }
 
 /**
- * Sign in a user with email and password
- * Includes rate limiting and audit logging
+ * メールとパスワードでログインする
+ *
+ * オリジン検証 → バリデーション → レート制限チェック → Supabase Auth認証 →
+ * プロフィール存在確認（なければ自動作成） → 監査ログ記録の順に処理する。
+ *
+ * @param email - メールアドレス
+ * @param password - パスワード
+ * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
  */
 export async function signIn(
   email: string,

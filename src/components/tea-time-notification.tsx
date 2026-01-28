@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { Avatar, AvatarFallback, OptimizedAvatarImage } from "@/components/ui/avatar";
+import { m } from "framer-motion";
+import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { Profile } from "@/domain/profile";
 import { TeaTimeMatch } from "@/domain/tea-time";
 import { useI18n } from "@/hooks/use-i18n";
+import { getInitials } from "@/lib/utils";
 
 interface TeaTimeNotificationProps {
   match: TeaTimeMatch & { partner: Profile | null };
@@ -15,17 +16,8 @@ export function TeaTimeNotification({ match }: TeaTimeNotificationProps) {
   const t = useI18n();
   if (!match.partner) return null;
 
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
@@ -39,13 +31,9 @@ export function TeaTimeNotification({ match }: TeaTimeNotificationProps) {
                 src={match.partner.avatar_url}
                 context="card"
                 alt={t("a11y.profilePhotoAlt", { name: match.partner.name })}
+                fallback={getInitials(match.partner.name)}
+                fallbackClassName="text-sm bg-[#f5f5f3] rounded-none"
               />
-              <AvatarFallback
-                className="text-sm bg-[#f5f5f3] rounded-none"
-                aria-label={t("a11y.profileInitials", { name: match.partner.name })}
-              >
-                {getInitials(match.partner.name)}
-              </AvatarFallback>
             </Avatar>
 
             {/* Content */}
@@ -81,6 +69,6 @@ export function TeaTimeNotification({ match }: TeaTimeNotificationProps) {
           </div>
         </div>
       </Link>
-    </motion.div>
+    </m.div>
   );
 }

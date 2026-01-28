@@ -20,7 +20,12 @@ type UpdateResponse = { success: true } | { error: string };
 type UploadResponse = { success: true; url: string } | { error: string };
 
 /**
- * Update user profile
+ * ログインユーザーのプロフィールを更新する
+ *
+ * オリジン検証 → バリデーション → 認証確認 → DB更新 → キャッシュ再検証の順に処理。
+ *
+ * @param data - 更新するプロフィールデータ（名前・部屋番号・自己紹介・趣味・MBTI・入居日）
+ * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
  */
 export async function updateProfile(data: ProfileUpdateInput): Promise<UpdateResponse> {
   const t = await getServerTranslator();
@@ -74,7 +79,14 @@ export async function updateProfile(data: ProfileUpdateInput): Promise<UpdateRes
 }
 
 /**
- * Upload avatar image
+ * アバター画像をアップロードする
+ *
+ * レート制限 → ファイルバリデーション → 旧アバター削除 → Storage アップロード →
+ * プロフィールURL更新 → キャッシュ再検証の順に処理。
+ * 対応形式: JPEG, PNG, WebP
+ *
+ * @param formData - "avatar" キーにFileを含むFormData
+ * @returns 成功時 `{ success: true, url }` （公開URL付き）、失敗時 `{ error }`
  */
 export async function uploadAvatar(formData: FormData): Promise<UploadResponse> {
   const t = await getServerTranslator();
@@ -181,7 +193,9 @@ export async function uploadAvatar(formData: FormData): Promise<UploadResponse> 
 }
 
 /**
- * Get current user's profile
+ * ログインユーザー自身のプロフィールを取得する
+ *
+ * @returns プロフィールデータ、未認証またはエラー時は null
  */
 export async function getMyProfile() {
   try {
@@ -213,7 +227,13 @@ export async function getMyProfile() {
 }
 
 /**
- * Create a new profile for the current user
+ * ログインユーザーの新規プロフィールを作成する
+ *
+ * 既存プロフィールがある場合は何もせず成功を返す。
+ * OAuth初回ログイン時のプロフィール自動作成に使用。
+ *
+ * @param name - ユーザー名
+ * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
  */
 export async function createProfile(name: string): Promise<UpdateResponse> {
   const t = await getServerTranslator();

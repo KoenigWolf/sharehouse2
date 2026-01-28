@@ -12,7 +12,13 @@ interface RecentMatch {
 }
 
 /**
- * マッチングを実行する
+ * ティータイムのマッチングを実行する
+ *
+ * 参加者全員から重み付きランダムでペアを作成し、tea_time_matchesテーブルに挿入する。
+ * 直近30日間のマッチ履歴を参照し、同じ相手との再マッチを抑制する。
+ * 参加者が2人未満の場合は何もしない。
+ *
+ * @param supabase - Supabaseクライアントインスタンス
  * @returns 作成されたマッチの数
  */
 export async function runMatching(supabase: SupabaseClient): Promise<number> {
@@ -62,7 +68,13 @@ export async function runMatching(supabase: SupabaseClient): Promise<number> {
 
 /**
  * 参加者をペアリングする
- * 直近でマッチした相手は避けるように重み付け
+ *
+ * シャッフルした参加者リストを順に走査し、未マッチの候補から重み付きで
+ * パートナーを選択する。直近マッチ回数が多いほど選ばれにくくなる。
+ *
+ * @param participants - 参加者リスト
+ * @param recentMatches - 直近30日間のマッチ履歴
+ * @returns ペア配列（[user1_id, user2_id]の配列）
  */
 function createPairs(
   participants: Participant[],
@@ -103,8 +115,14 @@ function createPairs(
 }
 
 /**
- * 重み付けでパートナーを選択
- * 直近マッチ回数が多いほど選ばれにくい
+ * 重み付きランダムでパートナーを選択する
+ *
+ * 重みルール: マッチ0回=10、1回=5、2回以上=1
+ *
+ * @param userId - 対象ユーザーID
+ * @param candidates - 候補者ID配列
+ * @param recentPairCount - ペアキー→マッチ回数のマップ
+ * @returns 選択されたパートナーID、候補なしの場合 null
  */
 function selectPartnerWithWeight(
   userId: string,
@@ -133,7 +151,13 @@ function selectPartnerWithWeight(
 }
 
 /**
- * ペアのキーを生成（順序に依存しない）
+ * ペアの一意キーを生成する（順序に依存しない）
+ *
+ * 2つのIDをソートして結合することで、(A,B) と (B,A) が同じキーになる。
+ *
+ * @param user1 - ユーザーID 1
+ * @param user2 - ユーザーID 2
+ * @returns ソート済みIDをハイフンで結合した文字列
  */
 function getPairKey(user1: string, user2: string): string {
   return [user1, user2].sort().join("-");

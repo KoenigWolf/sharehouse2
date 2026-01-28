@@ -2,29 +2,35 @@
 
 import { useState, useRef, useMemo, useCallback } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
-import { Avatar, AvatarFallback, OptimizedAvatarImage } from "@/components/ui/avatar";
+import { m, AnimatePresence } from "framer-motion";
+import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Profile, MBTI_TYPES, MBTI_LABELS, MBTIType } from "@/domain/profile";
 import { updateProfile, uploadAvatar } from "@/lib/profile/actions";
 import { updateTeaTimeSetting } from "@/lib/tea-time/actions";
 import { getInitials } from "@/lib/utils";
-import { useI18n } from "@/hooks/use-i18n";
-import { normalizeLocale } from "@/lib/i18n";
+import { useI18n, useLocale } from "@/hooks/use-i18n";
 
 interface ProfileEditFormProps {
   profile: Profile;
   initialTeaTimeEnabled?: boolean;
 }
 
+/**
+ * プロフィール編集フォームコンポーネント
+ *
+ * 左カラムにリアルタイムプレビュー（アバター・名前・趣味タグ）・
+ * プロフィール完成度メーター・ティータイム参加トグルを表示し、
+ * 右カラムに編集フォーム（名前・部屋番号・入居日・MBTI・自己紹介・趣味）を配置する。
+ * アバターアップロードはFormData経由のサーバーアクションで処理する。
+ *
+ * @param props.profile - 編集対象のプロフィールデータ
+ * @param props.initialTeaTimeEnabled - ティータイム参加の初期状態（デフォルト: false）
+ */
 export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: ProfileEditFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const t = useI18n();
-  const locale = normalizeLocale(
-    typeof document !== "undefined"
-      ? document.documentElement.lang || navigator.language
-      : undefined
-  );
+  const locale = useLocale();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -143,7 +149,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
   };
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
@@ -165,7 +171,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
       {/* メッセージ */}
       <AnimatePresence mode="wait">
         {error && (
-          <motion.div
+          <m.div
             key="error"
             role="alert"
             aria-live="polite"
@@ -176,10 +182,10 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
             className="py-3 px-4 bg-[#faf8f8] border-l-2 border-[#c9a0a0]"
           >
             <p className="text-sm text-[#8b6b6b]">{error}</p>
-          </motion.div>
+          </m.div>
         )}
         {success && (
-          <motion.div
+          <m.div
             key="success"
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -188,13 +194,13 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
             className="py-3 px-4 bg-[#f8faf8] border-l-2 border-[#a0c9a0]"
           >
             <p className="text-sm text-[#6b8b6b]">{t("profile.saved")}</p>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 
       <div className="grid gap-5 md:grid-cols-5">
         {/* 左：プレビュー */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
@@ -220,10 +226,9 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                     src={avatarUrl}
                     context="edit"
                     alt={t("a11y.profilePhotoAlt", { name: formData.name || "?" })}
+                    fallback={getInitials(formData.name || "?")}
+                    fallbackClassName="bg-[#f5f5f3] text-[#a3a3a3] text-4xl rounded-none"
                   />
-                  <AvatarFallback className="bg-[#f5f5f3] text-[#a3a3a3] text-4xl rounded-none">
-                    {getInitials(formData.name || "?")}
-                  </AvatarFallback>
                 </Avatar>
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <span className="text-white text-xs tracking-wide">
@@ -232,7 +237,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                 </div>
                 {isUploading && (
                   <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
-                    <motion.span
+                    <m.span
                       animate={{ rotate: 360 }}
                       transition={{
                         duration: 1,
@@ -292,7 +297,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
               <p className="text-sm text-[#1a1a1a]">{completionPercentage}%</p>
             </div>
             <div className="h-px bg-[#e5e5e5] mb-3">
-              <motion.div
+              <m.div
                 className="h-full bg-[#1a1a1a]"
                 initial={{ width: 0 }}
                 animate={{ width: `${completionPercentage}%` }}
@@ -316,7 +321,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
           </div>
 
           {/* ティータイム設定 */}
-          <motion.div
+          <m.div
             animate={{
               backgroundColor: teaTimeEnabled ? "#f8faf8" : "#ffffff",
               borderColor: teaTimeEnabled ? "#a0c9a0" : "#e5e5e5",
@@ -333,7 +338,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <motion.div
+                    <m.div
                       animate={{
                         scale: teaTimeEnabled ? 1 : 0.9,
                         opacity: teaTimeEnabled ? 1 : 0.4,
@@ -354,7 +359,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                           d="M3 6h18M3 12h18M3 18h18"
                         />
                       </svg>
-                    </motion.div>
+                    </m.div>
                     <p className={`text-sm sm:text-xs tracking-wide transition-colors ${
                       teaTimeEnabled ? "text-[#6b8b6b] font-medium" : "text-[#737373]"
                     }`}>
@@ -362,7 +367,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                     </p>
                   </div>
 
-                  <motion.p
+                  <m.p
                     animate={{
                       color: teaTimeEnabled ? "#6b8b6b" : "#a3a3a3",
                     }}
@@ -372,10 +377,10 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                     {teaTimeEnabled
                       ? t("teaTime.participating")
                       : t("teaTime.notParticipating")}
-                  </motion.p>
+                  </m.p>
 
                   {teaTimeEnabled && (
-                    <motion.p
+                    <m.p
                       initial={{ opacity: 0, y: -4 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -4 }}
@@ -383,21 +388,21 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                       className="text-[10px] text-[#8ba88b] mt-2"
                     >
                       {t("teaTime.matchingTarget")}
-                    </motion.p>
+                    </m.p>
                   )}
                 </div>
 
                 <div className="flex items-center gap-3 shrink-0">
                   <AnimatePresence mode="wait">
                     {isTeaTimeLoading ? (
-                      <motion.div
+                      <m.div
                         key="loading"
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.8 }}
                         transition={{ duration: 0.2 }}
                       >
-                        <motion.span
+                        <m.span
                           animate={{ rotate: 360 }}
                           transition={{
                             duration: 1,
@@ -406,9 +411,9 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                           }}
                           className="inline-block w-5 h-5 border border-[#d4d4d4] border-t-[#1a1a1a] rounded-full"
                         />
-                      </motion.div>
+                      </m.div>
                     ) : (
-                      <motion.div
+                      <m.div
                         key="switch"
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -421,13 +426,13 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                           disabled={isTeaTimeLoading}
                           className="data-[state=checked]:bg-[#6b8b6b] scale-110 sm:scale-100"
                         />
-                      </motion.div>
+                      </m.div>
                     )}
                   </AnimatePresence>
                 </div>
               </div>
             </button>
-          </motion.div>
+          </m.div>
 
           {/* 写真アップロードのヒント */}
         <p className="text-[10px] text-[#a3a3a3] text-center">
@@ -436,10 +441,10 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
           <span className="hidden sm:inline">・</span>
           {t("profile.photoFormat")}
         </p>
-        </motion.div>
+        </m.div>
 
         {/* 右：編集フォーム */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.15 }}
@@ -594,7 +599,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                   className="w-full h-12 sm:h-11 bg-[#1a1a1a] text-white text-base sm:text-sm tracking-wide hover:bg-[#333] active:scale-[0.99] disabled:bg-[#a3a3a3] disabled:cursor-not-allowed transition-all flex items-center justify-center"
                 >
                   {isLoading ? (
-                    <motion.span
+                    <m.span
                       animate={{ rotate: 360 }}
                       transition={{
                         duration: 1,
@@ -610,8 +615,8 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
               </div>
             </div>
           </form>
-        </motion.div>
+        </m.div>
       </div>
-    </motion.div>
+    </m.div>
   );
 }

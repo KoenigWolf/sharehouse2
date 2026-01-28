@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import type { Provider } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { signIn, signUp } from "@/lib/auth/actions";
 import { AUTH } from "@/lib/constants/config";
 import { useI18n } from "@/hooks/use-i18n";
@@ -179,7 +179,7 @@ export default function LoginPage() {
               </div>
               {/* アンダーライン */}
               <div className="absolute bottom-0 left-0 right-0 h-px bg-[#e5e5e5]" />
-              <motion.div
+              <m.div
                 className="absolute bottom-0 h-px bg-[#1a1a1a]"
                 initial={false}
                 animate={{
@@ -197,7 +197,7 @@ export default function LoginPage() {
             >
               <AnimatePresence mode="wait">
                 {mode === "signup" && (
-                  <motion.div
+                  <m.div
                     key="name-field"
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
@@ -222,7 +222,7 @@ export default function LoginPage() {
                         className="w-full h-12 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
                       />
                     </div>
-                  </motion.div>
+                  </m.div>
                 )}
               </AnimatePresence>
 
@@ -263,7 +263,7 @@ export default function LoginPage() {
                 />
                 <AnimatePresence>
                   {mode === "signup" && (
-                    <motion.div
+                    <m.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
@@ -275,7 +275,7 @@ export default function LoginPage() {
                       {password.length > 0 && (
                         <PasswordStrengthMeter password={password} />
                       )}
-                    </motion.div>
+                    </m.div>
                   )}
                 </AnimatePresence>
               </div>
@@ -283,7 +283,7 @@ export default function LoginPage() {
               {/* エラー・成功メッセージ */}
               <AnimatePresence>
                 {error && (
-                  <motion.div
+                  <m.div
                     role="alert"
                     aria-live="polite"
                     initial={{ opacity: 0, y: -8 }}
@@ -292,13 +292,13 @@ export default function LoginPage() {
                     className="py-3 px-4 bg-[#faf8f8] border-l-2 border-[#c9a0a0]"
                   >
                     <p className="text-sm text-[#8b6b6b]">{error}</p>
-                  </motion.div>
+                  </m.div>
                 )}
               </AnimatePresence>
 
               <AnimatePresence>
                 {success && (
-                  <motion.div
+                  <m.div
                     role="status"
                     aria-live="polite"
                     initial={{ opacity: 0, y: -8 }}
@@ -307,7 +307,7 @@ export default function LoginPage() {
                     className="py-3 px-4 bg-[#f8faf8] border-l-2 border-[#a0c9a0]"
                   >
                     <p className="text-sm text-[#6b8b6b]">{success}</p>
-                  </motion.div>
+                  </m.div>
                 )}
               </AnimatePresence>
 
@@ -329,7 +329,7 @@ export default function LoginPage() {
               >
                 {isLoading ? (
                   <span className="inline-flex items-center gap-2">
-                    <motion.span
+                    <m.span
                       animate={{ rotate: 360 }}
                       transition={{
                         duration: 1,
@@ -371,14 +371,14 @@ export default function LoginPage() {
             {/* 補足テキスト */}
             <AnimatePresence>
               {mode === "signup" && (
-                <motion.p
+                <m.p
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 className="text-xs text-[#a3a3a3] text-center mt-8 leading-relaxed"
               >
                   {t("auth.signupHint")}
-              </motion.p>
+              </m.p>
             )}
             </AnimatePresence>
           </div>

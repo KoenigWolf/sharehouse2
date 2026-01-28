@@ -12,7 +12,21 @@ interface AsyncState<T> {
 }
 
 /**
- * Hook for managing async operations with loading and error states
+ * 非同期操作の状態管理フック
+ *
+ * loading / error / data の3状態を管理し、execute()で非同期関数を実行する。
+ * reset()で状態を初期値に戻せる。
+ *
+ * @typeParam T - 非同期関数の戻り値の型
+ * @typeParam Args - 非同期関数の引数の型タプル
+ * @param asyncFunction - 実行する非同期関数
+ * @returns data, error, isLoading, execute, reset
+ *
+ * @example
+ * ```tsx
+ * const { data, isLoading, execute } = useAsync(fetchProfiles);
+ * useEffect(() => { execute(); }, [execute]);
+ * ```
  */
 export function useAsync<T, Args extends unknown[]>(
   asyncFunction: (...args: Args) => Promise<T>
@@ -53,7 +67,16 @@ export function useAsync<T, Args extends unknown[]>(
 }
 
 /**
- * Hook for managing form submission with optimistic updates
+ * フォーム送信の楽観的更新フック
+ *
+ * サーバーアクションの実行とloading/error状態を管理する。
+ * 成功・失敗時のコールバックをoptions経由で受け取れる。
+ *
+ * @typeParam T - アクションに渡すデータの型
+ * @typeParam R - アクションの戻り値の追加プロパティ型
+ * @param action - 実行するサーバーアクション
+ * @param options - 成功/失敗時のコールバック
+ * @returns isLoading, error, execute, clearError
  */
 export function useOptimisticAction<T, R>(
   action: (data: T) => Promise<{ success?: boolean; error?: string } & R>,

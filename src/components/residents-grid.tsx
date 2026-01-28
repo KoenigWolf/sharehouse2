@@ -4,8 +4,7 @@ import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ResidentCard } from "@/components/resident-card";
 import { Profile } from "@/domain/profile";
-import { useI18n } from "@/hooks/use-i18n";
-import { normalizeLocale } from "@/lib/i18n";
+import { useI18n, useLocale } from "@/hooks/use-i18n";
 import { useDebounce } from "@/hooks/use-debounce";
 
 interface ResidentsGridProps {
@@ -15,16 +14,22 @@ interface ResidentsGridProps {
 
 type SortOption = "name" | "room_number" | "move_in_date";
 
+/**
+ * 住人一覧グリッドコンポーネント
+ *
+ * 検索フィルタリング（300ms debounce）とソート（部屋番号/名前/入居日）機能付き。
+ * 検索は名前と趣味タグを対象にフィルタリングする。
+ * AnimatePresenceによるグリッド⇔空状態の切り替えアニメーションを含む。
+ *
+ * @param props.profiles - 全住人プロフィールの配列
+ * @param props.currentUserId - ログイン中のユーザーID（ソート時に自分を先頭に表示）
+ */
 export function ResidentsGrid({ profiles, currentUserId }: ResidentsGridProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 300); // 300msのdebounce
   const [sortBy, setSortBy] = useState<SortOption>("room_number");
   const t = useI18n();
-  const locale = normalizeLocale(
-    typeof document !== "undefined"
-      ? document.documentElement.lang || navigator.language
-      : undefined
-  );
+  const locale = useLocale();
 
   const sortOptions = useMemo(
     () => [

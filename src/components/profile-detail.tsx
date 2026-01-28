@@ -1,12 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { Avatar, AvatarFallback, OptimizedAvatarImage } from "@/components/ui/avatar";
+import { m } from "framer-motion";
+import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { Profile, MBTI_LABELS } from "@/domain/profile";
 import { getInitials, formatDate, calculateResidenceDuration } from "@/lib/utils";
-import { useI18n } from "@/hooks/use-i18n";
-import { normalizeLocale } from "@/lib/i18n";
+import { useI18n, useLocale } from "@/hooks/use-i18n";
 
 interface ProfileDetailProps {
   profile: Profile;
@@ -15,7 +14,15 @@ interface ProfileDetailProps {
 }
 
 /**
- * Profile detail view component
+ * 住人プロフィール詳細表示コンポーネント
+ *
+ * アバター、名前、部屋番号、入居期間、自己紹介、MBTI、趣味タグ、
+ * ティータイム参加状況を表示する。未登録（モック）プロフィールには
+ * 破線スタイルとバナーで区別表示する。
+ *
+ * @param props.profile - 表示対象のプロフィールデータ
+ * @param props.isOwnProfile - 自分のプロフィールかどうか（編集リンク表示に使用）
+ * @param props.teaTimeEnabled - ティータイム参加状態
  */
 export function ProfileDetail({
   profile,
@@ -24,15 +31,11 @@ export function ProfileDetail({
 }: ProfileDetailProps) {
   const isMockProfile = profile.id.startsWith("mock-");
   const t = useI18n();
-  const locale = normalizeLocale(
-    typeof document !== "undefined"
-      ? document.documentElement.lang || navigator.language
-      : undefined
-  );
+  const locale = useLocale();
   const localeTag = locale === "ja" ? "ja-JP" : "en-US";
 
   return (
-    <motion.article
+    <m.article
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
@@ -49,7 +52,7 @@ export function ProfileDetail({
 
       {/* Unregistered profile banner */}
       {isMockProfile && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2, delay: 0.1 }}
@@ -62,10 +65,10 @@ export function ProfileDetail({
           <p className="text-xs text-[#a3a3a3] mt-1">
             {t("profile.mockProfileSubtext")}
           </p>
-        </motion.div>
+        </m.div>
       )}
 
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.1 }}
@@ -85,10 +88,9 @@ export function ProfileDetail({
                 alt={t("a11y.profilePhotoAlt", { name: profile.name })}
                 context="detail"
                 priority
+                fallback={getInitials(profile.name)}
+                fallbackClassName="bg-[#f5f5f3] text-[#a3a3a3] text-5xl sm:text-6xl rounded-none w-full h-full"
               />
-              <AvatarFallback className="bg-[#f5f5f3] text-[#a3a3a3] text-5xl sm:text-6xl rounded-none w-full h-full">
-                {getInitials(profile.name)}
-              </AvatarFallback>
             </Avatar>
           </div>
 
@@ -191,7 +193,7 @@ export function ProfileDetail({
             </footer>
           </div>
         </div>
-      </motion.div>
-    </motion.article>
+      </m.div>
+    </m.article>
   );
 }

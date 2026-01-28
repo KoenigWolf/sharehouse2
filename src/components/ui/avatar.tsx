@@ -107,11 +107,15 @@ interface OptimizedAvatarImageProps {
   priority?: boolean;
   context?: "card" | "detail" | "edit";
   className?: string;
+  fallback?: React.ReactNode;
+  fallbackClassName?: string;
+  fallbackAriaLabel?: string;
 }
 
 /**
  * Optimized avatar image using Next.js Image
- * Provides automatic WebP conversion, lazy loading, and responsive images
+ * Provides automatic WebP conversion, lazy loading, and responsive images.
+ * When fallback is provided, it renders AvatarFallback only if src is absent.
  */
 function OptimizedAvatarImage({
   src,
@@ -119,10 +123,20 @@ function OptimizedAvatarImage({
   priority = false,
   context = "card",
   className,
+  fallback,
+  fallbackClassName,
+  fallbackAriaLabel,
 }: OptimizedAvatarImageProps) {
   const optimizedSrc = getOptimizedImageUrl(src);
 
   if (!optimizedSrc) {
+    if (fallback) {
+      return (
+        <AvatarFallback className={fallbackClassName} aria-label={fallbackAriaLabel}>
+          {fallback}
+        </AvatarFallback>
+      );
+    }
     return null;
   }
 

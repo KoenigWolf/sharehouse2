@@ -16,8 +16,14 @@ import { enforceAllowedOrigin } from "@/lib/security/request";
 type UpdateResponse = { success: true } | { error: string };
 
 /**
- * Build OR filter for user matches (safe from injection)
- * Using PostgREST filter syntax with UUID validation
+ * ユーザーのマッチを検索するためのPostgREST ORフィルタを生成する
+ *
+ * user1_id または user2_id に一致するレコードを検索する。
+ * SQLインジェクション防止のためUUID形式をバリデーションする。
+ *
+ * @param userId - 検索対象のユーザーID（UUID形式）
+ * @returns PostgREST用フィルタ文字列
+ * @throws UUID形式が不正な場合
  */
 function buildUserMatchFilter(userId: string): string {
   // Validate UUID format to prevent injection
@@ -28,7 +34,10 @@ function buildUserMatchFilter(userId: string): string {
 }
 
 /**
- * Get tea time setting for a user
+ * ユーザーのティータイム参加設定を取得する
+ *
+ * @param userId - 対象ユーザーのID
+ * @returns 設定データ、未設定またはエラー時は null
  */
 export async function getTeaTimeSetting(userId: string) {
   try {
@@ -54,7 +63,10 @@ export async function getTeaTimeSetting(userId: string) {
 }
 
 /**
- * Update tea time participation setting
+ * ティータイム参加設定を更新する（upsert）
+ *
+ * @param isEnabled - 参加を有効にするか
+ * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
  */
 export async function updateTeaTimeSetting(isEnabled: boolean): Promise<UpdateResponse> {
   const t = await getServerTranslator();
@@ -101,8 +113,12 @@ export async function updateTeaTimeSetting(isEnabled: boolean): Promise<UpdateRe
 }
 
 /**
- * Get user's match history with partner profiles
- * Optimized to batch-fetch partner profiles instead of N+1 queries
+ * ログインユーザーのマッチ履歴をパートナープロフィール付きで取得する
+ *
+ * N+1問題を回避するため、パートナーIDを集約しバッチ取得する。
+ * 表示上限は TEA_TIME.maxMatchesDisplay で制御。
+ *
+ * @returns マッチ履歴の配列（パートナープロフィール付き）、エラー時は空配列
  */
 export async function getMyMatches(): Promise<(TeaTimeMatch & { partner: Profile | null })[]> {
   try {
@@ -161,7 +177,13 @@ export async function getMyMatches(): Promise<(TeaTimeMatch & { partner: Profile
 }
 
 /**
- * Update match status
+ * マッチのステータスを更新する
+ *
+ * 所有権チェック（user1_id or user2_id が自分であること）を行った上で更新する。
+ *
+ * @param matchId - 対象マッチのID（UUID形式）
+ * @param status - 新しいステータス（"done" | "skipped"）
+ * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
  */
 export async function updateMatchStatus(
   matchId: string,
@@ -225,7 +247,11 @@ export async function updateMatchStatus(
 }
 
 /**
- * Get latest scheduled match for current user
+ * ログインユーザーの最新の予定マッチを取得する
+ *
+ * status="scheduled" のマッチのうち最新1件をパートナープロフィール付きで返す。
+ *
+ * @returns 予定マッチ（パートナープロフィール付き）、なければ null
  */
 export async function getLatestScheduledMatch(): Promise<(TeaTimeMatch & { partner: Profile | null }) | null> {
   try {

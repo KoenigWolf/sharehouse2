@@ -15,6 +15,15 @@ const translations: Record<Locale, Translations> = {
   en,
 };
 
+/**
+ * ロケール文字列を正規化する
+ *
+ * "ja-JP" → "ja"、"en-US" → "en" のようにサポート対象ロケールに変換する。
+ * 未対応または空の場合はデフォルトロケール(ja)を返す。
+ *
+ * @param input - ブラウザのlang属性やnavigator.language等のロケール文字列
+ * @returns 正規化されたロケール
+ */
 export function normalizeLocale(input?: string | null): Locale {
   const normalized = input?.toLowerCase();
   if (!normalized) return DEFAULT_LOCALE;
@@ -91,7 +100,7 @@ function translate(
   if (params) {
     return Object.entries(params).reduce(
       (str, [paramKey, paramValue]) =>
-        str.replace(new RegExp(`{{${paramKey}}}`, "g"), String(paramValue)),
+        str.replaceAll(`{{${paramKey}}}`, String(paramValue)),
       value
     );
   }
@@ -99,10 +108,24 @@ function translate(
   return value;
 }
 
+/**
+ * 指定ロケールの翻訳関数を生成する
+ *
+ * @param locale - 使用するロケール（デフォルト: ja）
+ * @returns ドットパス記法キーとパラメータを受け取る翻訳関数
+ */
 export function createTranslator(locale: Locale = DEFAULT_LOCALE): Translator {
   return (key, params) => translate(locale, key, params);
 }
 
+/**
+ * グローバル翻訳ヘルパー（サーバーサイド等でフック外から使用）
+ *
+ * @param key - ドットパス記法の翻訳キー
+ * @param params - 補間パラメータ（例: `{ count: 5 }`）
+ * @param locale - 使用ロケール（デフォルト: ja）
+ * @returns 翻訳済み文字列
+ */
 export function t(
   key: TranslationKey,
   params?: Record<string, string | number>,

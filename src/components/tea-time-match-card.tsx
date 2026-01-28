@@ -2,14 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { Avatar, AvatarFallback, OptimizedAvatarImage } from "@/components/ui/avatar";
+import { m } from "framer-motion";
+import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { updateMatchStatus } from "@/lib/tea-time/actions";
 import { getInitials } from "@/lib/utils";
 import { Profile } from "@/domain/profile";
 import { TeaTimeMatch } from "@/domain/tea-time";
-import { useI18n } from "@/hooks/use-i18n";
-import { normalizeLocale } from "@/lib/i18n";
+import { useI18n, useLocale } from "@/hooks/use-i18n";
 
 interface TeaTimeMatchCardProps {
   match: TeaTimeMatch & { partner: Profile | null };
@@ -19,11 +18,7 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
   const [status, setStatus] = useState(match.status);
   const [isLoading, setIsLoading] = useState(false);
   const t = useI18n();
-  const locale = normalizeLocale(
-    typeof document !== "undefined"
-      ? document.documentElement.lang || navigator.language
-      : undefined
-  );
+  const locale = useLocale();
 
   if (!match.partner) return null;
 
@@ -55,10 +50,9 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
               src={match.partner.avatar_url}
               context="card"
               alt={t("a11y.profilePhotoAlt", { name: match.partner.name })}
+              fallback={getInitials(match.partner.name)}
+              fallbackClassName="bg-white text-[#a3a3a3] text-xs rounded-none"
             />
-            <AvatarFallback className="bg-white text-[#a3a3a3] text-xs rounded-none">
-              {getInitials(match.partner.name)}
-            </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
             <p className="text-sm text-[#737373] truncate">
@@ -77,7 +71,7 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
 
   // アクティブなマッチ
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
@@ -90,10 +84,9 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
               src={match.partner.avatar_url}
               context="card"
               alt={t("a11y.profilePhotoAlt", { name: match.partner.name })}
+              fallback={getInitials(match.partner.name)}
+              fallbackClassName="bg-[#f5f5f3] text-[#a3a3a3] text-lg rounded-none"
             />
-            <AvatarFallback className="bg-[#f5f5f3] text-[#a3a3a3] text-lg rounded-none">
-              {getInitials(match.partner.name)}
-            </AvatarFallback>
           </Avatar>
         </Link>
         <div className="flex-1 min-w-0">
@@ -128,6 +121,6 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
           {t("teaTime.skip")}
         </button>
       </div>
-    </motion.div>
+    </m.div>
   );
 }
