@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 import { MobileNav } from "@/components/mobile-nav";
 import { ResidentsGrid } from "@/components/residents-grid";
 import { TeaTimeNotification } from "@/components/tea-time-notification";
@@ -61,9 +62,7 @@ export default async function Home() {
         </div>
       </main>
 
-      <footer className="hidden sm:block py-6 mt-auto">
-        <p className="text-xs text-[#a3a3a3] text-center">Share House Portal</p>
-      </footer>
+      <Footer />
 
       <MobileNav />
     </div>

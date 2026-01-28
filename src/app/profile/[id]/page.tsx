@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 import { MobileNav } from "@/components/mobile-nav";
 import { ProfileDetail } from "@/components/profile-detail";
 import { Profile } from "@/domain/profile";
@@ -72,10 +73,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
         </div>
       </main>
 
-      {/* フッター (デスクトップのみ) */}
-      <footer className="hidden sm:block py-6 mt-auto">
-        <p className="text-xs text-[#a3a3a3] text-center">Share House Portal</p>
-      </footer>
+      <Footer />
 
       {/* モバイルナビゲーション */}
       <MobileNav />

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 import { MobileNav } from "@/components/mobile-nav";
 import { TeaTimeMatchCard } from "@/components/tea-time-match-card";
 import { getTeaTimeSetting, getMyMatches } from "@/lib/tea-time/actions";
@@ -111,10 +112,7 @@ export default async function TeaTimePage() {
         </div>
       </main>
 
-      {/* フッター (デスクトップのみ) */}
-      <footer className="hidden sm:block py-6 mt-auto">
-        <p className="text-xs text-[#a3a3a3] text-center">Share House Portal</p>
-      </footer>
+      <Footer />
 
       {/* モバイルナビゲーション */}
       <MobileNav />

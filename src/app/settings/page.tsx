@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 import { MobileNav } from "@/components/mobile-nav";
 import { ProfileEditForm } from "@/components/profile-edit-form";
 import { RoomPhotoManager } from "@/components/room-photo-manager";
@@ -65,10 +66,7 @@ export default async function SettingsPage() {
         />
         <RoomPhotoManager photos={roomPhotos} />
       </main>
-      {/* フッター (デスクトップのみ) */}
-      <footer className="hidden sm:block py-6">
-        <p className="text-xs text-[#a3a3a3] text-center">Share House</p>
-      </footer>
+      <Footer />
       {/* モバイルナビゲーション */}
       <MobileNav />
     </div>
