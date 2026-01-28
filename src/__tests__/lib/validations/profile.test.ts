@@ -215,7 +215,7 @@ describe("profileUpdateSchema", () => {
     const result = profileUpdateSchema.safeParse({
       ...validData,
       nickname: "タロちゃん",
-      age_range: "early30s",
+      age_range: "30s",
       gender: "male",
       nationality: "日本",
       languages: ["japanese", "english"],
@@ -230,7 +230,6 @@ describe("profileUpdateSchema", () => {
       smoking: "noSmoke",
       pets: "either",
       guest_frequency: "rarely",
-      overnight_guests: "negotiable",
       social_stance: "moderate",
       shared_space_usage: "リビングでよく読書します",
       cleaning_attitude: "moderate",
@@ -242,7 +241,7 @@ describe("profileUpdateSchema", () => {
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.nickname).toBe("タロちゃん");
-      expect(result.data.age_range).toBe("early30s");
+      expect(result.data.age_range).toBe("30s");
       expect(result.data.languages).toEqual(["japanese", "english"]);
     }
   });

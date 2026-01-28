@@ -194,7 +194,7 @@ describe("ProfileDetail", () => {
         />
       );
       const statusText = screen.getByText(/参加中/);
-      expect(statusText).toHaveClass("text-[#6b8b6b]");
+      expect(statusText).toHaveClass("text-[#5c7a6b]");
     });
 
     it("applies gray color for not participating", () => {
@@ -206,7 +206,7 @@ describe("ProfileDetail", () => {
         />
       );
       const statusText = screen.getByText(/不参加/);
-      expect(statusText).toHaveClass("text-[#a3a3a3]");
+      expect(statusText).toHaveClass("text-[#737373]");
     });
   });
 
@@ -246,9 +246,8 @@ describe("ProfileDetail", () => {
       render(
         <ProfileDetail profile={mockProfile} isOwnProfile={false} />
       );
-      // Radix Avatar renders the image with role="img" and may not render img tag until loaded
       // Check that the avatar section exists with proper structure
-      const avatarContainer = screen.getByRole("article").querySelector(".aspect-square");
+      const avatarContainer = screen.getByRole("article").querySelector(".w-40");
       expect(avatarContainer).toBeInTheDocument();
     });
   });
