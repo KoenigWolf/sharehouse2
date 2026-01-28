@@ -7,7 +7,7 @@ export const MBTI_TYPES = [
 ] as const;
 
 // Profile option constants
-export const AGE_RANGES = ["10s", "early20s", "late20s", "early30s", "late30s", "40s", "50plus"] as const;
+export const AGE_RANGES = ["10s", "20s", "30s", "40s", "50plus"] as const;
 export const GENDERS = ["male", "female", "other", "noAnswer"] as const;
 export const OCCUPATIONS = ["employee", "freelance", "student", "executive", "other"] as const;
 export const INDUSTRIES = ["it", "finance", "medical", "education", "creative", "other"] as const;
@@ -18,7 +18,6 @@ export const ALCOHOL_OPTIONS = ["drink", "sometimes", "noDrink"] as const;
 export const SMOKING_OPTIONS = ["smoke", "noSmoke"] as const;
 export const PET_OPTIONS = ["wantPets", "noPets", "either"] as const;
 export const GUEST_FREQUENCIES = ["often", "sometimes", "rarely"] as const;
-export const OVERNIGHT_OPTIONS = ["ok", "negotiable", "ng"] as const;
 export const SOCIAL_STANCES = ["active", "moderate", "quiet"] as const;
 export const CLEANING_ATTITUDES = ["strict", "moderate", "relaxed"] as const;
 export const COOKING_FREQUENCIES = ["daily", "fewTimesWeek", "sometimes", "never"] as const;
@@ -36,7 +35,6 @@ export type AlcoholOption = typeof ALCOHOL_OPTIONS[number];
 export type SmokingOption = typeof SMOKING_OPTIONS[number];
 export type PetOption = typeof PET_OPTIONS[number];
 export type GuestFrequency = typeof GUEST_FREQUENCIES[number];
-export type OvernightOption = typeof OVERNIGHT_OPTIONS[number];
 export type SocialStance = typeof SOCIAL_STANCES[number];
 export type CleaningAttitude = typeof CLEANING_ATTITUDES[number];
 export type CookingFrequency = typeof COOKING_FREQUENCIES[number];
@@ -96,7 +94,6 @@ export interface Profile {
   smoking?: string | null;
   pets?: string | null;
   guest_frequency?: string | null;
-  overnight_guests?: string | null;
   // 共同生活への姿勢
   social_stance?: string | null;
   shared_space_usage?: string | null;
@@ -106,4 +103,10 @@ export interface Profile {
   // 性格・趣味
   personality_type?: string | null;
   weekend_activities?: string | null;
+  // SNSリンク
+  sns_x?: string | null;
+  sns_instagram?: string | null;
+  sns_facebook?: string | null;
+  sns_linkedin?: string | null;
+  sns_github?: string | null;
 }

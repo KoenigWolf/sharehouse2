@@ -101,6 +101,30 @@ const languagesSchema = z
       .filter((item) => item.length > 0 && item.length <= 50)
   );
 
+// SNS URL/username schema - accepts URL or username, stores username only
+const snsUsernameSchema = z
+  .string()
+  .max(200)
+  .optional()
+  .nullable()
+  .transform((val) => {
+    if (!val) return null;
+    const trimmed = val.trim();
+    if (trimmed.length === 0) return null;
+    // Extract username from URL or clean username input
+    const urlMatch = trimmed.match(/(?:https?:\/\/)?(?:www\.)?(?:twitter\.com|x\.com|instagram\.com|facebook\.com|linkedin\.com\/in|github\.com)\/([a-zA-Z0-9_.-]+)/);
+    if (urlMatch) {
+      return urlMatch[1];
+    }
+    // Remove @ prefix if present
+    const username = trimmed.replace(/^@/, "");
+    // Validate username format (alphanumeric, underscore, dot, hyphen)
+    if (/^[a-zA-Z0-9_.-]+$/.test(username) && username.length <= 50) {
+      return username;
+    }
+    return null;
+  });
+
 // Profile update schema with comprehensive sanitization
 export const profileUpdateSchema = z.object({
   name: z
@@ -132,7 +156,6 @@ export const profileUpdateSchema = z.object({
   smoking: textFieldSchema.optional(),
   pets: textFieldSchema.optional(),
   guest_frequency: textFieldSchema.optional(),
-  overnight_guests: textFieldSchema.optional(),
   // 共同生活への姿勢
   social_stance: textFieldSchema.optional(),
   shared_space_usage: longTextFieldSchema.optional(),
@@ -142,6 +165,12 @@ export const profileUpdateSchema = z.object({
   // 性格・趣味
   personality_type: textFieldSchema.optional(),
   weekend_activities: longTextFieldSchema.optional(),
+  // SNSリンク
+  sns_x: snsUsernameSchema.optional(),
+  sns_instagram: snsUsernameSchema.optional(),
+  sns_facebook: snsUsernameSchema.optional(),
+  sns_linkedin: snsUsernameSchema.optional(),
+  sns_github: snsUsernameSchema.optional(),
 });
 
 // File upload validation
