@@ -29,16 +29,16 @@
 
 このプロジェクトには、以下のドキュメントが用意されています:
 
-| ドキュメント | 目的 | サイズ | 参照タイミング |
-|------------|------|--------|--------------|
-| [README.md](./README.md) | プロジェクト概要・要約 | 12KB | 最初に必読 |
-| [CODING_GUIDELINES.md](./CODING_GUIDELINES.md) | コーディング規約詳細 | 13KB | コード作成時 |
-| [DESIGN_GUIDELINES.md](./DESIGN_GUIDELINES.md) | デザイン・実装パターン | 15KB | UI実装時 |
-| [IMPROVEMENTS.md](./IMPROVEMENTS.md) | 改善項目・技術的負債 | 29KB | 必要時のみ |
+| ドキュメント | 目的 | 参照タイミング |
+|------------|------|--------------|
+| [README.md](./README.md) | プロジェクト概要・セットアップ | 最初に必読 |
+| [CODING_GUIDELINES.md](./CODING_GUIDELINES.md) | コーディング規約 | コード作成時 |
+| [DESIGN_GUIDELINES.md](./DESIGN_GUIDELINES.md) | デザイン指針・カラーパレット | UI実装時 |
+| [IMPROVEMENTS.md](./IMPROVEMENTS.md) | 改善履歴・新機能アイデア | 必要時のみ |
 
 Claude Code への注意:
-- 初回は README.md のみ読めば基本ルールを把握可能（トークン消費 70%削減）
-- 詳細が必要な場合のみ、目次を使って該当セクションに直接アクセスすること
+- `CLAUDE.md` が自動読み込みされます。基本ルールはそこに集約済み
+- 詳細が必要な場合のみ、各ガイドラインを参照すること
 
 ## 技術スタック
 
