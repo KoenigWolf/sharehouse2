@@ -1,0 +1,303 @@
+"use server";
+
+import { createClient } from "@/lib/supabase/server";
+import { CacheStrategy } from "@/lib/utils/cache";
+import { validateFileUpload, sanitizeFileName } from "@/domain/validation/profile";
+import { logError } from "@/lib/errors";
+import { getServerTranslator } from "@/lib/i18n/server";
+import { RateLimiters, formatRateLimitError, isValidUUID } from "@/lib/security";
+import { enforceAllowedOrigin } from "@/lib/security/request";
+import type { RoomPhoto } from "@/domain/room-photo";
+import type { Profile } from "@/domain/profile";
+
+/**
+ * Response types
+ */
+type UpdateResponse = { success: true } | { error: string };
+type UploadResponse = { success: true; url: string } | { error: string };
+
+const MAX_PHOTOS_PER_USER = 5;
+
+/**
+ * 部屋の写真をアップロードする
+ *
+ * オリジン検証 → 認証確認 → レート制限 → ファイルバリデーション →
+ * 枚数チェック → Storage アップロード → DB挿入 → キャッシュ再検証の順に処理。
+ *
+ * @param formData - "photo" キーにFileを、"caption" キーにキャプション文字列を含むFormData
+ * @returns 成功時 `{ success: true, url }`、失敗時 `{ error }`
+ */
+export async function uploadRoomPhoto(formData: FormData): Promise<UploadResponse> {
+  const t = await getServerTranslator();
+
+  const originError = await enforceAllowedOrigin(t, "uploadRoomPhoto");
+  if (originError) {
+    return { error: originError };
+  }
+
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { error: t("errors.unauthorized") };
+    }
+
+    const uploadRateLimit = RateLimiters.upload(user.id);
+    if (!uploadRateLimit.success) {
+      return { error: formatRateLimitError(uploadRateLimit.retryAfter, t) };
+    }
+
+    const file = formData.get("photo") as File;
+    if (!file || file.size === 0) {
+      return { error: t("errors.fileRequired") };
+    }
+
+    // Validate file type and size
+    const fileValidation = validateFileUpload(
+      {
+        size: file.size,
+        type: file.type,
+      },
+      t
+    );
+    if (!fileValidation.success) {
+      return { error: fileValidation.error || t("errors.invalidFileType") };
+    }
+
+    // Check photo count limit
+    const { count, error: countError } = await supabase
+      .from("room_photos")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id);
+
+    if (countError) {
+      logError(countError, { action: "uploadRoomPhoto.countCheck", userId: user.id });
+      return { error: t("errors.serverError") };
+    }
+
+    if ((count ?? 0) >= MAX_PHOTOS_PER_USER) {
+      return { error: t("errors.maxPhotosReached") };
+    }
+
+    // Generate safe filename
+    const fileExt = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const sanitizedExt = sanitizeFileName(fileExt).slice(0, 10);
+    const fileName = `${user.id}/${Date.now()}.${sanitizedExt}`;
+
+    // Convert file to ArrayBuffer
+    const arrayBuffer = await file.arrayBuffer();
+    const uint8Array = new Uint8Array(arrayBuffer);
+
+    // Upload to storage
+    const { error: uploadError } = await supabase.storage
+      .from("room-photos")
+      .upload(fileName, uint8Array, {
+        contentType: file.type,
+        cacheControl: "3600",
+        upsert: false,
+      });
+
+    if (uploadError) {
+      logError(uploadError, { action: "uploadRoomPhoto", userId: user.id });
+      return { error: `${t("errors.uploadFailed")}: ${uploadError.message}` };
+    }
+
+    // Get public URL
+    const { data: urlData } = supabase.storage
+      .from("room-photos")
+      .getPublicUrl(fileName);
+
+    // Insert record into room_photos table
+    const caption = (formData.get("caption") as string) || null;
+
+    const { error: insertError } = await supabase.from("room_photos").insert({
+      user_id: user.id,
+      photo_url: urlData.publicUrl,
+      caption,
+    });
+
+    if (insertError) {
+      logError(insertError, { action: "uploadRoomPhoto.insert", userId: user.id });
+      // Clean up uploaded file on insert failure
+      await supabase.storage.from("room-photos").remove([fileName]);
+      return { error: t("errors.saveFailed") };
+    }
+
+    CacheStrategy.afterRoomPhotoUpdate();
+    return { success: true, url: urlData.publicUrl };
+  } catch (error) {
+    logError(error, { action: "uploadRoomPhoto" });
+    return { error: t("errors.serverError") };
+  }
+}
+
+/**
+ * 部屋の写真を削除する
+ *
+ * オリジン検証 → 認証確認 → UUID検証 → 所有権確認 →
+ * Storage削除 → DB削除 → キャッシュ再検証の順に処理。
+ *
+ * @param photoId - 削除対象の写真ID（UUID）
+ * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
+ */
+export async function deleteRoomPhoto(photoId: string): Promise<UpdateResponse> {
+  const t = await getServerTranslator();
+
+  const originError = await enforceAllowedOrigin(t, "deleteRoomPhoto");
+  if (originError) {
+    return { error: originError };
+  }
+
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { error: t("errors.unauthorized") };
+    }
+
+    // Validate photoId is a valid UUID
+    if (!isValidUUID(photoId)) {
+      return { error: t("errors.invalidInput") };
+    }
+
+    // Verify ownership
+    const { data: photo, error: fetchError } = await supabase
+      .from("room_photos")
+      .select("*")
+      .eq("id", photoId)
+      .eq("user_id", user.id)
+      .single();
+
+    if (fetchError || !photo) {
+      return { error: t("errors.notFound") };
+    }
+
+    // Delete from storage
+    if (photo.photo_url && photo.photo_url.includes("/room-photos/")) {
+      const storagePath = photo.photo_url.split("/room-photos/").pop();
+      if (storagePath) {
+        await supabase.storage.from("room-photos").remove([storagePath]);
+      }
+    }
+
+    // Delete from database
+    const { error: deleteError } = await supabase
+      .from("room_photos")
+      .delete()
+      .eq("id", photoId)
+      .eq("user_id", user.id);
+
+    if (deleteError) {
+      logError(deleteError, { action: "deleteRoomPhoto", userId: user.id, metadata: { photoId } });
+      return { error: t("errors.deleteFailed") };
+    }
+
+    CacheStrategy.afterRoomPhotoUpdate();
+    return { success: true };
+  } catch (error) {
+    logError(error, { action: "deleteRoomPhoto" });
+    return { error: t("errors.serverError") };
+  }
+}
+
+/**
+ * 指定ユーザーの部屋写真一覧を取得する
+ *
+ * @param userId - 対象ユーザーのID
+ * @returns 写真一覧（display_order順）、エラー時は空配列
+ */
+export async function getRoomPhotos(userId: string): Promise<RoomPhoto[]> {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return [];
+    }
+
+    const { data, error } = await supabase
+      .from("room_photos")
+      .select("*")
+      .eq("user_id", userId)
+      .order("display_order", { ascending: true });
+
+    if (error) {
+      logError(error, { action: "getRoomPhotos", userId });
+      return [];
+    }
+
+    return (data as RoomPhoto[]) ?? [];
+  } catch (error) {
+    logError(error, { action: "getRoomPhotos" });
+    return [];
+  }
+}
+
+/**
+ * 全ユーザーの部屋写真をプロフィール情報付きで取得する（ギャラリー用）
+ *
+ * @returns 写真一覧（プロフィール付き、作成日時降順）、エラー時は空配列
+ */
+export async function getAllRoomPhotos(): Promise<
+  (RoomPhoto & { profile: Profile | null })[]
+> {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return [];
+    }
+
+    const { data: photos, error } = await supabase
+      .from("room_photos")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      logError(error, { action: "getAllRoomPhotos" });
+      return [];
+    }
+
+    if (!photos || photos.length === 0) {
+      return [];
+    }
+
+    // Batch fetch profiles for unique user_ids
+    const uniqueUserIds = [...new Set(photos.map((p) => p.user_id))];
+
+    const { data: profiles, error: profilesError } = await supabase
+      .from("profiles")
+      .select("*")
+      .in("id", uniqueUserIds);
+
+    if (profilesError) {
+      logError(profilesError, { action: "getAllRoomPhotos.fetchProfiles" });
+    }
+
+    const profileMap = new Map<string, Profile>();
+    if (profiles) {
+      for (const profile of profiles) {
+        profileMap.set(profile.id, profile as Profile);
+      }
+    }
+
+    return photos.map((photo) => ({
+      ...(photo as RoomPhoto),
+      profile: profileMap.get(photo.user_id) ?? null,
+    }));
+  } catch (error) {
+    logError(error, { action: "getAllRoomPhotos" });
+    return [];
+  }
+}
