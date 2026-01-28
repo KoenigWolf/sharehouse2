@@ -322,6 +322,17 @@ export const ja = {
     filterAll: "すべて",
     floorLabel: "{{floor}}階",
     registeredShort: "登録",
+    // 統計
+    statsTitle: "住民統計",
+    statsRegistered: "登録済み",
+    statsNew: "新入居者",
+    statsNewSub: "（3ヶ月以内）",
+    statsTeaTime: "Tea Time",
+    statsParticipants: "参加中",
+    statsUnregistered: "未登録",
+    statsRooms: "部屋",
+    floorOccupancy: "階層別入居率",
+    showStats: "統計を表示",
   },
 
   // Tea Time

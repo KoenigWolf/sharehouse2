@@ -300,6 +300,17 @@ export const en: Translations = {
     filterAll: "All",
     floorLabel: "Floor {{floor}}",
     registeredShort: "registered",
+    // Stats
+    statsTitle: "Resident Statistics",
+    statsRegistered: "Registered",
+    statsNew: "New Residents",
+    statsNewSub: "(within 3 months)",
+    statsTeaTime: "Tea Time",
+    statsParticipants: "participating",
+    statsUnregistered: "Unregistered",
+    statsRooms: "rooms",
+    floorOccupancy: "Floor Occupancy",
+    showStats: "Show statistics",
   },
 
   teaTime: {
