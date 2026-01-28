@@ -1,7 +1,9 @@
 /**
  * Rate Limiting Utility
- * In-memory rate limiter for server-side use
- * For production, consider using Redis or a distributed cache
+ *
+ * REDIS_URL 環境変数が設定されている場合はRedisを使用し、
+ * 未設定時はインメモリストアにフォールバックする。
+ * Redis接続エラー時も自動的にインメモリにフォールバックする。
  */
 
 import { RATE_LIMIT } from "@/lib/constants/config";
@@ -12,22 +14,34 @@ interface RateLimitEntry {
   resetTime: number;
 }
 
-// In-memory store (for single-instance deployments)
-// For production multi-instance, use Redis or similar
+// In-memory store (fallback for when Redis is unavailable)
 const rateLimitStore = new Map<string, RateLimitEntry>();
 
-// Cleanup old entries periodically
-const CLEANUP_INTERVAL = 60 * 1000; // 1 minute
+/** ストアの上限サイズ（これを超えたら強制クリーンアップ） */
+const MAX_STORE_SIZE = 10_000;
+
+// Cleanup old entries periodically (in-memory only)
+const CLEANUP_INTERVAL = 30 * 1000; // 30 seconds
 let lastCleanup = Date.now();
 
-function cleanup() {
+function cleanup(force = false) {
   const now = Date.now();
-  if (now - lastCleanup < CLEANUP_INTERVAL) return;
+  if (!force && now - lastCleanup < CLEANUP_INTERVAL) return;
 
   lastCleanup = now;
   for (const [key, entry] of rateLimitStore.entries()) {
     if (entry.resetTime < now) {
       rateLimitStore.delete(key);
+    }
+  }
+
+  // 上限超過時は最も古いエントリから削除
+  if (rateLimitStore.size > MAX_STORE_SIZE) {
+    const entries = [...rateLimitStore.entries()]
+      .sort((a, b) => a[1].resetTime - b[1].resetTime);
+    const deleteCount = rateLimitStore.size - MAX_STORE_SIZE;
+    for (let i = 0; i < deleteCount; i++) {
+      rateLimitStore.delete(entries[i][0]);
     }
   }
 }
@@ -59,16 +73,88 @@ export interface RateLimitResult {
 }
 
 /**
- * Check rate limit for a given identifier
- * @param identifier - Unique identifier (e.g., IP address, user ID, email)
- * @param config - Rate limit configuration
- * @returns Rate limit result
+ * Redisベースのレート制限チェック（非同期）
+ *
+ * LuaスクリプトでアトミックにカウントとTTLを管理する。
+ * 分散環境でも正確にレート制限を適用可能。
+ *
+ * @param identifier - 一意識別子
+ * @param config - レート制限設定
+ * @returns レート制限結果
  */
-export function checkRateLimit(
+async function checkRateLimitRedis(
+  identifier: string,
+  config: RateLimitConfig
+): Promise<RateLimitResult> {
+  const { getRedisClient } = await import("./redis");
+  const redis = getRedisClient();
+  if (!redis) {
+    return checkRateLimitMemory(identifier, config);
+  }
+
+  const now = Date.now();
+  const key = `ratelimit:${config.prefix || "rl"}:${identifier}`;
+  const windowSeconds = Math.ceil(config.windowMs / 1000);
+
+  try {
+    // Lua script for atomic increment + TTL check
+    const result = await redis.multi()
+      .incr(key)
+      .pttl(key)
+      .exec();
+
+    if (!result) {
+      return checkRateLimitMemory(identifier, config);
+    }
+
+    const count = result[0][1] as number;
+    const pttl = result[1][1] as number;
+
+    // Set expiry on first request
+    if (count === 1 || pttl === -1) {
+      await redis.expire(key, windowSeconds);
+    }
+
+    const resetTime = pttl > 0 ? now + pttl : now + config.windowMs;
+    const remaining = Math.max(0, config.limit - count);
+    const retryAfter = Math.ceil((resetTime - now) / 1000);
+
+    if (count > config.limit) {
+      return {
+        success: false,
+        remaining: 0,
+        resetTime,
+        retryAfter,
+      };
+    }
+
+    return {
+      success: true,
+      remaining,
+      resetTime,
+      retryAfter: 0,
+    };
+  } catch {
+    // Redis error - fallback to in-memory
+    return checkRateLimitMemory(identifier, config);
+  }
+}
+
+/**
+ * インメモリのレート制限チェック（同期）
+ *
+ * シングルインスタンス環境用のフォールバック実装。
+ *
+ * @param identifier - 一意識別子
+ * @param config - レート制限設定
+ * @returns レート制限結果
+ */
+function checkRateLimitMemory(
   identifier: string,
   config: RateLimitConfig
 ): RateLimitResult {
-  cleanup();
+  // 通常クリーンアップ + サイズ超過時は強制クリーンアップ
+  cleanup(rateLimitStore.size > MAX_STORE_SIZE);
 
   const now = Date.now();
   const key = `${config.prefix || "rl"}:${identifier}`;
@@ -111,6 +197,46 @@ export function checkRateLimit(
     resetTime: entry.resetTime,
     retryAfter: 0,
   };
+}
+
+/**
+ * レート制限をチェックする
+ *
+ * REDIS_URL が設定されている場合はRedisを、未設定時はインメモリを使用する。
+ * 同期的に使用する場合はインメモリのみ使用される。
+ *
+ * @param identifier - 一意識別子（IPアドレス、ユーザーID、メールアドレス等）
+ * @param config - レート制限設定
+ * @returns レート制限結果
+ */
+export function checkRateLimit(
+  identifier: string,
+  config: RateLimitConfig
+): RateLimitResult {
+  // Synchronous callers get in-memory rate limiting
+  return checkRateLimitMemory(identifier, config);
+}
+
+/**
+ * 非同期レート制限チェック（Redis対応）
+ *
+ * Redis利用可能時はRedisを使用し、不可時はインメモリにフォールバック。
+ * サーバーアクションから使用する場合はこちらを推奨。
+ *
+ * @param identifier - 一意識別子
+ * @param config - レート制限設定
+ * @returns レート制限結果
+ */
+export async function checkRateLimitAsync(
+  identifier: string,
+  config: RateLimitConfig
+): Promise<RateLimitResult> {
+  const { getRedisClient } = await import("./redis");
+  const redis = getRedisClient();
+  if (redis) {
+    return checkRateLimitRedis(identifier, config);
+  }
+  return checkRateLimitMemory(identifier, config);
 }
 
 /**

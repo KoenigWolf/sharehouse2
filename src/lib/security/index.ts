@@ -6,6 +6,7 @@
 // Rate limiting
 export {
   checkRateLimit,
+  checkRateLimitAsync,
   RateLimiters,
   getRateLimitHeaders,
   formatRateLimitError,
