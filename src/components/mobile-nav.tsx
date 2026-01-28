@@ -4,7 +4,7 @@ import { memo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { Users, Coffee, User } from "lucide-react";
+import { Users, Coffee, User, Image, Info } from "lucide-react";
 import { useI18n } from "@/hooks/use-i18n";
 import type { TranslationKey } from "@/lib/i18n";
 
@@ -18,6 +18,8 @@ const NAV_ITEMS: {
   matchPaths?: string[];
 }[] = [
   { href: "/", labelKey: "nav.residents", icon: Users },
+  { href: "/room-photos", labelKey: "nav.gallery", icon: Image },
+  { href: "/info", labelKey: "nav.info", icon: Info },
   { href: "/tea-time", labelKey: "nav.teaTime", icon: Coffee },
   {
     href: "/settings",

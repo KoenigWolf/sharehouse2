@@ -4,6 +4,7 @@ import Link from "next/link";
 import { m } from "framer-motion";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { Profile, MBTI_LABELS } from "@/domain/profile";
+import type { RoomPhoto } from "@/domain/room-photo";
 import { getInitials, formatDate, calculateResidenceDuration } from "@/lib/utils";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
 
@@ -11,6 +12,7 @@ interface ProfileDetailProps {
   profile: Profile;
   isOwnProfile: boolean;
   teaTimeEnabled?: boolean;
+  roomPhotos?: RoomPhoto[];
 }
 
 /**
@@ -28,6 +30,7 @@ export function ProfileDetail({
   profile,
   isOwnProfile,
   teaTimeEnabled,
+  roomPhotos = [],
 }: ProfileDetailProps) {
   const isMockProfile = profile.id.startsWith("mock-");
   const t = useI18n();
@@ -171,6 +174,29 @@ export function ProfileDetail({
                     </li>
                   ))}
                 </ul>
+              </section>
+            )}
+
+            {/* Room Photos */}
+            {roomPhotos.length > 0 && (
+              <section className="mb-5" aria-label={t("roomPhotos.roomPhotosSection")}>
+                <h2 className="text-[10px] text-[#a3a3a3] tracking-wide mb-3">
+                  {t("roomPhotos.roomPhotosSection")}
+                </h2>
+                <div className="grid grid-cols-3 gap-2">
+                  {roomPhotos.map((photo) => (
+                    <div
+                      key={photo.id}
+                      className="aspect-square bg-[#f5f5f3] overflow-hidden"
+                    >
+                      <img
+                        src={photo.photo_url}
+                        alt={photo.caption || t("roomPhotos.roomPhotosSection")}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
               </section>
             )}
 

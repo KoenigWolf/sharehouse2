@@ -6,6 +6,7 @@ import { ProfileDetail } from "@/components/profile-detail";
 import { Profile } from "@/domain/profile";
 import { mockProfiles } from "@/lib/mock-data";
 import { getTeaTimeSetting } from "@/lib/tea-time/actions";
+import { getRoomPhotos } from "@/lib/room-photos/actions";
 import { validateId } from "@/lib/security/validation";
 
 interface ProfilePageProps {
@@ -32,6 +33,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
   let profile: Profile | null = null;
   let teaTimeEnabled = false;
+  let roomPhotos: Awaited<ReturnType<typeof getRoomPhotos>> = [];
 
   if (validatedId.startsWith("mock-")) {
     profile = mockProfiles.find((p) => p.id === validatedId) || null;
@@ -39,12 +41,14 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     const roomNum = parseInt(profile?.room_number || "0", 10);
     teaTimeEnabled = roomNum % 2 === 1;
   } else {
-    const [profileResult, teaTimeSetting] = await Promise.all([
+    const [profileResult, teaTimeSetting, photos] = await Promise.all([
       supabase.from("profiles").select("*").eq("id", validatedId).single(),
       getTeaTimeSetting(validatedId),
+      getRoomPhotos(validatedId),
     ]);
     profile = profileResult.data as Profile | null;
     teaTimeEnabled = teaTimeSetting?.is_enabled ?? false;
+    roomPhotos = photos;
   }
 
   if (!profile) {
@@ -63,6 +67,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
             profile={profile}
             isOwnProfile={isOwnProfile}
             teaTimeEnabled={teaTimeEnabled}
+            roomPhotos={roomPhotos}
           />
         </div>
       </main>
