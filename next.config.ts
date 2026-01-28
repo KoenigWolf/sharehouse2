@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 /**
  * Security headers configuration
@@ -95,4 +96,20 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  // ソースマップをSentryにアップロード（CI/CDで SENTRY_AUTH_TOKEN 設定時に有効）
+  silent: true,
+
+  // ソースマップの設定
+  sourcemaps: {
+    deleteSourcemapsAfterUpload: true,
+  },
+
+  // トンネルルートでAdBlockerを回避
+  tunnelRoute: "/monitoring",
+
+  // デバッグログの除去（バンドルサイズ最適化）
+  bundleSizeOptimizations: {
+    excludeDebugStatements: true,
+  },
+});

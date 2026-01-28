@@ -12,7 +12,8 @@
 
 - Phase 1 (高優先度): セキュリティ・パフォーマンス（5項目完了 ✅）
 - Phase 2 (中優先度): アクセシビリティ・型安全性・エラー処理（5項目完了 ✅）
-- Phase 3 (低優先度): テスト・ドキュメント・監視（3項目完了 ✅）
+- Phase 3 (低優先度): テスト・ドキュメント・監視（4項目完了 ✅）
+- Phase 4 (継続改善): パフォーマンス監視・Redis化（3項目完了 ✅）
 
 ---
 
@@ -37,14 +38,14 @@
 ### フェーズ3: テスト・ドキュメント
 
 - [x] 3.1 サーバーアクションのテスト追加 ✅
-- [ ] 3.2 JSDocドキュメント追加
-- [ ] 3.3 エラー追跡サービス統合
+- [x] 3.2 JSDocドキュメント追加 ✅
+- [x] 3.3 エラー追跡サービス統合 ✅
 - [x] 3.4 パスワード強度チェック ✅
 
 ### フェーズ4: 継続改善
 
-- [ ] 4.1 パフォーマンス監視
-- [ ] 4.2 レート制限のRedis化
+- [x] 4.1 パフォーマンス監視 ✅
+- [x] 4.2 レート制限のRedis化 ✅
 - [x] 4.3 モーション配慮（prefers-reduced-motion） ✅
 
 ---
@@ -115,14 +116,23 @@
 - `auth/actions.ts`（13テスト）、`profile/actions.ts`（8テスト）、`tea-time/actions.ts`（10テスト）
 - Supabaseクライアントのモックで認証・バリデーション・DB操作をカバー
 
-### 3.2 JSDocドキュメント追加
+### 3.2 JSDocドキュメント追加 ✅
 
-- 複雑なコンポーネント（ProfileDetail, ResidentsGrid, ProfileEditForm）、ユーティリティ関数、カスタムフック
+- 複雑なコンポーネント（ProfileDetail, ResidentsGrid, ProfileEditForm）に詳細なJSDoc追加
+- 全カスタムフック（useAsync, useOptimisticAction, useDebounce, useI18n）にJSDoc追加
+- 全サーバーアクション（auth, profile, tea-time）に`@param`/`@returns`付きJSDoc追加
+- i18nユーティリティ（normalizeLocale, createTranslator, t）にJSDoc追加
+- マッチングアルゴリズム（matching.ts）の全関数にJSDoc追加
 
-### 3.3 エラー追跡サービス統合
+### 3.3 エラー追跡サービス統合 ✅
 
-- Sentry推奨（Next.jsサポート充実）
-- `logError` ユーティリティと統合
+- `@sentry/nextjs` を導入
+- `sentry.client.config.ts` / `sentry.server.config.ts` / `sentry.edge.config.ts` を作成
+- `src/instrumentation.ts` でサーバー/エッジランタイム初期化
+- `logError` ユーティリティにSentry連携を統合（`captureException`/`captureMessage`）
+- `error.tsx` / `global-error.tsx` でクライアントエラーをSentryに送信
+- `next.config.ts` に `withSentryConfig` ラッパーを追加
+- DSN未設定時は自動的に無効化（環境変数 `NEXT_PUBLIC_SENTRY_DSN` で制御）
 
 ### 3.4 パスワード強度チェック ✅
 
@@ -133,7 +143,7 @@
 
 ## 📊 その他の推奨事項
 
-- **パフォーマンス監視**: Web Vitals のレポート（Vercel Analytics等）
+- **パフォーマンス監視**: ✅ Web Vitals レポーティング実装済み（LCP, CLS, FCP, TTFB, INP）
 - **モーション配慮**: ✅ Framer Motion `MotionConfig reducedMotion="user"` でグローバル対応済み
 
 ---
@@ -153,8 +163,8 @@
 | 型安全性向上 | 🟡 中 | 低 | ✅ |
 | フォーム最適化 | 🟡 中 | 中 | ✅ |
 | テスト追加 | 🟢 低 | 高 | ✅ |
-| JSDoc追加 | 🟢 低 | 低 | 未着手 |
-| エラー追跡統合 | 🟢 低 | 高 | 未着手 |
+| JSDoc追加 | 🟢 低 | 低 | ✅ |
+| エラー追跡統合 | 🟢 低 | 高 | ✅ |
 | パスワード強度 | 🟢 低 | 低 | ✅ |
 | モーション配慮 | 🟢 低 | 中 | ✅ |
 
@@ -182,6 +192,22 @@
 - [x] 3.1 サーバーアクションテスト追加（31テスト: auth 13, profile 8, tea-time 10）
 - [x] 3.4 パスワード強度メーター（3段階リアルタイム表示）
 - [x] 4.3 モーション配慮（`MotionConfig reducedMotion="user"` でグローバル対応）
+
+#### フェーズ3/4: 残タスク完了
+- [x] 3.2 JSDocドキュメント追加（コンポーネント・フック・アクション・ユーティリティ全般）
+- [x] 3.3 Sentry エラー追跡統合（クライアント/サーバー/エッジ対応）
+- [x] 4.1 Web Vitals パフォーマンス監視（LCP, CLS, FCP, TTFB, INP）
+- [x] 4.2 レート制限のRedis対応（REDIS_URL設定時にRedis使用、未設定時はインメモリフォールバック）
+
+#### パフォーマンス最適化
+- [x] [CRITICAL] インメモリRate Limitストアの無制限増大を修正（MAX_STORE_SIZE=10,000、30秒間隔の自動クリーンアップ）
+- [x] [CRITICAL] framer-motion バンドル最適化（LazyMotion + domAnimation + `m` コンポーネント化）
+- [x] [WARNING] Sentry二重送信修正（error.tsx/global-error.tsx から `import * as Sentry` + 直接captureException を除去）
+- [x] [WARNING] ioredis barrel import問題修正（rate-limit.ts で動的import使用、クライアントバンドルから除外）
+- [x] [WARNING] normalizeLocale重複呼び出し排除（`useLocale` フック新設、4コンポーネントで適用）
+- [x] [WARNING] translate() の毎回RegExp生成を `String.replaceAll` に置換
+- [x] [WARNING] getInitials重複コード除去（tea-time-notification.tsx → `@/lib/utils` からインポート）
+- [x] 全ビルド & テスト成功 ✅（lint + type-check + 375テスト + build）
 
 #### リーダブルコード改善
 - [x] `CODING_GUIDELINES.md` を作成

@@ -131,7 +131,47 @@ export function handleError(err: unknown): { error: string; code?: ErrorCodeType
 }
 
 /**
+ * Sentryにエラーを送信する（内部ヘルパー）
+ */
+async function sendToSentry(
+  error: unknown,
+  errorData: Record<string, unknown>,
+  context?: {
+    action?: string;
+    userId?: string;
+    metadata?: Record<string, unknown>;
+  }
+): Promise<void> {
+  const Sentry = await import("@sentry/nextjs");
+  if (!Sentry.isInitialized()) return;
+
+  Sentry.withScope((scope) => {
+    if (context?.action) {
+      scope.setTag("action", context.action);
+    }
+    if (context?.userId) {
+      scope.setUser({ id: context.userId });
+    }
+    if (context?.metadata) {
+      scope.setExtra("metadata", context.metadata);
+    }
+
+    if (error instanceof Error) {
+      Sentry.captureException(error);
+    } else {
+      Sentry.captureMessage(
+        typeof error === "string" ? error : JSON.stringify(errorData),
+        "error"
+      );
+    }
+  });
+}
+
+/**
  * Log error with context (for server-side use)
+ *
+ * Sentry DSNが設定されている場合はSentryにもエラーを送信する。
+ * 設定されていない場合はコンソールログのみ出力する。
  */
 export function logError(
   error: unknown,
@@ -164,6 +204,11 @@ export function logError(
     error: errorData,
   };
 
-  // In production, this could be sent to a logging service
+  // Console log for all environments
   console.error("[AppError]", JSON.stringify(errorInfo, null, 2));
+
+  // Send to Sentry if available (fire-and-forget)
+  sendToSentry(error, errorData, context).catch(() => {
+    // Sentry not available, skip silently
+  });
 }
