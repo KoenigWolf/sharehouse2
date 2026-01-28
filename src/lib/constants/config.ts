@@ -73,6 +73,20 @@ export const CACHE = {
   matchesTTLSeconds: 30,
 } as const;
 
+// Room photos configuration
+export const ROOM_PHOTOS = {
+  maxPhotosPerUser: 5,
+  maxSizeBytes: 5 * 1024 * 1024,
+  maxSizeMB: 5,
+  allowedTypes: ["image/jpeg", "image/png", "image/webp"] as const,
+} as const;
+
+// Garbage schedule configuration
+export const GARBAGE = {
+  dutyRotationWeeks: 4,
+  reminderHoursBefore: 12,
+} as const;
+
 // Type exports
 export type FileUploadConfig = typeof FILE_UPLOAD;
 export type TeaTimeConfig = typeof TEA_TIME;

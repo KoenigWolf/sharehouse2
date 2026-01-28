@@ -51,6 +51,29 @@ export const CacheStrategy = {
   },
 
   /**
+   * 部屋写真更新後のキャッシュ再検証
+   */
+  afterRoomPhotoUpdate: () => {
+    revalidatePath("/room-photos");
+    revalidatePath(`/profile/[id]`, "page");
+    revalidatePath("/settings");
+  },
+
+  /**
+   * Wi-Fi情報更新後のキャッシュ再検証
+   */
+  afterWifiUpdate: () => {
+    revalidatePath("/info");
+  },
+
+  /**
+   * ゴミ出しスケジュール・当番更新後のキャッシュ再検証
+   */
+  afterGarbageUpdate: () => {
+    revalidatePath("/info");
+  },
+
+  /**
    * 全体キャッシュクリア（管理用・緊急時）
    */
   clearAll: () => {
