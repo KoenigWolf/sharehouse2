@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { m } from "framer-motion";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
+import { RoomPhotoManager } from "@/components/room-photo-manager";
 import {
   Profile,
   MBTI_LABELS,
@@ -397,25 +398,49 @@ export function ProfileDetail({
               </div>
             </div>
           )}
+
+          {/* Room Photos - ヒーローカード内に統合して「自己紹介」の一部として表示 */}
+          {(isOwnProfile || roomPhotos.length > 0) && (
+            <div className="mt-6 pt-6 border-t border-[#e5e5e5]">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-[10px] text-[#a3a3a3] tracking-wide uppercase flex items-center gap-1.5">
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                  </svg>
+                  {t("roomPhotos.roomPhotosSection")}
+                  {isOwnProfile && (
+                    <span className="text-[#d4d4d4] ml-1">
+                      {roomPhotos.length}/5
+                    </span>
+                  )}
+                </p>
+                <Link
+                  href="/room-photos"
+                  className="text-[10px] text-[#a3a3a3] hover:text-[#1a1a1a] transition-colors"
+                >
+                  {t("roomPhotos.viewGallery")}
+                </Link>
+              </div>
+
+              {isOwnProfile ? (
+                <RoomPhotoManager photos={roomPhotos} compact />
+              ) : (
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                  {roomPhotos.map((photo) => (
+                    <div key={photo.id} className="aspect-square bg-[#f5f5f3] overflow-hidden">
+                      <img
+                        src={photo.photo_url}
+                        alt={photo.caption || t("roomPhotos.roomPhotosSection")}
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </m.div>
-
-      {/* Room Photos */}
-      {roomPhotos.length > 0 && (
-        <ProfileSection title={t("roomPhotos.roomPhotosSection")} category="photos" className="mb-6">
-          <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-            {roomPhotos.map((photo) => (
-              <div key={photo.id} className="aspect-square bg-[#f5f5f3] overflow-hidden">
-                <img
-                  src={photo.photo_url}
-                  alt={photo.caption || t("roomPhotos.roomPhotosSection")}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-            ))}
-          </div>
-        </ProfileSection>
-      )}
 
       {/* Extended Profile Sections */}
       {hasExtendedInfo && (

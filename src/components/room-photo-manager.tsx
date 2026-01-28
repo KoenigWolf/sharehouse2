@@ -11,6 +11,7 @@ import type { RoomPhoto } from "@/domain/room-photo";
 interface RoomPhotoManagerProps {
   photos: RoomPhoto[];
   maxPhotos?: number;
+  compact?: boolean;
 }
 
 /**
@@ -23,7 +24,7 @@ interface RoomPhotoManagerProps {
  * @param props.photos - 現在の写真一覧
  * @param props.maxPhotos - 最大アップロード枚数（デフォルト: 5）
  */
-export function RoomPhotoManager({ photos, maxPhotos = 5 }: RoomPhotoManagerProps) {
+export function RoomPhotoManager({ photos, maxPhotos = 5, compact = false }: RoomPhotoManagerProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const t = useI18n();
 
@@ -103,17 +104,19 @@ export function RoomPhotoManager({ photos, maxPhotos = 5 }: RoomPhotoManagerProp
   }, [t]);
 
   return (
-    <div className="bg-white border border-[#e5e5e5]">
-      <div className="px-4 py-3 border-b border-[#e5e5e5] flex items-center justify-between">
-        <p className="text-xs text-[#a3a3a3] tracking-wide">
-          {t("roomPhotos.roomPhotosSection")}
-        </p>
-        <span className="text-[10px] text-[#a3a3a3]">
-          {currentPhotos.length}/{maxPhotos} {t("roomPhotos.maxPhotos")}
-        </span>
-      </div>
+    <div className={compact ? "" : "bg-white border border-[#e5e5e5]"}>
+      {!compact && (
+        <div className="px-4 py-3 border-b border-[#e5e5e5] flex items-center justify-between">
+          <p className="text-xs text-[#a3a3a3] tracking-wide">
+            {t("roomPhotos.roomPhotosSection")}
+          </p>
+          <span className="text-[10px] text-[#a3a3a3]">
+            {currentPhotos.length}/{maxPhotos} {t("roomPhotos.maxPhotos")}
+          </span>
+        </div>
+      )}
 
-      <div className="p-4 space-y-4">
+      <div className={compact ? "space-y-4" : "p-4 space-y-4"}>
         {/* メッセージ */}
         <AnimatePresence mode="wait">
           {error && (
