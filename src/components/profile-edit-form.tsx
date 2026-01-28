@@ -46,7 +46,37 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
     interests: profile.interests?.join(", ") || "",
     mbti: profile.mbti || ("" as MBTIType | ""),
     move_in_date: profile.move_in_date || "",
+    // 基本情報
+    nickname: profile.nickname || "",
+    age_range: profile.age_range || "",
+    gender: profile.gender || "",
+    nationality: profile.nationality || "",
+    languages: profile.languages || [],
+    hometown: profile.hometown || "",
+    // 仕事・学歴
+    occupation: profile.occupation || "",
+    industry: profile.industry || "",
+    work_location: profile.work_location || "",
+    work_style: profile.work_style || "",
+    // ライフスタイル
+    daily_rhythm: profile.daily_rhythm || "",
+    home_frequency: profile.home_frequency || "",
+    alcohol: profile.alcohol || "",
+    smoking: profile.smoking || "",
+    pets: profile.pets || "",
+    guest_frequency: profile.guest_frequency || "",
+    overnight_guests: profile.overnight_guests || "",
+    // 共同生活への姿勢
+    social_stance: profile.social_stance || "",
+    shared_space_usage: profile.shared_space_usage || "",
+    cleaning_attitude: profile.cleaning_attitude || "",
+    cooking_frequency: profile.cooking_frequency || "",
+    shared_meals: profile.shared_meals || "",
+    // 性格・趣味
+    personality_type: profile.personality_type || "",
+    weekend_activities: profile.weekend_activities || "",
   });
+  const [expandedSections, setExpandedSections] = useState<string[]>(["basic"]);
 
   const interestsArray = useMemo(
     () =>
@@ -123,6 +153,35 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
       interests: interestsArray,
       mbti: formData.mbti || null,
       move_in_date: formData.move_in_date || null,
+      // 基本情報
+      nickname: formData.nickname.trim() || null,
+      age_range: formData.age_range || null,
+      gender: formData.gender || null,
+      nationality: formData.nationality.trim() || null,
+      languages: formData.languages,
+      hometown: formData.hometown.trim() || null,
+      // 仕事・学歴
+      occupation: formData.occupation || null,
+      industry: formData.industry.trim() || null,
+      work_location: formData.work_location.trim() || null,
+      work_style: formData.work_style || null,
+      // ライフスタイル
+      daily_rhythm: formData.daily_rhythm || null,
+      home_frequency: formData.home_frequency || null,
+      alcohol: formData.alcohol || null,
+      smoking: formData.smoking || null,
+      pets: formData.pets || null,
+      guest_frequency: formData.guest_frequency || null,
+      overnight_guests: formData.overnight_guests || null,
+      // 共同生活への姿勢
+      social_stance: formData.social_stance || null,
+      shared_space_usage: formData.shared_space_usage.trim() || null,
+      cleaning_attitude: formData.cleaning_attitude || null,
+      cooking_frequency: formData.cooking_frequency || null,
+      shared_meals: formData.shared_meals || null,
+      // 性格・趣味
+      personality_type: formData.personality_type.trim() || null,
+      weekend_activities: formData.weekend_activities.trim() || null,
     });
 
     setIsLoading(false);
@@ -588,8 +647,293 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                   {t("profile.interestsSeparatorHint")}
                 </p>
               </div>
+            </div>
 
-              {/* 保存ボタン */}
+            {/* 拡張プロフィールセクション */}
+            {/* 基本情報（拡張） */}
+            <div className="border-t border-[#e5e5e5]">
+              <button
+                type="button"
+                onClick={() => setExpandedSections(prev =>
+                  prev.includes("extended") ? prev.filter(s => s !== "extended") : [...prev, "extended"]
+                )}
+                className="w-full px-4 py-3 flex items-center justify-between hover:bg-[#fafaf8] transition-colors"
+              >
+                <span className="text-xs text-[#737373] tracking-wide">{t("profile.sectionBasicInfo")}</span>
+                <span className="text-xs text-[#a3a3a3]">{expandedSections.includes("extended") ? "−" : "+"}</span>
+              </button>
+              {expandedSections.includes("extended") && (
+                <div className="p-4 sm:p-5 pt-0 space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label htmlFor="nickname" className="block text-xs text-[#737373]">{t("profile.nickname")}</label>
+                      <input id="nickname" type="text" value={formData.nickname} onChange={(e) => setFormData({ ...formData, nickname: e.target.value })} placeholder={t("profile.nicknamePlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="age_range" className="block text-xs text-[#737373]">{t("profile.ageRange")}</label>
+                      <select id="age_range" value={formData.age_range} onChange={(e) => setFormData({ ...formData, age_range: e.target.value })} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
+                        <option value="">{t("profile.selectPlaceholder")}</option>
+                        <option value="10s">{t("profileOptions.ageRange.10s")}</option>
+                        <option value="early20s">{t("profileOptions.ageRange.early20s")}</option>
+                        <option value="late20s">{t("profileOptions.ageRange.late20s")}</option>
+                        <option value="early30s">{t("profileOptions.ageRange.early30s")}</option>
+                        <option value="late30s">{t("profileOptions.ageRange.late30s")}</option>
+                        <option value="40s">{t("profileOptions.ageRange.40s")}</option>
+                        <option value="50plus">{t("profileOptions.ageRange.50plus")}</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label htmlFor="gender" className="block text-xs text-[#737373]">{t("profile.gender")}</label>
+                      <select id="gender" value={formData.gender} onChange={(e) => setFormData({ ...formData, gender: e.target.value })} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
+                        <option value="">{t("profile.selectPlaceholder")}</option>
+                        <option value="male">{t("profileOptions.gender.male")}</option>
+                        <option value="female">{t("profileOptions.gender.female")}</option>
+                        <option value="other">{t("profileOptions.gender.other")}</option>
+                        <option value="noAnswer">{t("profileOptions.gender.noAnswer")}</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="hometown" className="block text-xs text-[#737373]">{t("profile.hometown")}</label>
+                      <input id="hometown" type="text" value={formData.hometown} onChange={(e) => setFormData({ ...formData, hometown: e.target.value })} placeholder={t("profile.hometownPlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="nationality" className="block text-xs text-[#737373]">{t("profile.nationality")}</label>
+                    <input id="nationality" type="text" value={formData.nationality} onChange={(e) => setFormData({ ...formData, nationality: e.target.value })} placeholder={t("profile.nationalityPlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* 仕事・学歴 */}
+            <div className="border-t border-[#e5e5e5]">
+              <button
+                type="button"
+                onClick={() => setExpandedSections(prev =>
+                  prev.includes("work") ? prev.filter(s => s !== "work") : [...prev, "work"]
+                )}
+                className="w-full px-4 py-3 flex items-center justify-between hover:bg-[#fafaf8] transition-colors"
+              >
+                <span className="text-xs text-[#737373] tracking-wide">{t("profile.sectionWork")}</span>
+                <span className="text-xs text-[#a3a3a3]">{expandedSections.includes("work") ? "−" : "+"}</span>
+              </button>
+              {expandedSections.includes("work") && (
+                <div className="p-4 sm:p-5 pt-0 space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label htmlFor="occupation" className="block text-xs text-[#737373]">{t("profile.occupation")}</label>
+                      <select id="occupation" value={formData.occupation} onChange={(e) => setFormData({ ...formData, occupation: e.target.value })} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
+                        <option value="">{t("profile.selectPlaceholder")}</option>
+                        <option value="employee">{t("profileOptions.occupation.employee")}</option>
+                        <option value="freelance">{t("profileOptions.occupation.freelance")}</option>
+                        <option value="student">{t("profileOptions.occupation.student")}</option>
+                        <option value="executive">{t("profileOptions.occupation.executive")}</option>
+                        <option value="other">{t("profileOptions.occupation.other")}</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="work_style" className="block text-xs text-[#737373]">{t("profile.workStyle")}</label>
+                      <select id="work_style" value={formData.work_style} onChange={(e) => setFormData({ ...formData, work_style: e.target.value })} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
+                        <option value="">{t("profile.selectPlaceholder")}</option>
+                        <option value="office">{t("profileOptions.workStyle.office")}</option>
+                        <option value="remote">{t("profileOptions.workStyle.remote")}</option>
+                        <option value="hybrid">{t("profileOptions.workStyle.hybrid")}</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label htmlFor="industry" className="block text-xs text-[#737373]">{t("profile.industry")}</label>
+                      <input id="industry" type="text" value={formData.industry} onChange={(e) => setFormData({ ...formData, industry: e.target.value })} placeholder={t("profile.industryPlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="work_location" className="block text-xs text-[#737373]">{t("profile.workLocation")}</label>
+                      <input id="work_location" type="text" value={formData.work_location} onChange={(e) => setFormData({ ...formData, work_location: e.target.value })} placeholder={t("profile.workLocationPlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* ライフスタイル */}
+            <div className="border-t border-[#e5e5e5]">
+              <button
+                type="button"
+                onClick={() => setExpandedSections(prev =>
+                  prev.includes("lifestyle") ? prev.filter(s => s !== "lifestyle") : [...prev, "lifestyle"]
+                )}
+                className="w-full px-4 py-3 flex items-center justify-between hover:bg-[#fafaf8] transition-colors"
+              >
+                <span className="text-xs text-[#737373] tracking-wide">{t("profile.sectionLifestyle")}</span>
+                <span className="text-xs text-[#a3a3a3]">{expandedSections.includes("lifestyle") ? "−" : "+"}</span>
+              </button>
+              {expandedSections.includes("lifestyle") && (
+                <div className="p-4 sm:p-5 pt-0 space-y-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <label htmlFor="daily_rhythm" className="block text-xs text-[#737373]">{t("profile.dailyRhythm")}</label>
+                      <select id="daily_rhythm" value={formData.daily_rhythm} onChange={(e) => setFormData({ ...formData, daily_rhythm: e.target.value })} className="w-full h-11 px-3 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
+                        <option value="">{t("profile.selectPlaceholder")}</option>
+                        <option value="morning">{t("profileOptions.dailyRhythm.morning")}</option>
+                        <option value="night">{t("profileOptions.dailyRhythm.night")}</option>
+                        <option value="irregular">{t("profileOptions.dailyRhythm.irregular")}</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="alcohol" className="block text-xs text-[#737373]">{t("profile.alcohol")}</label>
+                      <select id="alcohol" value={formData.alcohol} onChange={(e) => setFormData({ ...formData, alcohol: e.target.value })} className="w-full h-11 px-3 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
+                        <option value="">{t("profile.selectPlaceholder")}</option>
+                        <option value="drink">{t("profileOptions.alcohol.drink")}</option>
+                        <option value="sometimes">{t("profileOptions.alcohol.sometimes")}</option>
+                        <option value="noDrink">{t("profileOptions.alcohol.noDrink")}</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="smoking" className="block text-xs text-[#737373]">{t("profile.smoking")}</label>
+                      <select id="smoking" value={formData.smoking} onChange={(e) => setFormData({ ...formData, smoking: e.target.value })} className="w-full h-11 px-3 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
+                        <option value="">{t("profile.selectPlaceholder")}</option>
+                        <option value="smoke">{t("profileOptions.smoking.smoke")}</option>
+                        <option value="noSmoke">{t("profileOptions.smoking.noSmoke")}</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <label htmlFor="home_frequency" className="block text-xs text-[#737373]">{t("profile.homeFrequency")}</label>
+                      <select id="home_frequency" value={formData.home_frequency} onChange={(e) => setFormData({ ...formData, home_frequency: e.target.value })} className="w-full h-11 px-3 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
+                        <option value="">{t("profile.selectPlaceholder")}</option>
+                        <option value="everyday">{t("profileOptions.homeFrequency.everyday")}</option>
+                        <option value="weekdaysOnly">{t("profileOptions.homeFrequency.weekdaysOnly")}</option>
+                        <option value="weekendsOnly">{t("profileOptions.homeFrequency.weekendsOnly")}</option>
+                        <option value="oftenAway">{t("profileOptions.homeFrequency.oftenAway")}</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="guest_frequency" className="block text-xs text-[#737373]">{t("profile.guestFrequency")}</label>
+                      <select id="guest_frequency" value={formData.guest_frequency} onChange={(e) => setFormData({ ...formData, guest_frequency: e.target.value })} className="w-full h-11 px-3 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
+                        <option value="">{t("profile.selectPlaceholder")}</option>
+                        <option value="often">{t("profileOptions.guestFrequency.often")}</option>
+                        <option value="sometimes">{t("profileOptions.guestFrequency.sometimes")}</option>
+                        <option value="rarely">{t("profileOptions.guestFrequency.rarely")}</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="overnight_guests" className="block text-xs text-[#737373]">{t("profile.overnightGuests")}</label>
+                      <select id="overnight_guests" value={formData.overnight_guests} onChange={(e) => setFormData({ ...formData, overnight_guests: e.target.value })} className="w-full h-11 px-3 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
+                        <option value="">{t("profile.selectPlaceholder")}</option>
+                        <option value="ok">{t("profileOptions.overnightGuests.ok")}</option>
+                        <option value="negotiable">{t("profileOptions.overnightGuests.negotiable")}</option>
+                        <option value="ng">{t("profileOptions.overnightGuests.ng")}</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="pets" className="block text-xs text-[#737373]">{t("profile.pets")}</label>
+                    <select id="pets" value={formData.pets} onChange={(e) => setFormData({ ...formData, pets: e.target.value })} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
+                      <option value="">{t("profile.selectPlaceholder")}</option>
+                      <option value="wantPets">{t("profileOptions.pets.wantPets")}</option>
+                      <option value="noPets">{t("profileOptions.pets.noPets")}</option>
+                      <option value="either">{t("profileOptions.pets.either")}</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* 共同生活への姿勢 */}
+            <div className="border-t border-[#e5e5e5]">
+              <button
+                type="button"
+                onClick={() => setExpandedSections(prev =>
+                  prev.includes("communal") ? prev.filter(s => s !== "communal") : [...prev, "communal"]
+                )}
+                className="w-full px-4 py-3 flex items-center justify-between hover:bg-[#fafaf8] transition-colors"
+              >
+                <span className="text-xs text-[#737373] tracking-wide">{t("profile.sectionCommunal")}</span>
+                <span className="text-xs text-[#a3a3a3]">{expandedSections.includes("communal") ? "−" : "+"}</span>
+              </button>
+              {expandedSections.includes("communal") && (
+                <div className="p-4 sm:p-5 pt-0 space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label htmlFor="social_stance" className="block text-xs text-[#737373]">{t("profile.socialStance")}</label>
+                      <select id="social_stance" value={formData.social_stance} onChange={(e) => setFormData({ ...formData, social_stance: e.target.value })} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
+                        <option value="">{t("profile.selectPlaceholder")}</option>
+                        <option value="active">{t("profileOptions.socialStance.active")}</option>
+                        <option value="moderate">{t("profileOptions.socialStance.moderate")}</option>
+                        <option value="quiet">{t("profileOptions.socialStance.quiet")}</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="cleaning_attitude" className="block text-xs text-[#737373]">{t("profile.cleaningAttitude")}</label>
+                      <select id="cleaning_attitude" value={formData.cleaning_attitude} onChange={(e) => setFormData({ ...formData, cleaning_attitude: e.target.value })} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
+                        <option value="">{t("profile.selectPlaceholder")}</option>
+                        <option value="strict">{t("profileOptions.cleaningAttitude.strict")}</option>
+                        <option value="moderate">{t("profileOptions.cleaningAttitude.moderate")}</option>
+                        <option value="relaxed">{t("profileOptions.cleaningAttitude.relaxed")}</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label htmlFor="cooking_frequency" className="block text-xs text-[#737373]">{t("profile.cookingFrequency")}</label>
+                      <select id="cooking_frequency" value={formData.cooking_frequency} onChange={(e) => setFormData({ ...formData, cooking_frequency: e.target.value })} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
+                        <option value="">{t("profile.selectPlaceholder")}</option>
+                        <option value="daily">{t("profileOptions.cookingFrequency.daily")}</option>
+                        <option value="fewTimesWeek">{t("profileOptions.cookingFrequency.fewTimesWeek")}</option>
+                        <option value="sometimes">{t("profileOptions.cookingFrequency.sometimes")}</option>
+                        <option value="never">{t("profileOptions.cookingFrequency.never")}</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="shared_meals" className="block text-xs text-[#737373]">{t("profile.sharedMeals")}</label>
+                      <select id="shared_meals" value={formData.shared_meals} onChange={(e) => setFormData({ ...formData, shared_meals: e.target.value })} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
+                        <option value="">{t("profile.selectPlaceholder")}</option>
+                        <option value="wantToJoin">{t("profileOptions.sharedMeals.wantToJoin")}</option>
+                        <option value="sometimes">{t("profileOptions.sharedMeals.sometimes")}</option>
+                        <option value="rarely">{t("profileOptions.sharedMeals.rarely")}</option>
+                        <option value="noJoin">{t("profileOptions.sharedMeals.noJoin")}</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="shared_space_usage" className="block text-xs text-[#737373]">{t("profile.sharedSpaceUsage")}</label>
+                    <input id="shared_space_usage" type="text" value={formData.shared_space_usage} onChange={(e) => setFormData({ ...formData, shared_space_usage: e.target.value })} placeholder={t("profile.sharedSpaceUsagePlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* 性格・趣味 */}
+            <div className="border-t border-[#e5e5e5]">
+              <button
+                type="button"
+                onClick={() => setExpandedSections(prev =>
+                  prev.includes("personality") ? prev.filter(s => s !== "personality") : [...prev, "personality"]
+                )}
+                className="w-full px-4 py-3 flex items-center justify-between hover:bg-[#fafaf8] transition-colors"
+              >
+                <span className="text-xs text-[#737373] tracking-wide">{t("profile.sectionPersonality")}</span>
+                <span className="text-xs text-[#a3a3a3]">{expandedSections.includes("personality") ? "−" : "+"}</span>
+              </button>
+              {expandedSections.includes("personality") && (
+                <div className="p-4 sm:p-5 pt-0 space-y-4">
+                  <div className="space-y-2">
+                    <label htmlFor="personality_type" className="block text-xs text-[#737373]">{t("profile.personalityType")}</label>
+                    <input id="personality_type" type="text" value={formData.personality_type} onChange={(e) => setFormData({ ...formData, personality_type: e.target.value })} placeholder={t("profile.personalityTypePlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="weekend_activities" className="block text-xs text-[#737373]">{t("profile.weekendActivities")}</label>
+                    <input id="weekend_activities" type="text" value={formData.weekend_activities} onChange={(e) => setFormData({ ...formData, weekend_activities: e.target.value })} placeholder={t("profile.weekendActivitiesPlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* 保存ボタン */}
+            <div className="p-4 sm:p-5 border-t border-[#e5e5e5]">
               <div className="pt-3 sm:pt-2">
                 <button
                   type="submit"

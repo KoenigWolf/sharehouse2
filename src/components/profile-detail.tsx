@@ -3,9 +3,30 @@
 import Link from "next/link";
 import { m } from "framer-motion";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
-import { Profile, MBTI_LABELS } from "@/domain/profile";
+import {
+  Profile,
+  MBTI_LABELS,
+  AGE_RANGES,
+  GENDERS,
+  OCCUPATIONS,
+  INDUSTRIES,
+  WORK_STYLES,
+  DAILY_RHYTHMS,
+  HOME_FREQUENCIES,
+  ALCOHOL_OPTIONS,
+  SMOKING_OPTIONS,
+  PET_OPTIONS,
+  GUEST_FREQUENCIES,
+  OVERNIGHT_OPTIONS,
+  SOCIAL_STANCES,
+  CLEANING_ATTITUDES,
+  COOKING_FREQUENCIES,
+  SHARED_MEAL_OPTIONS,
+  LANGUAGES,
+} from "@/domain/profile";
 import type { RoomPhoto } from "@/domain/room-photo";
 import { getInitials, formatDate, calculateResidenceDuration } from "@/lib/utils";
+import type { Translator } from "@/lib/i18n";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
 
 interface ProfileDetailProps {
@@ -13,6 +34,240 @@ interface ProfileDetailProps {
   isOwnProfile: boolean;
   teaTimeEnabled?: boolean;
   roomPhotos?: RoomPhoto[];
+}
+
+// Helper to translate profile option values
+function translateOption(
+  value: string | null | undefined,
+  category: string,
+  options: readonly string[],
+  t: Translator
+): string | null {
+  if (!value) return null;
+  // Check if value is a predefined option
+  if (options.includes(value as typeof options[number])) {
+    return t(`profileOptions.${category}.${value}` as Parameters<Translator>[0]);
+  }
+  // Return as-is for custom "other" values
+  return value;
+}
+
+// Helper to translate language array
+function translateLanguages(
+  languages: string[] | undefined,
+  t: Translator
+): string[] {
+  if (!languages || languages.length === 0) return [];
+  return languages.map((lang) => {
+    if (LANGUAGES.includes(lang as typeof LANGUAGES[number])) {
+      return t(`profileOptions.languages.${lang}` as Parameters<Translator>[0]);
+    }
+    return lang;
+  });
+}
+
+// Individual field display component
+function ProfileField({
+  label,
+  value,
+}: {
+  label: string;
+  value: string | null | undefined;
+}) {
+  if (!value) return null;
+  return (
+    <div className="flex flex-col gap-0.5">
+      <dt className="text-[10px] text-[#a3a3a3] tracking-wide">{label}</dt>
+      <dd className="text-sm text-[#1a1a1a]">{value}</dd>
+    </div>
+  );
+}
+
+// Extended profile sections component
+function ExtendedProfileSection({
+  profile,
+  t,
+}: {
+  profile: Profile;
+  t: Translator;
+}) {
+  // Basic info fields
+  const basicInfoFields = [
+    { label: t("profile.nickname"), value: profile.nickname },
+    {
+      label: t("profile.ageRange"),
+      value: translateOption(profile.age_range, "ageRange", AGE_RANGES, t),
+    },
+    {
+      label: t("profile.gender"),
+      value: translateOption(profile.gender, "gender", GENDERS, t),
+    },
+    { label: t("profile.nationality"), value: profile.nationality },
+    {
+      label: t("profile.languages"),
+      value: translateLanguages(profile.languages, t).join(", ") || null,
+    },
+    { label: t("profile.hometown"), value: profile.hometown },
+  ].filter((f) => f.value);
+
+  // Work fields
+  const workFields = [
+    {
+      label: t("profile.occupation"),
+      value: translateOption(profile.occupation, "occupation", OCCUPATIONS, t),
+    },
+    {
+      label: t("profile.industry"),
+      value: translateOption(profile.industry, "industry", INDUSTRIES, t),
+    },
+    { label: t("profile.workLocation"), value: profile.work_location },
+    {
+      label: t("profile.workStyle"),
+      value: translateOption(profile.work_style, "workStyle", WORK_STYLES, t),
+    },
+  ].filter((f) => f.value);
+
+  // Lifestyle fields
+  const lifestyleFields = [
+    {
+      label: t("profile.dailyRhythm"),
+      value: translateOption(profile.daily_rhythm, "dailyRhythm", DAILY_RHYTHMS, t),
+    },
+    {
+      label: t("profile.homeFrequency"),
+      value: translateOption(profile.home_frequency, "homeFrequency", HOME_FREQUENCIES, t),
+    },
+    {
+      label: t("profile.alcohol"),
+      value: translateOption(profile.alcohol, "alcohol", ALCOHOL_OPTIONS, t),
+    },
+    {
+      label: t("profile.smoking"),
+      value: translateOption(profile.smoking, "smoking", SMOKING_OPTIONS, t),
+    },
+    {
+      label: t("profile.pets"),
+      value: translateOption(profile.pets, "pets", PET_OPTIONS, t),
+    },
+    {
+      label: t("profile.guestFrequency"),
+      value: translateOption(profile.guest_frequency, "guestFrequency", GUEST_FREQUENCIES, t),
+    },
+    {
+      label: t("profile.overnightGuests"),
+      value: translateOption(profile.overnight_guests, "overnightGuests", OVERNIGHT_OPTIONS, t),
+    },
+  ].filter((f) => f.value);
+
+  // Communal living fields
+  const communalFields = [
+    {
+      label: t("profile.socialStance"),
+      value: translateOption(profile.social_stance, "socialStance", SOCIAL_STANCES, t),
+    },
+    { label: t("profile.sharedSpaceUsage"), value: profile.shared_space_usage },
+    {
+      label: t("profile.cleaningAttitude"),
+      value: translateOption(profile.cleaning_attitude, "cleaningAttitude", CLEANING_ATTITUDES, t),
+    },
+    {
+      label: t("profile.cookingFrequency"),
+      value: translateOption(profile.cooking_frequency, "cookingFrequency", COOKING_FREQUENCIES, t),
+    },
+    {
+      label: t("profile.sharedMeals"),
+      value: translateOption(profile.shared_meals, "sharedMeals", SHARED_MEAL_OPTIONS, t),
+    },
+  ].filter((f) => f.value);
+
+  // Personality fields
+  const personalityFields = [
+    { label: t("profile.personalityType"), value: profile.personality_type },
+    { label: t("profile.weekendActivities"), value: profile.weekend_activities },
+  ].filter((f) => f.value);
+
+  const hasAnyExtendedInfo =
+    basicInfoFields.length > 0 ||
+    workFields.length > 0 ||
+    lifestyleFields.length > 0 ||
+    communalFields.length > 0 ||
+    personalityFields.length > 0;
+
+  if (!hasAnyExtendedInfo) return null;
+
+  return (
+    <div className="space-y-5 mb-5">
+      {/* Basic Info */}
+      {basicInfoFields.length > 0 && (
+        <section aria-label={t("profile.sectionBasicInfo")}>
+          <h2 className="text-[10px] text-[#a3a3a3] tracking-wide mb-3 border-b border-[#e5e5e5] pb-2">
+            {t("profile.sectionBasicInfo")}
+          </h2>
+          <dl className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            {basicInfoFields.map((field, i) => (
+              <ProfileField key={i} label={field.label} value={field.value} />
+            ))}
+          </dl>
+        </section>
+      )}
+
+      {/* Work */}
+      {workFields.length > 0 && (
+        <section aria-label={t("profile.sectionWork")}>
+          <h2 className="text-[10px] text-[#a3a3a3] tracking-wide mb-3 border-b border-[#e5e5e5] pb-2">
+            {t("profile.sectionWork")}
+          </h2>
+          <dl className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            {workFields.map((field, i) => (
+              <ProfileField key={i} label={field.label} value={field.value} />
+            ))}
+          </dl>
+        </section>
+      )}
+
+      {/* Lifestyle */}
+      {lifestyleFields.length > 0 && (
+        <section aria-label={t("profile.sectionLifestyle")}>
+          <h2 className="text-[10px] text-[#a3a3a3] tracking-wide mb-3 border-b border-[#e5e5e5] pb-2">
+            {t("profile.sectionLifestyle")}
+          </h2>
+          <dl className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            {lifestyleFields.map((field, i) => (
+              <ProfileField key={i} label={field.label} value={field.value} />
+            ))}
+          </dl>
+        </section>
+      )}
+
+      {/* Communal Living */}
+      {communalFields.length > 0 && (
+        <section aria-label={t("profile.sectionCommunal")}>
+          <h2 className="text-[10px] text-[#a3a3a3] tracking-wide mb-3 border-b border-[#e5e5e5] pb-2">
+            {t("profile.sectionCommunal")}
+          </h2>
+          <dl className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            {communalFields.map((field, i) => (
+              <ProfileField key={i} label={field.label} value={field.value} />
+            ))}
+          </dl>
+        </section>
+      )}
+
+      {/* Personality */}
+      {personalityFields.length > 0 && (
+        <section aria-label={t("profile.sectionPersonality")}>
+          <h2 className="text-[10px] text-[#a3a3a3] tracking-wide mb-3 border-b border-[#e5e5e5] pb-2">
+            {t("profile.sectionPersonality")}
+          </h2>
+          <dl className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            {personalityFields.map((field, i) => (
+              <ProfileField key={i} label={field.label} value={field.value} />
+            ))}
+          </dl>
+        </section>
+      )}
+    </div>
+  );
 }
 
 /**
@@ -199,6 +454,9 @@ export function ProfileDetail({
                 </div>
               </section>
             )}
+
+            {/* Extended Profile Sections */}
+            <ExtendedProfileSection profile={profile} t={t} />
 
             {/* Tea Time status */}
             <footer className="flex items-center gap-3 pt-4 border-t border-[#e5e5e5]">
