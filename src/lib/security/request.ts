@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import { validateOrigin } from "./validation";
 import { getAllowedOrigins } from "./origin";
+import { auditLog, AuditEventType } from "./audit";
 import type { Translator } from "@/lib/i18n";
 
 export async function getRequestOrigin(): Promise<string | null> {
@@ -63,7 +64,12 @@ export async function enforceAllowedOrigin(
       }
     }
 
-    console.warn(`[Security] Blocked ${actionName} from origin: ${origin}`);
+    auditLog({
+      timestamp: new Date().toISOString(),
+      eventType: AuditEventType.SECURITY_UNAUTHORIZED_ACCESS,
+      action: `Blocked ${actionName} from origin: ${origin}`,
+      outcome: "failure",
+    });
     return t("errors.forbidden");
   }
 

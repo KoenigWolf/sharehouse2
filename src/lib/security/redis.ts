@@ -6,6 +6,7 @@
  */
 
 import Redis from "ioredis";
+import { logError } from "@/lib/errors";
 
 let redisClient: Redis | null = null;
 
@@ -30,7 +31,7 @@ export function getRedisClient(): Redis | null {
     });
 
     redisClient.on("error", (err) => {
-      console.error("[Redis] Connection error:", err.message);
+      logError(err, { action: "redis.connection" });
     });
   }
 
