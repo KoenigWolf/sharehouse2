@@ -65,7 +65,6 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
     smoking: profile.smoking || "",
     pets: profile.pets || "",
     guest_frequency: profile.guest_frequency || "",
-    overnight_guests: profile.overnight_guests || "",
     // 共同生活への姿勢
     social_stance: profile.social_stance || "",
     shared_space_usage: profile.shared_space_usage || "",
@@ -75,6 +74,12 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
     // 性格・趣味
     personality_type: profile.personality_type || "",
     weekend_activities: profile.weekend_activities || "",
+    // SNS
+    sns_x: profile.sns_x || "",
+    sns_instagram: profile.sns_instagram || "",
+    sns_facebook: profile.sns_facebook || "",
+    sns_linkedin: profile.sns_linkedin || "",
+    sns_github: profile.sns_github || "",
   });
   const [expandedSections, setExpandedSections] = useState<string[]>(["basic"]);
 
@@ -172,7 +177,6 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
       smoking: formData.smoking || null,
       pets: formData.pets || null,
       guest_frequency: formData.guest_frequency || null,
-      overnight_guests: formData.overnight_guests || null,
       // 共同生活への姿勢
       social_stance: formData.social_stance || null,
       shared_space_usage: formData.shared_space_usage.trim() || null,
@@ -182,6 +186,12 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
       // 性格・趣味
       personality_type: formData.personality_type.trim() || null,
       weekend_activities: formData.weekend_activities.trim() || null,
+      // SNS
+      sns_x: formData.sns_x.trim() || null,
+      sns_instagram: formData.sns_instagram.trim() || null,
+      sns_facebook: formData.sns_facebook.trim() || null,
+      sns_linkedin: formData.sns_linkedin.trim() || null,
+      sns_github: formData.sns_github.trim() || null,
     });
 
     setIsLoading(false);
@@ -263,7 +273,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
-          className="md:col-span-2 space-y-4"
+          className="md:col-span-2 md:self-start md:sticky md:top-4 space-y-4"
         >
           {/* プロフィールカードプレビュー */}
           <div className="bg-white border border-[#e5e5e5]">
@@ -274,13 +284,14 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
             </div>
             <div className="p-4">
               {/* アバター */}
-              <button
-                type="button"
-                onClick={handleAvatarClick}
-                disabled={isUploading}
-                className="relative w-full aspect-square bg-[#f5f5f3] group mb-4"
-              >
-                <Avatar className="w-full h-full rounded-none">
+              <div className="w-full max-w-[240px] mx-auto mb-4">
+                <button
+                  type="button"
+                  onClick={handleAvatarClick}
+                  disabled={isUploading}
+                  className="relative w-full aspect-square bg-[#f5f5f3] group block"
+                >
+                  <Avatar className="absolute inset-0 size-full rounded-none">
                   <OptimizedAvatarImage
                     src={avatarUrl}
                     context="edit"
@@ -307,7 +318,8 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                     />
                   </div>
                 )}
-              </button>
+                </button>
+              </div>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -674,10 +686,8 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                       <select id="age_range" value={formData.age_range} onChange={(e) => setFormData({ ...formData, age_range: e.target.value })} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
                         <option value="">{t("profile.selectPlaceholder")}</option>
                         <option value="10s">{t("profileOptions.ageRange.10s")}</option>
-                        <option value="early20s">{t("profileOptions.ageRange.early20s")}</option>
-                        <option value="late20s">{t("profileOptions.ageRange.late20s")}</option>
-                        <option value="early30s">{t("profileOptions.ageRange.early30s")}</option>
-                        <option value="late30s">{t("profileOptions.ageRange.late30s")}</option>
+                        <option value="20s">{t("profileOptions.ageRange.20s")}</option>
+                        <option value="30s">{t("profileOptions.ageRange.30s")}</option>
                         <option value="40s">{t("profileOptions.ageRange.40s")}</option>
                         <option value="50plus">{t("profileOptions.ageRange.50plus")}</option>
                       </select>
@@ -819,15 +829,6 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                         <option value="rarely">{t("profileOptions.guestFrequency.rarely")}</option>
                       </select>
                     </div>
-                    <div className="space-y-2">
-                      <label htmlFor="overnight_guests" className="block text-xs text-[#737373]">{t("profile.overnightGuests")}</label>
-                      <select id="overnight_guests" value={formData.overnight_guests} onChange={(e) => setFormData({ ...formData, overnight_guests: e.target.value })} className="w-full h-11 px-3 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors">
-                        <option value="">{t("profile.selectPlaceholder")}</option>
-                        <option value="ok">{t("profileOptions.overnightGuests.ok")}</option>
-                        <option value="negotiable">{t("profileOptions.overnightGuests.negotiable")}</option>
-                        <option value="ng">{t("profileOptions.overnightGuests.ng")}</option>
-                      </select>
-                    </div>
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="pets" className="block text-xs text-[#737373]">{t("profile.pets")}</label>
@@ -927,6 +928,49 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                   <div className="space-y-2">
                     <label htmlFor="weekend_activities" className="block text-xs text-[#737373]">{t("profile.weekendActivities")}</label>
                     <input id="weekend_activities" type="text" value={formData.weekend_activities} onChange={(e) => setFormData({ ...formData, weekend_activities: e.target.value })} placeholder={t("profile.weekendActivitiesPlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* SNS */}
+            <div className="border-t border-[#e5e5e5]">
+              <button
+                type="button"
+                onClick={() => setExpandedSections(prev =>
+                  prev.includes("sns") ? prev.filter(s => s !== "sns") : [...prev, "sns"]
+                )}
+                className="w-full px-4 py-3 flex items-center justify-between hover:bg-[#fafaf8] transition-colors"
+              >
+                <span className="text-xs text-[#737373] tracking-wide">{t("profile.sectionSns")}</span>
+                <span className="text-xs text-[#a3a3a3]">{expandedSections.includes("sns") ? "−" : "+"}</span>
+              </button>
+              {expandedSections.includes("sns") && (
+                <div className="p-4 sm:p-5 pt-0 space-y-4">
+                  <p className="text-[10px] text-[#a3a3a3] mb-2">{t("profile.snsHint")}</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label htmlFor="sns_x" className="block text-xs text-[#737373]">{t("profile.snsX")}</label>
+                      <input id="sns_x" type="text" value={formData.sns_x} onChange={(e) => setFormData({ ...formData, sns_x: e.target.value })} placeholder={t("profile.snsXPlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="sns_instagram" className="block text-xs text-[#737373]">{t("profile.snsInstagram")}</label>
+                      <input id="sns_instagram" type="text" value={formData.sns_instagram} onChange={(e) => setFormData({ ...formData, sns_instagram: e.target.value })} placeholder={t("profile.snsInstagramPlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label htmlFor="sns_facebook" className="block text-xs text-[#737373]">{t("profile.snsFacebook")}</label>
+                      <input id="sns_facebook" type="text" value={formData.sns_facebook} onChange={(e) => setFormData({ ...formData, sns_facebook: e.target.value })} placeholder={t("profile.snsFacebookPlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="sns_linkedin" className="block text-xs text-[#737373]">{t("profile.snsLinkedin")}</label>
+                      <input id="sns_linkedin" type="text" value={formData.sns_linkedin} onChange={(e) => setFormData({ ...formData, sns_linkedin: e.target.value })} placeholder={t("profile.snsLinkedinPlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="sns_github" className="block text-xs text-[#737373]">{t("profile.snsGithub")}</label>
+                    <input id="sns_github" type="text" value={formData.sns_github} onChange={(e) => setFormData({ ...formData, sns_github: e.target.value })} placeholder={t("profile.snsGithubPlaceholder")} className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors" />
                   </div>
                 </div>
               )}
