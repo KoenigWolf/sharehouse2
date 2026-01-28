@@ -5,14 +5,26 @@ import { m } from "framer-motion";
 import Image from "next/image";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
 import { completeDuty } from "@/lib/garbage/actions";
-import {
-  DAY_NAMES_JA,
-  DAY_NAMES_EN,
-} from "@/domain/garbage";
-import type {
-  GarbageSchedule,
-  GarbageDutyWithProfile,
-} from "@/domain/garbage";
+import { DAY_NAMES_JA, DAY_NAMES_EN } from "@/domain/garbage";
+import type { GarbageSchedule, GarbageDutyWithProfile } from "@/domain/garbage";
+
+// =============================================================================
+// Constants
+// =============================================================================
+
+const GARBAGE_TYPE_STYLES: Record<string, { bg: string; text: string; border: string }> = {
+  可燃ごみ: { bg: "bg-orange-50", text: "text-orange-700", border: "border-orange-200" },
+  不燃ごみ: { bg: "bg-slate-50", text: "text-slate-600", border: "border-slate-200" },
+  資源: { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200" },
+  資源プラスチック: { bg: "bg-blue-50", text: "text-blue-700", border: "border-blue-200" },
+  資源ごみ: { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200" },
+};
+
+const DEFAULT_STYLE = { bg: "bg-[#f5f5f3]", text: "text-[#737373]", border: "border-[#e5e5e5]" };
+
+// =============================================================================
+// Types
+// =============================================================================
 
 interface GarbageScheduleViewProps {
   schedule: GarbageSchedule[];
@@ -20,16 +32,10 @@ interface GarbageScheduleViewProps {
   currentUserId: string;
 }
 
-/**
- * ゴミ出しスケジュール表示コンポーネント
- *
- * 曜日別のゴミ出し予定と直近の当番一覧を表示する。
- * 自分の当番には完了ボタンを表示し、completeDutyで完了処理を行う。
- *
- * @param props.schedule - 曜日別ゴミ出しスケジュール
- * @param props.duties - 直近の当番（プロフィール付き）
- * @param props.currentUserId - ログインユーザーのID
- */
+// =============================================================================
+// Main Component
+// =============================================================================
+
 export function GarbageScheduleView({
   schedule,
   duties,
@@ -41,7 +47,6 @@ export function GarbageScheduleView({
   const [completingId, setCompletingId] = useState<string | null>(null);
   const [error, setError] = useState("");
 
-  // 曜日別にスケジュールをグループ化
   const scheduleByDay = useMemo(() => {
     const grouped = new Map<number, GarbageSchedule[]>();
     for (const entry of schedule) {
@@ -52,31 +57,30 @@ export function GarbageScheduleView({
     return grouped;
   }, [schedule]);
 
-  const handleComplete = useCallback(
-    async (dutyId: string) => {
-      setCompletingId(dutyId);
-      setError("");
+  const handleComplete = useCallback(async (dutyId: string) => {
+    setCompletingId(dutyId);
+    setError("");
 
-      const result = await completeDuty(dutyId);
-      if ("error" in result) {
-        setError(result.error);
-      }
-      setCompletingId(null);
-    },
-    []
-  );
+    const result = await completeDuty(dutyId);
+    if ("error" in result) {
+      setError(result.error);
+    }
+    setCompletingId(null);
+  }, []);
+
+  const getTypeStyle = (type: string) => GARBAGE_TYPE_STYLES[type] ?? DEFAULT_STYLE;
 
   return (
     <div className="space-y-6">
       {error && (
-        <div className="py-3 px-4 border border-red-200 bg-red-50 text-sm text-red-600">
+        <div className="py-3 px-4 border-l-2 border-[#c9a0a0] bg-[#faf8f8] text-sm text-[#8b6b6b]">
           {error}
         </div>
       )}
 
       {/* 曜日別スケジュール */}
       <section>
-        <h2 className="text-xs text-[#a3a3a3] tracking-wide mb-3">
+        <h2 className="text-xs text-[#a3a3a3] tracking-wide uppercase mb-3">
           {t("garbage.weeklySchedule")}
         </h2>
 
@@ -85,7 +89,7 @@ export function GarbageScheduleView({
             <p className="text-sm text-[#737373]">{t("garbage.noSchedule")}</p>
           </div>
         ) : (
-          <div className="bg-white border border-[#e5e5e5]">
+          <div className="grid gap-2">
             {Array.from({ length: 7 }, (_, i) => i).map((dayIndex) => {
               const daySchedule = scheduleByDay.get(dayIndex);
               if (!daySchedule || daySchedule.length === 0) return null;
@@ -93,44 +97,57 @@ export function GarbageScheduleView({
               return (
                 <div
                   key={dayIndex}
-                  className="flex items-start gap-4 px-4 py-3 border-b border-[#e5e5e5] last:border-b-0"
+                  className="bg-white border border-[#e5e5e5] px-4 py-3"
                 >
-                  <span
-                    className={`text-sm font-medium w-8 flex-shrink-0 ${
-                      dayIndex === 0
-                        ? "text-red-400"
-                        : dayIndex === 6
-                          ? "text-blue-400"
-                          : "text-[#1a1a1a]"
-                    }`}
-                  >
-                    {dayNames[dayIndex]}
-                  </span>
-                  <div className="flex flex-wrap gap-2">
-                    {daySchedule.map((entry) => (
-                      <span
-                        key={entry.id}
-                        className="text-xs px-2.5 py-1 bg-[#f5f5f3] text-[#737373]"
-                      >
-                        {entry.garbage_type}
-                        {entry.notes && (
-                          <span className="text-[#a3a3a3] ml-1">
-                            ({entry.notes})
-                          </span>
-                        )}
+                  <div className="flex items-center gap-4">
+                    {/* 曜日 */}
+                    <div
+                      className={`w-10 h-10 flex items-center justify-center flex-shrink-0 ${
+                        dayIndex === 0
+                          ? "bg-red-50 text-red-500"
+                          : dayIndex === 6
+                            ? "bg-blue-50 text-blue-500"
+                            : "bg-[#f5f5f3] text-[#1a1a1a]"
+                      }`}
+                    >
+                      <span className="text-sm font-medium">{dayNames[dayIndex]}</span>
+                    </div>
+
+                    {/* ゴミ種類 */}
+                    {daySchedule.map((entry) => {
+                      const style = getTypeStyle(entry.garbage_type);
+                      return (
+                        <span
+                          key={entry.id}
+                          className={`inline-flex items-center px-3 py-1.5 text-sm font-medium border ${style.bg} ${style.text} ${style.border}`}
+                        >
+                          {entry.garbage_type}
+                        </span>
+                      );
+                    })}
+
+                    {/* 備考（最初のエントリのnotes） */}
+                    {daySchedule[0]?.notes && (
+                      <span className="text-xs text-[#a3a3a3] ml-auto">
+                        {daySchedule[0].notes}
                       </span>
-                    ))}
+                    )}
                   </div>
                 </div>
               );
             })}
           </div>
         )}
+
+        {/* 注意書き */}
+        <p className="text-[10px] text-[#a3a3a3] mt-3 tracking-wide">
+          ※ 必ず収集日の朝8時までに集積所にお出しください
+        </p>
       </section>
 
       {/* 直近の当番 */}
       <section>
-        <h2 className="text-xs text-[#a3a3a3] tracking-wide mb-3">
+        <h2 className="text-xs text-[#a3a3a3] tracking-wide uppercase mb-3">
           {t("garbage.upcomingDuties")}
         </h2>
 
@@ -145,12 +162,9 @@ export function GarbageScheduleView({
               const dutyDate = new Date(duty.duty_date + "T00:00:00");
               const dateStr = dutyDate.toLocaleDateString(
                 locale === "ja" ? "ja-JP" : "en-US",
-                {
-                  month: "short",
-                  day: "numeric",
-                  weekday: "short",
-                }
+                { month: "short", day: "numeric", weekday: "short" }
               );
+              const style = getTypeStyle(duty.garbage_type);
 
               return (
                 <m.div
@@ -159,12 +173,10 @@ export function GarbageScheduleView({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.15, delay: index * 0.03 }}
                   className={`flex items-center gap-3 px-4 py-3 bg-white border ${
-                    isOwn
-                      ? "border-[#1a1a1a] bg-[#fafaf8]"
-                      : "border-[#e5e5e5]"
+                    isOwn ? "border-[#1a1a1a]" : "border-[#e5e5e5]"
                   } ${duty.is_completed ? "opacity-50" : ""}`}
                 >
-                  {/* 完了チェック（自分の当番のみ） */}
+                  {/* 完了チェック */}
                   {isOwn && !duty.is_completed ? (
                     <button
                       type="button"
@@ -180,15 +192,11 @@ export function GarbageScheduleView({
                   ) : (
                     <div
                       className={`w-5 h-5 flex items-center justify-center flex-shrink-0 ${
-                        duty.is_completed
-                          ? "bg-[#f5f5f3] border border-[#e5e5e5]"
-                          : ""
+                        duty.is_completed ? "bg-[#f5f5f3] border border-[#e5e5e5]" : ""
                       }`}
                     >
                       {duty.is_completed && (
-                        <span className="text-[10px] text-[#a3a3a3]">
-                          ✓
-                        </span>
+                        <span className="text-[10px] text-[#a3a3a3]">✓</span>
                       )}
                     </div>
                   )}
@@ -210,33 +218,31 @@ export function GarbageScheduleView({
                     </div>
                   )}
 
-                  {/* 情報 */}
+                  {/* 名前 */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-baseline gap-2">
-                      <span
-                        className={`text-sm ${
-                          isOwn
-                            ? "text-[#1a1a1a] font-medium"
-                            : "text-[#737373]"
-                        }`}
-                      >
-                        {duty.profile?.name || t("garbage.unknownUser")}
+                    <span
+                      className={`text-sm ${
+                        isOwn ? "text-[#1a1a1a] font-medium" : "text-[#737373]"
+                      }`}
+                    >
+                      {duty.profile?.name || t("garbage.unknownUser")}
+                    </span>
+                    {isOwn && (
+                      <span className="text-[10px] text-[#a3a3a3] ml-1">
+                        ({t("garbage.you")})
                       </span>
-                      {isOwn && (
-                        <span className="text-[10px] text-[#a3a3a3]">
-                          ({t("garbage.you")})
-                        </span>
-                      )}
-                    </div>
+                    )}
                   </div>
 
-                  {/* 日付・種類 */}
-                  <div className="text-right flex-shrink-0">
-                    <p className="text-xs text-[#1a1a1a]">{dateStr}</p>
-                    <p className="text-[10px] text-[#a3a3a3]">
-                      {duty.garbage_type}
-                    </p>
-                  </div>
+                  {/* ゴミ種類タグ */}
+                  <span
+                    className={`text-[10px] px-2 py-0.5 border ${style.bg} ${style.text} ${style.border} flex-shrink-0`}
+                  >
+                    {duty.garbage_type}
+                  </span>
+
+                  {/* 日付 */}
+                  <span className="text-xs text-[#737373] flex-shrink-0">{dateStr}</span>
                 </m.div>
               );
             })}
