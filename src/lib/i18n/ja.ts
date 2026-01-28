@@ -441,6 +441,7 @@ export const ja = {
     maxPhotos: "最大5枚",
     uploadSuccess: "アップロードしました",
     roomPhotosSection: "部屋の写真",
+    viewGallery: "みんなの部屋写真を見る →",
   },
 
   // Wi-Fi

@@ -417,6 +417,7 @@ export const en: Translations = {
     maxPhotos: "Up to 5 photos",
     uploadSuccess: "Uploaded",
     roomPhotosSection: "Room Photos",
+    viewGallery: "View everyone's room photos →",
   },
 
   wifi: {
