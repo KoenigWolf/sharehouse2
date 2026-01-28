@@ -493,6 +493,12 @@ export const en: Translations = {
     permissionDenied: "Notification permission denied",
   },
 
+  footer: {
+    copyright: "© {{year}} All rights reserved",
+    navigation: "Footer navigation",
+    tagline: "A portal that values resident connections",
+  },
+
   a11y: {
     mainNavigation: "Main navigation",
     userMenu: "User menu",

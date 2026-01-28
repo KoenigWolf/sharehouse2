@@ -521,6 +521,13 @@ export const ja = {
     permissionDenied: "通知の許可が拒否されています",
   },
 
+  // Footer
+  footer: {
+    copyright: "© {{year}} All rights reserved",
+    navigation: "フッターナビゲーション",
+    tagline: "住民同士のつながりを大切にするシェアハウスポータル",
+  },
+
   // Accessibility
   a11y: {
     mainNavigation: "メインナビゲーション",
