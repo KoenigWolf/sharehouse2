@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { getServerLocale } from "@/lib/i18n/server";
 import { headers } from "next/headers";
 import { MotionProvider } from "@/components/motion-provider";
+import { WebVitalsReporter } from "@/components/web-vitals-reporter";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -36,6 +37,7 @@ export default async function RootLayout({
         nonce={nonce}
       >
         <MotionProvider>{children}</MotionProvider>
+        <WebVitalsReporter />
       </body>
     </html>
   );
