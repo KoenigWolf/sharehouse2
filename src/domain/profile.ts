@@ -37,6 +37,7 @@ export interface Profile {
   interests: string[];
   mbti: MBTIType | null;
   move_in_date: string | null;
+  is_admin: boolean;
   created_at: string;
   updated_at: string;
 }
