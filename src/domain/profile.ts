@@ -1,3 +1,13 @@
+// Room numbers (2F-5F, 5 rooms per floor)
+export const ROOM_NUMBERS = [
+  "201", "202", "203", "204", "205",
+  "301", "302", "303", "304", "305",
+  "401", "402", "403", "404", "405",
+  "501", "502", "503", "504", "505",
+] as const;
+
+export type RoomNumber = typeof ROOM_NUMBERS[number];
+
 // Valid MBTI types
 export const MBTI_TYPES = [
   "INTJ", "INTP", "ENTJ", "ENTP",
