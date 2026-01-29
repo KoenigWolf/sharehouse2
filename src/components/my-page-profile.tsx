@@ -351,10 +351,10 @@ export function MyPageProfile({ profile, teaTimeEnabled, roomPhotos }: MyPagePro
         />
 
         {/* Profile Header (Facebook-style: avatar overlapping cover) */}
-        <div className="px-5 sm:px-8 pb-6">
-          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
-            <div className="shrink-0 -mt-12 sm:-mt-16 mx-auto sm:mx-0">
-              <div className="w-24 h-24 sm:w-36 sm:h-36 rounded-full border-4 border-white bg-[#f5f5f3] overflow-hidden">
+        <div className="px-6 sm:px-10 pb-8">
+          <div className="flex flex-col sm:flex-row gap-5 sm:gap-8">
+            <div className="shrink-0 -mt-14 sm:-mt-[84px] mx-auto sm:mx-0">
+              <div className="w-28 h-28 sm:w-[168px] sm:h-[168px] rounded-full border-4 border-white bg-[#f5f5f3] overflow-hidden">
                 <Avatar className="size-full rounded-full">
                   <OptimizedAvatarImage
                     src={profile.avatar_url}
@@ -362,32 +362,33 @@ export function MyPageProfile({ profile, teaTimeEnabled, roomPhotos }: MyPagePro
                     context="detail"
                     priority
                     fallback={getInitials(profile.name)}
-                    fallbackClassName="bg-[#f5f5f3] text-[#a3a3a3] text-3xl sm:text-4xl rounded-full w-full h-full"
+                    fallbackClassName="bg-[#f5f5f3] text-[#a3a3a3] text-4xl sm:text-5xl rounded-full w-full h-full"
                   />
                 </Avatar>
               </div>
             </div>
 
-            <div className="flex-1 text-center sm:text-left pt-2">
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3">
+            <div className="flex-1 text-center sm:text-left sm:pt-3">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
                 <div>
-                  <h1 className="text-2xl text-[#1a1a1a] tracking-wide font-light mb-1">
+                  <h1 className="text-[28px] text-[#1a1a1a] tracking-wide font-light leading-tight">
                     {profile.name}
                   </h1>
-                  {profile.room_number && (
-                    <p className="text-sm text-[#737373]">
-                      {profile.room_number}{t("profile.room")}
-                    </p>
-                  )}
-                  {snsLinks.length > 0 && (
-                    <div className="flex items-center justify-center sm:justify-start gap-2 mt-2">
+                  {(profile.room_number || snsLinks.length > 0) && (
+                    <div className="flex items-center justify-center sm:justify-start gap-2 mt-1.5 text-sm text-[#737373]">
+                      {profile.room_number && (
+                        <span>{profile.room_number}{t("profile.room")}</span>
+                      )}
+                      {snsLinks.length > 0 && profile.room_number && (
+                        <span className="text-[#d4d4d4]">·</span>
+                      )}
                       {snsLinks.map((link) => (
                         <a
                           key={link.platform}
                           href={link.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[#a3a3a3] hover:text-[#1a1a1a] transition-colors"
+                          className="inline-flex items-center text-[#a3a3a3] hover:text-[#1a1a1a] transition-colors"
                           aria-label={`${link.label}: @${link.username}`}
                         >
                           {link.platform === "x" && (
@@ -429,7 +430,7 @@ export function MyPageProfile({ profile, teaTimeEnabled, roomPhotos }: MyPagePro
               </div>
 
               {/* Badges */}
-              <div className="flex flex-wrap justify-center sm:justify-start gap-2 mb-3">
+              <div className="flex flex-wrap justify-center sm:justify-start gap-2 mb-4">
                 {profile.move_in_date && (
                   <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 bg-[#f5f5f3] text-[#737373]">
                     <svg className="w-3 h-3 text-[#a3a3a3]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -469,7 +470,7 @@ export function MyPageProfile({ profile, teaTimeEnabled, roomPhotos }: MyPagePro
 
           {/* Interests */}
           {profile.interests && profile.interests.length > 0 && (
-            <div className="mt-5 pt-5 border-t border-[#e5e5e5]">
+            <div className="mt-6 pt-6 border-t border-[#f0f0ee]">
               <p className="text-[10px] text-[#a3a3a3] tracking-wide uppercase mb-3 flex items-center gap-1.5">
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
