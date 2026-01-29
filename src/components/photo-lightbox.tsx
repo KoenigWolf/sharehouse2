@@ -43,7 +43,40 @@ function ChevronRightIcon() {
   );
 }
 
-// key={photo.id} でマウントし直すことで isImageLoaded を自然にリセット
+// Instagram-style aspect ratio clamping
+const MIN_RATIO = 4 / 5; // 0.8 — tallest portrait
+const MAX_RATIO = 16 / 9; // 1.778 — widest landscape
+const MAX_CONTAINER_W = 600;
+const VW_FRACTION = 0.9;
+const VH_FRACTION = 0.65;
+
+function computeDisplaySize(naturalWidth: number, naturalHeight: number) {
+  const naturalRatio = naturalWidth / naturalHeight;
+  const clampedRatio = Math.max(MIN_RATIO, Math.min(MAX_RATIO, naturalRatio));
+
+  const maxW = Math.min(window.innerWidth * VW_FRACTION, MAX_CONTAINER_W);
+  const maxH = window.innerHeight * VH_FRACTION;
+
+  let w = maxW;
+  let h = w / clampedRatio;
+
+  if (h > maxH) {
+    h = maxH;
+    w = h * clampedRatio;
+  }
+
+  return { width: Math.round(w), height: Math.round(h) };
+}
+
+function getInitialSize() {
+  if (typeof window === "undefined") return { width: 400, height: 400 };
+  const maxW = Math.min(window.innerWidth * VW_FRACTION, MAX_CONTAINER_W);
+  const maxH = window.innerHeight * VH_FRACTION;
+  const size = Math.min(maxW, maxH);
+  return { width: size, height: size };
+}
+
+// key={photo.id} でマウントし直すことで state を自然にリセット
 const LightboxImage = memo(function LightboxImage({
   photo,
 }: {
@@ -51,27 +84,34 @@ const LightboxImage = memo(function LightboxImage({
 }) {
   const t = useI18n();
   const [isLoaded, setIsLoaded] = useState(false);
+  const [size, setSize] = useState(getInitialSize);
+
+  const handleLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    setSize(computeDisplaySize(img.naturalWidth, img.naturalHeight));
+    setIsLoaded(true);
+  }, []);
 
   return (
-    <div className="relative flex-1 flex items-center justify-center">
-      <div className="relative">
-        {!isLoaded && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Spinner size="lg" variant="light" className="border-2" />
-          </div>
-        )}
-        <Image
-          src={photo.photo_url}
-          alt={photo.caption || t("roomPhotos.photoAlt")}
-          width={1200}
-          height={1200}
-          className={`max-w-[90vw] max-h-[70vh] w-auto h-auto object-contain transition-opacity duration-200 ${
-            isLoaded ? "opacity-100" : "opacity-0"
-          }`}
-          onLoad={() => setIsLoaded(true)}
-          priority
-        />
-      </div>
+    <div
+      className="relative overflow-hidden transition-[width,height] duration-200 ease-out"
+      style={{ width: size.width, height: size.height }}
+    >
+      {!isLoaded && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <Spinner size="lg" variant="light" className="border-2" />
+        </div>
+      )}
+      <Image
+        src={photo.photo_url}
+        alt={t("roomPhotos.photoAlt")}
+        fill
+        className={`object-cover transition-opacity duration-200 ${
+          isLoaded ? "opacity-100" : "opacity-0"
+        }`}
+        onLoad={handleLoad}
+        priority
+      />
     </div>
   );
 });
@@ -201,7 +241,7 @@ export function PhotoLightbox({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="relative max-w-[90vw] max-h-[85vh] flex flex-col"
+            className="relative flex flex-col w-fit"
             onClick={(e) => e.stopPropagation()}
           >
             <LightboxImage key={photo.id} photo={photo} />
@@ -210,7 +250,7 @@ export function PhotoLightbox({
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2, delay: 0.1 }}
-              className="mt-4 px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10"
+              className="mt-3 px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10"
             >
               <div className="flex items-center gap-3">
                 {photo.profile?.avatar_url ? (
