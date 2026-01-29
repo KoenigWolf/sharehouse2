@@ -72,13 +72,7 @@ export const MobileNav = memo(function MobileNav() {
                   />
                 )}
               </div>
-              <span
-                className={`text-[10px] mt-1 tracking-wide whitespace-nowrap transition-colors ${
-                  active ? "text-[#1a1a1a] font-medium" : "text-[#a3a3a3]"
-                }`}
-              >
-                {t(item.labelKey)}
-              </span>
+              <span className="sr-only">{t(item.labelKey)}</span>
             </Link>
           );
         })}
