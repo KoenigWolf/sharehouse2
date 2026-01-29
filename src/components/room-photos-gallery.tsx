@@ -54,13 +54,14 @@ const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardPr
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, delay: index * 0.03 }}
     >
-      <Button
-        type="button"
-        variant="ghost"
+      <div
+        role="button"
+        tabIndex={0}
         onClick={onClick}
-        className="group w-full h-auto p-0 flex-col justify-start bg-white border border-[#e5e5e5] overflow-hidden hover:border-[#1a1a1a] hover:bg-white text-left"
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } }}
+        className="group w-full bg-white border border-[#e5e5e5] overflow-hidden hover:border-[#1a1a1a] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a] focus-visible:ring-offset-2 cursor-pointer"
       >
-        <div className="relative w-full aspect-square overflow-hidden">
+        <div className="relative w-full overflow-hidden" style={{ paddingBottom: "100%" }}>
           <Image
             src={photo.photo_url}
             alt={t("roomPhotos.photoAlt")}
@@ -68,7 +69,6 @@ const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardPr
             sizes="(max-width: 640px) 50vw, 33vw"
             className="object-cover group-hover:scale-[1.02] transition-transform duration-300"
           />
-
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
             <span className="opacity-0 group-hover:opacity-100 transition-opacity p-2 bg-white/90 text-[#1a1a1a]">
               <ExpandIcon />
@@ -76,17 +76,17 @@ const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardPr
           </div>
         </div>
 
-        <div className="flex items-center gap-2 w-full p-2.5 border-t border-[#e5e5e5]">
+        <div className="flex items-center gap-2 p-2.5 border-t border-[#e5e5e5]">
           {photo.profile?.avatar_url ? (
             <Image
               src={photo.profile.avatar_url}
               alt={photo.profile.name}
               width={20}
               height={20}
-              className="rounded-full object-cover flex-shrink-0"
+              className="rounded-full object-cover shrink-0"
             />
           ) : (
-            <div className="w-5 h-5 rounded-full bg-[#f5f5f3] flex items-center justify-center flex-shrink-0">
+            <div className="w-5 h-5 rounded-full bg-[#f5f5f3] flex items-center justify-center shrink-0">
               <span className="text-[8px] text-[#a3a3a3]">
                 {photo.profile?.name?.charAt(0) || "?"}
               </span>
@@ -96,7 +96,7 @@ const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardPr
             {photo.profile?.name || t("roomPhotos.unknownUser")}
           </span>
         </div>
-      </Button>
+      </div>
     </m.div>
   );
 });
