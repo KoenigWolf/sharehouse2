@@ -4,6 +4,7 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { MobileNav } from "@/components/mobile-nav";
 import { RoomPhotosGallery } from "@/components/room-photos-gallery";
+import { GalleryUploadSection } from "@/components/gallery-upload-section";
 import { getAllRoomPhotos } from "@/lib/room-photos/actions";
 import { getServerTranslator } from "@/lib/i18n/server";
 
@@ -34,6 +35,10 @@ export default async function RoomPhotosPage() {
             <p className="text-xs text-[#a3a3a3] mt-1">
               {t("roomPhotos.subtitle")}
             </p>
+          </div>
+
+          <div className="mb-6 sm:mb-8">
+            <GalleryUploadSection />
           </div>
 
           <RoomPhotosGallery photos={photos} />

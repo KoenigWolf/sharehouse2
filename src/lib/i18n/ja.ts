@@ -396,7 +396,7 @@ export const ja = {
     subtitle: "住民の部屋写真",
     gallery: "部屋写真ギャラリー",
     noPhotos: "まだ写真がありません",
-    noPhotosHint: "住民がマイページから写真をアップロードできます",
+    noPhotosHint: "写真を投稿してみましょう",
     photoAlt: "部屋の写真",
     unknownUser: "不明なユーザー",
     upload: "写真をアップロード",
@@ -411,6 +411,7 @@ export const ja = {
     clickToEnlarge: "※ クリックで拡大表示",
     prevPhoto: "前の写真",
     nextPhoto: "次の写真",
+    uploadButton: "写真を投稿",
   },
 
   wifi: {

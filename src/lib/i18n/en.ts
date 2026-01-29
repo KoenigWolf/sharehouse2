@@ -397,7 +397,7 @@ export const en: Translations = {
     subtitle: "Room photos from residents",
     gallery: "Room Photo Gallery",
     noPhotos: "No photos yet",
-    noPhotosHint: "Residents can upload photos from their profile page",
+    noPhotosHint: "Upload your first room photo",
     photoAlt: "Room photo",
     unknownUser: "Unknown user",
     upload: "Upload photo",
@@ -412,6 +412,7 @@ export const en: Translations = {
     clickToEnlarge: "* Click to enlarge",
     prevPhoto: "Previous photo",
     nextPhoto: "Next photo",
+    uploadButton: "Upload photo",
   },
 
   wifi: {
