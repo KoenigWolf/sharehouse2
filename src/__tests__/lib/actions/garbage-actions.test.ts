@@ -117,11 +117,13 @@ describe("completeDuty", () => {
   it("should return error when duty not owned by user", async () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: "user-123" } } });
     mockFrom.mockReturnValue({
-      select: vi.fn().mockReturnValue({
+      update: vi.fn().mockReturnValue({
         eq: vi.fn().mockReturnValue({
-          single: vi.fn().mockResolvedValue({
-            data: { id: "duty-1", user_id: "other-user" },
-            error: null,
+          eq: vi.fn().mockReturnValue({
+            select: vi.fn().mockResolvedValue({
+              data: [],
+              error: null,
+            }),
           }),
         }),
       }),
@@ -136,25 +138,18 @@ describe("completeDuty", () => {
 
   it("should complete duty successfully when owned by user", async () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: "user-123" } } });
-
-    const mockUpdate = vi.fn().mockReturnValue({
-      eq: vi.fn().mockResolvedValue({ error: null }),
-    });
-
-    mockFrom
-      .mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
+    mockFrom.mockReturnValue({
+      update: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({
-              data: { id: "duty-1", user_id: "user-123" },
+            select: vi.fn().mockResolvedValue({
+              data: [{ id: "12345678-1234-1234-1234-123456789012" }],
               error: null,
             }),
           }),
         }),
-      })
-      .mockReturnValueOnce({
-        update: mockUpdate,
-      });
+      }),
+    });
 
     const { completeDuty } = await import("@/lib/garbage/actions");
     const result = await completeDuty("12345678-1234-1234-1234-123456789012");
