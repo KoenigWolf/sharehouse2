@@ -149,14 +149,18 @@ export const Header = memo(function Header() {
       className="sticky top-0 z-40 border-b border-[#e5e5e5] bg-white/95 backdrop-blur-sm"
       role="banner"
     >
-      <div className="container mx-auto px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between max-w-5xl">
+      <div className="container mx-auto px-4 sm:px-6 py-3 flex items-center justify-between max-w-5xl">
         <div className="flex items-center gap-4 sm:gap-8">
           <Link
             href="/"
             className="text-[13px] leading-none sm:text-base tracking-[0.15em] sm:tracking-wider text-[#1a1a1a] font-light outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a] focus-visible:ring-offset-2"
             aria-label={t("a11y.goHome")}
           >
-            SHARE HOUSE
+            <span className="sm:hidden flex flex-col leading-none gap-0.5">
+              <span>SHARE</span>
+              <span>HOUSE</span>
+            </span>
+            <span className="hidden sm:inline">SHARE HOUSE</span>
           </Link>
 
           <nav
