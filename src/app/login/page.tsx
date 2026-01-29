@@ -5,6 +5,7 @@ import type { Provider } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { m, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { signIn, signUp } from "@/lib/auth/actions";
 import { AUTH } from "@/lib/constants/config";
 import { useI18n } from "@/hooks/use-i18n";
@@ -324,15 +325,7 @@ export default function LoginPage() {
               >
                 {isLoading ? (
                   <span className="inline-flex items-center gap-2">
-                    <m.span
-                      animate={{ rotate: 360 }}
-                      transition={{
-                        duration: 1,
-                        repeat: Infinity,
-                        ease: "linear",
-                      }}
-                      className="inline-block w-4 h-4 border border-white/30 border-t-white rounded-full"
-                    />
+                    <Spinner size="sm" variant="light" />
                     {t("common.processing")}
                   </span>
                 ) : mode === "login" ? (

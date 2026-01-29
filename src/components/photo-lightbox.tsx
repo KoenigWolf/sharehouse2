@@ -4,6 +4,7 @@ import { useEffect, useCallback, useState, memo } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { useI18n } from "@/hooks/use-i18n";
 import type { RoomPhoto } from "@/domain/room-photo";
 import type { Profile } from "@/domain/profile";
@@ -56,7 +57,7 @@ const LightboxImage = memo(function LightboxImage({
       <div className="relative">
         {!isLoaded && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-6 h-6 border-2 border-white/30 border-t-white/80 rounded-full animate-spin" />
+            <Spinner size="lg" variant="light" className="border-2" />
           </div>
         )}
         <Image

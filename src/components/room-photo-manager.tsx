@@ -5,6 +5,7 @@ import Image from "next/image";
 import { m, AnimatePresence } from "framer-motion";
 import { X, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { uploadRoomPhoto, deleteRoomPhoto } from "@/lib/room-photos/actions";
 import { useI18n } from "@/hooks/use-i18n";
 import type { RoomPhoto } from "@/domain/room-photo";
@@ -174,11 +175,7 @@ export function RoomPhotoManager({ photos, maxPhotos = 5, compact = false }: Roo
                 className="absolute top-1 right-1 bg-black/60 text-white opacity-0 group-hover:opacity-100 focus:opacity-100 hover:bg-black/80 hover:text-white"
               >
                 {deletingId === photo.id ? (
-                  <m.span
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                    className="inline-block w-3 h-3 border border-white/30 border-t-white rounded-full"
-                  />
+                  <Spinner size="xs" variant="light" />
                 ) : (
                   <X className="w-3.5 h-3.5" />
                 )}
@@ -200,11 +197,7 @@ export function RoomPhotoManager({ photos, maxPhotos = 5, compact = false }: Roo
               className="aspect-square h-auto flex-col gap-1 bg-[#fafaf8] hover:bg-[#f5f5f3]"
             >
               {isUploading ? (
-                <m.span
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                  className="inline-block w-5 h-5 border border-[#d4d4d4] border-t-[#1a1a1a] rounded-full"
-                />
+                <Spinner />
               ) : (
                 <>
                   <Plus className="w-5 h-5 text-[#a3a3a3]" />

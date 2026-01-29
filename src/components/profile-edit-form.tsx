@@ -5,6 +5,7 @@ import Link from "next/link";
 import { m, AnimatePresence } from "framer-motion";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 import { Profile, MBTI_TYPES, MBTI_LABELS, MBTIType, ROOM_NUMBERS } from "@/domain/profile";
 import { updateProfile, uploadAvatar } from "@/lib/profile/actions";
@@ -567,11 +568,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                 </div>
                 {isUploading && (
                   <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
-                    <m.span
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                      className="inline-block w-6 h-6 border border-[#d4d4d4] border-t-[#1a1a1a] rounded-full"
-                    />
+                    <Spinner size="lg" />
                   </div>
                 )}
               </Button>
@@ -1156,11 +1153,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
             className="w-full active:scale-[0.99]"
           >
             {isLoading ? (
-              <m.span
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                className="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
-              />
+              <Spinner variant="light" className="border-2" />
             ) : (
               t("profile.saveChanges")
             )}
