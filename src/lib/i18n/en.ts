@@ -392,6 +392,16 @@ export const en: Translations = {
     },
   },
 
+  myPage: {
+    title: "My Page",
+    editProfile: "Edit Profile",
+    coverPhoto: "Change cover photo",
+    noCoverPhoto: "Add cover photo",
+    backToMyPage: "Back to My Page",
+    coverPhotoUpdated: "Cover photo updated",
+    coverPhotoUploading: "Uploading...",
+  },
+
   roomPhotos: {
     title: "Gallery",
     subtitle: "Room photos from residents",

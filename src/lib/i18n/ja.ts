@@ -391,6 +391,16 @@ export const ja = {
     },
   },
 
+  myPage: {
+    title: "マイページ",
+    editProfile: "プロフィールを編集",
+    coverPhoto: "カバー写真を変更",
+    noCoverPhoto: "カバー写真を追加",
+    backToMyPage: "マイページに戻る",
+    coverPhotoUpdated: "カバー写真を更新しました",
+    coverPhotoUploading: "アップロード中...",
+  },
+
   roomPhotos: {
     title: "ギャラリー",
     subtitle: "住民の部屋写真",
