@@ -51,6 +51,14 @@ export const CacheStrategy = {
   },
 
   /**
+   * カバー写真更新後のキャッシュ再検証
+   */
+  afterCoverPhotoUpdate: () => {
+    revalidatePath("/settings");
+    revalidatePath(`/profile/[id]`, "page");
+  },
+
+  /**
    * 部屋写真更新後のキャッシュ再検証
    */
   afterRoomPhotoUpdate: () => {
