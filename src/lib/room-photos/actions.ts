@@ -265,7 +265,7 @@ export async function getAllRoomPhotos(): Promise<
 
     const { data: profiles, error: profilesError } = await supabase
       .from("profiles")
-      .select("*")
+      .select("id, name, avatar_url")
       .in("id", uniqueUserIds);
 
     if (profilesError) {

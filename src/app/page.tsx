@@ -22,7 +22,10 @@ export default async function Home() {
   }
 
   const [profilesResult, latestMatch] = await Promise.all([
-    supabase.from("profiles").select("*").order("name"),
+    supabase
+      .from("profiles")
+      .select("id, name, nickname, room_number, avatar_url, move_in_date, mbti, interests, occupation, industry, work_style, daily_rhythm, social_stance, sns_x, sns_instagram, sns_github, is_admin")
+      .order("name"),
     getLatestScheduledMatch(),
   ]);
 

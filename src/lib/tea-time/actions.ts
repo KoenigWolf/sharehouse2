@@ -156,7 +156,7 @@ export async function getMyMatches(): Promise<(TeaTimeMatch & { partner: Profile
 
     const { data: partners } = await supabase
       .from("profiles")
-      .select("*")
+      .select("id, name, avatar_url")
       .in("id", uniquePartnerIds);
 
     const partnerMap = new Map<string, Profile>();
@@ -283,7 +283,7 @@ export async function getLatestScheduledMatch(): Promise<(TeaTimeMatch & { partn
 
     const { data: partner } = await supabase
       .from("profiles")
-      .select("*")
+      .select("id, name, avatar_url")
       .eq("id", partnerId)
       .single();
 

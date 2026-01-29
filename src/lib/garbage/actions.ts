@@ -106,7 +106,7 @@ export async function getUpcomingDuties(days = 7): Promise<GarbageDutyWithProfil
 
     const { data: profiles } = await supabase
       .from("profiles")
-      .select("*")
+      .select("id, name, avatar_url")
       .in("id", userIds);
 
     const profileMap = new Map<string, Profile>();
@@ -431,7 +431,7 @@ export async function generateDutyRotation(startDate: string, weeks: number): Pr
 
     const { data: profiles, error: profilesError } = await supabase
       .from("profiles")
-      .select("*")
+      .select("id, room_number")
       .order("room_number", { ascending: true });
 
     if (profilesError) {
@@ -537,20 +537,17 @@ export async function completeDuty(dutyId: string): Promise<UpdateResponse> {
       return { error: t("errors.unauthorized") };
     }
 
-    const { data: duty } = await supabase
-      .from("garbage_duties")
-      .select("user_id")
-      .eq("id", dutyId)
-      .single();
-
-    if (!duty || duty.user_id !== user.id) {
-      return { error: t("errors.unauthorized") };
-    }
-
-    const { error } = await supabase
+    // Ownership check + update in a single query
+    const { data: updated, error } = await supabase
       .from("garbage_duties")
       .update({ is_completed: true })
-      .eq("id", dutyId);
+      .eq("id", dutyId)
+      .eq("user_id", user.id)
+      .select("id");
+
+    if (!error && (!updated || updated.length === 0)) {
+      return { error: t("errors.unauthorized") };
+    }
 
     if (error) {
       logError(error, { action: "completeDuty", userId: user.id, metadata: { dutyId } });
