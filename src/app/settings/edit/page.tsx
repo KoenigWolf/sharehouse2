@@ -1,15 +1,17 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { MobileNav } from "@/components/mobile-nav";
-import { MyPageProfile } from "@/components/my-page-profile";
+import { ProfileEditForm } from "@/components/profile-edit-form";
+import { RoomPhotoManager } from "@/components/room-photo-manager";
 import { Profile } from "@/domain/profile";
 import { getTeaTimeSetting } from "@/lib/tea-time/actions";
 import { getRoomPhotos } from "@/lib/room-photos/actions";
 import { getServerTranslator } from "@/lib/i18n/server";
 
-export default async function SettingsPage() {
+export default async function SettingsEditPage() {
   const t = await getServerTranslator();
   const supabase = await createClient();
 
@@ -57,12 +59,19 @@ export default async function SettingsPage() {
   return (
     <div className="min-h-screen bg-[#fafaf8] flex flex-col">
       <Header />
-      <main className="flex-1 pb-20 sm:pb-0 container mx-auto px-4 sm:px-6 py-5 sm:py-8 max-w-6xl">
-        <MyPageProfile
+      <main className="flex-1 pb-20 sm:pb-0 container mx-auto px-4 sm:px-6 py-5 sm:py-8 max-w-2xl space-y-5">
+        <Link
+          href="/settings"
+          className="inline-flex items-center gap-1.5 text-xs text-[#737373] hover:text-[#1a1a1a] transition-colors"
+        >
+          <span aria-hidden="true">&larr;</span>
+          <span>{t("myPage.backToMyPage")}</span>
+        </Link>
+        <ProfileEditForm
           profile={profile as Profile}
-          teaTimeEnabled={teaTimeSetting?.is_enabled ?? false}
-          roomPhotos={roomPhotos}
+          initialTeaTimeEnabled={teaTimeSetting?.is_enabled ?? false}
         />
+        <RoomPhotoManager photos={roomPhotos} />
       </main>
       <Footer />
       <MobileNav />
