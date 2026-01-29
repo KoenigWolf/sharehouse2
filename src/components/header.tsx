@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { createClient } from "@/lib/supabase/client";
 import { useI18n } from "@/hooks/use-i18n";
+import { useUser } from "@/hooks/use-user";
 import { getOptimizedImageUrl } from "@/lib/utils/image";
 import type { TranslationKey } from "@/lib/i18n";
 
@@ -70,33 +71,9 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
   const pathname = usePathname();
   const router = useRouter();
   const t = useI18n();
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
+  const { userId, avatarUrl } = useUser();
 
   const isActive = pathname.startsWith("/profile/");
-
-  useEffect(() => {
-    const fetchAvatar = async () => {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
-
-      setUserId(user.id);
-
-      const { data } = await supabase
-        .from("profiles")
-        .select("avatar_url")
-        .eq("id", user.id)
-        .single();
-
-      if (data?.avatar_url) {
-        setAvatarUrl(data.avatar_url);
-      }
-    };
-    fetchAvatar();
-  }, []);
 
   const handleLogout = useCallback(async () => {
     const supabase = createClient();
