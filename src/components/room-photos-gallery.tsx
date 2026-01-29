@@ -1,9 +1,13 @@
 "use client";
 
-import { useState, useCallback, memo } from "react";
-import { m } from "framer-motion";
+import { useState, useRef, useCallback, memo } from "react";
+import { useRouter } from "next/navigation";
+import { m, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import { uploadRoomPhoto } from "@/lib/room-photos/actions";
 import { useI18n } from "@/hooks/use-i18n";
 import { PhotoLightbox } from "@/components/photo-lightbox";
 import type { RoomPhoto } from "@/domain/room-photo";
@@ -54,12 +58,12 @@ const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardPr
         type="button"
         variant="ghost"
         onClick={onClick}
-        className="group w-full h-auto p-0 bg-white border border-[#e5e5e5] overflow-hidden hover:border-[#1a1a1a] hover:bg-white text-left"
+        className="group w-full h-auto p-0 flex-col justify-start bg-white border border-[#e5e5e5] overflow-hidden hover:border-[#1a1a1a] hover:bg-white text-left"
       >
-        <div className="relative aspect-square overflow-hidden">
+        <div className="relative w-full aspect-square overflow-hidden">
           <Image
             src={photo.photo_url}
-            alt={photo.caption || t("roomPhotos.photoAlt")}
+            alt={t("roomPhotos.photoAlt")}
             fill
             sizes="(max-width: 640px) 50vw, 33vw"
             className="object-cover group-hover:scale-[1.02] transition-transform duration-300"
@@ -70,17 +74,9 @@ const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardPr
               <ExpandIcon />
             </span>
           </div>
-
-          {photo.caption && (
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-3 pt-8">
-              <p className="text-xs text-white leading-relaxed line-clamp-2">
-                {photo.caption}
-              </p>
-            </div>
-          )}
         </div>
 
-        <div className="flex items-center gap-2 p-2.5 border-t border-[#e5e5e5]">
+        <div className="flex items-center gap-2 w-full p-2.5 border-t border-[#e5e5e5]">
           {photo.profile?.avatar_url ? (
             <Image
               src={photo.profile.avatar_url}
@@ -107,6 +103,60 @@ const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardPr
 
 PhotoCard.displayName = "PhotoCard";
 
+function UploadCard({ onUpload, isUploading }: { onUpload: (file: File) => void; isUploading: boolean }) {
+  const t = useI18n();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      onUpload(file);
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  return (
+    <m.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
+    >
+      <Button
+        type="button"
+        variant="dashed"
+        onClick={handleClick}
+        disabled={isUploading}
+        className="w-full h-auto p-0 flex-col aspect-square bg-[#fafaf8] hover:bg-[#f5f5f3] hover:border-[#a3a3a3]"
+      >
+        {isUploading ? (
+          <Spinner />
+        ) : (
+          <>
+            <Plus className="w-6 h-6 text-[#a3a3a3]" />
+            <span className="text-[10px] text-[#a3a3a3] mt-1">
+              {t("roomPhotos.uploadButton")}
+            </span>
+          </>
+        )}
+      </Button>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        onChange={handleFileChange}
+        className="hidden"
+        aria-hidden="true"
+      />
+    </m.div>
+  );
+}
+
 interface SectionHeaderProps {
   icon: React.ReactNode;
   title: string;
@@ -129,15 +179,12 @@ const SectionHeader = memo(function SectionHeader({ icon, title, count }: Sectio
 
 SectionHeader.displayName = "SectionHeader";
 
-/**
- * 部屋写真ギャラリーコンポーネント
- *
- * 全住人の部屋写真をグリッド表示し、クリックでライトボックス表示。
- * キーボードナビゲーション（矢印キー、Escape）対応。
- */
 export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
   const t = useI18n();
+  const router = useRouter();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
   const handlePhotoClick = useCallback((index: number) => {
     setSelectedIndex(index);
@@ -151,24 +198,27 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
     setSelectedIndex(index);
   }, []);
 
-  if (photos.length === 0) {
-    return (
-      <m.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.3 }}
-        className="bg-white border border-[#e5e5e5] p-8 sm:p-12 text-center"
-      >
-        <div className="w-12 h-12 mx-auto mb-4 bg-[#f5f5f3] flex items-center justify-center text-[#a3a3a3]">
-          <CameraIcon />
-        </div>
-        <p className="text-sm text-[#737373]">{t("roomPhotos.noPhotos")}</p>
-        <p className="text-xs text-[#a3a3a3] mt-2">
-          {t("roomPhotos.noPhotosHint")}
-        </p>
-      </m.div>
-    );
-  }
+  const handleUpload = useCallback(async (file: File) => {
+    setIsUploading(true);
+    setFeedback(null);
+
+    const formData = new FormData();
+    formData.append("photo", file);
+
+    const result = await uploadRoomPhoto(formData);
+
+    if ("error" in result) {
+      setFeedback({ type: "error", message: result.error });
+    } else {
+      setFeedback({ type: "success", message: t("roomPhotos.uploadSuccess") });
+      router.refresh();
+      setTimeout(() => setFeedback(null), 3000);
+    }
+
+    setIsUploading(false);
+  }, [router, t]);
+
+  const hasPhotos = photos.length > 0;
 
   return (
     <>
@@ -180,10 +230,36 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
         <SectionHeader
           icon={<CameraIcon />}
           title={t("roomPhotos.gallery")}
-          count={photos.length}
+          count={hasPhotos ? photos.length : undefined}
         />
 
+        <AnimatePresence mode="wait">
+          {feedback && (
+            <m.div
+              key={feedback.type}
+              role={feedback.type === "error" ? "alert" : undefined}
+              aria-live="polite"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+              className={`mb-4 py-3 px-4 ${
+                feedback.type === "error"
+                  ? "bg-[#faf8f8] border-l-2 border-[#c9a0a0]"
+                  : "bg-[#f8faf8] border-l-2 border-[#a0c9a0]"
+              }`}
+            >
+              <p className={`text-sm ${
+                feedback.type === "error" ? "text-[#8b6b6b]" : "text-[#6b8b6b]"
+              }`}>
+                {feedback.message}
+              </p>
+            </m.div>
+          )}
+        </AnimatePresence>
+
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+          <UploadCard onUpload={handleUpload} isUploading={isUploading} />
           {photos.map((photo, index) => (
             <PhotoCard
               key={photo.id}
@@ -194,9 +270,17 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
           ))}
         </div>
 
-        <p className="text-[10px] text-[#a3a3a3] mt-4 tracking-wide">
-          {t("roomPhotos.clickToEnlarge")}
-        </p>
+        {hasPhotos && (
+          <p className="text-[10px] text-[#a3a3a3] mt-4 tracking-wide">
+            {t("roomPhotos.clickToEnlarge")}
+          </p>
+        )}
+
+        {!hasPhotos && (
+          <p className="text-xs text-[#a3a3a3] mt-4">
+            {t("roomPhotos.noPhotosHint")}
+          </p>
+        )}
       </m.section>
 
       <PhotoLightbox
