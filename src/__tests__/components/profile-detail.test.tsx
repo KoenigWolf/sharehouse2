@@ -247,7 +247,7 @@ describe("ProfileDetail", () => {
         <ProfileDetail profile={mockProfile} isOwnProfile={false} />
       );
       // Check that the avatar section exists with proper structure
-      const avatarContainer = screen.getByRole("article").querySelector(".w-40");
+      const avatarContainer = screen.getByRole("article").querySelector(".rounded-full");
       expect(avatarContainer).toBeInTheDocument();
     });
   });

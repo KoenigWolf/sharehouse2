@@ -9,6 +9,7 @@ import { mockProfiles } from "@/lib/mock-data";
 import { getTeaTimeSetting } from "@/lib/tea-time/actions";
 import { getRoomPhotos } from "@/lib/room-photos/actions";
 import { validateId } from "@/lib/security/validation";
+import { getServerTranslator } from "@/lib/i18n/server";
 
 interface ProfilePageProps {
   params: Promise<{ id: string }>;
@@ -50,6 +51,29 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     profile = profileResult.data as Profile | null;
     teaTimeEnabled = teaTimeSetting?.is_enabled ?? false;
     roomPhotos = photos;
+
+    // 自分のプロフィールが未作成の場合は自動作成
+    if (!profile && user.id === validatedId) {
+      const t = await getServerTranslator();
+      const userName =
+        user.user_metadata?.name ||
+        user.email?.split("@")[0] ||
+        t("auth.defaultName");
+      const { data: newProfile } = await supabase
+        .from("profiles")
+        .insert({
+          id: user.id,
+          name: userName,
+          room_number: null,
+          bio: null,
+          avatar_url: null,
+          interests: [],
+          move_in_date: null,
+        })
+        .select()
+        .single();
+      profile = newProfile as Profile | null;
+    }
   }
 
   if (!profile) {
@@ -62,8 +86,8 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     <div className="min-h-screen bg-[#fafaf8] flex flex-col">
       <Header />
 
-      <main className="flex-1 flex items-center pb-20 sm:pb-0">
-        <div className="container mx-auto px-4 sm:px-6 py-5 sm:py-8 max-w-2xl">
+      <main className="flex-1 pb-20 sm:pb-0">
+        <div className="container mx-auto px-4 sm:px-6 py-5 sm:py-8 max-w-6xl">
           <ProfileDetail
             profile={profile}
             isOwnProfile={isOwnProfile}

@@ -1,9 +1,13 @@
 "use client";
 
+import { useState, useRef, useCallback } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { m } from "framer-motion";
+import { Camera } from "lucide-react";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { LogoutButton } from "@/components/logout-button";
 import { RoomPhotoManager } from "@/components/room-photo-manager";
 import {
   Profile,
@@ -27,8 +31,10 @@ import {
 } from "@/domain/profile";
 import type { RoomPhoto } from "@/domain/room-photo";
 import { getInitials, calculateResidenceDuration } from "@/lib/utils";
+import { uploadCoverPhoto } from "@/lib/profile/cover-photo-actions";
 import type { Translator } from "@/lib/i18n";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
+import { logError } from "@/lib/errors";
 
 interface ProfileDetailProps {
   profile: Profile;
@@ -76,7 +82,7 @@ function translateLanguages(
   });
 }
 
-type CategoryType = "basic" | "work" | "lifestyle" | "communal" | "personality" | "photos" | "sns";
+type CategoryType = "basic" | "work" | "lifestyle" | "communal" | "personality" | "photos";
 
 const categoryConfig: Record<CategoryType, { color: string; bgColor: string; icon: React.ReactNode }> = {
   basic: {
@@ -130,15 +136,6 @@ const categoryConfig: Record<CategoryType, { color: string; bgColor: string; ico
     icon: (
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-      </svg>
-    ),
-  },
-  sns: {
-    color: "text-[#5c6b7a]",
-    bgColor: "bg-[#f8f9fa]",
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
       </svg>
     ),
   },
@@ -200,6 +197,45 @@ export function ProfileDetail({
   const isMockProfile = profile.id.startsWith("mock-");
   const t = useI18n();
   const locale = useLocale();
+  const router = useRouter();
+  const coverInputRef = useRef<HTMLInputElement>(null);
+  const [isUploadingCover, setIsUploadingCover] = useState(false);
+  const [coverUrl, setCoverUrl] = useState<string | null>(profile.cover_photo_url ?? null);
+  const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
+
+  const handleCoverUploadClick = useCallback(() => {
+    coverInputRef.current?.click();
+  }, []);
+
+  const handleCoverFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingCover(true);
+    setFeedback(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("cover", file);
+      const result = await uploadCoverPhoto(formData);
+
+      if ("error" in result) {
+        setFeedback({ type: "error", message: result.error });
+      } else {
+        setCoverUrl(result.url);
+        setFeedback({ type: "success", message: t("myPage.coverPhotoUpdated") });
+        router.refresh();
+      }
+    } catch (error) {
+      logError(error, { action: "handleCoverFileChange" });
+      setFeedback({ type: "error", message: t("errors.serverError") });
+    } finally {
+      setIsUploadingCover(false);
+      if (coverInputRef.current) {
+        coverInputRef.current.value = "";
+      }
+    }
+  }, [t, router]);
 
   const basicInfo = [
     { label: t("profile.nickname"), value: profile.nickname },
@@ -247,14 +283,14 @@ export function ProfileDetail({
     { platform: "github", username: profile.sns_github, url: `https://github.com/${profile.sns_github}`, label: t("profile.snsGithub") },
   ].filter((link) => link.username);
 
-  const hasExtendedInfo = basicInfo.length > 0 || workInfo.length > 0 || lifestyleInfo.length > 0 || communalInfo.length > 0 || personalityInfo.length > 0 || sharedSpaceUsage || snsLinks.length > 0;
+  const hasExtendedInfo = basicInfo.length > 0 || workInfo.length > 0 || lifestyleInfo.length > 0 || communalInfo.length > 0 || personalityInfo.length > 0 || !!sharedSpaceUsage;
 
   return (
     <m.article
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="max-w-2xl mx-auto"
+      className="w-full"
     >
       <m.div variants={itemVariants}>
         <Link
@@ -278,41 +314,123 @@ export function ProfileDetail({
         </m.div>
       )}
 
+      {isOwnProfile && (
+        <input
+          ref={coverInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          onChange={handleCoverFileChange}
+          className="hidden"
+          aria-label={t("myPage.coverPhoto")}
+        />
+      )}
+
       <m.div
         variants={itemVariants}
-        className={`bg-white border mb-6 ${isMockProfile ? "border-dashed border-[#d4d4d4]" : "border-[#e5e5e5]"}`}
+        className={`bg-white border overflow-hidden ${isMockProfile ? "border-dashed border-[#d4d4d4]" : "border-[#e5e5e5]"}`}
       >
-        <div className="p-6 sm:p-8">
-          <div className="flex flex-col sm:flex-row gap-6 sm:gap-8">
-            <div className="shrink-0 mx-auto sm:mx-0">
-              <div className="w-40 h-40 sm:w-52 sm:h-52 bg-[#f5f5f3] overflow-hidden">
-                <Avatar className="size-full rounded-none">
+        {/* Cover Photo */}
+        <div className="relative aspect-2/1 sm:aspect-21/8 bg-[#f5f5f3] overflow-hidden">
+          {coverUrl ? (
+            <img
+              src={coverUrl}
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-linear-to-b from-[#f0ede8] to-[#e8e5e0]" />
+          )}
+          {isOwnProfile && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleCoverUploadClick}
+              disabled={isUploadingCover}
+              className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm border-[#e5e5e5] text-[#737373] hover:text-[#1a1a1a] hover:border-[#d4d4d4]"
+            >
+              <Camera size={14} strokeWidth={1.5} />
+              {isUploadingCover
+                ? t("myPage.coverPhotoUploading")
+                : coverUrl
+                  ? t("myPage.coverPhoto")
+                  : t("myPage.noCoverPhoto")}
+            </Button>
+          )}
+        </div>
+
+        <div className="px-6 sm:px-10 pb-8">
+          <div className="flex flex-col sm:flex-row gap-5 sm:gap-8">
+            <div className="shrink-0 -mt-14 sm:-mt-[84px] mx-auto sm:mx-0">
+              <div className="w-28 h-28 sm:w-[168px] sm:h-[168px] rounded-full border-4 border-white bg-[#f5f5f3] overflow-hidden">
+                <Avatar className="size-full rounded-full">
                   <OptimizedAvatarImage
                     src={profile.avatar_url}
                     alt={t("a11y.profilePhotoAlt", { name: profile.name })}
                     context="detail"
                     priority
                     fallback={getInitials(profile.name)}
-                    fallbackClassName="bg-[#f5f5f3] text-[#a3a3a3] text-4xl sm:text-5xl rounded-none w-full h-full"
+                    fallbackClassName="bg-[#f5f5f3] text-[#a3a3a3] text-4xl sm:text-5xl rounded-full w-full h-full"
                   />
                 </Avatar>
               </div>
             </div>
 
-            <div className="flex-1 text-center sm:text-left">
+            <div className="flex-1 text-center sm:text-left sm:pt-3">
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
                 <div>
-                  <h1 className="text-2xl text-[#1a1a1a] tracking-wide font-light mb-1">
+                  <h1 className="text-[28px] text-[#1a1a1a] tracking-wide font-light leading-tight">
                     {profile.name}
                   </h1>
-                  {profile.room_number && (
-                    <p className="text-sm text-[#737373]">
-                      {profile.room_number}{t("profile.room")}
-                    </p>
+                  {(profile.room_number || snsLinks.length > 0) && (
+                    <div className="flex items-center justify-center sm:justify-start gap-2 mt-1.5 text-sm text-[#737373]">
+                      {profile.room_number && (
+                        <span>{profile.room_number}{t("profile.room")}</span>
+                      )}
+                      {snsLinks.length > 0 && profile.room_number && (
+                        <span className="text-[#d4d4d4]">·</span>
+                      )}
+                      {snsLinks.map((link) => (
+                        <a
+                          key={link.platform}
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center text-[#a3a3a3] hover:text-[#1a1a1a] transition-colors"
+                          aria-label={`${link.label}: @${link.username}`}
+                        >
+                          {link.platform === "x" && (
+                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                            </svg>
+                          )}
+                          {link.platform === "instagram" && (
+                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                            </svg>
+                          )}
+                          {link.platform === "facebook" && (
+                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                            </svg>
+                          )}
+                          {link.platform === "linkedin" && (
+                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                            </svg>
+                          )}
+                          {link.platform === "github" && (
+                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+                            </svg>
+                          )}
+                        </a>
+                      ))}
+                    </div>
                   )}
                 </div>
                 {isOwnProfile && (
-                  <Button variant="outline" asChild className="self-center sm:self-start">
+                  <Button variant="outline" size="sm" asChild className="self-center sm:self-start">
                     <Link href={`/profile/${profile.id}/edit`}>
                       {t("common.edit")}
                     </Link>
@@ -361,7 +479,7 @@ export function ProfileDetail({
           </div>
 
           {profile.interests && profile.interests.length > 0 && (
-            <div className="mt-6 pt-6 border-t border-[#e5e5e5]">
+            <div className="mt-6 pt-6 border-t border-[#f0f0ee]">
               <p className="text-[10px] text-[#a3a3a3] tracking-wide uppercase mb-3 flex items-center gap-1.5">
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
@@ -424,7 +542,7 @@ export function ProfileDetail({
       </m.div>
 
       {hasExtendedInfo && (
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {basicInfo.length > 0 && (
             <ProfileSection title={t("profile.sectionBasicInfo")} category="basic">
               <dl className="grid grid-cols-2 gap-4">
@@ -471,7 +589,7 @@ export function ProfileDetail({
           )}
 
           {personalityInfo.length > 0 && (
-            <ProfileSection title={t("profile.sectionPersonality")} category="personality" className="sm:col-span-2">
+            <ProfileSection title={t("profile.sectionPersonality")} category="personality" className="sm:col-span-2 lg:col-span-3">
               <dl className="grid sm:grid-cols-2 gap-4">
                 {personalityInfo.map((field, i) => (
                   <FieldRow key={i} label={field.label} value={field.value} />
@@ -480,50 +598,26 @@ export function ProfileDetail({
             </ProfileSection>
           )}
 
-          {snsLinks.length > 0 && (
-            <ProfileSection title={t("profile.sectionSns")} category="sns" className="sm:col-span-2">
-              <div className="flex flex-wrap gap-3">
-                {snsLinks.map((link) => (
-                  <a
-                    key={link.platform}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#f8f9fa] hover:bg-[#f0f2f4] border border-[#e5e5e5] text-sm text-[#1a1a1a] transition-colors group"
-                    aria-label={`${link.label}: @${link.username}`}
-                  >
-                    {link.platform === "x" && (
-                      <svg className="w-4 h-4 text-[#737373] group-hover:text-[#1a1a1a] transition-colors" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                      </svg>
-                    )}
-                    {link.platform === "instagram" && (
-                      <svg className="w-4 h-4 text-[#737373] group-hover:text-[#E4405F] transition-colors" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                      </svg>
-                    )}
-                    {link.platform === "facebook" && (
-                      <svg className="w-4 h-4 text-[#737373] group-hover:text-[#1877F2] transition-colors" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                      </svg>
-                    )}
-                    {link.platform === "linkedin" && (
-                      <svg className="w-4 h-4 text-[#737373] group-hover:text-[#0A66C2] transition-colors" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                      </svg>
-                    )}
-                    {link.platform === "github" && (
-                      <svg className="w-4 h-4 text-[#737373] group-hover:text-[#181717] transition-colors" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-                      </svg>
-                    )}
-                    <span>@{link.username}</span>
-                  </a>
-                ))}
-              </div>
-            </ProfileSection>
-          )}
         </div>
+      )}
+
+      {isOwnProfile && feedback && (
+        <m.div
+          variants={itemVariants}
+          className={`mt-4 px-4 py-3 border-l-2 text-sm ${
+            feedback.type === "success"
+              ? "bg-[#f8faf8] border-[#a0c9a0] text-[#6b8b6b]"
+              : "bg-[#faf8f8] border-[#c9a0a0] text-[#8b6b6b]"
+          }`}
+        >
+          {feedback.message}
+        </m.div>
+      )}
+
+      {isOwnProfile && (
+        <m.div variants={itemVariants} className="mt-4">
+          <LogoutButton />
+        </m.div>
       )}
     </m.article>
   );
