@@ -3,7 +3,6 @@
  * Central export for all security utilities
  */
 
-// Rate limiting
 export {
   checkRateLimit,
   checkRateLimitAsync,
@@ -15,7 +14,6 @@ export {
   type RateLimitResult,
 } from "./rate-limit";
 
-// Validation
 export {
   isValidUUID,
   uuidSchema,
@@ -33,7 +31,6 @@ export {
   validateOrigin,
 } from "./validation";
 
-// Audit logging
 export {
   auditLog,
   createAuditLogger,

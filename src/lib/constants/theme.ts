@@ -8,7 +8,6 @@ export const colors = {
   primary: "#1a1a1a",
   primaryHover: "#333333",
 
-  // Text colors
   text: {
     primary: "#1a1a1a",
     secondary: "#737373",
@@ -17,14 +16,12 @@ export const colors = {
     placeholder: "#d4d4d4",
   },
 
-  // Background colors
   background: {
     primary: "#fafaf8",
     secondary: "#f5f5f3",
     card: "#ffffff",
   },
 
-  // Border colors
   border: {
     primary: "#e5e5e5",
     secondary: "#d4d4d4",
@@ -79,7 +76,6 @@ export const components = {
   },
 } as const;
 
-// Type exports for type safety
 export type ThemeColors = typeof colors;
 export type ThemeSpacing = typeof spacing;
 export type ThemeTypography = typeof typography;

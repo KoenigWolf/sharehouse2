@@ -101,7 +101,6 @@ export function GarbageAdminPanel({ schedule }: GarbageAdminPanelProps) {
           </div>
         )}
 
-        {/* スケジュール管理 */}
         <section className="mb-6">
           <h3 className="text-xs text-[#a3a3a3] tracking-wide mb-3">
             {t("garbage.scheduleManagement")}
@@ -172,7 +171,6 @@ export function GarbageAdminPanel({ schedule }: GarbageAdminPanelProps) {
             ))}
           </AnimatePresence>
 
-          {/* 新規追加 */}
           {showAddForm ? (
             <m.div
               initial={{ opacity: 0, y: 4 }}
@@ -199,7 +197,6 @@ export function GarbageAdminPanel({ schedule }: GarbageAdminPanelProps) {
           )}
         </section>
 
-        {/* ローテーション生成 */}
         <section>
           <h3 className="text-xs text-[#a3a3a3] tracking-wide mb-3">
             {t("garbage.dutyRotation")}
@@ -315,7 +312,6 @@ function ScheduleEntryForm({
       )}
 
       <div className="flex flex-col sm:flex-row gap-3">
-        {/* 曜日 */}
         <div className="w-24">
           <label className="block text-[10px] text-[#a3a3a3] tracking-wide mb-1">
             {t("garbage.dayOfWeek")}
@@ -338,7 +334,6 @@ function ScheduleEntryForm({
           </select>
         </div>
 
-        {/* 種類 */}
         <div className="flex-1">
           <label className="block text-[10px] text-[#a3a3a3] tracking-wide mb-1">
             {t("garbage.garbageType")}
@@ -358,7 +353,6 @@ function ScheduleEntryForm({
           />
         </div>
 
-        {/* メモ */}
         <div className="flex-1">
           <label className="block text-[10px] text-[#a3a3a3] tracking-wide mb-1">
             {t("garbage.notes")}

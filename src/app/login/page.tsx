@@ -117,9 +117,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-[#fafaf8] flex flex-col">
-      {/* メインコンテンツ */}
       <main className="flex-1 flex">
-        {/* 左側：ブランディング */}
         <div className="hidden lg:flex lg:w-1/2 bg-[#f5f5f3] items-center justify-center p-12">
           <div className="max-w-md">
             <h1 className="text-3xl font-light text-[#1a1a1a] tracking-wider mb-6">
@@ -142,10 +140,8 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* 右側：フォーム */}
         <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12">
           <div className="w-full max-w-sm">
-            {/* モバイル用ロゴ */}
             <div className="lg:hidden text-center mb-12">
               <h1 className="text-xl font-light text-[#1a1a1a] tracking-wider">
                 SHARE HOUSE
@@ -155,7 +151,6 @@ export default function LoginPage() {
               </p>
             </div>
 
-            {/* モード切り替え */}
             <div className="relative mb-10">
               <div className="flex">
                 <button
@@ -177,7 +172,6 @@ export default function LoginPage() {
                   {t("auth.signup")}
                 </button>
               </div>
-              {/* アンダーライン */}
               <div className="absolute bottom-0 left-0 right-0 h-px bg-[#e5e5e5]" />
               <m.div
                 className="absolute bottom-0 h-px bg-[#1a1a1a]"
@@ -190,7 +184,6 @@ export default function LoginPage() {
               />
             </div>
 
-            {/* フォーム */}
             <form
               onSubmit={mode === "login" ? handleLogin : handleSignup}
               className="space-y-6"
@@ -280,7 +273,6 @@ export default function LoginPage() {
                 </AnimatePresence>
               </div>
 
-              {/* エラー・成功メッセージ */}
               <AnimatePresence>
                 {error && (
                   <m.div
@@ -311,7 +303,6 @@ export default function LoginPage() {
                 )}
               </AnimatePresence>
 
-              {/* 送信ボタン */}
               <button
                 type="submit"
                 disabled={isLoading}
@@ -368,7 +359,6 @@ export default function LoginPage() {
               </button>
             </div>
 
-            {/* 補足テキスト */}
             <AnimatePresence>
               {mode === "signup" && (
                 <m.p
@@ -385,7 +375,6 @@ export default function LoginPage() {
         </div>
       </main>
 
-      {/* フッター */}
       <footer className="py-6">
         <p className="text-xs text-[#a3a3a3] text-center">Share House Portal</p>
       </footer>

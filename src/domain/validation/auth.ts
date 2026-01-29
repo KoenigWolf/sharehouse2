@@ -8,7 +8,6 @@ import type { TranslationKey, Translator } from "@/lib/i18n";
  * Implements OWASP password recommendations
  */
 
-// Email validation with sanitization
 export const emailSchema = z
   .string()
   .min(1, "auth.emailRequired")
@@ -53,27 +52,23 @@ export const passwordLoginSchema = z
   .string()
   .min(1, "auth.passwordRequired");
 
-// Name validation
 export const nameSchema = z
   .string()
   .min(1, "auth.nameRequired")
   .max(PROFILE.nameMaxLength, "validation.nameMaxLength")
   .transform((val) => val.trim());
 
-// Sign up schema
 export const signUpSchema = z.object({
   name: nameSchema,
   email: emailSchema,
   password: passwordSchema,
 });
 
-// Sign in schema (uses less strict password validation for existing users)
 export const signInSchema = z.object({
   email: emailSchema,
   password: passwordLoginSchema,
 });
 
-// Type exports
 export type SignUpInput = z.infer<typeof signUpSchema>;
 export type SignInInput = z.infer<typeof signInSchema>;
 

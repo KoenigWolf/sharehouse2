@@ -61,7 +61,6 @@ export async function updateProfile(data: ProfileUpdateInput): Promise<UpdateRes
         interests: validatedData.interests,
         mbti: validatedData.mbti,
         move_in_date: validatedData.move_in_date,
-        // Extended profile fields
         nickname: validatedData.nickname,
         age_range: validatedData.age_range,
         gender: validatedData.gender,
@@ -85,7 +84,6 @@ export async function updateProfile(data: ProfileUpdateInput): Promise<UpdateRes
         shared_meals: validatedData.shared_meals,
         personality_type: validatedData.personality_type,
         weekend_activities: validatedData.weekend_activities,
-        // SNS
         sns_x: validatedData.sns_x,
         sns_instagram: validatedData.sns_instagram,
         sns_facebook: validatedData.sns_facebook,
@@ -146,7 +144,6 @@ export async function uploadAvatar(formData: FormData): Promise<UploadResponse> 
       return { error: formatRateLimitError(uploadRateLimit.retryAfter, t) };
     }
 
-    // Validate file
     const fileValidation = validateFileUpload(
       {
       size: file.size,
@@ -158,12 +155,10 @@ export async function uploadAvatar(formData: FormData): Promise<UploadResponse> 
       return { error: fileValidation.error || t("errors.invalidFileType") };
     }
 
-    // Generate safe filename
     const fileExt = file.name.split(".").pop()?.toLowerCase() || "jpg";
     const sanitizedExt = sanitizeFileName(fileExt).slice(0, 10);
     const fileName = `${user.id}-${Date.now()}.${sanitizedExt}`;
 
-    // Delete existing avatar
     const { data: profile } = await supabase
       .from("profiles")
       .select("avatar_url")
@@ -177,11 +172,9 @@ export async function uploadAvatar(formData: FormData): Promise<UploadResponse> 
       }
     }
 
-    // Convert file to ArrayBuffer
     const arrayBuffer = await file.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
 
-    // Upload new avatar
     const { error: uploadError } = await supabase.storage
       .from("avatars")
       .upload(fileName, uint8Array, {
@@ -195,12 +188,10 @@ export async function uploadAvatar(formData: FormData): Promise<UploadResponse> 
       return { error: `${t("errors.uploadFailed")}: ${uploadError.message}` };
     }
 
-    // Get public URL
     const { data: urlData } = supabase.storage
       .from("avatars")
       .getPublicUrl(fileName);
 
-    // Update profile
     const { error: updateError } = await supabase
       .from("profiles")
       .update({
@@ -286,7 +277,6 @@ export async function createProfile(name: string): Promise<UpdateResponse> {
       return { error: t("errors.unauthorized") };
     }
 
-    // Check for existing profile
     const { data: existing } = await supabase
       .from("profiles")
       .select("id")
@@ -297,7 +287,6 @@ export async function createProfile(name: string): Promise<UpdateResponse> {
       return { success: true };
     }
 
-    // Create new profile
     const { error } = await supabase.from("profiles").insert({
       id: user.id,
       name: name.trim(),

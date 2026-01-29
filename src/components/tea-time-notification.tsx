@@ -25,7 +25,6 @@ export function TeaTimeNotification({ match }: TeaTimeNotificationProps) {
       <Link href="/tea-time" className="block group">
         <div className="bg-white border border-[#e5e5e5] p-4 sm:p-5 hover:border-[#1a1a1a] transition-colors">
           <div className="flex items-center gap-4">
-            {/* Partner Avatar */}
             <Avatar className="w-12 h-12 sm:w-14 sm:h-14 rounded-none shrink-0">
               <OptimizedAvatarImage
                 src={match.partner.avatar_url}
@@ -36,7 +35,6 @@ export function TeaTimeNotification({ match }: TeaTimeNotificationProps) {
               />
             </Avatar>
 
-            {/* Content */}
             <div className="flex-1 min-w-0">
               <p className="text-xs text-[#a3a3a3] tracking-wide">
                 {t("teaTime.matchNotificationTitle")}
@@ -50,7 +48,6 @@ export function TeaTimeNotification({ match }: TeaTimeNotificationProps) {
               </p>
             </div>
 
-            {/* Arrow */}
             <div className="text-[#d4d4d4] group-hover:text-[#a3a3a3] transition-colors shrink-0">
               <svg
                 className="w-5 h-5"

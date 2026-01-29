@@ -421,7 +421,6 @@ export async function generateDutyRotation(startDate: string, weeks: number): Pr
       return { error: adminError };
     }
 
-    // Validate startDate format
     if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate)) {
       return { error: t("errors.invalidInput") };
     }
@@ -430,7 +429,6 @@ export async function generateDutyRotation(startDate: string, weeks: number): Pr
       return { error: t("errors.invalidInput") };
     }
 
-    // Fetch all residents ordered by room_number
     const { data: profiles, error: profilesError } = await supabase
       .from("profiles")
       .select("*")
@@ -445,7 +443,6 @@ export async function generateDutyRotation(startDate: string, weeks: number): Pr
       return { error: t("errors.invalidInput") };
     }
 
-    // Fetch garbage schedule
     const { data: schedule, error: scheduleError } = await supabase
       .from("garbage_schedule")
       .select("*")
@@ -461,7 +458,6 @@ export async function generateDutyRotation(startDate: string, weeks: number): Pr
       return { error: t("errors.invalidInput") };
     }
 
-    // Build duty assignments using round-robin
     const duties: { user_id: string; duty_date: string; garbage_type: string }[] = [];
     let residentIndex = 0;
     const start = new Date(startDate + "T00:00:00");
@@ -472,7 +468,6 @@ export async function generateDutyRotation(startDate: string, weeks: number): Pr
         currentDate.setDate(start.getDate() + week * 7 + dayOffset);
         const dayOfWeek = currentDate.getDay();
 
-        // Find schedule entries for this day of week
         const daySchedule = schedule.filter(
           (entry) => entry.day_of_week === dayOfWeek
         );
@@ -493,7 +488,6 @@ export async function generateDutyRotation(startDate: string, weeks: number): Pr
       return { success: true, count: 0 };
     }
 
-    // Batch insert all duties
     const { error: insertError } = await supabase
       .from("garbage_duties")
       .insert(duties);
@@ -543,7 +537,6 @@ export async function completeDuty(dutyId: string): Promise<UpdateResponse> {
       return { error: t("errors.unauthorized") };
     }
 
-    // Verify user owns this duty before updating
     const { data: duty } = await supabase
       .from("garbage_duties")
       .select("user_id")

@@ -20,7 +20,6 @@ const rateLimitStore = new Map<string, RateLimitEntry>();
 /** ストアの上限サイズ（これを超えたら強制クリーンアップ） */
 const MAX_STORE_SIZE = 10_000;
 
-// Cleanup old entries periodically (in-memory only)
 const CLEANUP_INTERVAL = 30 * 1000; // 30 seconds
 let lastCleanup = Date.now();
 
@@ -97,7 +96,6 @@ async function checkRateLimitRedis(
   const windowSeconds = Math.ceil(config.windowMs / 1000);
 
   try {
-    // Lua script for atomic increment + TTL check
     const result = await redis.multi()
       .incr(key)
       .pttl(key)
@@ -110,7 +108,6 @@ async function checkRateLimitRedis(
     const count = result[0][1] as number;
     const pttl = result[1][1] as number;
 
-    // Set expiry on first request
     if (count === 1 || pttl === -1) {
       await redis.expire(key, windowSeconds);
     }
@@ -160,7 +157,6 @@ function checkRateLimitMemory(
   const key = `${config.prefix || "rl"}:${identifier}`;
   const entry = rateLimitStore.get(key);
 
-  // If no entry exists or window has passed, create new entry
   if (!entry || entry.resetTime < now) {
     const newEntry: RateLimitEntry = {
       count: 1,
@@ -176,7 +172,6 @@ function checkRateLimitMemory(
     };
   }
 
-  // Increment count
   entry.count += 1;
 
   const remaining = Math.max(0, config.limit - entry.count);
@@ -213,7 +208,6 @@ export function checkRateLimit(
   identifier: string,
   config: RateLimitConfig
 ): RateLimitResult {
-  // Synchronous callers get in-memory rate limiting
   return checkRateLimitMemory(identifier, config);
 }
 

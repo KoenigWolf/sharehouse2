@@ -8,10 +8,6 @@ import { completeDuty } from "@/lib/garbage/actions";
 import { DAY_NAMES_JA, DAY_NAMES_EN } from "@/domain/garbage";
 import type { GarbageSchedule, GarbageDutyWithProfile } from "@/domain/garbage";
 
-// =============================================================================
-// Constants
-// =============================================================================
-
 const GARBAGE_TYPE_STYLES: Record<string, { bg: string; text: string; border: string }> = {
   可燃ごみ: { bg: "bg-orange-50", text: "text-orange-700", border: "border-orange-200" },
   不燃ごみ: { bg: "bg-slate-50", text: "text-slate-600", border: "border-slate-200" },
@@ -22,19 +18,11 @@ const GARBAGE_TYPE_STYLES: Record<string, { bg: string; text: string; border: st
 
 const DEFAULT_STYLE = { bg: "bg-[#f5f5f3]", text: "text-[#737373]", border: "border-[#e5e5e5]" };
 
-// =============================================================================
-// Types
-// =============================================================================
-
 interface GarbageScheduleViewProps {
   schedule: GarbageSchedule[];
   duties: GarbageDutyWithProfile[];
   currentUserId: string;
 }
-
-// =============================================================================
-// Main Component
-// =============================================================================
 
 export function GarbageScheduleView({
   schedule,
@@ -78,7 +66,6 @@ export function GarbageScheduleView({
         </div>
       )}
 
-      {/* 曜日別スケジュール */}
       <section>
         <h2 className="text-xs text-[#a3a3a3] tracking-wide uppercase mb-3">
           {t("garbage.weeklySchedule")}
@@ -100,7 +87,6 @@ export function GarbageScheduleView({
                   className="bg-white border border-[#e5e5e5] px-4 py-3"
                 >
                   <div className="flex items-center gap-4">
-                    {/* 曜日 */}
                     <div
                       className={`w-10 h-10 flex items-center justify-center flex-shrink-0 ${
                         dayIndex === 0
@@ -113,7 +99,6 @@ export function GarbageScheduleView({
                       <span className="text-sm font-medium">{dayNames[dayIndex]}</span>
                     </div>
 
-                    {/* ゴミ種類 */}
                     {daySchedule.map((entry) => {
                       const style = getTypeStyle(entry.garbage_type);
                       return (
@@ -126,7 +111,6 @@ export function GarbageScheduleView({
                       );
                     })}
 
-                    {/* 備考（最初のエントリのnotes） */}
                     {daySchedule[0]?.notes && (
                       <span className="text-xs text-[#a3a3a3] ml-auto">
                         {daySchedule[0].notes}
@@ -139,13 +123,11 @@ export function GarbageScheduleView({
           </div>
         )}
 
-        {/* 注意書き */}
         <p className="text-[10px] text-[#a3a3a3] mt-3 tracking-wide">
           ※ 必ず収集日の朝8時までに集積所にお出しください
         </p>
       </section>
 
-      {/* 直近の当番 */}
       <section>
         <h2 className="text-xs text-[#a3a3a3] tracking-wide uppercase mb-3">
           {t("garbage.upcomingDuties")}
@@ -176,7 +158,6 @@ export function GarbageScheduleView({
                     isOwn ? "border-[#1a1a1a]" : "border-[#e5e5e5]"
                   } ${duty.is_completed ? "opacity-50" : ""}`}
                 >
-                  {/* 完了チェック */}
                   {isOwn && !duty.is_completed ? (
                     <button
                       type="button"
@@ -201,7 +182,6 @@ export function GarbageScheduleView({
                     </div>
                   )}
 
-                  {/* アバター */}
                   {duty.profile?.avatar_url ? (
                     <Image
                       src={duty.profile.avatar_url}
@@ -218,7 +198,6 @@ export function GarbageScheduleView({
                     </div>
                   )}
 
-                  {/* 名前 */}
                   <div className="flex-1 min-w-0">
                     <span
                       className={`text-sm ${
@@ -234,14 +213,12 @@ export function GarbageScheduleView({
                     )}
                   </div>
 
-                  {/* ゴミ種類タグ */}
                   <span
                     className={`text-[10px] px-2 py-0.5 border ${style.bg} ${style.text} ${style.border} flex-shrink-0`}
                   >
                     {duty.garbage_type}
                   </span>
 
-                  {/* 日付 */}
                   <span className="text-xs text-[#737373] flex-shrink-0">{dateStr}</span>
                 </m.div>
               );

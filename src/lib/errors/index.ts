@@ -10,29 +10,24 @@ import { AUTH } from "@/lib/constants/config";
  * Application error codes
  */
 export const ErrorCode = {
-  // Authentication errors
   UNAUTHORIZED: "UNAUTHORIZED",
   INVALID_CREDENTIALS: "INVALID_CREDENTIALS",
   EMAIL_ALREADY_EXISTS: "EMAIL_ALREADY_EXISTS",
   WEAK_PASSWORD: "WEAK_PASSWORD",
   EMAIL_NOT_CONFIRMED: "EMAIL_NOT_CONFIRMED",
 
-  // Validation errors
   INVALID_INPUT: "INVALID_INPUT",
   REQUIRED_FIELD: "REQUIRED_FIELD",
   INVALID_FORMAT: "INVALID_FORMAT",
 
-  // Resource errors
   NOT_FOUND: "NOT_FOUND",
   FORBIDDEN: "FORBIDDEN",
   CONFLICT: "CONFLICT",
 
-  // Server errors
   INTERNAL_ERROR: "INTERNAL_ERROR",
   DATABASE_ERROR: "DATABASE_ERROR",
   NETWORK_ERROR: "NETWORK_ERROR",
 
-  // File errors
   FILE_TOO_LARGE: "FILE_TOO_LARGE",
   INVALID_FILE_TYPE: "INVALID_FILE_TYPE",
   UPLOAD_FAILED: "UPLOAD_FAILED",
@@ -116,7 +111,6 @@ export function handleError(err: unknown): { error: string; code?: ErrorCodeType
   }
 
   if (err instanceof Error) {
-    // Map known error messages
     if (err.message.includes("already registered")) {
       return { error: t("auth.emailAlreadyExists"), code: ErrorCode.EMAIL_ALREADY_EXISTS };
     }
@@ -183,7 +177,6 @@ export function logError(
 ): void {
   const timestamp = new Date().toISOString();
 
-  // Serialize error properly
   let errorData: Record<string, unknown>;
   if (error instanceof Error) {
     errorData = {
@@ -192,7 +185,6 @@ export function logError(
       stack: error.stack,
     };
   } else if (error && typeof error === "object") {
-    // Handle Supabase errors and other plain objects
     errorData = { ...error } as Record<string, unknown>;
   } else {
     errorData = { message: String(error) };
@@ -204,10 +196,8 @@ export function logError(
     error: errorData,
   };
 
-  // Console log for all environments
   console.error("[AppError]", JSON.stringify(errorInfo, null, 2));
 
-  // Send to Sentry if available (fire-and-forget)
   sendToSentry(error, errorData, context).catch(() => {
     // Sentry not available, skip silently
   });

@@ -55,7 +55,6 @@ export async function uploadRoomPhoto(formData: FormData): Promise<UploadRespons
       return { error: t("errors.fileRequired") };
     }
 
-    // Validate file type and size
     const fileValidation = validateFileUpload(
       {
         size: file.size,
@@ -67,7 +66,6 @@ export async function uploadRoomPhoto(formData: FormData): Promise<UploadRespons
       return { error: fileValidation.error || t("errors.invalidFileType") };
     }
 
-    // Check photo count limit
     const { count, error: countError } = await supabase
       .from("room_photos")
       .select("id", { count: "exact", head: true })
@@ -82,16 +80,13 @@ export async function uploadRoomPhoto(formData: FormData): Promise<UploadRespons
       return { error: t("errors.maxPhotosReached") };
     }
 
-    // Generate safe filename
     const fileExt = file.name.split(".").pop()?.toLowerCase() || "jpg";
     const sanitizedExt = sanitizeFileName(fileExt).slice(0, 10);
     const fileName = `${user.id}/${Date.now()}.${sanitizedExt}`;
 
-    // Convert file to ArrayBuffer
     const arrayBuffer = await file.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
 
-    // Upload to storage
     const { error: uploadError } = await supabase.storage
       .from("room-photos")
       .upload(fileName, uint8Array, {
@@ -105,12 +100,10 @@ export async function uploadRoomPhoto(formData: FormData): Promise<UploadRespons
       return { error: `${t("errors.uploadFailed")}: ${uploadError.message}` };
     }
 
-    // Get public URL
     const { data: urlData } = supabase.storage
       .from("room-photos")
       .getPublicUrl(fileName);
 
-    // Insert record into room_photos table
     const caption = (formData.get("caption") as string) || null;
 
     const { error: insertError } = await supabase.from("room_photos").insert({
@@ -121,7 +114,6 @@ export async function uploadRoomPhoto(formData: FormData): Promise<UploadRespons
 
     if (insertError) {
       logError(insertError, { action: "uploadRoomPhoto.insert", userId: user.id });
-      // Clean up uploaded file on insert failure
       await supabase.storage.from("room-photos").remove([fileName]);
       return { error: t("errors.saveFailed") };
     }
@@ -161,12 +153,10 @@ export async function deleteRoomPhoto(photoId: string): Promise<UpdateResponse> 
       return { error: t("errors.unauthorized") };
     }
 
-    // Validate photoId is a valid UUID
     if (!isValidUUID(photoId)) {
       return { error: t("errors.invalidInput") };
     }
 
-    // Verify ownership
     const { data: photo, error: fetchError } = await supabase
       .from("room_photos")
       .select("*")
@@ -178,7 +168,6 @@ export async function deleteRoomPhoto(photoId: string): Promise<UpdateResponse> 
       return { error: t("errors.notFound") };
     }
 
-    // Delete from storage
     if (photo.photo_url && photo.photo_url.includes("/room-photos/")) {
       const storagePath = photo.photo_url.split("/room-photos/").pop();
       if (storagePath) {
@@ -186,7 +175,6 @@ export async function deleteRoomPhoto(photoId: string): Promise<UpdateResponse> 
       }
     }
 
-    // Delete from database
     const { error: deleteError } = await supabase
       .from("room_photos")
       .delete()
@@ -273,7 +261,6 @@ export async function getAllRoomPhotos(): Promise<
       return [];
     }
 
-    // Batch fetch profiles for unique user_ids
     const uniqueUserIds = [...new Set(photos.map((p) => p.user_id))];
 
     const { data: profiles, error: profilesError } = await supabase

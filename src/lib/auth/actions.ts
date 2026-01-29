@@ -76,7 +76,6 @@ export async function signUp(
   try {
     const supabase = await createClient();
 
-    // Create user
     const { data, error } = await supabase.auth.signUp({
       email: validatedEmail,
       password: validatedPassword,
@@ -91,7 +90,6 @@ export async function signUp(
     if (error) {
       logError(error, { action: "signUp", metadata: { email: validatedEmail } });
 
-      // Audit failed signup
       auditLog({
         timestamp: new Date().toISOString(),
         eventType: AuditEventType.AUTH_SIGNUP,
@@ -111,12 +109,11 @@ export async function signUp(
       return { error: t("auth.signupFailed") };
     }
 
-    // Check if email confirmation is needed (identities is empty)
+    // Supabase returns empty identities when email already exists
     if (data.user.identities?.length === 0) {
       return { error: t("auth.emailAlreadyExists") };
     }
 
-    // If no session, email confirmation is required
     if (!data.session) {
       auditLog({
         timestamp: new Date().toISOString(),
@@ -134,7 +131,6 @@ export async function signUp(
       };
     }
 
-    // Create profile
     const { error: profileError } = await supabase
       .from("profiles")
       .insert(createDefaultProfileData(data.user.id, validatedName));
@@ -147,7 +143,6 @@ export async function signUp(
       // Don't fail signup if profile creation fails - it can be created on login
     }
 
-    // Audit successful signup
     auditLog({
       timestamp: new Date().toISOString(),
       eventType: AuditEventType.AUTH_SIGNUP,
@@ -215,13 +210,11 @@ export async function signIn(
     if (error) {
       logError(error, { action: "signIn", metadata: { email: validatedEmail } });
 
-      // Audit failed login
       AuditActions.loginFailure(validatedEmail, error.message, ipAddress || undefined);
 
       return { error: t("auth.invalidCredentials") };
     }
 
-    // Ensure profile exists, create if not
     const { data: profile } = await supabase
       .from("profiles")
       .select("id")
@@ -244,7 +237,6 @@ export async function signIn(
       }
     }
 
-    // Audit successful login
     AuditActions.loginSuccess(data.user.id);
 
     CacheStrategy.afterAuth();

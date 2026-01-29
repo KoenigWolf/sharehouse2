@@ -23,7 +23,6 @@ export default function Error({
 
   return (
     <div className="min-h-screen bg-[#fafaf8] flex flex-col">
-      {/* ヘッダー */}
       <header className="border-b border-[#e5e5e5] bg-white">
         <div className="container mx-auto px-6 h-16 flex items-center">
           <Link href="/" className="text-lg tracking-wider text-[#1a1a1a]">
@@ -32,7 +31,6 @@ export default function Error({
         </div>
       </header>
 
-      {/* メインコンテンツ */}
       <main className="flex-1 flex items-center justify-center p-6">
         <div className="text-center max-w-md">
           <p className="text-6xl text-[#d4d4d4] mb-6 font-light">Error</p>
@@ -59,7 +57,6 @@ export default function Error({
         </div>
       </main>
 
-      {/* フッター */}
       <footer className="border-t border-[#e5e5e5] bg-white">
         <div className="container mx-auto px-6 py-4">
           <p className="text-xs text-[#a3a3a3] text-center">

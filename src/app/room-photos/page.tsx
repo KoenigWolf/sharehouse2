@@ -27,7 +27,6 @@ export default async function RoomPhotosPage() {
 
       <main className="flex-1 pb-20 sm:pb-0">
         <div className="container mx-auto px-4 sm:px-6 py-5 sm:py-8 max-w-4xl">
-          {/* Page header */}
           <div className="mb-6 sm:mb-8">
             <h1 className="text-xl text-[#1a1a1a] tracking-wide font-light">
               {t("roomPhotos.title")}
@@ -37,14 +36,12 @@ export default async function RoomPhotosPage() {
             </p>
           </div>
 
-          {/* Gallery */}
           <RoomPhotosGallery photos={photos} />
         </div>
       </main>
 
       <Footer />
 
-      {/* Mobile navigation */}
       <MobileNav />
     </div>
   );

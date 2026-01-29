@@ -34,7 +34,6 @@ export default async function TeaTimePage() {
 
       <main className="flex-1 pb-20 sm:pb-0">
         <div className="container mx-auto px-4 sm:px-6 py-5 sm:py-8 max-w-lg">
-          {/* ヘッダー */}
           <div className="flex items-baseline justify-between mb-5 sm:mb-6">
             <h1 className="text-xl text-[#1a1a1a] tracking-wide font-light">
               {t("teaTime.title")}
@@ -42,7 +41,6 @@ export default async function TeaTimePage() {
             <span className="text-xs text-[#a3a3a3]">{t("teaTime.subtitle")}</span>
           </div>
 
-          {/* 参加状況 */}
           <Link href="/settings" className="block mb-5 sm:mb-6 group active:scale-[0.99] transition-transform">
             <div className="bg-white border border-[#e5e5e5] p-4 hover:border-[#1a1a1a] transition-colors">
               <div className="flex items-center justify-between">
@@ -63,7 +61,6 @@ export default async function TeaTimePage() {
             </div>
           </Link>
 
-          {/* 新しいマッチ */}
           {scheduledMatches.length > 0 && (
             <section className="mb-5 sm:mb-6">
               <h2 className="text-xs text-[#a3a3a3] tracking-wide mb-3">
@@ -77,7 +74,6 @@ export default async function TeaTimePage() {
             </section>
           )}
 
-          {/* 過去のマッチ */}
           {pastMatches.length > 0 && (
             <section>
               <h2 className="text-xs text-[#a3a3a3] tracking-wide mb-3">
@@ -91,7 +87,6 @@ export default async function TeaTimePage() {
             </section>
           )}
 
-          {/* マッチがない場合 */}
           {matches.length === 0 && (
             <div className="text-center py-12">
               <p className="text-sm text-[#737373]">{t("teaTime.noMatches")}</p>
@@ -114,7 +109,6 @@ export default async function TeaTimePage() {
 
       <Footer />
 
-      {/* モバイルナビゲーション */}
       <MobileNav />
     </div>
   );

@@ -10,10 +10,6 @@ import { PROFILE } from "@/lib/constants/config";
 import { useI18n } from "@/hooks/use-i18n";
 import type { Translator } from "@/lib/i18n";
 
-// =============================================================================
-// Types
-// =============================================================================
-
 interface ResidentCardProps {
   profile: Profile;
   isCurrentUser?: boolean;
@@ -36,10 +32,6 @@ interface SnsLink {
 
 type BadgeVariant = "default" | "dark" | "success" | "muted";
 
-// =============================================================================
-// Constants
-// =============================================================================
-
 const ANIMATION_VARIANTS: Variants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1 },
@@ -51,10 +43,6 @@ const CARD_HEIGHTS = {
 } as const;
 
 const NEW_RESIDENT_THRESHOLD_MONTHS = 3;
-
-// =============================================================================
-// Utilities
-// =============================================================================
 
 /**
  * 入居期間を計算する
@@ -111,10 +99,6 @@ function getCardBorderClass(isCurrentUser: boolean, isMock: boolean): string {
   if (isMock) return "border-dashed border-[#d4d4d4] hover:border-[#a3a3a3]";
   return "border-[#e5e5e5] hover:border-[#1a1a1a]";
 }
-
-// =============================================================================
-// Sub-Components
-// =============================================================================
 
 function Badge({
   variant = "default",
@@ -236,10 +220,6 @@ function InterestTagList({
   );
 }
 
-// =============================================================================
-// Custom Hook
-// =============================================================================
-
 function useResidentCardData(profile: Profile, t: Translator) {
   return useMemo(() => {
     const isMock = isMockProfile(profile.id);
@@ -268,10 +248,6 @@ function useResidentCardData(profile: Profile, t: Translator) {
     };
   }, [profile, t]);
 }
-
-// =============================================================================
-// Main Component
-// =============================================================================
 
 /**
  * 住民カードコンポーネント

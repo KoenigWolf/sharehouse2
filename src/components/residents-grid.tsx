@@ -21,14 +21,12 @@ type SortOption = "name" | "room_number" | "move_in_date";
 type ViewMode = "grid" | "floor" | "list";
 type FloorFilter = "all" | "2F" | "3F" | "4F" | "5F";
 
-// 部屋番号から階層を取得
 function getFloorFromRoom(roomNumber: string | null): string {
   if (!roomNumber) return "?";
   const firstDigit = roomNumber[0];
   return `${firstDigit}F`;
 }
 
-// 新入居者判定（3ヶ月以内）
 function isNewResident(moveInDate: string | null): boolean {
   if (!moveInDate) return false;
   const moveIn = new Date(moveInDate);
@@ -37,7 +35,6 @@ function isNewResident(moveInDate: string | null): boolean {
   return moveIn > threeMonthsAgo;
 }
 
-// 階層ごとのカラーテーマ
 const floorColors: Record<string, { bg: string; border: string; text: string; accent: string; fill: string }> = {
   "2F": { bg: "bg-[#f8faf8]", border: "border-[#a0c9a0]", text: "text-[#6b8b6b]", accent: "#a0c9a0", fill: "#a0c9a0" },
   "3F": { bg: "bg-[#f8f9fa]", border: "border-[#a0b4c9]", text: "text-[#6b7a8b]", accent: "#a0b4c9", fill: "#a0b4c9" },
@@ -84,7 +81,6 @@ export function ResidentsGrid({
 
   const floors: FloorFilter[] = ["all", "2F", "3F", "4F", "5F"];
 
-  // 統計計算
   const stats = useMemo(() => {
     const registered = profiles.filter((p) => !p.id.startsWith("mock-"));
     const newResidents = registered.filter((p) => isNewResident(p.move_in_date));
@@ -121,7 +117,6 @@ export function ResidentsGrid({
   const filteredAndSortedProfiles = useMemo(() => {
     let result = [...profiles];
 
-    // 階層フィルター
     if (floorFilter !== "all") {
       result = result.filter((profile) => {
         const floor = getFloorFromRoom(profile.room_number);
@@ -129,7 +124,6 @@ export function ResidentsGrid({
       });
     }
 
-    // 検索フィルター
     if (debouncedSearchQuery.trim()) {
       const query = debouncedSearchQuery.toLowerCase();
       result = result.filter(
@@ -169,7 +163,6 @@ export function ResidentsGrid({
     return result;
   }, [profiles, debouncedSearchQuery, sortBy, floorFilter, currentUserId, locale]);
 
-  // 階層別グループ
   const groupedByFloor = useMemo(() => {
     const groups: Record<string, Profile[]> = {
       "2F": [],
@@ -186,7 +179,6 @@ export function ResidentsGrid({
     return groups;
   }, [filteredAndSortedProfiles]);
 
-  // Tea Time参加者のSet
   const teaTimeSet = useMemo(() => new Set(teaTimeParticipants), [teaTimeParticipants]);
 
   if (profiles.length === 0) {
@@ -199,7 +191,6 @@ export function ResidentsGrid({
 
   return (
     <div className="space-y-5 sm:space-y-6">
-      {/* 統計ダッシュボード */}
       <AnimatePresence>
         {showStats && (
           <motion.div
@@ -221,7 +212,6 @@ export function ResidentsGrid({
                 </button>
               </div>
 
-              {/* 主要統計 */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4">
                 <StatCard
                   label={t("residents.statsRegistered")}
@@ -249,7 +239,6 @@ export function ResidentsGrid({
                 />
               </div>
 
-              {/* 階層別占有率 */}
               <div className="space-y-2">
                 <p className="text-[10px] text-[#a3a3a3] tracking-wide">{t("residents.floorOccupancy")}</p>
                 <div className="flex gap-2">
@@ -284,7 +273,6 @@ export function ResidentsGrid({
         )}
       </AnimatePresence>
 
-      {/* 統計を閉じた時の復元ボタン */}
       {!showStats && (
         <motion.button
           initial={{ opacity: 0 }}
@@ -297,7 +285,6 @@ export function ResidentsGrid({
         </motion.button>
       )}
 
-      {/* ヘッダー: タイトル + 表示モード */}
       <div className="flex flex-col gap-4">
         <div className="flex items-end justify-between">
           <div>
@@ -311,7 +298,6 @@ export function ResidentsGrid({
             </p>
           </div>
 
-          {/* 表示モード切替 */}
           <div className="flex gap-1 bg-[#f5f5f3] p-1">
             {viewModeOptions.map((option) => {
               const isActive = viewMode === option.value;
@@ -337,7 +323,6 @@ export function ResidentsGrid({
           </div>
         </div>
 
-        {/* 階層フィルター */}
         <div className="flex gap-2 sm:gap-3 overflow-x-auto scrollbar-hide -mx-1 px-1 pb-1">
           {floors.map((floor) => {
             const isAll = floor === "all";
@@ -371,9 +356,7 @@ export function ResidentsGrid({
           })}
         </div>
 
-        {/* フィルターバー: 検索 + ソート */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-4 border-b border-[#e5e5e5]">
-          {/* 検索 */}
           <div className="relative">
             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-[#a3a3a3]" />
             <input
@@ -394,7 +377,6 @@ export function ResidentsGrid({
             )}
           </div>
 
-          {/* ソート */}
           <div className="relative sm:flex sm:gap-0">
             <div className="flex overflow-x-auto scrollbar-hide sm:overflow-visible -mx-1 px-1 sm:mx-0 sm:px-0 snap-x snap-mandatory sm:snap-none">
               {sortOptions.map((option) => {
@@ -431,7 +413,6 @@ export function ResidentsGrid({
         </div>
       </div>
 
-      {/* コンテンツ */}
       <AnimatePresence mode="wait">
         {filteredAndSortedProfiles.length === 0 ? (
           <motion.div
@@ -486,7 +467,6 @@ export function ResidentsGrid({
   );
 }
 
-// 統計カード
 function StatCard({
   label,
   value,
@@ -509,7 +489,6 @@ function StatCard({
   );
 }
 
-// グリッドビュー
 function GridView({
   profiles,
   currentUserId,
@@ -545,7 +524,6 @@ function GridView({
   );
 }
 
-// 階層別ビュー
 function FloorView({
   groupedByFloor,
   currentUserId,
@@ -582,7 +560,6 @@ function FloorView({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: floorIndex * 0.1 }}
           >
-            {/* 階層ヘッダー */}
             <div className={`flex items-center gap-3 mb-4 pb-3 border-b-2 ${colors.border}`}>
               <div
                 className={`w-12 h-12 flex items-center justify-center ${colors.bg} border ${colors.border}`}
@@ -610,7 +587,6 @@ function FloorView({
               </div>
             </div>
 
-            {/* カードグリッド */}
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
               {profiles.map((profile, index) => (
                 <motion.div
@@ -636,7 +612,6 @@ function FloorView({
   );
 }
 
-// リストビュー
 function ListView({
   profiles,
   currentUserId,
@@ -674,7 +649,6 @@ function ListView({
   );
 }
 
-// リストアイテム
 function ResidentListItem({
   profile,
   isCurrentUser,
@@ -706,7 +680,6 @@ function ResidentListItem({
             : "border-[#e5e5e5] hover:border-[#1a1a1a]"
         }`}
       >
-        {/* アバター */}
         <div className="relative shrink-0">
           <Avatar className="w-12 h-12 sm:w-14 sm:h-14 rounded-none">
             <OptimizedAvatarImage
@@ -725,7 +698,6 @@ function ResidentListItem({
           )}
         </div>
 
-        {/* 情報 */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <h3 className="text-sm sm:text-base text-[#1a1a1a] truncate">
@@ -768,7 +740,6 @@ function ResidentListItem({
           </div>
         </div>
 
-        {/* 矢印 */}
         <div className="text-[#d4d4d4] group-hover:text-[#a3a3a3] transition-colors shrink-0">
           <ChevronRightIcon />
         </div>
@@ -777,7 +748,6 @@ function ResidentListItem({
   );
 }
 
-// アイコンコンポーネント
 function GridIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">

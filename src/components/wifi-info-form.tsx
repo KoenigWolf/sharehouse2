@@ -82,7 +82,6 @@ export function WifiInfoForm({ initialData, onSave, onCancel }: WifiInfoFormProp
         </div>
       )}
 
-      {/* エリア名 */}
       <div>
         <label className="block text-[10px] text-[#a3a3a3] tracking-wide mb-1">
           {t("wifi.areaName")}
@@ -97,7 +96,6 @@ export function WifiInfoForm({ initialData, onSave, onCancel }: WifiInfoFormProp
         />
       </div>
 
-      {/* SSID */}
       <div>
         <label className="block text-[10px] text-[#a3a3a3] tracking-wide mb-1">
           SSID
@@ -112,7 +110,6 @@ export function WifiInfoForm({ initialData, onSave, onCancel }: WifiInfoFormProp
         />
       </div>
 
-      {/* パスワード */}
       <div>
         <label className="block text-[10px] text-[#a3a3a3] tracking-wide mb-1">
           {t("wifi.password")}
@@ -127,7 +124,6 @@ export function WifiInfoForm({ initialData, onSave, onCancel }: WifiInfoFormProp
         />
       </div>
 
-      {/* 表示順 */}
       <div>
         <label className="block text-[10px] text-[#a3a3a3] tracking-wide mb-1">
           {t("wifi.displayOrder")}
@@ -143,7 +139,6 @@ export function WifiInfoForm({ initialData, onSave, onCancel }: WifiInfoFormProp
         />
       </div>
 
-      {/* アクション */}
       <div className="flex items-center gap-2 pt-2">
         <button
           type="submit"

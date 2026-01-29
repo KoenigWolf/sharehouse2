@@ -9,7 +9,6 @@ import { maskSensitiveData } from "./validation";
  * Audit event types
  */
 export const AuditEventType = {
-  // Authentication events
   AUTH_LOGIN_SUCCESS: "AUTH_LOGIN_SUCCESS",
   AUTH_LOGIN_FAILURE: "AUTH_LOGIN_FAILURE",
   AUTH_LOGOUT: "AUTH_LOGOUT",
@@ -17,35 +16,28 @@ export const AuditEventType = {
   AUTH_PASSWORD_CHANGE: "AUTH_PASSWORD_CHANGE",
   AUTH_RATE_LIMITED: "AUTH_RATE_LIMITED",
 
-  // Profile events
   PROFILE_UPDATE: "PROFILE_UPDATE",
   PROFILE_VIEW: "PROFILE_VIEW",
   AVATAR_UPLOAD: "AVATAR_UPLOAD",
   AVATAR_DELETE: "AVATAR_DELETE",
 
-  // Data access events
   DATA_EXPORT: "DATA_EXPORT",
   DATA_DELETE: "DATA_DELETE",
 
-  // Security events
   SECURITY_SUSPICIOUS_ACTIVITY: "SECURITY_SUSPICIOUS_ACTIVITY",
   SECURITY_VALIDATION_FAILURE: "SECURITY_VALIDATION_FAILURE",
   SECURITY_UNAUTHORIZED_ACCESS: "SECURITY_UNAUTHORIZED_ACCESS",
 
-  // Tea Time events
   TEA_TIME_SETTING_CHANGE: "TEA_TIME_SETTING_CHANGE",
   TEA_TIME_MATCH_UPDATE: "TEA_TIME_MATCH_UPDATE",
 
-  // Room Photos events
   ROOM_PHOTO_UPLOAD: "ROOM_PHOTO_UPLOAD",
   ROOM_PHOTO_DELETE: "ROOM_PHOTO_DELETE",
 
-  // Wi-Fi events
   WIFI_CREATE: "WIFI_CREATE",
   WIFI_UPDATE: "WIFI_UPDATE",
   WIFI_DELETE: "WIFI_DELETE",
 
-  // Garbage events
   GARBAGE_SCHEDULE_CREATE: "GARBAGE_SCHEDULE_CREATE",
   GARBAGE_SCHEDULE_UPDATE: "GARBAGE_SCHEDULE_UPDATE",
   GARBAGE_SCHEDULE_DELETE: "GARBAGE_SCHEDULE_DELETE",
@@ -156,7 +148,6 @@ export function auditLog(entry: AuditLogEntry): void {
     timestamp: entry.timestamp || new Date().toISOString(),
   });
 
-  // Output based on severity
   const severity = getSeverity(entry.eventType);
 
   switch (severity) {

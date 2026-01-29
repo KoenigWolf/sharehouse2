@@ -22,7 +22,6 @@ export default async function SettingsPage() {
     redirect("/login");
   }
 
-  // プロフィール・ティータイム設定・部屋写真を並列取得
   const [profileResult, teaTimeSetting, roomPhotos] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", user.id).single(),
     getTeaTimeSetting(user.id),
@@ -67,7 +66,6 @@ export default async function SettingsPage() {
         <RoomPhotoManager photos={roomPhotos} />
       </main>
       <Footer />
-      {/* モバイルナビゲーション */}
       <MobileNav />
     </div>
   );

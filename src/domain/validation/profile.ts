@@ -8,7 +8,6 @@ import { MBTI_TYPES } from "@/domain/profile";
  * Profile validation schemas with security sanitization
  */
 
-// Room number validation - strict alphanumeric only
 export const roomNumberSchema = z
   .string()
   .max(PROFILE.roomNumberMaxLength, "validation.roomNumberMaxLength")
@@ -21,7 +20,6 @@ export const roomNumberSchema = z
     return trimmed.length > 0 ? trimmed : null;
   });
 
-// Bio validation with HTML stripping and sanitization
 export const bioSchema = z
   .string()
   .max(PROFILE.bioMaxLength, "validation.bioMaxLength")
@@ -29,12 +27,10 @@ export const bioSchema = z
   .nullable()
   .transform((val) => {
     if (!val) return null;
-    // Strip HTML tags and sanitize for storage
     const sanitized = sanitizeForStorage(stripHtml(val));
     return sanitized.length > 0 ? sanitized : null;
   });
 
-// Interests validation with sanitization
 export const interestsSchema = z
   .array(z.string().trim())
   .max(20, "validation.interestsMaxCount")
@@ -45,7 +41,6 @@ export const interestsSchema = z
       .filter((item) => item.length > 0 && item.length <= 50)
   );
 
-// Move-in date validation
 export const moveInDateSchema = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/, "validation.dateFormat")
@@ -60,13 +55,11 @@ export const moveInDateSchema = z
     { message: "validation.dateInvalid" }
   );
 
-// MBTI validation
 export const mbtiSchema = z
   .enum(MBTI_TYPES, { message: "validation.invalidMBTI" })
   .optional()
   .nullable();
 
-// Generic text field schema for new profile fields (nullable, max 100 chars)
 const textFieldSchema = z
   .string()
   .max(100)
@@ -78,7 +71,6 @@ const textFieldSchema = z
     return sanitized.length > 0 ? sanitized : null;
   });
 
-// Longer text field schema (for descriptions, max 500 chars)
 const longTextFieldSchema = z
   .string()
   .max(500)
@@ -90,7 +82,6 @@ const longTextFieldSchema = z
     return sanitized.length > 0 ? sanitized : null;
   });
 
-// Languages array schema (max 10 items)
 const languagesSchema = z
   .array(z.string().trim())
   .max(10)
@@ -101,7 +92,6 @@ const languagesSchema = z
       .filter((item) => item.length > 0 && item.length <= 50)
   );
 
-// SNS URL/username schema - accepts URL or username, stores username only
 const snsUsernameSchema = z
   .string()
   .max(200)
@@ -111,21 +101,17 @@ const snsUsernameSchema = z
     if (!val) return null;
     const trimmed = val.trim();
     if (trimmed.length === 0) return null;
-    // Extract username from URL or clean username input
     const urlMatch = trimmed.match(/(?:https?:\/\/)?(?:www\.)?(?:twitter\.com|x\.com|instagram\.com|facebook\.com|linkedin\.com\/in|github\.com)\/([a-zA-Z0-9_.-]+)/);
     if (urlMatch) {
       return urlMatch[1];
     }
-    // Remove @ prefix if present
     const username = trimmed.replace(/^@/, "");
-    // Validate username format (alphanumeric, underscore, dot, hyphen)
     if (/^[a-zA-Z0-9_.-]+$/.test(username) && username.length <= 50) {
       return username;
     }
     return null;
   });
 
-// Profile update schema with comprehensive sanitization
 export const profileUpdateSchema = z.object({
   name: z
     .string()
@@ -137,35 +123,29 @@ export const profileUpdateSchema = z.object({
   interests: interestsSchema,
   mbti: mbtiSchema,
   move_in_date: moveInDateSchema,
-  // 基本情報（すべてオプショナル）
   nickname: textFieldSchema.optional(),
   age_range: textFieldSchema.optional(),
   gender: textFieldSchema.optional(),
   nationality: textFieldSchema.optional(),
   languages: languagesSchema.optional(),
   hometown: textFieldSchema.optional(),
-  // 仕事・学歴
   occupation: textFieldSchema.optional(),
   industry: textFieldSchema.optional(),
   work_location: textFieldSchema.optional(),
   work_style: textFieldSchema.optional(),
-  // ライフスタイル
   daily_rhythm: textFieldSchema.optional(),
   home_frequency: textFieldSchema.optional(),
   alcohol: textFieldSchema.optional(),
   smoking: textFieldSchema.optional(),
   pets: textFieldSchema.optional(),
   guest_frequency: textFieldSchema.optional(),
-  // 共同生活への姿勢
   social_stance: textFieldSchema.optional(),
   shared_space_usage: longTextFieldSchema.optional(),
   cleaning_attitude: textFieldSchema.optional(),
   cooking_frequency: textFieldSchema.optional(),
   shared_meals: textFieldSchema.optional(),
-  // 性格・趣味
   personality_type: textFieldSchema.optional(),
   weekend_activities: longTextFieldSchema.optional(),
-  // SNSリンク
   sns_x: snsUsernameSchema.optional(),
   sns_instagram: snsUsernameSchema.optional(),
   sns_facebook: snsUsernameSchema.optional(),
@@ -173,7 +153,6 @@ export const profileUpdateSchema = z.object({
   sns_github: snsUsernameSchema.optional(),
 });
 
-// File upload validation
 export const fileUploadSchema = z.object({
   size: z.number().max(FILE_UPLOAD.maxSizeBytes, "validation.fileTooLarge"),
   type: z.enum(FILE_UPLOAD.allowedTypes as unknown as [string, ...string[]], {
@@ -181,7 +160,6 @@ export const fileUploadSchema = z.object({
   }),
 });
 
-// Type exports
 export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;
 export type FileUploadInput = z.infer<typeof fileUploadSchema>;
 

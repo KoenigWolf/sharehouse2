@@ -36,7 +36,6 @@ interface ProfileDetailProps {
   roomPhotos?: RoomPhoto[];
 }
 
-// Animation variants
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -50,7 +49,6 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" as const } },
 };
 
-// Helper to translate profile option values
 function translateOption(
   value: string | null | undefined,
   category: string,
@@ -64,7 +62,6 @@ function translateOption(
   return value;
 }
 
-// Helper to translate language array
 function translateLanguages(
   languages: string[] | undefined,
   t: Translator
@@ -78,7 +75,6 @@ function translateLanguages(
   });
 }
 
-// Category accent colors and icons
 type CategoryType = "basic" | "work" | "lifestyle" | "communal" | "personality" | "photos" | "sns";
 
 const categoryConfig: Record<CategoryType, { color: string; bgColor: string; icon: React.ReactNode }> = {
@@ -147,7 +143,6 @@ const categoryConfig: Record<CategoryType, { color: string; bgColor: string; ico
   },
 };
 
-// Section card component with category styling
 function ProfileSection({
   title,
   category,
@@ -175,7 +170,6 @@ function ProfileSection({
   );
 }
 
-// Field row for displaying label-value pairs (for longer text content)
 function FieldRow({ label, value }: { label: string; value: string | null | undefined }) {
   if (!value) return null;
   return (
@@ -186,7 +180,6 @@ function FieldRow({ label, value }: { label: string; value: string | null | unde
   );
 }
 
-// Compact field for grid layouts with visual chip
 function CompactField({ label, value }: { label: string; value: string | null | undefined }) {
   if (!value) return null;
   return (
@@ -207,7 +200,6 @@ export function ProfileDetail({
   const t = useI18n();
   const locale = useLocale();
 
-  // Prepare extended profile data
   const basicInfo = [
     { label: t("profile.nickname"), value: profile.nickname },
     { label: t("profile.ageRange"), value: translateOption(profile.age_range, "ageRange", AGE_RANGES, t) },
@@ -246,7 +238,6 @@ export function ProfileDetail({
     { label: t("profile.weekendActivities"), value: profile.weekend_activities },
   ].filter((f) => f.value);
 
-  // SNS Links
   const snsLinks = [
     { platform: "x", username: profile.sns_x, url: `https://x.com/${profile.sns_x}`, label: t("profile.snsX") },
     { platform: "instagram", username: profile.sns_instagram, url: `https://instagram.com/${profile.sns_instagram}`, label: t("profile.snsInstagram") },
@@ -264,7 +255,6 @@ export function ProfileDetail({
       animate="visible"
       className="max-w-2xl mx-auto"
     >
-      {/* Back link */}
       <m.div variants={itemVariants}>
         <Link
           href="/"
@@ -276,7 +266,6 @@ export function ProfileDetail({
         </Link>
       </m.div>
 
-      {/* Unregistered profile banner */}
       {isMockProfile && (
         <m.div
           variants={itemVariants}
@@ -288,14 +277,12 @@ export function ProfileDetail({
         </m.div>
       )}
 
-      {/* Hero Section - Avatar and Key Info */}
       <m.div
         variants={itemVariants}
         className={`bg-white border mb-6 ${isMockProfile ? "border-dashed border-[#d4d4d4]" : "border-[#e5e5e5]"}`}
       >
         <div className="p-6 sm:p-8">
           <div className="flex flex-col sm:flex-row gap-6 sm:gap-8">
-            {/* Avatar */}
             <div className="shrink-0 mx-auto sm:mx-0">
               <div className="w-40 h-40 sm:w-52 sm:h-52 bg-[#f5f5f3] overflow-hidden">
                 <Avatar className="size-full rounded-none">
@@ -311,9 +298,7 @@ export function ProfileDetail({
               </div>
             </div>
 
-            {/* Core Info */}
             <div className="flex-1 text-center sm:text-left">
-              {/* Name and Edit */}
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
                 <div>
                   <h1 className="text-2xl text-[#1a1a1a] tracking-wide font-light mb-1">
@@ -335,7 +320,6 @@ export function ProfileDetail({
                 )}
               </div>
 
-              {/* Quick Info Badges */}
               <div className="flex flex-wrap justify-center sm:justify-start gap-2 mb-4">
                 {profile.move_in_date && (
                   <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 bg-[#f5f5f3] text-[#737373]">
@@ -368,7 +352,6 @@ export function ProfileDetail({
                 </span>
               </div>
 
-              {/* Bio */}
               {profile.bio && (
                 <p className="text-sm text-[#1a1a1a] leading-relaxed">
                   {profile.bio}
@@ -377,7 +360,6 @@ export function ProfileDetail({
             </div>
           </div>
 
-          {/* Interests Tags */}
           {profile.interests && profile.interests.length > 0 && (
             <div className="mt-6 pt-6 border-t border-[#e5e5e5]">
               <p className="text-[10px] text-[#a3a3a3] tracking-wide uppercase mb-3 flex items-center gap-1.5">
@@ -399,7 +381,6 @@ export function ProfileDetail({
             </div>
           )}
 
-          {/* Room Photos - ヒーローカード内に統合して「自己紹介」の一部として表示 */}
           {(isOwnProfile || roomPhotos.length > 0) && (
             <div className="mt-6 pt-6 border-t border-[#e5e5e5]">
               <div className="flex items-center justify-between mb-3">
@@ -442,10 +423,8 @@ export function ProfileDetail({
         </div>
       </m.div>
 
-      {/* Extended Profile Sections */}
       {hasExtendedInfo && (
         <div className="grid gap-4 sm:grid-cols-2">
-          {/* Basic Info */}
           {basicInfo.length > 0 && (
             <ProfileSection title={t("profile.sectionBasicInfo")} category="basic">
               <dl className="grid grid-cols-2 gap-4">
@@ -456,7 +435,6 @@ export function ProfileDetail({
             </ProfileSection>
           )}
 
-          {/* Work */}
           {workInfo.length > 0 && (
             <ProfileSection title={t("profile.sectionWork")} category="work">
               <dl className="grid grid-cols-2 gap-4">
@@ -467,7 +445,6 @@ export function ProfileDetail({
             </ProfileSection>
           )}
 
-          {/* Lifestyle */}
           {lifestyleInfo.length > 0 && (
             <ProfileSection title={t("profile.sectionLifestyle")} category="lifestyle">
               <dl className="grid grid-cols-2 gap-4">
@@ -478,7 +455,6 @@ export function ProfileDetail({
             </ProfileSection>
           )}
 
-          {/* Communal Living */}
           {(communalInfo.length > 0 || sharedSpaceUsage) && (
             <ProfileSection title={t("profile.sectionCommunal")} category="communal">
               <dl className="space-y-4">
@@ -494,7 +470,6 @@ export function ProfileDetail({
             </ProfileSection>
           )}
 
-          {/* Personality */}
           {personalityInfo.length > 0 && (
             <ProfileSection title={t("profile.sectionPersonality")} category="personality" className="sm:col-span-2">
               <dl className="grid sm:grid-cols-2 gap-4">
@@ -505,7 +480,6 @@ export function ProfileDetail({
             </ProfileSection>
           )}
 
-          {/* SNS Links */}
           {snsLinks.length > 0 && (
             <ProfileSection title={t("profile.sectionSns")} category="sns" className="sm:col-span-2">
               <div className="flex flex-wrap gap-3">

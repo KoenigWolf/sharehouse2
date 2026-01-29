@@ -7,7 +7,6 @@ type TranslationTree<T> = {
 };
 
 export const ja = {
-  // Common
   common: {
     loading: "読み込み中...",
     saving: "保存中...",
@@ -28,7 +27,6 @@ export const ja = {
     copy: "コピー",
   },
 
-  // Navigation
   nav: {
     home: "ホーム",
     residents: "住民",
@@ -40,7 +38,6 @@ export const ja = {
     info: "情報",
   },
 
-  // Auth
   auth: {
     login: "ログイン",
     signup: "新規登録",
@@ -81,7 +78,6 @@ export const ja = {
     lineLoginFailed: "LINEログインに失敗しました",
   },
 
-  // Profile
   profile: {
     title: "プロフィール",
     myPage: "マイページ",
@@ -125,13 +121,11 @@ export const ja = {
     completionLabel: "完成度",
     teaTimeStatus: "ティータイム",
     interestsSeparatorHint: "「、」「・」「,」で区切ると、タグとして表示されます",
-    // 拡張プロフィールセクション
     sectionBasicInfo: "基本情報",
     sectionWork: "仕事・学歴",
     sectionLifestyle: "ライフスタイル",
     sectionCommunal: "共同生活への姿勢",
     sectionPersonality: "性格・趣味",
-    // 基本情報
     nickname: "ニックネーム",
     nicknamePlaceholder: "呼ばれたい名前",
     ageRange: "年代",
@@ -141,28 +135,24 @@ export const ja = {
     languages: "使用言語",
     hometown: "出身地",
     hometownPlaceholder: "都道府県や国名",
-    // 仕事・学歴
     occupation: "職業",
     industry: "業界・職種",
     industryPlaceholder: "業界や職種を入力",
     workLocation: "勤務地エリア",
     workLocationPlaceholder: "エリア名",
     workStyle: "勤務形態",
-    // ライフスタイル
     dailyRhythm: "生活リズム",
     homeFrequency: "在宅頻度",
     alcohol: "お酒",
     smoking: "タバコ",
     pets: "ペット",
     guestFrequency: "来客頻度",
-    // 共同生活への姿勢
     socialStance: "交流スタンス",
     sharedSpaceUsage: "共有スペースの使い方",
     sharedSpaceUsagePlaceholder: "リビングでよく過ごす、静かに使いたい など",
     cleaningAttitude: "掃除・家事への姿勢",
     cookingFrequency: "料理頻度",
     sharedMeals: "シェアごはん",
-    // 性格・趣味
     personalityType: "性格タイプ",
     personalityTypePlaceholder: "社交的、マイペース など",
     weekendActivities: "休日の過ごし方",
@@ -170,7 +160,6 @@ export const ja = {
     other: "その他",
     otherPlaceholder: "具体的に入力...",
     selectPlaceholder: "選択してください",
-    // SNS
     sectionSns: "SNS",
     snsX: "X (Twitter)",
     snsXPlaceholder: "@username または URL",
@@ -185,9 +174,7 @@ export const ja = {
     snsHint: "ユーザー名または URLを入力",
   },
 
-  // プロフィール選択肢
   profileOptions: {
-    // 年代
     ageRange: {
       "10s": "10代",
       "20s": "20代",
@@ -195,14 +182,12 @@ export const ja = {
       "40s": "40代",
       "50plus": "50代以上",
     },
-    // 性別
     gender: {
       male: "男性",
       female: "女性",
       other: "その他",
       noAnswer: "回答しない",
     },
-    // 職業
     occupation: {
       employee: "会社員",
       freelance: "フリーランス",
@@ -210,7 +195,6 @@ export const ja = {
       executive: "経営者",
       other: "その他",
     },
-    // 業界
     industry: {
       it: "IT・テクノロジー",
       finance: "金融",
@@ -219,75 +203,63 @@ export const ja = {
       creative: "クリエイティブ",
       other: "その他",
     },
-    // 勤務形態
     workStyle: {
       office: "フル出社",
       remote: "フルリモート",
       hybrid: "ハイブリッド",
     },
-    // 生活リズム
     dailyRhythm: {
       morning: "朝型",
       night: "夜型",
       irregular: "不規則",
     },
-    // 在宅頻度
     homeFrequency: {
       everyday: "ほぼ毎日",
       weekdaysOnly: "平日のみ",
       weekendsOnly: "週末のみ",
       oftenAway: "出張多め",
     },
-    // お酒
     alcohol: {
       drink: "飲む",
       sometimes: "たまに",
       noDrink: "飲まない",
     },
-    // タバコ
     smoking: {
       smoke: "吸う",
       noSmoke: "吸わない",
     },
-    // ペット
     pets: {
       wantPets: "飼いたい",
       noPets: "飼わない",
       either: "どちらでも",
     },
-    // 来客頻度
     guestFrequency: {
       often: "よくある",
       sometimes: "たまに",
       rarely: "ほとんどない",
     },
-    // 交流スタンス
     socialStance: {
       active: "積極的に交流したい",
       moderate: "程よく",
       quiet: "静かに暮らしたい",
     },
-    // 掃除への姿勢
     cleaningAttitude: {
       strict: "きっちり派",
       moderate: "ほどほど派",
       relaxed: "おおらか派",
     },
-    // 料理頻度
     cookingFrequency: {
       daily: "毎日",
       fewTimesWeek: "週数回",
       sometimes: "たまに",
       never: "しない",
     },
-    // シェアごはん
     sharedMeals: {
       wantToJoin: "参加したい",
       sometimes: "たまに",
       rarely: "あまり",
       noJoin: "参加しない",
     },
-    // 使用言語
     languages: {
       japanese: "日本語",
       english: "英語",
@@ -297,7 +269,6 @@ export const ja = {
     },
   },
 
-  // Residents
   residents: {
     title: "住民一覧",
     count: "人",
@@ -315,15 +286,12 @@ export const ja = {
     countOf: "（{{total}}人中）",
     registeredLabel: "登録済み {{count}}人",
     unregisteredLabel: "未登録 {{count}}部屋",
-    // 表示モード
     viewGrid: "グリッド表示",
     viewFloor: "階層別表示",
     viewList: "リスト表示",
-    // フィルター
     filterAll: "すべて",
     floorLabel: "{{floor}}階",
     registeredShort: "登録",
-    // 統計
     statsTitle: "住民統計",
     statsRegistered: "登録済み",
     statsNew: "新入居者",
@@ -336,7 +304,6 @@ export const ja = {
     showStats: "統計を表示",
   },
 
-  // Tea Time
   teaTime: {
     title: "ティータイム",
     subtitle: "ランダムマッチ",
@@ -364,7 +331,6 @@ export const ja = {
     nameSuffix: "さん",
   },
 
-  // Errors
   errors: {
     unauthorized: "認証が必要です",
     forbidden: "アクセスできません",
@@ -425,7 +391,6 @@ export const ja = {
     },
   },
 
-  // Room Photos
   roomPhotos: {
     title: "ギャラリー",
     subtitle: "住民の部屋写真",
@@ -448,7 +413,6 @@ export const ja = {
     nextPhoto: "次の写真",
   },
 
-  // Wi-Fi
   wifi: {
     title: "Wi-Fi情報",
     areaName: "エリア名",
@@ -468,7 +432,6 @@ export const ja = {
     confirmDelete: "このWi-Fi情報を削除しますか？",
   },
 
-  // Garbage
   garbage: {
     title: "ゴミ出し",
     schedule: "スケジュール",
@@ -506,7 +469,6 @@ export const ja = {
     saveSuccess: "保存しました",
   },
 
-  // Info page
   info: {
     title: "シェアハウス情報",
     subtitle: "生活に必要な情報をまとめています",
@@ -520,14 +482,12 @@ export const ja = {
     wifiPassword: "Wi-Fi パスワード",
   },
 
-  // Shared info
   sharedInfo: {
     mailbox: "郵便受け",
     address: "住所",
     note: "※",
   },
 
-  // Push notifications
   push: {
     enable: "プッシュ通知を有効にする",
     disable: "プッシュ通知を無効にする",
@@ -537,14 +497,12 @@ export const ja = {
     permissionDenied: "通知の許可が拒否されています",
   },
 
-  // Footer
   footer: {
     copyright: "© {{year}} All rights reserved",
     navigation: "フッターナビゲーション",
     tagline: "住民同士のつながりを大切にするシェアハウスポータル",
   },
 
-  // Accessibility
   a11y: {
     mainNavigation: "メインナビゲーション",
     userMenu: "ユーザーメニュー",

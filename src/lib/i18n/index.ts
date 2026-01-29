@@ -96,7 +96,6 @@ function translate(
     return key;
   }
 
-  // Simple parameter interpolation
   if (params) {
     return Object.entries(params).reduce(
       (str, [paramKey, paramValue]) =>

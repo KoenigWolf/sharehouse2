@@ -8,19 +8,11 @@ import { PhotoLightbox } from "@/components/photo-lightbox";
 import type { RoomPhoto } from "@/domain/room-photo";
 import type { Profile } from "@/domain/profile";
 
-// =============================================================================
-// Types
-// =============================================================================
-
 type PhotoWithProfile = RoomPhoto & { profile: Profile | null };
 
 interface RoomPhotosGalleryProps {
   photos: PhotoWithProfile[];
 }
-
-// =============================================================================
-// Icons
-// =============================================================================
 
 function CameraIcon() {
   return (
@@ -42,10 +34,6 @@ function ExpandIcon() {
   );
 }
 
-// =============================================================================
-// Sub-components
-// =============================================================================
-
 interface PhotoCardProps {
   photo: PhotoWithProfile;
   index: number;
@@ -66,7 +54,6 @@ const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardPr
         onClick={onClick}
         className="group w-full bg-white border border-[#e5e5e5] overflow-hidden hover:border-[#1a1a1a] transition-colors cursor-pointer text-left"
       >
-        {/* Photo */}
         <div className="relative aspect-square overflow-hidden">
           <Image
             src={photo.photo_url}
@@ -76,14 +63,12 @@ const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardPr
             className="object-cover group-hover:scale-[1.02] transition-transform duration-300"
           />
 
-          {/* Expand indicator */}
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
             <span className="opacity-0 group-hover:opacity-100 transition-opacity p-2 bg-white/90 text-[#1a1a1a]">
               <ExpandIcon />
             </span>
           </div>
 
-          {/* Caption overlay */}
           {photo.caption && (
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-3 pt-8">
               <p className="text-xs text-white leading-relaxed line-clamp-2">
@@ -93,7 +78,6 @@ const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardPr
           )}
         </div>
 
-        {/* Author info */}
         <div className="flex items-center gap-2 p-2.5 border-t border-[#e5e5e5]">
           {photo.profile?.avatar_url ? (
             <Image
@@ -142,10 +126,6 @@ const SectionHeader = memo(function SectionHeader({ icon, title, count }: Sectio
 });
 
 SectionHeader.displayName = "SectionHeader";
-
-// =============================================================================
-// Main Component
-// =============================================================================
 
 /**
  * 部屋写真ギャラリーコンポーネント
@@ -201,7 +181,6 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
           count={photos.length}
         />
 
-        {/* Photo grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
           {photos.map((photo, index) => (
             <PhotoCard
@@ -213,13 +192,11 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
           ))}
         </div>
 
-        {/* Hint */}
         <p className="text-[10px] text-[#a3a3a3] mt-4 tracking-wide">
           {t("roomPhotos.clickToEnlarge")}
         </p>
       </m.section>
 
-      {/* Lightbox */}
       <PhotoLightbox
         photos={photos}
         selectedIndex={selectedIndex}

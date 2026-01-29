@@ -11,7 +11,6 @@ const generateMinimalAvatar = (
   hairColor: string,
   clothesColor: string
 ) => {
-  // 背景パターン（生成り系、わずかな違い）
   const bgColors: Record<string, string> = {
     a: "#f5f5f3",
     b: "#f8f8f6",
@@ -60,14 +59,11 @@ const generateMinimalAvatar = (
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 };
 
-// DESIGN_GUIDELINES.md準拠のカラーパレット（低彩度）
 const avatarConfigs: Array<{
   variant: "a" | "b" | "c" | "d";
   hairColor: string;
   clothesColor: string;
 }> = [
-  // 髪色: 暗めの茶〜黒系（#3d3530, #4a4540, #2d2a28）
-  // 服: 落ち着いたグレー・ベージュ系（#d4d4d4, #c9c5c0, #b8b4b0）
   { variant: "b", hairColor: "#3d3530", clothesColor: "#d4d4d4" },
   { variant: "a", hairColor: "#2d2a28", clothesColor: "#c9c5c0" },
   { variant: "d", hairColor: "#4a4540", clothesColor: "#d8d4d0" },
@@ -95,7 +91,6 @@ const avatars = avatarConfigs.map((config) =>
 );
 
 export const mockProfiles: Profile[] = [
-  // 2階
   {
     id: "mock-1",
     name: "サンプル ユーザーA",
@@ -161,7 +156,6 @@ export const mockProfiles: Profile[] = [
     created_at: "2024-04-01T00:00:00Z",
     updated_at: "2024-04-01T00:00:00Z",
   },
-  // 3階
   {
     id: "mock-6",
     name: "サンプル ユーザーF",
@@ -227,7 +221,6 @@ export const mockProfiles: Profile[] = [
     created_at: "2023-09-15T00:00:00Z",
     updated_at: "2023-09-15T00:00:00Z",
   },
-  // 4階
   {
     id: "mock-11",
     name: "サンプル ユーザーK",
@@ -293,7 +286,6 @@ export const mockProfiles: Profile[] = [
     created_at: "2024-03-15T00:00:00Z",
     updated_at: "2024-03-15T00:00:00Z",
   },
-  // 5階
   {
     id: "mock-16",
     name: "サンプル ユーザーP",

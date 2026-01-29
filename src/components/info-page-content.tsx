@@ -9,10 +9,6 @@ import type { WifiInfo } from "@/domain/wifi";
 import type { GarbageSchedule, GarbageDutyWithProfile } from "@/domain/garbage";
 import type { SharedInfo } from "@/domain/shared-info";
 
-// =============================================================================
-// Types
-// =============================================================================
-
 interface InfoPageContentProps {
   wifiInfos: WifiInfo[];
   schedule: GarbageSchedule[];
@@ -21,10 +17,6 @@ interface InfoPageContentProps {
   isAdmin: boolean;
   currentUserId: string;
 }
-
-// =============================================================================
-// Sub-components
-// =============================================================================
 
 interface QuickAccessCardProps {
   icon: React.ReactNode;
@@ -114,7 +106,6 @@ const WifiCard = memo(function WifiCard({ wifiInfos }: WifiCardProps) {
 
   return (
     <div className="bg-white border border-[#e5e5e5]">
-      {/* パスワード（共通） */}
       <div className="px-4 py-3 border-b border-[#e5e5e5] bg-[#fafaf8]">
         <div className="flex items-center justify-between">
           <div>
@@ -145,7 +136,6 @@ const WifiCard = memo(function WifiCard({ wifiInfos }: WifiCardProps) {
         </div>
       </div>
 
-      {/* SSID一覧 */}
       <div className="divide-y divide-[#e5e5e5]">
         {wifiInfos.map((wifi) => (
           <div key={wifi.id} className="px-4 py-3 flex items-center justify-between">
@@ -157,7 +147,6 @@ const WifiCard = memo(function WifiCard({ wifiInfos }: WifiCardProps) {
         ))}
       </div>
 
-      {/* 注意書き */}
       <div className="px-4 py-2 bg-[#fafaf8] border-t border-[#e5e5e5]">
         <p className="text-[10px] text-[#a3a3a3]">
           {t("info.wifiNote")}
@@ -168,10 +157,6 @@ const WifiCard = memo(function WifiCard({ wifiInfos }: WifiCardProps) {
 });
 
 WifiCard.displayName = "WifiCard";
-
-// =============================================================================
-// Icons
-// =============================================================================
 
 function WifiIcon() {
   return (
@@ -248,10 +233,6 @@ function EyeOffIcon() {
   );
 }
 
-// =============================================================================
-// Main Component
-// =============================================================================
-
 export function InfoPageContent({
   wifiInfos,
   schedule,
@@ -268,7 +249,6 @@ export function InfoPageContent({
 
   return (
     <div className="space-y-8">
-      {/* ページヘッダー */}
       <div>
         <h1 className="text-xl text-[#1a1a1a] tracking-wide font-light">
           {t("info.title")}
@@ -278,7 +258,6 @@ export function InfoPageContent({
         </p>
       </div>
 
-      {/* クイックアクセス */}
       <m.section
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
@@ -304,7 +283,6 @@ export function InfoPageContent({
         </div>
       </m.section>
 
-      {/* Wi-Fi セクション */}
       <m.section
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
@@ -314,7 +292,6 @@ export function InfoPageContent({
         <WifiCard wifiInfos={wifiInfos} />
       </m.section>
 
-      {/* ゴミ出しセクション */}
       <m.section
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
@@ -329,7 +306,6 @@ export function InfoPageContent({
         {isAdmin && <GarbageAdminPanel schedule={schedule} />}
       </m.section>
 
-      {/* 施設情報セクション */}
       {(addressInfo || sharedInfos.filter((i) => i.info_key !== "mailbox_code" && i.info_key !== "address").length > 0) && (
         <m.section
           initial={{ opacity: 0, y: 8 }}

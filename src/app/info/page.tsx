@@ -47,7 +47,6 @@ export default async function InfoPage() {
 
       <Footer />
 
-      {/* モバイルナビゲーション */}
       <MobileNav />
     </div>
   );

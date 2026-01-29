@@ -117,7 +117,6 @@ export function RoomPhotoManager({ photos, maxPhotos = 5, compact = false }: Roo
       )}
 
       <div className={compact ? "space-y-4" : "p-4 space-y-4"}>
-        {/* メッセージ */}
         <AnimatePresence mode="wait">
           {error && (
             <m.div
@@ -147,7 +146,6 @@ export function RoomPhotoManager({ photos, maxPhotos = 5, compact = false }: Roo
           )}
         </AnimatePresence>
 
-        {/* 写真グリッド */}
         <div className="grid grid-cols-3 gap-2">
           {currentPhotos.map((photo) => (
             <m.div
@@ -165,7 +163,6 @@ export function RoomPhotoManager({ photos, maxPhotos = 5, compact = false }: Roo
                 sizes="(max-width: 640px) 33vw, 20vw"
                 className="object-cover"
               />
-              {/* 削除ボタン */}
               <button
                 type="button"
                 onClick={() => handleDelete(photo.id)}
@@ -183,7 +180,6 @@ export function RoomPhotoManager({ photos, maxPhotos = 5, compact = false }: Roo
                   <X className="w-3.5 h-3.5" />
                 )}
               </button>
-              {/* キャプション */}
               {photo.caption && (
                 <div className="absolute inset-x-0 bottom-0 bg-black/50 px-1.5 py-1">
                   <p className="text-[9px] text-white truncate">{photo.caption}</p>
@@ -192,7 +188,6 @@ export function RoomPhotoManager({ photos, maxPhotos = 5, compact = false }: Roo
             </m.div>
           ))}
 
-          {/* アップロードボタン */}
           {canUpload && (
             <button
               type="button"
@@ -216,7 +211,6 @@ export function RoomPhotoManager({ photos, maxPhotos = 5, compact = false }: Roo
           )}
         </div>
 
-        {/* キャプション入力 */}
         {canUpload && (
           <div className="space-y-2">
             <label htmlFor="photo-caption" className="block text-xs text-[#737373] tracking-wide">
@@ -237,14 +231,12 @@ export function RoomPhotoManager({ photos, maxPhotos = 5, compact = false }: Roo
           </div>
         )}
 
-        {/* ヒント */}
         {currentPhotos.length === 0 && (
           <p className="text-xs text-[#a3a3a3] text-center py-4">
             {t("roomPhotos.noPhotosHint")}
           </p>
         )}
 
-        {/* 隠しファイル入力 */}
         <input
           ref={fileInputRef}
           type="file"

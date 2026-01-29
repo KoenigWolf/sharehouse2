@@ -39,7 +39,6 @@ export default function GlobalError({
               '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
           }}
         >
-          {/* ヘッダー */}
           <header
             style={{
               borderBottom: "1px solid #e5e5e5",
@@ -68,7 +67,6 @@ export default function GlobalError({
             </div>
           </header>
 
-          {/* メインコンテンツ */}
           <main
             style={{
               flex: 1,
@@ -127,7 +125,6 @@ export default function GlobalError({
             </div>
           </main>
 
-          {/* フッター */}
           <footer
             style={{
               borderTop: "1px solid #e5e5e5",

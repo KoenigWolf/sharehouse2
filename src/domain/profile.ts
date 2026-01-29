@@ -1,4 +1,3 @@
-// Room numbers (2F-5F, 5 rooms per floor)
 export const ROOM_NUMBERS = [
   "201", "202", "203", "204", "205",
   "301", "302", "303", "304", "305",
@@ -8,7 +7,6 @@ export const ROOM_NUMBERS = [
 
 export type RoomNumber = typeof ROOM_NUMBERS[number];
 
-// Valid MBTI types
 export const MBTI_TYPES = [
   "INTJ", "INTP", "ENTJ", "ENTP",
   "INFJ", "INFP", "ENFJ", "ENFP",
@@ -16,7 +14,6 @@ export const MBTI_TYPES = [
   "ISTP", "ISFP", "ESTP", "ESFP",
 ] as const;
 
-// Profile option constants
 export const AGE_RANGES = ["10s", "20s", "30s", "40s", "50plus"] as const;
 export const GENDERS = ["male", "female", "other", "noAnswer"] as const;
 export const OCCUPATIONS = ["employee", "freelance", "student", "executive", "other"] as const;
@@ -53,7 +50,6 @@ export type Language = typeof LANGUAGES[number];
 
 export type MBTIType = typeof MBTI_TYPES[number];
 
-// MBTI type labels (nickname/archetype)
 export const MBTI_LABELS: Record<MBTIType, { ja: string; en: string }> = {
   INTJ: { ja: "建築家", en: "Architect" },
   INTP: { ja: "論理学者", en: "Logician" },
@@ -85,35 +81,29 @@ export interface Profile {
   is_admin: boolean;
   created_at: string;
   updated_at: string;
-  // 基本情報（既存データとの互換性のためオプショナル）
   nickname?: string | null;
   age_range?: string | null;
   gender?: string | null;
   nationality?: string | null;
   languages?: string[];
   hometown?: string | null;
-  // 仕事・学歴
   occupation?: string | null;
   industry?: string | null;
   work_location?: string | null;
   work_style?: string | null;
-  // ライフスタイル
   daily_rhythm?: string | null;
   home_frequency?: string | null;
   alcohol?: string | null;
   smoking?: string | null;
   pets?: string | null;
   guest_frequency?: string | null;
-  // 共同生活への姿勢
   social_stance?: string | null;
   shared_space_usage?: string | null;
   cleaning_attitude?: string | null;
   cooking_frequency?: string | null;
   shared_meals?: string | null;
-  // 性格・趣味
   personality_type?: string | null;
   weekend_activities?: string | null;
-  // SNSリンク
   sns_x?: string | null;
   sns_instagram?: string | null;
   sns_facebook?: string | null;

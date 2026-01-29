@@ -56,7 +56,6 @@ export function usePushNotifications() {
       return;
     }
 
-    // Check current subscription state
     navigator.serviceWorker.ready
       .then((registration) => registration.pushManager.getSubscription())
       .then((subscription) => {

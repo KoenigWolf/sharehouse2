@@ -75,7 +75,6 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
       <Footer />
 
-      {/* モバイルナビゲーション */}
       <MobileNav />
     </div>
   );

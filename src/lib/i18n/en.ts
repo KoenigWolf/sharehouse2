@@ -121,13 +121,11 @@ export const en: Translations = {
     completionLabel: "Completion",
     teaTimeStatus: "Tea Time",
     interestsSeparatorHint: "Use commas or dots to display tags",
-    // Extended profile sections
     sectionBasicInfo: "Basic Information",
     sectionWork: "Work & Education",
     sectionLifestyle: "Lifestyle",
     sectionCommunal: "Community Living",
     sectionPersonality: "Personality & Hobbies",
-    // Basic info
     nickname: "Nickname",
     nicknamePlaceholder: "What you'd like to be called",
     ageRange: "Age Range",
@@ -137,28 +135,24 @@ export const en: Translations = {
     languages: "Languages",
     hometown: "Hometown",
     hometownPlaceholder: "City or country",
-    // Work
     occupation: "Occupation",
     industry: "Industry",
     industryPlaceholder: "Enter industry or job type",
     workLocation: "Work Location",
     workLocationPlaceholder: "Area name",
     workStyle: "Work Style",
-    // Lifestyle
     dailyRhythm: "Daily Rhythm",
     homeFrequency: "Time at Home",
     alcohol: "Alcohol",
     smoking: "Smoking",
     pets: "Pets",
     guestFrequency: "Guest Frequency",
-    // Communal
     socialStance: "Social Style",
     sharedSpaceUsage: "Shared Space Usage",
     sharedSpaceUsagePlaceholder: "e.g., Often in the living room, prefer quiet use",
     cleaningAttitude: "Cleaning Attitude",
     cookingFrequency: "Cooking Frequency",
     sharedMeals: "Shared Meals",
-    // Personality
     personalityType: "Personality Type",
     personalityTypePlaceholder: "e.g., Outgoing, laid-back",
     weekendActivities: "Weekend Activities",
@@ -166,7 +160,6 @@ export const en: Translations = {
     other: "Other",
     otherPlaceholder: "Please specify...",
     selectPlaceholder: "Select an option",
-    // SNS
     sectionSns: "Social",
     snsX: "X (Twitter)",
     snsXPlaceholder: "@username or URL",
@@ -293,15 +286,12 @@ export const en: Translations = {
     countOf: "(of {{total}})",
     registeredLabel: "{{count}} registered",
     unregisteredLabel: "{{count}} rooms unregistered",
-    // View modes
     viewGrid: "Grid view",
     viewFloor: "Floor view",
     viewList: "List view",
-    // Filters
     filterAll: "All",
     floorLabel: "Floor {{floor}}",
     registeredShort: "registered",
-    // Stats
     statsTitle: "Resident Statistics",
     statsRegistered: "Registered",
     statsNew: "New Residents",

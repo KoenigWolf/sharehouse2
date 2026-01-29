@@ -66,7 +66,6 @@ export default async function ProfileEditPage({ params }: ProfileEditPageProps) 
 
       <Footer />
 
-      {/* モバイルナビゲーション */}
       <MobileNav />
     </div>
   );

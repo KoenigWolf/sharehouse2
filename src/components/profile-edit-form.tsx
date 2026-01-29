@@ -16,7 +16,6 @@ interface ProfileEditFormProps {
   initialTeaTimeEnabled?: boolean;
 }
 
-// Section category types with icons and colors
 type SectionType = "basic" | "extended" | "work" | "lifestyle" | "communal" | "personality" | "sns";
 
 const sectionConfig: Record<SectionType, { color: string; bgColor: string; borderColor: string; icon: React.ReactNode }> = {
@@ -92,7 +91,6 @@ const sectionConfig: Record<SectionType, { color: string; bgColor: string; borde
   },
 };
 
-// Collapsible Section Component
 function FormSection({
   id,
   title,
@@ -167,7 +165,6 @@ function FormSection({
   );
 }
 
-// Input Field Component
 function InputField({
   id,
   label,
@@ -204,7 +201,6 @@ function InputField({
   );
 }
 
-// Select Field Component
 function SelectField({
   id,
   label,
@@ -242,7 +238,6 @@ function SelectField({
   );
 }
 
-// Textarea Field Component
 function TextareaField({
   id,
   label,
@@ -337,7 +332,6 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
     [formData.interests]
   );
 
-  // Section field counts
   const sectionFieldCounts = useMemo(() => ({
     extended: {
       filled: [formData.nickname, formData.age_range, formData.gender, formData.hometown, formData.nationality].filter(Boolean).length,
@@ -365,7 +359,6 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
     },
   }), [formData]);
 
-  // Overall completion
   const completionItems = useMemo(
     () => [
       { label: t("profile.completionItems.photo"), completed: !!avatarUrl },
@@ -497,7 +490,6 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
       transition={{ duration: 0.3 }}
       className="max-w-3xl mx-auto"
     >
-      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <Link
           href={`/profile/${profile.id}`}
@@ -512,7 +504,6 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
         <div className="w-16" />
       </div>
 
-      {/* Messages */}
       <AnimatePresence mode="wait">
         {error && (
           <m.div
@@ -542,7 +533,6 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
         )}
       </AnimatePresence>
 
-      {/* Hero Section - Avatar & Core Info */}
       <m.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -551,7 +541,6 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
       >
         <div className="p-6 sm:p-8">
           <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-center sm:items-start">
-            {/* Avatar */}
             <div className="shrink-0">
               <button
                 type="button"
@@ -595,9 +584,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
               </p>
             </div>
 
-            {/* Info Side */}
             <div className="flex-1 w-full text-center sm:text-left">
-              {/* Completion Meter */}
               <div className="mb-4 p-3 bg-[#fafaf8] border border-[#f0f0f0]">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-[10px] text-[#737373] tracking-wide">{t("profile.completionLabel")}</p>
@@ -627,7 +614,6 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                 </div>
               </div>
 
-              {/* Tea Time Toggle */}
               <m.div
                 animate={{
                   backgroundColor: teaTimeEnabled ? "#f0f8f4" : "#fafaf8",
@@ -687,9 +673,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
         </div>
       </m.div>
 
-      {/* Form Sections */}
       <form onSubmit={handleSubmit} className="space-y-3">
-        {/* Basic Info (Always visible) */}
         <m.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -764,7 +748,6 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
           </FormSection>
         </m.div>
 
-        {/* Extended Profile */}
         <m.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -834,7 +817,6 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
           </FormSection>
         </m.div>
 
-        {/* Work */}
         <m.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -896,7 +878,6 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
           </FormSection>
         </m.div>
 
-        {/* Lifestyle */}
         <m.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -990,7 +971,6 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
           </FormSection>
         </m.div>
 
-        {/* Communal */}
         <m.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -1069,7 +1049,6 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
           </FormSection>
         </m.div>
 
-        {/* Personality */}
         <m.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -1101,7 +1080,6 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
           </FormSection>
         </m.div>
 
-        {/* SNS */}
         <m.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -1159,7 +1137,6 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
           </FormSection>
         </m.div>
 
-        {/* Save Button */}
         <m.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}

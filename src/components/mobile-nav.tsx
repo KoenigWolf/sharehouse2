@@ -8,9 +8,6 @@ import { Users, Coffee, User, Image, Info } from "lucide-react";
 import { useI18n } from "@/hooks/use-i18n";
 import type { TranslationKey } from "@/lib/i18n";
 
-/**
- * Navigation items for mobile bottom nav
- */
 const NAV_ITEMS: {
   href: string;
   labelKey: TranslationKey;
@@ -29,9 +26,6 @@ const NAV_ITEMS: {
   },
 ];
 
-/**
- * Mobile bottom navigation bar
- */
 export const MobileNav = memo(function MobileNav() {
   const pathname = usePathname();
   const t = useI18n();
