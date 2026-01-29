@@ -65,10 +65,9 @@ export default async function ProfileEditPage({ params }: ProfileEditPageProps) 
         <div className="container mx-auto px-4 sm:px-6 py-5 sm:py-8 max-w-2xl space-y-5">
           <Link
             href={`/profile/${validatedId}`}
-            className="inline-flex items-center gap-1.5 text-xs text-[#737373] hover:text-[#1a1a1a] transition-colors"
+            className="text-[11px] tracking-wide text-[#a3a3a3] hover:text-[#737373] transition-colors"
           >
-            <span aria-hidden="true">&larr;</span>
-            <span>{t("myPage.backToMyPage")}</span>
+            {t("myPage.backToMyPage")}
           </Link>
           <ProfileEditForm
             profile={profile as Profile}

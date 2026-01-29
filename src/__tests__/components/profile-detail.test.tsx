@@ -53,12 +53,6 @@ describe("ProfileDetail", () => {
       expect(screen.getByText("ランニング")).toBeInTheDocument();
     });
 
-    it("renders back link", () => {
-      render(
-        <ProfileDetail profile={mockProfile} isOwnProfile={false} />
-      );
-      expect(screen.getByText("戻る")).toBeInTheDocument();
-    });
   });
 
   describe("optional fields", () => {
@@ -218,14 +212,6 @@ describe("ProfileDetail", () => {
       expect(screen.getByRole("article")).toBeInTheDocument();
     });
 
-    it("back link has proper aria-label", () => {
-      render(
-        <ProfileDetail profile={mockProfile} isOwnProfile={false} />
-      );
-      const backLink = screen.getByLabelText("住民一覧に戻る");
-      expect(backLink).toBeInTheDocument();
-    });
-
     it("profile name uses h1 heading", () => {
       render(
         <ProfileDetail profile={mockProfile} isOwnProfile={false} />
@@ -252,13 +238,4 @@ describe("ProfileDetail", () => {
     });
   });
 
-  describe("navigation", () => {
-    it("back link points to home", () => {
-      render(
-        <ProfileDetail profile={mockProfile} isOwnProfile={false} />
-      );
-      const backLink = screen.getByLabelText("住民一覧に戻る");
-      expect(backLink).toHaveAttribute("href", "/");
-    });
-  });
 });

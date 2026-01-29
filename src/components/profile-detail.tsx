@@ -291,17 +291,6 @@ export function ProfileDetail({
       animate="visible"
       className="w-full"
     >
-      <m.div variants={itemVariants}>
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 text-xs text-[#737373] hover:text-[#1a1a1a] mb-6 transition-colors"
-          aria-label={t("a11y.backToResidents")}
-        >
-          <span aria-hidden="true">←</span>
-          <span>{t("common.back")}</span>
-        </Link>
-      </m.div>
-
       {isMockProfile && (
         <m.div
           variants={itemVariants}

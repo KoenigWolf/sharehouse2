@@ -496,10 +496,9 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
       <div className="flex items-center justify-between mb-6">
         <Link
           href={`/profile/${profile.id}`}
-          className="inline-flex items-center gap-1.5 text-xs text-[#737373] hover:text-[#1a1a1a] transition-colors"
+          className="text-[11px] tracking-wide text-[#a3a3a3] hover:text-[#737373] transition-colors"
         >
-          <span aria-hidden="true">←</span>
-          <span>{t("common.back")}</span>
+          {t("common.back")}
         </Link>
         <h1 className="text-lg text-[#1a1a1a] tracking-wide font-light">
           {t("profile.editTitle")}
