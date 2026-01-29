@@ -3,9 +3,16 @@
 import { memo, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { m } from "framer-motion";
-import { User } from "lucide-react";
+import { User, LogOut } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { createClient } from "@/lib/supabase/client";
 import { useI18n } from "@/hooks/use-i18n";
 import { getOptimizedImageUrl } from "@/lib/utils/image";
@@ -59,8 +66,9 @@ const NavLink = memo(function NavLink({ item, isActive }: NavLinkProps) {
 
 NavLink.displayName = "NavLink";
 
-const UserAvatarLink = memo(function UserAvatarLink() {
+const UserAvatarMenu = memo(function UserAvatarMenu() {
   const pathname = usePathname();
+  const router = useRouter();
   const t = useI18n();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
@@ -90,42 +98,65 @@ const UserAvatarLink = memo(function UserAvatarLink() {
     fetchAvatar();
   }, []);
 
+  const handleLogout = useCallback(async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  }, [router]);
+
   const optimizedSrc = getOptimizedImageUrl(avatarUrl);
-  const href = userId ? `/profile/${userId}` : "/settings";
+  const profileHref = userId ? `/profile/${userId}` : "/settings";
 
   return (
-    <Link
-      href={href}
-      aria-current={isActive ? "page" : undefined}
-      aria-label={t("nav.myPage")}
-      className="relative shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a] focus-visible:ring-offset-2 rounded-full"
-    >
-      <div
-        className={`w-8 h-8 rounded-full overflow-hidden transition-all ${
-          isActive
-            ? "ring-2 ring-[#1a1a1a] ring-offset-1"
-            : "ring-1 ring-[#e5e5e5] hover:ring-[#a3a3a3]"
-        }`}
-      >
-        {optimizedSrc ? (
-          <Image
-            src={optimizedSrc}
-            alt={t("nav.myPage")}
-            width={32}
-            height={32}
-            className="object-cover w-full h-full"
-          />
-        ) : (
-          <div className="w-full h-full bg-[#f5f5f3] flex items-center justify-center">
-            <User size={16} className="text-[#a3a3a3]" strokeWidth={1.5} />
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          aria-label={t("nav.myPage")}
+          className="relative shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a] focus-visible:ring-offset-2 rounded-full cursor-pointer"
+        >
+          <div
+            className={`w-8 h-8 rounded-full overflow-hidden transition-all ${
+              isActive
+                ? "ring-2 ring-[#1a1a1a] ring-offset-1"
+                : "ring-1 ring-[#e5e5e5] hover:ring-[#a3a3a3]"
+            }`}
+          >
+            {optimizedSrc ? (
+              <Image
+                src={optimizedSrc}
+                alt={t("nav.myPage")}
+                width={32}
+                height={32}
+                className="object-cover w-full h-full"
+              />
+            ) : (
+              <div className="w-full h-full bg-[#f5f5f3] flex items-center justify-center">
+                <User size={16} className="text-[#a3a3a3]" strokeWidth={1.5} />
+              </div>
+            )}
           </div>
-        )}
-      </div>
-    </Link>
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" sideOffset={8} className="w-40">
+        <DropdownMenuItem asChild>
+          <Link href={profileHref} className="cursor-pointer">
+            <User size={14} strokeWidth={1.5} />
+            {t("nav.myPage")}
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-[#a3a3a3]">
+          <LogOut size={14} strokeWidth={1.5} />
+          {t("nav.logout")}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 });
 
-UserAvatarLink.displayName = "UserAvatarLink";
+UserAvatarMenu.displayName = "UserAvatarMenu";
 
 export const Header = memo(function Header() {
   const pathname = usePathname();
@@ -165,7 +196,7 @@ export const Header = memo(function Header() {
           </nav>
         </div>
 
-        <UserAvatarLink />
+        <UserAvatarMenu />
       </div>
     </header>
   );
