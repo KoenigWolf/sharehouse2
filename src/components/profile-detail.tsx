@@ -7,7 +7,6 @@ import { m } from "framer-motion";
 import { Camera } from "lucide-react";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { LogoutButton } from "@/components/logout-button";
 import { RoomPhotoManager } from "@/components/room-photo-manager";
 import {
   Profile,
@@ -614,11 +613,6 @@ export function ProfileDetail({
         </m.div>
       )}
 
-      {isOwnProfile && (
-        <m.div variants={itemVariants} className="mt-4">
-          <LogoutButton />
-        </m.div>
-      )}
     </m.article>
   );
 }
