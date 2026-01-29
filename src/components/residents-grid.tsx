@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
 import { ResidentCard } from "@/components/resident-card";
 import { Profile } from "@/domain/profile";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
@@ -192,10 +193,11 @@ export function ResidentsGrid({
   return (
     <div className="space-y-5 sm:space-y-6">
       <div className="bg-white border border-[#e5e5e5] mb-4">
-        <button
+        <Button
           type="button"
+          variant="ghost"
           onClick={() => setShowStats((prev) => !prev)}
-          className="w-full flex items-center justify-between px-4 sm:px-5 py-3 hover:bg-[#fafaf8] transition-colors"
+          className="w-full h-auto flex items-center justify-between px-4 sm:px-5 py-3 hover:bg-[#fafaf8]"
         >
           <h3 className="text-sm text-[#1a1a1a] tracking-wide">{t("residents.statsTitle")}</h3>
           <motion.span
@@ -205,7 +207,7 @@ export function ResidentsGrid({
           >
             <ChevronIcon />
           </motion.span>
-        </button>
+        </Button>
 
         <AnimatePresence initial={false}>
           {showStats && (
@@ -297,13 +299,15 @@ export function ResidentsGrid({
               const isActive = viewMode === option.value;
               const Icon = option.icon;
               return (
-                <button
+                <Button
                   key={option.value}
                   type="button"
+                  variant="ghost"
+                  size="icon-sm"
                   onClick={() => setViewMode(option.value)}
-                  className={`p-2 transition-colors ${
+                  className={`${
                     isActive
-                      ? "bg-white text-[#1a1a1a]"
+                      ? "bg-white text-[#1a1a1a] hover:bg-white"
                       : "text-[#a3a3a3] hover:text-[#737373]"
                   }`}
                   title={option.label}
@@ -311,7 +315,7 @@ export function ResidentsGrid({
                   aria-pressed={isActive}
                 >
                   <Icon />
-                </button>
+                </Button>
               );
             })}
           </div>
@@ -325,16 +329,17 @@ export function ResidentsGrid({
             const colors = isAll ? null : floorColors[floor];
 
             return (
-              <button
+              <Button
                 key={floor}
                 type="button"
+                variant={isActive && isAll ? "default" : "outline"}
                 onClick={() => setFloorFilter(floor)}
-                className={`shrink-0 px-3 sm:px-4 py-2 sm:py-2.5 border transition-all ${
-                  isActive
-                    ? isAll
-                      ? "bg-[#1a1a1a] border-[#1a1a1a] text-white"
-                      : `${colors?.bg} ${colors?.border} ${colors?.text}`
-                    : "bg-white border-[#e5e5e5] text-[#737373] hover:border-[#a3a3a3]"
+                className={`shrink-0 h-auto px-3 sm:px-4 py-2 sm:py-2.5 ${
+                  isActive && !isAll
+                    ? `${colors?.bg} ${colors?.border} ${colors?.text} hover:${colors?.bg}`
+                    : !isActive
+                      ? "bg-white border-[#e5e5e5] text-[#737373] hover:border-[#a3a3a3]"
+                      : ""
                 }`}
               >
                 <span className="text-xs sm:text-sm tracking-wide">
@@ -345,7 +350,7 @@ export function ResidentsGrid({
                     {floorStat.registered}/{floorStat.total}
                   </span>
                 )}
-              </button>
+              </Button>
             );
           })}
         </div>
@@ -361,13 +366,15 @@ export function ResidentsGrid({
               className="w-full sm:w-64 h-11 sm:h-10 pl-10 pr-4 bg-white border border-[#e5e5e5] text-base sm:text-sm text-[#1a1a1a] placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
             />
             {searchQuery && (
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon-xs"
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a3a3a3] hover:text-[#737373]"
+                className="absolute right-3 top-1/2 -translate-y-1/2"
               >
                 <CloseIcon />
-              </button>
+              </Button>
             )}
           </div>
 
@@ -376,11 +383,12 @@ export function ResidentsGrid({
               {sortOptions.map((option) => {
                 const isActive = sortBy === option.value;
                 return (
-                  <button
+                  <Button
                     key={option.value}
                     type="button"
+                    variant="ghost"
                     onClick={() => handleSortChange(option.value)}
-                    className="relative px-4 sm:px-4 py-2.5 sm:py-2 tracking-wide transition-colors group whitespace-nowrap active:opacity-70 snap-center sm:snap-align-none shrink-0"
+                    className="relative h-auto px-4 sm:px-4 py-2.5 sm:py-2 tracking-wide group whitespace-nowrap active:opacity-70 snap-center sm:snap-align-none shrink-0 hover:bg-transparent"
                   >
                     <span
                       className={`text-sm ${
@@ -398,7 +406,7 @@ export function ResidentsGrid({
                         transition={{ duration: 0.3, ease: "easeInOut" }}
                       />
                     )}
-                  </button>
+                  </Button>
                 );
               })}
             </div>
@@ -420,16 +428,18 @@ export function ResidentsGrid({
               <SearchIcon className="w-8 h-8 text-[#d4d4d4]" />
             </div>
             <p className="text-[#737373] text-sm">{t("residents.noMatch")}</p>
-            <button
+            <Button
               type="button"
+              variant="outline"
+              size="lg"
               onClick={() => {
                 setSearchQuery("");
                 setFloorFilter("all");
               }}
-              className="mt-4 px-5 py-3 text-sm text-[#1a1a1a] border border-[#e5e5e5] hover:border-[#1a1a1a] active:scale-[0.98] transition-all"
+              className="mt-4 active:scale-[0.98]"
             >
               {t("residents.clearSearch")}
-            </button>
+            </Button>
           </motion.div>
         ) : viewMode === "floor" ? (
           <FloorView

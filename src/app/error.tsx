@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/use-i18n";
 import { logError } from "@/lib/errors";
 
@@ -41,18 +42,14 @@ export default function Error({
             {t("pages.error.description")}
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <button
-              onClick={reset}
-              className="px-8 py-3 bg-[#1a1a1a] text-white text-sm tracking-wide hover:bg-[#333] transition-colors"
-            >
+            <Button size="xl" onClick={reset}>
               {t("pages.error.retry")}
-            </button>
-            <Link
-              href="/"
-              className="px-8 py-3 border border-[#e5e5e5] text-[#1a1a1a] text-sm tracking-wide hover:bg-[#f5f5f3] transition-colors"
-            >
-              {t("pages.error.backHome")}
-            </Link>
+            </Button>
+            <Button variant="outline" size="xl" asChild>
+              <Link href="/">
+                {t("pages.error.backHome")}
+              </Link>
+            </Button>
           </div>
         </div>
       </main>

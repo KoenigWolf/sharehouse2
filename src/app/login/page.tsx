@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import type { Provider } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { m, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
 import { signIn, signUp } from "@/lib/auth/actions";
 import { AUTH } from "@/lib/constants/config";
 import { useI18n } from "@/hooks/use-i18n";
@@ -153,24 +154,26 @@ export default function LoginPage() {
 
             <div className="relative mb-10">
               <div className="flex">
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
                   onClick={() => switchMode("login")}
-                  className={`flex-1 py-3 text-sm tracking-wide transition-colors relative z-10 ${
+                  className={`flex-1 h-auto py-3 relative z-10 hover:bg-transparent ${
                     mode === "login" ? "text-[#1a1a1a]" : "text-[#a3a3a3]"
                   }`}
                 >
                   {t("auth.login")}
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
+                  variant="ghost"
                   onClick={() => switchMode("signup")}
-                  className={`flex-1 py-3 text-sm tracking-wide transition-colors relative z-10 ${
+                  className={`flex-1 h-auto py-3 relative z-10 hover:bg-transparent ${
                     mode === "signup" ? "text-[#1a1a1a]" : "text-[#a3a3a3]"
                   }`}
                 >
                   {t("auth.signup")}
-                </button>
+                </Button>
               </div>
               <div className="absolute bottom-0 left-0 right-0 h-px bg-[#e5e5e5]" />
               <m.div
@@ -303,8 +306,9 @@ export default function LoginPage() {
                 )}
               </AnimatePresence>
 
-              <button
+              <Button
                 type="submit"
+                size="xl"
                 disabled={isLoading}
                 aria-busy={isLoading}
                 aria-label={
@@ -316,7 +320,7 @@ export default function LoginPage() {
                     ? t("auth.login")
                     : t("auth.register")
                 }
-                className="w-full h-12 bg-[#1a1a1a] text-white text-sm tracking-wide hover:bg-[#333] disabled:bg-[#a3a3a3] disabled:cursor-not-allowed transition-colors"
+                className="w-full"
               >
                 {isLoading ? (
                   <span className="inline-flex items-center gap-2">
@@ -336,7 +340,7 @@ export default function LoginPage() {
                 ) : (
                   t("auth.register")
                 )}
-              </button>
+              </Button>
             </form>
 
             <div className="mt-6">
@@ -345,18 +349,20 @@ export default function LoginPage() {
                 <span>{t("auth.orContinueWith")}</span>
                 <span className="flex-1 h-px bg-[#e5e5e5]" />
               </div>
-              <button
+              <Button
                 type="button"
+                variant="outline"
+                size="xl"
                 onClick={handleLineLogin}
                 disabled={isLineLoading}
-                className="mt-4 w-full h-12 border border-[#e5e5e5] text-[#1a1a1a] text-sm tracking-wide hover:border-[#1a1a1a] disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                className="mt-4 w-full"
               >
                 {isLineLoading
                   ? t("common.processing")
                   : mode === "signup"
                     ? t("auth.signupWithLine")
                     : t("auth.loginWithLine")}
-              </button>
+              </Button>
             </div>
 
             <AnimatePresence>

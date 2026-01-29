@@ -2,6 +2,7 @@
 
 import { useState, useCallback, memo } from "react";
 import { m } from "framer-motion";
+import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/use-i18n";
 import { GarbageScheduleView } from "@/components/garbage-schedule-view";
 import { GarbageAdminPanel } from "@/components/garbage-admin-panel";
@@ -55,13 +56,15 @@ const QuickAccessCard = memo(function QuickAccessCard({
         {subtext && <p className="text-[10px] text-[#a3a3a3] mt-0.5">{subtext}</p>}
       </div>
       {copyLabel && (
-        <button
+        <Button
           type="button"
+          variant="outline"
+          size="xs"
           onClick={handleCopy}
-          className="px-3 py-1.5 text-[10px] text-[#737373] border border-[#e5e5e5] hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-colors flex-shrink-0"
+          className="flex-shrink-0"
         >
           {copied ? "✓" : copyLabel}
-        </button>
+        </Button>
       )}
     </div>
   );
@@ -117,21 +120,23 @@ const WifiCard = memo(function WifiCard({ wifiInfos }: WifiCardProps) {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon-sm"
               onClick={() => setShowPassword(!showPassword)}
-              className="p-2 text-[#a3a3a3] hover:text-[#737373] transition-colors"
               aria-label={showPassword ? t("wifi.hidePassword") : t("wifi.showPassword")}
             >
               {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant="outline"
+              size="xs"
               onClick={handleCopyPassword}
-              className="px-3 py-1.5 text-[10px] text-[#737373] border border-[#e5e5e5] hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-colors"
             >
               {copied ? "✓" : t("common.copy")}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

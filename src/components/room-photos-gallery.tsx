@@ -3,6 +3,7 @@
 import { useState, useCallback, memo } from "react";
 import { m } from "framer-motion";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/use-i18n";
 import { PhotoLightbox } from "@/components/photo-lightbox";
 import type { RoomPhoto } from "@/domain/room-photo";
@@ -49,10 +50,11 @@ const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardPr
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, delay: index * 0.03 }}
     >
-      <button
+      <Button
         type="button"
+        variant="ghost"
         onClick={onClick}
-        className="group w-full bg-white border border-[#e5e5e5] overflow-hidden hover:border-[#1a1a1a] transition-colors cursor-pointer text-left"
+        className="group w-full h-auto p-0 bg-white border border-[#e5e5e5] overflow-hidden hover:border-[#1a1a1a] hover:bg-white text-left"
       >
         <div className="relative aspect-square overflow-hidden">
           <Image
@@ -98,7 +100,7 @@ const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardPr
             {photo.profile?.name || t("roomPhotos.unknownUser")}
           </span>
         </div>
-      </button>
+      </Button>
     </m.div>
   );
 });

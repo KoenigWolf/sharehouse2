@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { m } from "framer-motion";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
 import { completeDuty } from "@/lib/garbage/actions";
 import { DAY_NAMES_JA, DAY_NAMES_EN } from "@/domain/garbage";
@@ -159,17 +160,18 @@ export function GarbageScheduleView({
                   } ${duty.is_completed ? "opacity-50" : ""}`}
                 >
                   {isOwn && !duty.is_completed ? (
-                    <button
+                    <Button
                       type="button"
+                      variant="outline"
                       onClick={() => handleComplete(duty.id)}
                       disabled={completingId === duty.id}
-                      className="w-5 h-5 border border-[#e5e5e5] hover:border-[#1a1a1a] flex items-center justify-center flex-shrink-0 transition-colors disabled:opacity-50"
+                      className="w-5 h-5 p-0 border-[#e5e5e5] hover:border-[#1a1a1a] flex-shrink-0"
                       aria-label={t("garbage.markComplete")}
                     >
                       {completingId === duty.id && (
                         <span className="w-2 h-2 bg-[#a3a3a3] animate-pulse" />
                       )}
-                    </button>
+                    </Button>
                   ) : (
                     <div
                       className={`w-5 h-5 flex items-center justify-center flex-shrink-0 ${
