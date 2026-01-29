@@ -63,9 +63,9 @@ const UserAvatarLink = memo(function UserAvatarLink() {
   const pathname = usePathname();
   const t = useI18n();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
-  const isActive =
-    pathname === "/settings" || pathname.startsWith("/profile/");
+  const isActive = pathname.startsWith("/profile/");
 
   useEffect(() => {
     const fetchAvatar = async () => {
@@ -74,6 +74,8 @@ const UserAvatarLink = memo(function UserAvatarLink() {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) return;
+
+      setUserId(user.id);
 
       const { data } = await supabase
         .from("profiles")
@@ -89,10 +91,11 @@ const UserAvatarLink = memo(function UserAvatarLink() {
   }, []);
 
   const optimizedSrc = getOptimizedImageUrl(avatarUrl);
+  const href = userId ? `/profile/${userId}` : "/settings";
 
   return (
     <Link
-      href="/settings"
+      href={href}
       aria-current={isActive ? "page" : undefined}
       aria-label={t("nav.myPage")}
       className="relative shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a] focus-visible:ring-offset-2 rounded-full"

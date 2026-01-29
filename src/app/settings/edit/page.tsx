@@ -1,18 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
-import { MobileNav } from "@/components/mobile-nav";
-import { ProfileEditForm } from "@/components/profile-edit-form";
-import { RoomPhotoManager } from "@/components/room-photo-manager";
-import { Profile } from "@/domain/profile";
-import { getTeaTimeSetting } from "@/lib/tea-time/actions";
-import { getRoomPhotos } from "@/lib/room-photos/actions";
-import { getServerTranslator } from "@/lib/i18n/server";
 
 export default async function SettingsEditPage() {
-  const t = await getServerTranslator();
   const supabase = await createClient();
 
   const {
@@ -23,58 +12,5 @@ export default async function SettingsEditPage() {
     redirect("/login");
   }
 
-  const [profileResult, teaTimeSetting, roomPhotos] = await Promise.all([
-    supabase.from("profiles").select("*").eq("id", user.id).single(),
-    getTeaTimeSetting(user.id),
-    getRoomPhotos(user.id),
-  ]);
-
-  let profile = profileResult.data;
-
-  if (!profile) {
-    const userName =
-      user.user_metadata?.name ||
-      user.email?.split("@")[0] ||
-      t("auth.defaultName");
-    const { data: newProfile } = await supabase
-      .from("profiles")
-      .insert({
-        id: user.id,
-        name: userName,
-        room_number: null,
-        bio: null,
-        avatar_url: null,
-        interests: [],
-        move_in_date: null,
-      })
-      .select()
-      .single();
-    profile = newProfile;
-  }
-
-  if (!profile) {
-    redirect("/");
-  }
-
-  return (
-    <div className="min-h-screen bg-[#fafaf8] flex flex-col">
-      <Header />
-      <main className="flex-1 pb-20 sm:pb-0 container mx-auto px-4 sm:px-6 py-5 sm:py-8 max-w-2xl space-y-5">
-        <Link
-          href="/settings"
-          className="inline-flex items-center gap-1.5 text-xs text-[#737373] hover:text-[#1a1a1a] transition-colors"
-        >
-          <span aria-hidden="true">&larr;</span>
-          <span>{t("myPage.backToMyPage")}</span>
-        </Link>
-        <ProfileEditForm
-          profile={profile as Profile}
-          initialTeaTimeEnabled={teaTimeSetting?.is_enabled ?? false}
-        />
-        <RoomPhotoManager photos={roomPhotos} />
-      </main>
-      <Footer />
-      <MobileNav />
-    </div>
-  );
+  redirect(`/profile/${user.id}/edit`);
 }

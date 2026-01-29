@@ -1,16 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
-import { MobileNav } from "@/components/mobile-nav";
-import { MyPageProfile } from "@/components/my-page-profile";
-import { Profile } from "@/domain/profile";
-import { getTeaTimeSetting } from "@/lib/tea-time/actions";
-import { getRoomPhotos } from "@/lib/room-photos/actions";
-import { getServerTranslator } from "@/lib/i18n/server";
 
 export default async function SettingsPage() {
-  const t = await getServerTranslator();
   const supabase = await createClient();
 
   const {
@@ -21,51 +12,5 @@ export default async function SettingsPage() {
     redirect("/login");
   }
 
-  const [profileResult, teaTimeSetting, roomPhotos] = await Promise.all([
-    supabase.from("profiles").select("*").eq("id", user.id).single(),
-    getTeaTimeSetting(user.id),
-    getRoomPhotos(user.id),
-  ]);
-
-  let profile = profileResult.data;
-
-  if (!profile) {
-    const userName =
-      user.user_metadata?.name ||
-      user.email?.split("@")[0] ||
-      t("auth.defaultName");
-    const { data: newProfile } = await supabase
-      .from("profiles")
-      .insert({
-        id: user.id,
-        name: userName,
-        room_number: null,
-        bio: null,
-        avatar_url: null,
-        interests: [],
-        move_in_date: null,
-      })
-      .select()
-      .single();
-    profile = newProfile;
-  }
-
-  if (!profile) {
-    redirect("/");
-  }
-
-  return (
-    <div className="min-h-screen bg-[#fafaf8] flex flex-col">
-      <Header />
-      <main className="flex-1 pb-20 sm:pb-0 container mx-auto px-4 sm:px-6 py-5 sm:py-8 max-w-6xl">
-        <MyPageProfile
-          profile={profile as Profile}
-          teaTimeEnabled={teaTimeSetting?.is_enabled ?? false}
-          roomPhotos={roomPhotos}
-        />
-      </main>
-      <Footer />
-      <MobileNav />
-    </div>
-  );
+  redirect(`/profile/${user.id}`);
 }
