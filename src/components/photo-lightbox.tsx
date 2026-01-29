@@ -233,11 +233,6 @@ export function PhotoLightbox({
                   <p className="text-sm text-white/90">
                     {photo.profile?.name || t("roomPhotos.unknownUser")}
                   </p>
-                  {photo.caption && (
-                    <p className="text-xs text-white/60 mt-0.5 line-clamp-2">
-                      {photo.caption}
-                    </p>
-                  )}
                 </div>
               </div>
             </m.div>

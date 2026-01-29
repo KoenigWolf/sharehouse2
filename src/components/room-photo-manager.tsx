@@ -35,7 +35,6 @@ export function RoomPhotoManager({ photos, maxPhotos = 5, compact = false }: Roo
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [caption, setCaption] = useState("");
 
   const canUpload = currentPhotos.length < maxPhotos;
 
@@ -55,9 +54,6 @@ export function RoomPhotoManager({ photos, maxPhotos = 5, compact = false }: Roo
 
     const formData = new FormData();
     formData.append("photo", file);
-    if (caption.trim()) {
-      formData.append("caption", caption.trim());
-    }
 
     const result = await uploadRoomPhoto(formData);
 
@@ -65,13 +61,11 @@ export function RoomPhotoManager({ photos, maxPhotos = 5, compact = false }: Roo
       setError(result.error);
     } else {
       setSuccess(t("roomPhotos.uploadSuccess"));
-      setCaption("");
-      // Optimistic update - add the new photo to the list
       const newPhoto: RoomPhoto = {
         id: `temp-${Date.now()}`,
         user_id: "",
         photo_url: result.url,
-        caption: caption.trim() || null,
+        caption: null,
         display_order: currentPhotos.length,
         created_at: new Date().toISOString(),
       };
@@ -83,7 +77,7 @@ export function RoomPhotoManager({ photos, maxPhotos = 5, compact = false }: Roo
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
-  }, [caption, currentPhotos.length, t]);
+  }, [currentPhotos.length, t]);
 
   const handleDelete = useCallback(async (photoId: string) => {
     if (!window.confirm(t("roomPhotos.deleteConfirm"))) {
@@ -180,11 +174,6 @@ export function RoomPhotoManager({ photos, maxPhotos = 5, compact = false }: Roo
                   <X className="w-3.5 h-3.5" />
                 )}
               </Button>
-              {photo.caption && (
-                <div className="absolute inset-x-0 bottom-0 bg-black/50 px-1.5 py-1">
-                  <p className="text-[9px] text-white truncate">{photo.caption}</p>
-                </div>
-              )}
             </m.div>
           ))}
 
@@ -209,23 +198,9 @@ export function RoomPhotoManager({ photos, maxPhotos = 5, compact = false }: Roo
         </div>
 
         {canUpload && (
-          <div className="space-y-2">
-            <label htmlFor="photo-caption" className="block text-xs text-[#737373] tracking-wide">
-              {t("roomPhotos.caption")}
-            </label>
-            <input
-              id="photo-caption"
-              type="text"
-              value={caption}
-              onChange={(e) => setCaption(e.target.value)}
-              placeholder={t("roomPhotos.captionPlaceholder")}
-              maxLength={200}
-              className="w-full h-10 px-3 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
-            />
-            <p className="text-[10px] text-[#a3a3a3]">
-              {t("profile.photoFormat")}
-            </p>
-          </div>
+          <p className="text-[10px] text-[#a3a3a3]">
+            {t("profile.photoFormat")}
+          </p>
         )}
 
         {currentPhotos.length === 0 && (
