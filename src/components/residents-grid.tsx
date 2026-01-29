@@ -57,7 +57,7 @@ export function ResidentsGrid({
   const [sortBy, setSortBy] = useState<SortOption>("room_number");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [floorFilter, setFloorFilter] = useState<FloorFilter>("all");
-  const [showStats, setShowStats] = useState(true);
+  const [showStats, setShowStats] = useState(false);
   const t = useI18n();
   const locale = useLocale();
 
@@ -191,99 +191,93 @@ export function ResidentsGrid({
 
   return (
     <div className="space-y-5 sm:space-y-6">
-      <AnimatePresence>
-        {showStats && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
+      <div className="bg-white border border-[#e5e5e5] mb-4">
+        <button
+          type="button"
+          onClick={() => setShowStats((prev) => !prev)}
+          className="w-full flex items-center justify-between px-4 sm:px-5 py-3 hover:bg-[#fafaf8] transition-colors"
+        >
+          <h3 className="text-sm text-[#1a1a1a] tracking-wide">{t("residents.statsTitle")}</h3>
+          <motion.span
+            animate={{ rotate: showStats ? 180 : 0 }}
             transition={{ duration: 0.2 }}
+            className="text-[#a3a3a3]"
           >
-            <div className="bg-white border border-[#e5e5e5] p-4 sm:p-5 mb-4">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm text-[#1a1a1a] tracking-wide">{t("residents.statsTitle")}</h3>
-                <button
-                  type="button"
-                  onClick={() => setShowStats(false)}
-                  className="text-[#a3a3a3] hover:text-[#737373] transition-colors p-1"
-                  aria-label={t("common.close")}
-                >
-                  <CloseIcon />
-                </button>
-              </div>
+            <ChevronIcon />
+          </motion.span>
+        </button>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4">
-                <StatCard
-                  label={t("residents.statsRegistered")}
-                  value={stats.registered}
-                  subValue={`/ ${stats.total}`}
-                  color="#1a1a1a"
-                />
-                <StatCard
-                  label={t("residents.statsNew")}
-                  value={stats.newResidents}
-                  subValue={t("residents.statsNewSub")}
-                  color="#6b8b6b"
-                />
-                <StatCard
-                  label={t("residents.statsTeaTime")}
-                  value={stats.teaTimeCount}
-                  subValue={t("residents.statsParticipants")}
-                  color="#5c7a6b"
-                />
-                <StatCard
-                  label={t("residents.statsUnregistered")}
-                  value={stats.unregistered}
-                  subValue={t("residents.statsRooms")}
-                  color="#a3a3a3"
-                />
-              </div>
+        <AnimatePresence initial={false}>
+          {showStats && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden"
+            >
+              <div className="px-4 sm:px-5 pb-4 sm:pb-5 space-y-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                  <StatCard
+                    label={t("residents.statsRegistered")}
+                    value={stats.registered}
+                    subValue={`/ ${stats.total}`}
+                    color="#1a1a1a"
+                  />
+                  <StatCard
+                    label={t("residents.statsNew")}
+                    value={stats.newResidents}
+                    subValue={t("residents.statsNewSub")}
+                    color="#6b8b6b"
+                  />
+                  <StatCard
+                    label={t("residents.statsTeaTime")}
+                    value={stats.teaTimeCount}
+                    subValue={t("residents.statsParticipants")}
+                    color="#5c7a6b"
+                  />
+                  <StatCard
+                    label={t("residents.statsUnregistered")}
+                    value={stats.unregistered}
+                    subValue={t("residents.statsRooms")}
+                    color="#a3a3a3"
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <p className="text-[10px] text-[#a3a3a3] tracking-wide">{t("residents.floorOccupancy")}</p>
-                <div className="flex gap-2">
-                  {(["5F", "4F", "3F", "2F"] as const).map((floor) => {
-                    const floorStat = stats.floorStats[floor];
-                    const percentage = (floorStat.registered / floorStat.total) * 100;
-                    const colors = floorColors[floor];
-                    return (
-                      <div key={floor} className="flex-1">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className={`text-[10px] ${colors.text}`}>{floor}</span>
-                          <span className="text-[10px] text-[#a3a3a3]">
-                            {floorStat.registered}/{floorStat.total}
-                          </span>
+                <div className="space-y-2">
+                  <p className="text-[10px] text-[#a3a3a3] tracking-wide">{t("residents.floorOccupancy")}</p>
+                  <div className="flex gap-2">
+                    {(["5F", "4F", "3F", "2F"] as const).map((floor) => {
+                      const floorStat = stats.floorStats[floor];
+                      const percentage = (floorStat.registered / floorStat.total) * 100;
+                      const colors = floorColors[floor];
+                      return (
+                        <div key={floor} className="flex-1">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className={`text-[10px] ${colors.text}`}>{floor}</span>
+                            <span className="text-[10px] text-[#a3a3a3]">
+                              {floorStat.registered}/{floorStat.total}
+                            </span>
+                          </div>
+                          <div className="h-1.5 bg-[#f5f5f3] overflow-hidden">
+                            <motion.div
+                              initial={{ width: 0 }}
+                              animate={{ width: `${percentage}%` }}
+                              transition={{ duration: 0.5, delay: 0.1 }}
+                              style={{ backgroundColor: colors.fill }}
+                              className="h-full"
+                            />
+                          </div>
                         </div>
-                        <div className="h-1.5 bg-[#f5f5f3] overflow-hidden">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${percentage}%` }}
-                            transition={{ duration: 0.5, delay: 0.1 }}
-                            style={{ backgroundColor: colors.fill }}
-                            className="h-full"
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {!showStats && (
-        <motion.button
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          type="button"
-          onClick={() => setShowStats(true)}
-          className="text-[10px] text-[#a3a3a3] hover:text-[#737373] transition-colors mb-2"
-        >
-          {t("residents.showStats")} ↓
-        </motion.button>
-      )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       <div className="flex flex-col gap-4">
         <div className="flex items-end justify-between">
@@ -801,6 +795,14 @@ function CloseIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
       <path d="M3 3L11 11M11 3L3 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function ChevronIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path d="M3 5L7 9L11 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
