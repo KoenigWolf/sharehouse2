@@ -54,7 +54,7 @@ export const MobileNav = memo(function MobileNav() {
               key={item.href}
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className="relative flex flex-col items-center justify-center flex-1 h-full px-4 py-3 transition-colors active:bg-[#f5f5f3]"
+              className="relative flex flex-col items-center justify-center flex-1 h-full px-1 py-3 transition-colors active:bg-[#f5f5f3]"
             >
               <div className="relative">
                 <Icon
@@ -73,7 +73,7 @@ export const MobileNav = memo(function MobileNav() {
                 )}
               </div>
               <span
-                className={`text-[10px] mt-1 tracking-wide transition-colors ${
+                className={`text-[10px] mt-1 tracking-wide whitespace-nowrap transition-colors ${
                   active ? "text-[#1a1a1a] font-medium" : "text-[#a3a3a3]"
                 }`}
               >

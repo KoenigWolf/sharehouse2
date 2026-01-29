@@ -27,13 +27,8 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/room-photos", labelKey: "nav.gallery" },
   { href: "/info", labelKey: "nav.info" },
   { href: "/tea-time", labelKey: "nav.teaTime" },
+  { href: "/settings", labelKey: "nav.myPage", matchPaths: ["/settings", "/profile/"] },
 ];
-
-const USER_NAV: NavItem = {
-  href: "/settings",
-  labelKey: "nav.myPage",
-  matchPaths: ["/settings", "/profile/"],
-};
 
 // =============================================================================
 // Sub-components
@@ -52,7 +47,7 @@ const NavLink = memo(function NavLink({ item, isActive, layoutId }: NavLinkProps
     <Link
       href={item.href}
       aria-current={isActive ? "page" : undefined}
-      className="relative px-4 py-2 text-sm tracking-wide transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a] focus-visible:ring-offset-2 group"
+      className="relative px-2 sm:px-4 py-2 text-xs sm:text-sm tracking-wide transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a] focus-visible:ring-offset-2 group"
     >
       <span
         className={
@@ -66,7 +61,7 @@ const NavLink = memo(function NavLink({ item, isActive, layoutId }: NavLinkProps
       {isActive && (
         <m.span
           layoutId={layoutId}
-          className="absolute bottom-0 left-4 right-4 h-px bg-[#1a1a1a]"
+          className="absolute bottom-0 left-2 right-2 sm:left-4 sm:right-4 h-px bg-[#1a1a1a]"
           transition={{ duration: 0.25, ease: "easeOut" }}
         />
       )}
@@ -110,7 +105,7 @@ export const Header = memo(function Header() {
       role="banner"
     >
       <div className="container mx-auto px-4 sm:px-6 h-14 flex items-center justify-between max-w-5xl">
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-4 sm:gap-8">
           <Link
             href="/"
             className="text-[11px] leading-tight sm:text-base sm:leading-normal tracking-wider text-[#1a1a1a] font-light outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a] focus-visible:ring-offset-2"
@@ -143,17 +138,6 @@ export const Header = memo(function Header() {
           aria-label={t("a11y.userMenu")}
           className="flex items-center"
         >
-          <NavLink
-            item={USER_NAV}
-            isActive={isPathActive(USER_NAV)}
-            layoutId="user-nav-underline"
-          />
-
-          <span
-            className="hidden sm:block w-px h-4 bg-[#e5e5e5] mx-1"
-            aria-hidden="true"
-          />
-
           <button
             type="button"
             onClick={handleLogout}
