@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { m, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
 import { uploadRoomPhoto } from "@/lib/room-photos/actions";
 import { useI18n } from "@/hooks/use-i18n";
 
@@ -65,11 +66,11 @@ export function GalleryUploadSection() {
           maxLength={200}
           className="flex-1 h-10 px-3 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
         />
-        <button
+        <Button
           type="button"
+          size="lg"
           onClick={handleUploadClick}
           disabled={isUploading}
-          className="h-10 px-4 bg-[#1a1a1a] text-white text-xs tracking-wide whitespace-nowrap hover:bg-[#333] transition-colors disabled:bg-[#a3a3a3] disabled:cursor-not-allowed"
         >
           {isUploading ? (
             <m.span
@@ -80,7 +81,7 @@ export function GalleryUploadSection() {
           ) : (
             t("roomPhotos.uploadButton")
           )}
-        </button>
+        </Button>
       </div>
 
       <p className="text-[10px] text-[#a3a3a3]">

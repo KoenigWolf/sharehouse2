@@ -4,6 +4,7 @@ import { useState, useRef, useCallback } from "react";
 import Image from "next/image";
 import { m, AnimatePresence } from "framer-motion";
 import { X, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { uploadRoomPhoto, deleteRoomPhoto } from "@/lib/room-photos/actions";
 import { useI18n } from "@/hooks/use-i18n";
 import type { RoomPhoto } from "@/domain/room-photo";
@@ -163,12 +164,14 @@ export function RoomPhotoManager({ photos, maxPhotos = 5, compact = false }: Roo
                 sizes="(max-width: 640px) 33vw, 20vw"
                 className="object-cover"
               />
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon-xs"
                 onClick={() => handleDelete(photo.id)}
                 disabled={deletingId === photo.id}
                 aria-label={t("roomPhotos.delete")}
-                className="absolute top-1 right-1 w-6 h-6 bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity disabled:opacity-50"
+                className="absolute top-1 right-1 bg-black/60 text-white opacity-0 group-hover:opacity-100 focus:opacity-100 hover:bg-black/80 hover:text-white"
               >
                 {deletingId === photo.id ? (
                   <m.span
@@ -179,7 +182,7 @@ export function RoomPhotoManager({ photos, maxPhotos = 5, compact = false }: Roo
                 ) : (
                   <X className="w-3.5 h-3.5" />
                 )}
-              </button>
+              </Button>
               {photo.caption && (
                 <div className="absolute inset-x-0 bottom-0 bg-black/50 px-1.5 py-1">
                   <p className="text-[9px] text-white truncate">{photo.caption}</p>
@@ -189,11 +192,12 @@ export function RoomPhotoManager({ photos, maxPhotos = 5, compact = false }: Roo
           ))}
 
           {canUpload && (
-            <button
+            <Button
               type="button"
+              variant="dashed"
               onClick={handleUploadClick}
               disabled={isUploading}
-              className="aspect-square border border-dashed border-[#d4d4d4] bg-[#fafaf8] flex flex-col items-center justify-center gap-1 hover:border-[#a3a3a3] hover:bg-[#f5f5f3] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="aspect-square h-auto flex-col gap-1 bg-[#fafaf8] hover:bg-[#f5f5f3]"
             >
               {isUploading ? (
                 <m.span
@@ -207,7 +211,7 @@ export function RoomPhotoManager({ photos, maxPhotos = 5, compact = false }: Roo
                   <span className="text-[9px] text-[#a3a3a3]">{t("roomPhotos.upload")}</span>
                 </>
               )}
-            </button>
+            </Button>
           )}
         </div>
 

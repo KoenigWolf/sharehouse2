@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { m, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
 import {
   createGarbageScheduleEntry,
@@ -150,20 +151,22 @@ export function GarbageAdminPanel({ schedule }: GarbageAdminPanelProps) {
                       )}
                     </div>
                     <div className="flex items-center gap-2">
-                      <button
+                      <Button
                         type="button"
+                        variant="outline"
+                        size="xs"
                         onClick={() => setEditingId(entry.id)}
-                        className="px-2.5 py-1 text-[11px] text-[#737373] border border-[#e5e5e5] hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-colors"
                       >
                         {t("common.edit")}
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         type="button"
+                        variant="destructive"
+                        size="xs"
                         onClick={() => handleDelete(entry.id)}
-                        className="px-2.5 py-1 text-[11px] text-red-400 border border-red-200 hover:border-red-400 hover:text-red-600 transition-colors"
                       >
                         {t("common.delete")}
-                      </button>
+                      </Button>
                     </div>
                   </>
                 )}
@@ -187,13 +190,14 @@ export function GarbageAdminPanel({ schedule }: GarbageAdminPanelProps) {
               />
             </m.div>
           ) : (
-            <button
+            <Button
               type="button"
+              variant="dashed"
               onClick={() => setShowAddForm(true)}
-              className="w-full py-2.5 border border-dashed border-[#e5e5e5] text-xs text-[#a3a3a3] hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-colors"
+              className="w-full"
             >
               + {t("garbage.addScheduleEntry")}
-            </button>
+            </Button>
           )}
         </section>
 
@@ -237,15 +241,15 @@ export function GarbageAdminPanel({ schedule }: GarbageAdminPanelProps) {
               </div>
             </div>
 
-            <button
+            <Button
               type="submit"
+              size="lg"
               disabled={isGenerating || !rotationStartDate}
-              className="px-5 py-2.5 bg-[#1a1a1a] text-white text-xs tracking-wide hover:bg-[#333] disabled:opacity-50 transition-colors"
             >
               {isGenerating
                 ? t("garbage.generating")
                 : t("garbage.generateRotation")}
-            </button>
+            </Button>
           </form>
         </section>
       </div>
@@ -373,25 +377,22 @@ function ScheduleEntryForm({
       </div>
 
       <div className="flex items-center gap-2">
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="px-4 py-2 bg-[#1a1a1a] text-white text-[11px] tracking-wide hover:bg-[#333] disabled:opacity-50 transition-colors"
-        >
+        <Button type="submit" size="xs" disabled={isLoading}>
           {isLoading
             ? t("common.saving")
             : isEditing
               ? t("common.save")
               : t("garbage.add")}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
+          variant="outline"
+          size="xs"
           onClick={onCancel}
           disabled={isLoading}
-          className="px-4 py-2 text-[11px] text-[#737373] border border-[#e5e5e5] hover:border-[#1a1a1a] hover:text-[#1a1a1a] disabled:opacity-50 transition-colors"
         >
           {t("common.cancel")}
-        </button>
+        </Button>
       </div>
     </form>
   );

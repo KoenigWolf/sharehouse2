@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { m } from "framer-motion";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { RoomPhotoManager } from "@/components/room-photo-manager";
 import {
   Profile,
@@ -311,12 +312,11 @@ export function ProfileDetail({
                   )}
                 </div>
                 {isOwnProfile && (
-                  <Link
-                    href={`/profile/${profile.id}/edit`}
-                    className="px-4 py-2 border border-[#e5e5e5] text-xs text-[#737373] tracking-wide hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-colors self-center sm:self-start"
-                  >
-                    {t("common.edit")}
-                  </Link>
+                  <Button variant="outline" asChild className="self-center sm:self-start">
+                    <Link href={`/profile/${profile.id}/edit`}>
+                      {t("common.edit")}
+                    </Link>
+                  </Button>
                 )}
               </div>
 

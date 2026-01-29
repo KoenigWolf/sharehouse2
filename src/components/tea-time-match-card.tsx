@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { m } from "framer-motion";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { updateMatchStatus } from "@/lib/tea-time/actions";
 import { getInitials } from "@/lib/utils";
 import { Profile } from "@/domain/profile";
@@ -106,20 +107,23 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
       </div>
 
       <div className="flex gap-3">
-        <button
+        <Button
+          size="lg"
           onClick={() => handleStatusUpdate("done")}
           disabled={isLoading}
-          className="flex-1 h-10 bg-[#1a1a1a] text-white text-xs tracking-wide hover:bg-[#333] disabled:bg-[#a3a3a3] disabled:cursor-not-allowed transition-colors"
+          className="flex-1"
         >
           {isLoading ? t("common.processing") : t("teaTime.hadTea")}
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="outline"
+          size="lg"
           onClick={() => handleStatusUpdate("skipped")}
           disabled={isLoading}
-          className="flex-1 h-10 border border-[#e5e5e5] text-[#737373] text-xs tracking-wide hover:border-[#1a1a1a] hover:text-[#1a1a1a] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="flex-1"
         >
           {t("teaTime.skip")}
-        </button>
+        </Button>
       </div>
     </m.div>
   );

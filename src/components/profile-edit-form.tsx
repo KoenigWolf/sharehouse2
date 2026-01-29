@@ -4,6 +4,7 @@ import { useState, useRef, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { m, AnimatePresence } from "framer-motion";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Profile, MBTI_TYPES, MBTI_LABELS, MBTIType, ROOM_NUMBERS } from "@/domain/profile";
 import { updateProfile, uploadAvatar } from "@/lib/profile/actions";
@@ -119,10 +120,11 @@ function FormSection({
       animate={{ backgroundColor: isExpanded ? config.bgColor.replace("bg-", "") : "#ffffff" }}
       className={`border ${config.borderColor} overflow-hidden`}
     >
-      <button
+      <Button
         type="button"
+        variant="ghost"
         onClick={onToggle}
-        className={`w-full px-5 py-4 flex items-center justify-between hover:bg-[#fafaf8] transition-colors ${config.bgColor}`}
+        className={`w-full h-auto px-5 py-4 flex items-center justify-between hover:bg-[#fafaf8] ${config.bgColor}`}
       >
         <div className="flex items-center gap-3">
           <span className={config.color}>{config.icon}</span>
@@ -144,7 +146,7 @@ function FormSection({
             </svg>
           </m.span>
         </div>
-      </button>
+      </Button>
       <AnimatePresence initial={false}>
         {isExpanded && (
           <m.div
@@ -542,11 +544,12 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
         <div className="p-6 sm:p-8">
           <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-center sm:items-start">
             <div className="shrink-0">
-              <button
+              <Button
                 type="button"
+                variant="ghost"
                 onClick={handleAvatarClick}
                 disabled={isUploading}
-                className="relative w-36 h-36 sm:w-44 sm:h-44 bg-[#f5f5f3] group block overflow-hidden"
+                className="relative w-36 h-36 sm:w-44 sm:h-44 h-auto p-0 bg-[#f5f5f3] group block overflow-hidden hover:bg-[#f5f5f3]"
               >
                 <Avatar className="absolute inset-0 size-full rounded-none">
                   <OptimizedAvatarImage
@@ -571,7 +574,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                     />
                   </div>
                 )}
-              </button>
+              </Button>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -622,11 +625,12 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                 transition={{ duration: 0.3 }}
                 className="p-3 border"
               >
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
                   onClick={() => !isTeaTimeLoading && handleTeaTimeToggle(!teaTimeEnabled)}
                   disabled={isTeaTimeLoading}
-                  className="w-full text-left group disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="w-full h-auto p-0 text-left group disabled:opacity-60 disabled:cursor-not-allowed hover:bg-transparent"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
@@ -666,7 +670,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                       )}
                     </AnimatePresence>
                   </div>
-                </button>
+                </Button>
               </m.div>
             </div>
           </div>
@@ -1143,12 +1147,13 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
           transition={{ duration: 0.3, delay: 0.5 }}
           className="pt-4"
         >
-          <button
+          <Button
             type="submit"
+            size="xl"
             disabled={isLoading || isUploading}
             aria-busy={isLoading}
             aria-label={isLoading ? t("a11y.saving") : t("profile.saveChanges")}
-            className="w-full h-12 bg-[#1a1a1a] text-white text-sm tracking-wide hover:bg-[#333] active:scale-[0.99] disabled:bg-[#a3a3a3] disabled:cursor-not-allowed transition-all flex items-center justify-center"
+            className="w-full active:scale-[0.99]"
           >
             {isLoading ? (
               <m.span
@@ -1159,7 +1164,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
             ) : (
               t("profile.saveChanges")
             )}
-          </button>
+          </Button>
         </m.div>
       </form>
     </m.div>

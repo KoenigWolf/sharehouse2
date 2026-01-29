@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { m } from "framer-motion";
 import { Camera } from "lucide-react";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { RoomPhotoManager } from "@/components/room-photo-manager";
 import { LogoutButton } from "@/components/logout-button";
 import {
@@ -217,11 +218,13 @@ function CoverPhotoSection({
       ) : (
         <div className="w-full h-full bg-gradient-to-b from-[#f0ede8] to-[#e8e5e0]" />
       )}
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="sm"
         onClick={onUpload}
         disabled={isUploading}
-        className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur-sm border border-[#e5e5e5] text-xs text-[#737373] hover:text-[#1a1a1a] hover:border-[#d4d4d4] transition-colors disabled:opacity-50"
+        className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm border-[#e5e5e5] text-[#737373] hover:text-[#1a1a1a] hover:border-[#d4d4d4]"
       >
         <Camera size={14} strokeWidth={1.5} />
         {isUploading
@@ -229,7 +232,7 @@ function CoverPhotoSection({
           : coverPhotoUrl
             ? t("myPage.coverPhoto")
             : t("myPage.noCoverPhoto")}
-      </button>
+      </Button>
     </div>
   );
 }
@@ -421,12 +424,11 @@ export function MyPageProfile({ profile, teaTimeEnabled, roomPhotos }: MyPagePro
                     </div>
                   )}
                 </div>
-                <Link
-                  href="/settings/edit"
-                  className="px-4 py-2 border border-[#e5e5e5] text-xs text-[#737373] tracking-wide hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-colors self-center sm:self-start"
-                >
-                  {t("myPage.editProfile")}
-                </Link>
+                <Button variant="outline" size="sm" asChild className="self-center sm:self-start">
+                  <Link href="/settings/edit">
+                    {t("myPage.editProfile")}
+                  </Link>
+                </Button>
               </div>
 
               {/* Badges */}

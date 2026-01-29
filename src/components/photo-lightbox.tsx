@@ -3,6 +3,7 @@
 import { useEffect, useCallback, useState, memo } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/use-i18n";
 import type { RoomPhoto } from "@/domain/room-photo";
 import type { Profile } from "@/domain/profile";
@@ -146,45 +147,51 @@ export function PhotoLightbox({
         >
           <div className="absolute inset-0 bg-black/90" />
 
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon-sm"
             onClick={onClose}
-            className="absolute top-4 right-4 z-10 p-2 text-white/70 hover:text-white transition-colors"
+            className="absolute top-4 right-4 z-10 text-white/70 hover:text-white hover:bg-white/10"
             aria-label={t("common.close")}
           >
             <CloseIcon />
-          </button>
+          </Button>
 
           <div className="absolute top-4 left-4 z-10 text-sm text-white/70 font-mono">
             {(selectedIndex ?? 0) + 1} / {photos.length}
           </div>
 
           {hasPrev && (
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon"
               onClick={(e) => {
                 e.stopPropagation();
                 handlePrev();
               }}
-              className="absolute left-2 sm:left-4 z-10 p-2 sm:p-3 text-white/50 hover:text-white transition-colors"
+              className="absolute left-2 sm:left-4 z-10 text-white/50 hover:text-white hover:bg-white/10"
               aria-label={t("roomPhotos.prevPhoto")}
             >
               <ChevronLeftIcon />
-            </button>
+            </Button>
           )}
 
           {hasNext && (
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon"
               onClick={(e) => {
                 e.stopPropagation();
                 handleNext();
               }}
-              className="absolute right-2 sm:right-4 z-10 p-2 sm:p-3 text-white/50 hover:text-white transition-colors"
+              className="absolute right-2 sm:right-4 z-10 text-white/50 hover:text-white hover:bg-white/10"
               aria-label={t("roomPhotos.nextPhoto")}
             >
               <ChevronRightIcon />
-            </button>
+            </Button>
           )}
 
           <m.div

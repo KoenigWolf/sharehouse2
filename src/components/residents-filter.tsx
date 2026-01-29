@@ -1,6 +1,7 @@
 "use client";
 
 import { memo } from "react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useI18n } from "@/hooks/use-i18n";
 import type { TranslationKey } from "@/lib/i18n";
@@ -61,20 +62,19 @@ export const ResidentsFilter = memo(function ResidentsFilter({
         {SORT_OPTIONS.map((option) => {
           const isSelected = sortBy === option.value;
           return (
-            <button
+            <Button
               key={option.value}
               type="button"
+              variant={isSelected ? "default" : "ghost"}
               onClick={() => onSortChange(option.value)}
               aria-label={t(option.ariaKey)}
               aria-pressed={isSelected}
-              className={`text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-1 transition-colors ${
-                isSelected
-                  ? "bg-[#1a1a1a] text-white"
-                  : "bg-white text-[#737373] hover:bg-[#f5f5f3]"
+              className={`h-auto text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-1 ${
+                !isSelected ? "bg-white text-[#737373] hover:bg-[#f5f5f3]" : ""
               }`}
             >
               {t(option.labelKey)}
-            </button>
+            </Button>
           );
         })}
       </div>

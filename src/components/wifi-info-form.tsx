@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { m } from "framer-motion";
+import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/use-i18n";
 import { createWifiInfo, updateWifiInfo } from "@/lib/wifi/actions";
 import type { WifiInfo, WifiInfoInput } from "@/domain/wifi";
@@ -140,25 +141,22 @@ export function WifiInfoForm({ initialData, onSave, onCancel }: WifiInfoFormProp
       </div>
 
       <div className="flex items-center gap-2 pt-2">
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="px-5 py-2.5 bg-[#1a1a1a] text-white text-xs tracking-wide hover:bg-[#333] disabled:opacity-50 transition-colors"
-        >
+        <Button type="submit" size="lg" disabled={isLoading}>
           {isLoading
             ? t("common.saving")
             : isEditing
               ? t("common.save")
               : t("wifi.add")}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
+          variant="outline"
+          size="lg"
           onClick={onCancel}
           disabled={isLoading}
-          className="px-5 py-2.5 text-xs text-[#737373] border border-[#e5e5e5] hover:border-[#1a1a1a] hover:text-[#1a1a1a] disabled:opacity-50 transition-colors"
         >
           {t("common.cancel")}
-        </button>
+        </Button>
       </div>
     </m.form>
   );

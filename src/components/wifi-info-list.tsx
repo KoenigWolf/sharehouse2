@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo } from "react";
 import { m, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/use-i18n";
 import { WifiInfoForm } from "@/components/wifi-info-form";
 import { deleteWifiInfo } from "@/lib/wifi/actions";
@@ -101,18 +102,14 @@ export function WifiInfoList({ wifiInfos, isAdmin }: WifiInfoListProps) {
       {floors.length > 1 && (
         <div className="flex gap-2 mb-4">
           {floors.map((floor) => (
-            <button
+            <Button
               key={floor}
               type="button"
+              variant={activeFloor === floor ? "default" : "outline"}
               onClick={() => setActiveFloor(floor)}
-              className={`px-4 py-2 text-sm tracking-wide transition-colors ${
-                activeFloor === floor
-                  ? "bg-[#1a1a1a] text-white"
-                  : "bg-white border border-[#e5e5e5] text-[#737373] hover:border-[#1a1a1a] hover:text-[#1a1a1a]"
-              }`}
             >
               {floor}F
-            </button>
+            </Button>
           ))}
         </div>
       )}
@@ -162,10 +159,11 @@ export function WifiInfoList({ wifiInfos, isAdmin }: WifiInfoListProps) {
                           ? wifi.password
                           : "\u2022".repeat(8)}
                       </span>
-                      <button
+                      <Button
                         type="button"
+                        variant="ghost"
+                        size="icon-xs"
                         onClick={() => togglePassword(wifi.id)}
-                        className="p-1 text-[#a3a3a3] hover:text-[#737373] transition-colors"
                         aria-label={
                           visiblePasswords.has(wifi.id)
                             ? t("wifi.hidePassword")
@@ -177,7 +175,7 @@ export function WifiInfoList({ wifiInfos, isAdmin }: WifiInfoListProps) {
                         ) : (
                           <EyeIcon />
                         )}
-                      </button>
+                      </Button>
                     </dd>
                   </div>
                 </dl>
@@ -185,20 +183,22 @@ export function WifiInfoList({ wifiInfos, isAdmin }: WifiInfoListProps) {
                 {/* 管理者アクション */}
                 {isAdmin && (
                   <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[#e5e5e5]">
-                    <button
+                    <Button
                       type="button"
+                      variant="outline"
+                      size="sm"
                       onClick={() => setEditingId(wifi.id)}
-                      className="px-3 py-1.5 text-xs text-[#737373] border border-[#e5e5e5] hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-colors"
                     >
                       {t("common.edit")}
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       type="button"
+                      variant="destructive"
+                      size="sm"
                       onClick={() => handleDelete(wifi.id)}
-                      className="px-3 py-1.5 text-xs text-[#8b6b6b] border border-[#c9a0a0] hover:border-[#8b6b6b] transition-colors"
                     >
                       {t("common.delete")}
-                    </button>
+                    </Button>
                   </div>
                 )}
               </div>
@@ -222,13 +222,14 @@ export function WifiInfoList({ wifiInfos, isAdmin }: WifiInfoListProps) {
               />
             </m.div>
           ) : (
-            <button
+            <Button
               type="button"
+              variant="dashed"
               onClick={() => setShowAddForm(true)}
-              className="w-full py-3 border border-dashed border-[#e5e5e5] text-sm text-[#a3a3a3] hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-colors"
+              className="w-full"
             >
               + {t("wifi.addNew")}
-            </button>
+            </Button>
           )}
         </div>
       )}

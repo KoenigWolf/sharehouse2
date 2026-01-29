@@ -3,6 +3,7 @@
 import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/use-i18n";
 
 export function LogoutButton() {
@@ -17,12 +18,14 @@ export function LogoutButton() {
   }, [router]);
 
   return (
-    <button
+    <Button
       type="button"
+      variant="outline"
+      size="xl"
       onClick={handleLogout}
-      className="w-full h-12 border border-[#e5e5e5] text-sm text-[#a3a3a3] hover:text-[#737373] hover:border-[#d4d4d4] tracking-wide transition-colors"
+      className="w-full text-[#a3a3a3] hover:text-[#737373] hover:border-[#d4d4d4]"
     >
       {t("nav.logout")}
-    </button>
+    </Button>
   );
 }
