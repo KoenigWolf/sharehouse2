@@ -60,7 +60,7 @@ export async function uploadCoverPhoto(formData: FormData): Promise<UploadRespon
 
     const fileExt = file.name.split(".").pop()?.toLowerCase() || "jpg";
     const sanitizedExt = sanitizeFileName(fileExt).slice(0, 10);
-    const fileName = `${user.id}-${Date.now()}.${sanitizedExt}`;
+    const fileName = `${user.id}/${Date.now()}.${sanitizedExt}`;
 
     const { data: profile } = await supabase
       .from("profiles")
