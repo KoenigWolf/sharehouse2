@@ -356,6 +356,17 @@ export function ProfileDetail({
                   : t("myPage.noCoverPhoto")}
             </Button>
           )}
+          {isOwnProfile && feedback && (
+            <div
+              className={`absolute top-3 left-3 right-3 sm:left-auto sm:right-3 sm:max-w-xs px-3 py-2 text-xs border-l-2 ${
+                feedback.type === "success"
+                  ? "bg-[#f8faf8]/95 border-[#a0c9a0] text-[#6b8b6b]"
+                  : "bg-[#faf8f8]/95 border-[#c9a0a0] text-[#8b6b6b]"
+              } backdrop-blur-sm`}
+            >
+              {feedback.message}
+            </div>
+          )}
         </div>
 
         <div className="px-6 sm:px-10 pb-8">
@@ -598,19 +609,6 @@ export function ProfileDetail({
           )}
 
         </div>
-      )}
-
-      {isOwnProfile && feedback && (
-        <m.div
-          variants={itemVariants}
-          className={`mt-4 px-4 py-3 border-l-2 text-sm ${
-            feedback.type === "success"
-              ? "bg-[#f8faf8] border-[#a0c9a0] text-[#6b8b6b]"
-              : "bg-[#faf8f8] border-[#c9a0a0] text-[#8b6b6b]"
-          }`}
-        >
-          {feedback.message}
-        </m.div>
       )}
 
     </m.article>
