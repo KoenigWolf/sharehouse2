@@ -219,9 +219,7 @@ describe("getAllRoomPhotos", () => {
         }),
       })
       .mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
-          in: vi.fn().mockResolvedValue({ data: mockProfiles, error: null }),
-        }),
+        select: vi.fn().mockResolvedValue({ data: mockProfiles, error: null }),
       });
 
     const { getAllRoomPhotos } = await import("@/lib/room-photos/actions");

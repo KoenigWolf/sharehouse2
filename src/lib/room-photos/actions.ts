@@ -247,30 +247,31 @@ export async function getAllRoomPhotos(): Promise<
       return [];
     }
 
-    const { data: photos, error } = await supabase
-      .from("room_photos")
-      .select("*")
-      .order("created_at", { ascending: false });
+    const [photosResult, profilesResult] = await Promise.all([
+      supabase
+        .from("room_photos")
+        .select("*")
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("profiles")
+        .select("id, name, avatar_url"),
+    ]);
 
-    if (error) {
-      logError(error, { action: "getAllRoomPhotos" });
+    if (photosResult.error) {
+      logError(photosResult.error, { action: "getAllRoomPhotos" });
       return [];
     }
 
+    const photos = photosResult.data;
     if (!photos || photos.length === 0) {
       return [];
     }
 
-    const uniqueUserIds = [...new Set(photos.map((p) => p.user_id))];
-
-    const { data: profiles, error: profilesError } = await supabase
-      .from("profiles")
-      .select("id, name, avatar_url")
-      .in("id", uniqueUserIds);
-
-    if (profilesError) {
-      logError(profilesError, { action: "getAllRoomPhotos.fetchProfiles" });
+    if (profilesResult.error) {
+      logError(profilesResult.error, { action: "getAllRoomPhotos.fetchProfiles" });
     }
+
+    const profiles = profilesResult.data;
 
     const profileMap = new Map<string, Profile>();
     if (profiles) {
