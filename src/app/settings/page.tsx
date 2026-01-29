@@ -5,6 +5,7 @@ import { Footer } from "@/components/footer";
 import { MobileNav } from "@/components/mobile-nav";
 import { ProfileEditForm } from "@/components/profile-edit-form";
 import { RoomPhotoManager } from "@/components/room-photo-manager";
+import { LogoutButton } from "@/components/logout-button";
 import { Profile } from "@/domain/profile";
 import { getTeaTimeSetting } from "@/lib/tea-time/actions";
 import { getRoomPhotos } from "@/lib/room-photos/actions";
@@ -64,6 +65,7 @@ export default async function SettingsPage() {
           initialTeaTimeEnabled={teaTimeSetting?.is_enabled ?? false}
         />
         <RoomPhotoManager photos={roomPhotos} />
+        <LogoutButton />
       </main>
       <Footer />
       <MobileNav />

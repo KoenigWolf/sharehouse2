@@ -2,9 +2,8 @@
 
 import { memo, useCallback } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { m } from "framer-motion";
-import { createClient } from "@/lib/supabase/client";
 import { useI18n } from "@/hooks/use-i18n";
 import type { TranslationKey } from "@/lib/i18n";
 
@@ -76,16 +75,8 @@ NavLink.displayName = "NavLink";
 // =============================================================================
 
 export const Header = memo(function Header() {
-  const router = useRouter();
   const pathname = usePathname();
   const t = useI18n();
-
-  const handleLogout = useCallback(async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push("/login");
-    router.refresh();
-  }, [router]);
 
   const isPathActive = useCallback(
     (item: NavItem) => {
@@ -104,48 +95,32 @@ export const Header = memo(function Header() {
       className="sticky top-0 z-40 border-b border-[#e5e5e5] bg-white/95 backdrop-blur-sm"
       role="banner"
     >
-      <div className="container mx-auto px-4 sm:px-6 h-14 flex items-center justify-between max-w-5xl">
-        <div className="flex items-center gap-4 sm:gap-8">
-          <Link
-            href="/"
-            className="text-[11px] leading-tight sm:text-base sm:leading-normal tracking-wider text-[#1a1a1a] font-light outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a] focus-visible:ring-offset-2"
-            aria-label={t("a11y.goHome")}
-          >
-            <span className="sm:hidden">
-              SHARE
-              <br />
-              HOUSE
-            </span>
-            <span className="hidden sm:inline">SHARE HOUSE</span>
-          </Link>
-
-          <nav
-            aria-label={t("a11y.mainNavigation")}
-            className="hidden sm:flex items-center"
-          >
-            {NAV_ITEMS.map((item) => (
-              <NavLink
-                key={item.href}
-                item={item}
-                isActive={isPathActive(item)}
-                layoutId="nav-underline"
-              />
-            ))}
-          </nav>
-        </div>
+      <div className="container mx-auto px-4 sm:px-6 h-14 flex items-center gap-4 sm:gap-8 max-w-5xl">
+        <Link
+          href="/"
+          className="text-[11px] leading-tight sm:text-base sm:leading-normal tracking-wider text-[#1a1a1a] font-light outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a] focus-visible:ring-offset-2"
+          aria-label={t("a11y.goHome")}
+        >
+          <span className="sm:hidden">
+            SHARE
+            <br />
+            HOUSE
+          </span>
+          <span className="hidden sm:inline">SHARE HOUSE</span>
+        </Link>
 
         <nav
-          aria-label={t("a11y.userMenu")}
-          className="flex items-center"
+          aria-label={t("a11y.mainNavigation")}
+          className="hidden sm:flex items-center"
         >
-          <button
-            type="button"
-            onClick={handleLogout}
-            aria-label={t("a11y.logout")}
-            className="px-3 sm:px-4 py-2 text-xs sm:text-sm text-[#a3a3a3] hover:text-[#737373] tracking-wide transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a] focus-visible:ring-offset-2"
-          >
-            {t("nav.logout")}
-          </button>
+          {NAV_ITEMS.map((item) => (
+            <NavLink
+              key={item.href}
+              item={item}
+              isActive={isPathActive(item)}
+              layoutId="nav-underline"
+            />
+          ))}
         </nav>
       </div>
     </header>
