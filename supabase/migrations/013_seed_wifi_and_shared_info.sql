@@ -100,8 +100,8 @@ values (
   1
 );
 
--- 住所情報
-insert into public.shared_info (info_key, title, content, notes, display_order)
+-- 住所情報（notes は省略で NULL）
+insert into public.shared_info (info_key, title, content, display_order)
 values (
   'address',
   '住所',
@@ -114,7 +114,12 @@ insert into public.shared_info (info_key, title, content, notes, display_order)
 values (
   'wifi_note',
   'Wi-Fi利用上の注意',
-  'SSIDは隠蔽されているため、各自のデバイスから手動で検索してください。セキュリティはWPA2です。',
+  'Wi-Fiの名前（SSID）は非公開になっているため、自動では表示されません。
+以下の手順で接続してください：
+1. スマホやPCのWi-Fi設定を開く
+2. 「ネットワークを手動で追加」を選ぶ
+3. Wi-Fi名とパスワードを入力する
+4. セキュリティは「WPA2」を選ぶ',
   '自室に別途Wi-Fiルーターを設置すると混線するため、極力設置は避けてください',
   3
 );
