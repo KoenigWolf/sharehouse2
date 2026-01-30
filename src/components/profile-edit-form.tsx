@@ -10,12 +10,21 @@ import { Switch } from "@/components/ui/switch";
 import { Profile, MBTI_TYPES, MBTI_LABELS, MBTIType, ROOM_NUMBERS } from "@/domain/profile";
 import { updateProfile, uploadAvatar } from "@/lib/profile/actions";
 import { updateTeaTimeSetting } from "@/lib/tea-time/actions";
+import { updateNotificationSetting } from "@/lib/notifications/actions";
+import type { NotificationKey } from "@/domain/notification";
 import { getInitials } from "@/lib/utils";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
+
+interface NotificationSettingsData {
+  notify_tea_time: boolean;
+  notify_garbage_duty: boolean;
+  notify_new_photos: boolean;
+}
 
 interface ProfileEditFormProps {
   profile: Profile;
   initialTeaTimeEnabled?: boolean;
+  initialNotificationSettings?: NotificationSettingsData;
 }
 
 type SectionType = "basic" | "extended" | "work" | "lifestyle" | "communal" | "personality" | "sns";
@@ -276,7 +285,11 @@ function TextareaField({
   );
 }
 
-export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: ProfileEditFormProps) {
+export function ProfileEditForm({
+  profile,
+  initialTeaTimeEnabled = false,
+  initialNotificationSettings,
+}: ProfileEditFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const t = useI18n();
   const locale = useLocale();
@@ -285,6 +298,12 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
   const [isUploading, setIsUploading] = useState(false);
   const [isTeaTimeLoading, setIsTeaTimeLoading] = useState(false);
   const [teaTimeEnabled, setTeaTimeEnabled] = useState(initialTeaTimeEnabled);
+  const [notificationSettings, setNotificationSettings] = useState<NotificationSettingsData>({
+    notify_tea_time: initialNotificationSettings?.notify_tea_time ?? true,
+    notify_garbage_duty: initialNotificationSettings?.notify_garbage_duty ?? true,
+    notify_new_photos: initialNotificationSettings?.notify_new_photos ?? true,
+  });
+  const [notificationLoading, setNotificationLoading] = useState<NotificationKey | null>(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState(profile.avatar_url);
@@ -316,6 +335,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
     cleaning_attitude: profile.cleaning_attitude || "",
     cooking_frequency: profile.cooking_frequency || "",
     shared_meals: profile.shared_meals || "",
+    allergies: profile.allergies || "",
     personality_type: profile.personality_type || "",
     weekend_activities: profile.weekend_activities || "",
     sns_x: profile.sns_x || "",
@@ -323,6 +343,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
     sns_facebook: profile.sns_facebook || "",
     sns_linkedin: profile.sns_linkedin || "",
     sns_github: profile.sns_github || "",
+    sns_line: profile.sns_line || "",
   });
   const [expandedSections, setExpandedSections] = useState<string[]>(["basic"]);
 
@@ -349,16 +370,16 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
       total: 6,
     },
     communal: {
-      filled: [formData.social_stance, formData.cleaning_attitude, formData.cooking_frequency, formData.shared_meals, formData.shared_space_usage].filter(Boolean).length,
-      total: 5,
+      filled: [formData.social_stance, formData.cleaning_attitude, formData.cooking_frequency, formData.shared_meals, formData.shared_space_usage, formData.allergies].filter(Boolean).length,
+      total: 6,
     },
     personality: {
       filled: [formData.personality_type, formData.weekend_activities].filter(Boolean).length,
       total: 2,
     },
     sns: {
-      filled: [formData.sns_x, formData.sns_instagram, formData.sns_facebook, formData.sns_linkedin, formData.sns_github].filter(Boolean).length,
-      total: 5,
+      filled: [formData.sns_x, formData.sns_instagram, formData.sns_facebook, formData.sns_linkedin, formData.sns_github, formData.sns_line].filter(Boolean).length,
+      total: 6,
     },
   }), [formData]);
 
@@ -450,6 +471,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
       cleaning_attitude: formData.cleaning_attitude || null,
       cooking_frequency: formData.cooking_frequency || null,
       shared_meals: formData.shared_meals || null,
+      allergies: formData.allergies.trim() || null,
       personality_type: formData.personality_type.trim() || null,
       weekend_activities: formData.weekend_activities.trim() || null,
       sns_x: formData.sns_x.trim() || null,
@@ -457,6 +479,7 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
       sns_facebook: formData.sns_facebook.trim() || null,
       sns_linkedin: formData.sns_linkedin.trim() || null,
       sns_github: formData.sns_github.trim() || null,
+      sns_line: formData.sns_line.trim() || null,
     });
 
     setIsLoading(false);
@@ -480,6 +503,19 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
     }
 
     setIsTeaTimeLoading(false);
+  };
+
+  const handleNotificationToggle = async (key: NotificationKey, checked: boolean) => {
+    setNotificationLoading(key);
+    setNotificationSettings((prev) => ({ ...prev, [key]: checked }));
+
+    const result = await updateNotificationSetting(key, checked);
+
+    if ("error" in result) {
+      setNotificationSettings((prev) => ({ ...prev, [key]: !checked }));
+    }
+
+    setNotificationLoading(null);
   };
 
   const updateField = useCallback((field: string, value: string | string[]) => {
@@ -667,6 +703,59 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                     </AnimatePresence>
                   </div>
                 </Button>
+              </m.div>
+
+              <m.div
+                animate={{
+                  borderColor: "#e5e5e5",
+                }}
+                className="p-3 border mt-2"
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <svg className="w-4 h-4 text-[#737373]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                  </svg>
+                  <p className="text-xs tracking-wide text-[#737373]">
+                    {t("notifications.sectionTitle")}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  {([
+                    { key: "notify_tea_time" as NotificationKey, label: t("notifications.teaTime"), description: t("notifications.teaTimeDescription") },
+                    { key: "notify_garbage_duty" as NotificationKey, label: t("notifications.garbageDuty"), description: t("notifications.garbageDutyDescription") },
+                    { key: "notify_new_photos" as NotificationKey, label: t("notifications.newPhotos"), description: t("notifications.newPhotosDescription") },
+                  ]).map((item) => (
+                    <Button
+                      key={item.key}
+                      type="button"
+                      variant="ghost"
+                      onClick={() => notificationLoading !== item.key && handleNotificationToggle(item.key, !notificationSettings[item.key])}
+                      disabled={notificationLoading === item.key}
+                      className="w-full h-auto p-2 text-left hover:bg-[#fafaf8] disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs tracking-wide text-[#737373]">{item.label}</p>
+                          <p className="text-[10px] text-[#a3a3a3]">{item.description}</p>
+                        </div>
+                        {notificationLoading === item.key ? (
+                          <m.span
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            className="inline-block w-5 h-5 border border-[#d4d4d4] border-t-[#1a1a1a] rounded-full shrink-0"
+                          />
+                        ) : (
+                          <Switch
+                            checked={notificationSettings[item.key]}
+                            onCheckedChange={(checked) => handleNotificationToggle(item.key, checked)}
+                            disabled={notificationLoading === item.key}
+                            className="shrink-0"
+                          />
+                        )}
+                      </div>
+                    </Button>
+                  ))}
+                </div>
               </m.div>
             </div>
           </div>
@@ -1046,6 +1135,13 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
               onChange={(v) => updateField("shared_space_usage", v)}
               placeholder={t("profile.sharedSpaceUsagePlaceholder")}
             />
+            <InputField
+              id="allergies"
+              label={t("profile.allergies")}
+              value={formData.allergies}
+              onChange={(v) => updateField("allergies", v)}
+              placeholder={t("profile.allergiesPlaceholder")}
+            />
           </FormSection>
         </m.div>
 
@@ -1127,13 +1223,22 @@ export function ProfileEditForm({ profile, initialTeaTimeEnabled = false }: Prof
                 placeholder={t("profile.snsLinkedinPlaceholder")}
               />
             </div>
-            <InputField
-              id="sns_github"
-              label={t("profile.snsGithub")}
-              value={formData.sns_github}
-              onChange={(v) => updateField("sns_github", v)}
-              placeholder={t("profile.snsGithubPlaceholder")}
-            />
+            <div className="grid grid-cols-2 gap-4">
+              <InputField
+                id="sns_github"
+                label={t("profile.snsGithub")}
+                value={formData.sns_github}
+                onChange={(v) => updateField("sns_github", v)}
+                placeholder={t("profile.snsGithubPlaceholder")}
+              />
+              <InputField
+                id="sns_line"
+                label={t("profile.snsLine")}
+                value={formData.sns_line}
+                onChange={(v) => updateField("sns_line", v)}
+                placeholder={t("profile.snsLinePlaceholder")}
+              />
+            </div>
           </FormSection>
         </m.div>
 

@@ -104,10 +104,12 @@ export interface Profile {
   shared_meals?: string | null;
   personality_type?: string | null;
   weekend_activities?: string | null;
+  allergies?: string | null;
   sns_x?: string | null;
   sns_instagram?: string | null;
   sns_facebook?: string | null;
   sns_linkedin?: string | null;
   sns_github?: string | null;
+  sns_line?: string | null;
   cover_photo_url?: string | null;
 }

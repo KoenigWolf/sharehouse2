@@ -171,7 +171,11 @@ export const en: Translations = {
     snsLinkedinPlaceholder: "Username or URL",
     snsGithub: "GitHub",
     snsGithubPlaceholder: "Username or URL",
+    snsLine: "LINE",
+    snsLinePlaceholder: "LINE ID",
     snsHint: "Enter username or URL",
+    allergies: "Allergies & Dietary Restrictions",
+    allergiesPlaceholder: "e.g., Egg allergy, vegetarian",
   },
 
   profileOptions: {
@@ -498,6 +502,16 @@ export const en: Translations = {
     mailbox: "Mailbox",
     address: "Address",
     note: "*",
+  },
+
+  notifications: {
+    sectionTitle: "Notifications",
+    teaTime: "Tea Time matching",
+    teaTimeDescription: "Receive matching notifications",
+    garbageDuty: "Garbage duty",
+    garbageDutyDescription: "Receive duty reminders",
+    newPhotos: "New photos",
+    newPhotosDescription: "Receive new photo notifications",
   },
 
   push: {

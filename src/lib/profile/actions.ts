@@ -84,11 +84,13 @@ export async function updateProfile(data: ProfileUpdateInput): Promise<UpdateRes
         shared_meals: validatedData.shared_meals,
         personality_type: validatedData.personality_type,
         weekend_activities: validatedData.weekend_activities,
+        allergies: validatedData.allergies,
         sns_x: validatedData.sns_x,
         sns_instagram: validatedData.sns_instagram,
         sns_facebook: validatedData.sns_facebook,
         sns_linkedin: validatedData.sns_linkedin,
         sns_github: validatedData.sns_github,
+        sns_line: validatedData.sns_line,
         updated_at: new Date().toISOString(),
       })
       .eq("id", user.id);

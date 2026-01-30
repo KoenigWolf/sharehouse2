@@ -171,7 +171,11 @@ export const ja = {
     snsLinkedinPlaceholder: "ユーザー名 または URL",
     snsGithub: "GitHub",
     snsGithubPlaceholder: "ユーザー名 または URL",
+    snsLine: "LINE",
+    snsLinePlaceholder: "LINE ID",
     snsHint: "ユーザー名または URLを入力",
+    allergies: "アレルギー・食事制限",
+    allergiesPlaceholder: "卵アレルギー、ベジタリアン など",
   },
 
   profileOptions: {
@@ -497,6 +501,16 @@ export const ja = {
     mailbox: "郵便受け",
     address: "住所",
     note: "※",
+  },
+
+  notifications: {
+    sectionTitle: "通知設定",
+    teaTime: "Tea Time マッチング",
+    teaTimeDescription: "マッチング通知を受け取る",
+    garbageDuty: "ゴミ当番",
+    garbageDutyDescription: "当番リマインダーを受け取る",
+    newPhotos: "新着写真",
+    newPhotosDescription: "新しい写真の通知を受け取る",
   },
 
   push: {

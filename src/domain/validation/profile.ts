@@ -146,11 +146,13 @@ export const profileUpdateSchema = z.object({
   shared_meals: textFieldSchema.optional(),
   personality_type: textFieldSchema.optional(),
   weekend_activities: longTextFieldSchema.optional(),
+  allergies: longTextFieldSchema.optional(),
   sns_x: snsUsernameSchema.optional(),
   sns_instagram: snsUsernameSchema.optional(),
   sns_facebook: snsUsernameSchema.optional(),
   sns_linkedin: snsUsernameSchema.optional(),
   sns_github: snsUsernameSchema.optional(),
+  sns_line: snsUsernameSchema.optional(),
 });
 
 export const fileUploadSchema = z.object({
