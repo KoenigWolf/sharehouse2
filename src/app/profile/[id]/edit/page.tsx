@@ -8,6 +8,7 @@ import { ProfileEditForm } from "@/components/profile-edit-form";
 import { RoomPhotoManager } from "@/components/room-photo-manager";
 import { Profile } from "@/domain/profile";
 import { getTeaTimeSetting } from "@/lib/tea-time/actions";
+import { getNotificationSettings } from "@/lib/notifications/actions";
 import { getRoomPhotos } from "@/lib/room-photos/actions";
 import { validateId } from "@/lib/security/validation";
 import { getServerTranslator } from "@/lib/i18n/server";
@@ -45,9 +46,10 @@ export default async function ProfileEditPage({ params }: ProfileEditPageProps) 
   }
 
   const t = await getServerTranslator();
-  const [profileResult, teaTimeSetting, roomPhotos] = await Promise.all([
+  const [profileResult, teaTimeSetting, notificationSettings, roomPhotos] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", validatedId).single(),
     getTeaTimeSetting(validatedId),
+    getNotificationSettings(),
     getRoomPhotos(validatedId),
   ]);
 
@@ -72,6 +74,7 @@ export default async function ProfileEditPage({ params }: ProfileEditPageProps) 
           <ProfileEditForm
             profile={profile as Profile}
             initialTeaTimeEnabled={teaTimeSetting?.is_enabled ?? false}
+            initialNotificationSettings={notificationSettings}
           />
           <RoomPhotoManager photos={roomPhotos} />
         </div>
