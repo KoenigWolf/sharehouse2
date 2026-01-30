@@ -23,7 +23,7 @@ export const SharedInfoList = memo(function SharedInfoList({
       {sharedInfos.map((info) => (
         <div
           key={info.id}
-          className="bg-white border border-[#e5e5e5] p-4"
+          className="bg-white border border-[#e5e5e5] rounded-lg p-4"
         >
           <p className="text-[10px] text-[#a3a3a3] tracking-wide uppercase mb-2">
             {info.title}

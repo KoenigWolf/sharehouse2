@@ -42,7 +42,7 @@ export default async function TeaTimePage() {
           </div>
 
           <Link href="/settings" className="block mb-5 sm:mb-6 group active:scale-[0.99] transition-transform">
-            <div className="bg-white border border-[#e5e5e5] p-4 hover:border-[#1a1a1a] transition-colors">
+            <div className="bg-white border border-[#e5e5e5] rounded-lg p-4 hover:border-[#1a1a1a] transition-colors">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-[#1a1a1a]">
@@ -97,7 +97,7 @@ export default async function TeaTimePage() {
               ) : (
                 <Link
                   href="/settings"
-                  className="inline-block mt-3 px-5 py-3 text-xs text-[#737373] border border-[#e5e5e5] hover:border-[#1a1a1a] hover:text-[#1a1a1a] active:scale-[0.98] transition-all"
+                  className="inline-block mt-3 px-5 py-3 rounded-md text-xs text-[#737373] border border-[#e5e5e5] hover:border-[#1a1a1a] hover:text-[#1a1a1a] active:scale-[0.98] transition-all"
                 >
                   {t("teaTime.enableParticipation")}
                 </Link>

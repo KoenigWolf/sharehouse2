@@ -122,7 +122,7 @@ export function WifiInfoList({ wifiInfos, isAdmin }: WifiInfoListProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2, delay: index * 0.05 }}
-            className="bg-white border border-[#e5e5e5] p-4"
+            className="bg-white border border-[#e5e5e5] rounded-lg p-4"
           >
             {editingId === wifi.id ? (
               <WifiInfoForm
@@ -214,7 +214,7 @@ export function WifiInfoList({ wifiInfos, isAdmin }: WifiInfoListProps) {
             <m.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white border border-[#e5e5e5] p-4"
+              className="bg-white border border-[#e5e5e5] rounded-lg p-4"
             >
               <WifiInfoForm
                 onSave={handleSaved}

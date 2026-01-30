@@ -153,7 +153,7 @@ function ProfileSection({
 }) {
   const config = categoryConfig[category];
   return (
-    <m.section variants={itemVariants} className={`bg-white border border-[#e5e5e5] overflow-hidden ${className}`}>
+    <m.section variants={itemVariants} className={`bg-white border border-[#e5e5e5] rounded-lg overflow-hidden ${className}`}>
       <div className={`px-5 py-3 border-b border-[#e5e5e5] ${config.bgColor}`}>
         <h2 className={`flex items-center gap-2 text-[11px] tracking-wider uppercase ${config.color}`}>
           {config.icon}
@@ -296,7 +296,7 @@ export function ProfileDetail({
       {isMockProfile && (
         <m.div
           variants={itemVariants}
-          className="mb-6 py-3 px-4 border border-dashed border-[#d4d4d4] bg-[#fafaf8]"
+          className="mb-6 py-3 px-4 border border-dashed border-[#d4d4d4] bg-[#fafaf8] rounded-lg"
           role="alert"
         >
           <p className="text-sm text-[#737373]">{t("profile.mockProfileBanner")}</p>
@@ -317,7 +317,7 @@ export function ProfileDetail({
 
       <m.div
         variants={itemVariants}
-        className={`bg-white border overflow-hidden ${isMockProfile ? "border-dashed border-[#d4d4d4]" : "border-[#e5e5e5]"}`}
+        className={`bg-white border rounded-lg overflow-hidden ${isMockProfile ? "border-dashed border-[#d4d4d4]" : "border-[#e5e5e5]"}`}
       >
         {/* Cover Photo */}
         <div className="relative aspect-2/1 sm:aspect-21/8 bg-[#f5f5f3] overflow-hidden">
@@ -466,7 +466,7 @@ export function ProfileDetail({
 
               <div className="flex flex-wrap justify-center sm:justify-start gap-2 mb-4">
                 {profile.move_in_date && (
-                  <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 bg-[#f5f5f3] text-[#737373]">
+                  <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded bg-[#f5f5f3] text-[#737373]">
                     <svg className="w-3 h-3 text-[#a3a3a3]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
                     </svg>
@@ -474,7 +474,7 @@ export function ProfileDetail({
                   </span>
                 )}
                 {profile.mbti && (
-                  <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 bg-[#f0f4f8] text-[#5c6b7a]">
+                  <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded bg-[#f0f4f8] text-[#5c6b7a]">
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
                     </svg>
@@ -484,7 +484,7 @@ export function ProfileDetail({
                     </span>
                   </span>
                 )}
-                <span className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 ${
+                <span className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded ${
                   teaTimeEnabled
                     ? "bg-[#f0f8f4] text-[#5c7a6b]"
                     : "bg-[#f5f5f3] text-[#737373]"
@@ -516,7 +516,7 @@ export function ProfileDetail({
                 {profile.interests.map((interest, index) => (
                   <span
                     key={index}
-                    className="text-xs px-3 py-1.5 bg-[#faf8f6] text-[#6b5c4a] border border-[#f0ebe5]"
+                    className="text-xs px-3 py-1.5 rounded bg-[#faf8f6] text-[#6b5c4a] border border-[#f0ebe5]"
                   >
                     {interest}
                   </span>

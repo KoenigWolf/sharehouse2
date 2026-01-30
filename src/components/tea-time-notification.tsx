@@ -23,15 +23,15 @@ export function TeaTimeNotification({ match }: TeaTimeNotificationProps) {
       transition={{ duration: 0.3 }}
     >
       <Link href="/tea-time" className="block group">
-        <div className="bg-white border border-[#e5e5e5] p-4 sm:p-5 hover:border-[#1a1a1a] transition-colors">
+        <div className="bg-white border border-[#e5e5e5] rounded-lg p-4 sm:p-5 hover:border-[#1a1a1a] transition-colors">
           <div className="flex items-center gap-4">
-            <Avatar className="w-12 h-12 sm:w-14 sm:h-14 rounded-none shrink-0">
+            <Avatar className="w-12 h-12 sm:w-14 sm:h-14 rounded-full shrink-0">
               <OptimizedAvatarImage
                 src={match.partner.avatar_url}
                 context="card"
                 alt={t("a11y.profilePhotoAlt", { name: match.partner.name })}
                 fallback={getInitials(match.partner.name)}
-                fallbackClassName="text-sm bg-[#f5f5f3] rounded-none"
+                fallbackClassName="text-sm bg-[#f5f5f3] rounded-full"
               />
             </Avatar>
 

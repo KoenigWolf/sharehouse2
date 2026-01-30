@@ -118,7 +118,7 @@ function Badge({
 
   return (
     <span
-      className={`text-[10px] sm:text-[11px] px-2 py-0.5 tracking-wide ${variantStyles[variant]} ${className}`}
+      className={`text-[10px] sm:text-[11px] px-2 py-0.5 rounded tracking-wide ${variantStyles[variant]} ${className}`}
     >
       {children}
     </span>
@@ -211,7 +211,7 @@ function InterestTagList({
       {interests.map((interest, index) => (
         <li
           key={`${interest}-${index}`}
-          className="text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 bg-[#f5f5f3] text-[#737373]"
+          className="text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded bg-[#f5f5f3] text-[#737373]"
         >
           {interest}
         </li>
@@ -300,7 +300,7 @@ export const ResidentCard = memo(function ResidentCard({
       prefetch={false}
     >
       <article
-        className={`bg-white border transition-all duration-200 active:scale-[0.98] active:opacity-95 relative overflow-hidden ${borderClass}`}
+        className={`bg-white border rounded-lg transition-all duration-200 active:scale-[0.98] active:opacity-95 relative overflow-hidden ${borderClass}`}
         style={floorAccentStyle}
       >
         <div className="aspect-square bg-[#f5f5f3] relative overflow-hidden">
@@ -330,7 +330,7 @@ export const ResidentCard = memo(function ResidentCard({
               <Badge variant="dark">{t("common.you")}</Badge>
             )}
             {showTeaTime && teaTimeEnabled && !isMock && (
-              <span className="bg-[#5c7a6b] text-white text-[10px] px-1.5 py-0.5 flex items-center gap-1">
+              <span className="bg-[#5c7a6b] text-white text-[10px] px-1.5 py-0.5 rounded flex items-center gap-1">
                 <OverlayIcons.TeaCup />
               </span>
             )}
@@ -347,7 +347,7 @@ export const ResidentCard = memo(function ResidentCard({
               {snsLinks.slice(0, 3).map((link) => (
                 <span
                   key={link.platform}
-                  className="w-5 h-5 bg-white/90 backdrop-blur-sm flex items-center justify-center text-[#737373]"
+                  className="w-5 h-5 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-[#737373]"
                   aria-label={link.platform}
                 >
                   <SnsIcon platform={link.platform} />

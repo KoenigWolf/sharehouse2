@@ -59,7 +59,7 @@ const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardPr
         tabIndex={0}
         onClick={onClick}
         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } }}
-        className="group w-full bg-white border border-[#e5e5e5] overflow-hidden hover:border-[#1a1a1a] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a] focus-visible:ring-offset-2 cursor-pointer"
+        className="group w-full bg-white border border-[#e5e5e5] rounded-lg overflow-hidden hover:border-[#1a1a1a] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a] focus-visible:ring-offset-2 cursor-pointer"
       >
         <div className="relative w-full overflow-hidden" style={{ paddingBottom: "100%" }}>
           <Image

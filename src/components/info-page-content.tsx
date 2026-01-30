@@ -46,8 +46,8 @@ const QuickAccessCard = memo(function QuickAccessCard({
   }, [value, onCopy]);
 
   return (
-    <div className="bg-white border border-[#e5e5e5] p-4 flex items-center gap-4">
-      <div className="w-10 h-10 bg-[#f5f5f3] flex items-center justify-center flex-shrink-0 text-[#737373]">
+    <div className="bg-white border border-[#e5e5e5] rounded-lg p-4 flex items-center gap-4">
+      <div className="w-10 h-10 rounded-md bg-[#f5f5f3] flex items-center justify-center flex-shrink-0 text-[#737373]">
         {icon}
       </div>
       <div className="flex-1 min-w-0">
@@ -108,7 +108,7 @@ const WifiCard = memo(function WifiCard({ wifiInfos }: WifiCardProps) {
   if (wifiInfos.length === 0) return null;
 
   return (
-    <div className="bg-white border border-[#e5e5e5]">
+    <div className="bg-white border border-[#e5e5e5] rounded-lg overflow-hidden">
       <div className="px-4 py-3 border-b border-[#e5e5e5] bg-[#fafaf8]">
         <div className="flex items-center justify-between">
           <div>
@@ -320,7 +320,7 @@ export function InfoPageContent({
           <SectionHeader icon={<BuildingIcon />} title={t("info.tabBuilding")} />
           <div className="space-y-3">
             {addressInfo && (
-              <div className="bg-white border border-[#e5e5e5] p-4">
+              <div className="bg-white border border-[#e5e5e5] rounded-lg p-4">
                 <p className="text-[10px] text-[#a3a3a3] tracking-wide uppercase mb-1">
                   {addressInfo.title}
                 </p>
@@ -333,7 +333,7 @@ export function InfoPageContent({
             {sharedInfos
               .filter((info) => info.info_key !== "mailbox_code" && info.info_key !== "address")
               .map((info) => (
-                <div key={info.id} className="bg-white border border-[#e5e5e5] p-4">
+                <div key={info.id} className="bg-white border border-[#e5e5e5] rounded-lg p-4">
                   <p className="text-[10px] text-[#a3a3a3] tracking-wide uppercase mb-1">
                     {info.title}
                   </p>

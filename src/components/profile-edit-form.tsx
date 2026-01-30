@@ -128,7 +128,7 @@ function FormSection({
     <m.div
       initial={false}
       animate={{ backgroundColor: isExpanded ? config.bgColor.replace("bg-", "") : "#ffffff" }}
-      className={`border ${config.borderColor} overflow-hidden`}
+      className={`border ${config.borderColor} rounded-lg overflow-hidden`}
     >
       <Button
         type="button"
@@ -207,7 +207,7 @@ function InputField({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         required={required}
-        className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
+        className="w-full h-11 px-4 bg-white border border-[#e5e5e5] rounded-md text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
       />
     </div>
   );
@@ -237,7 +237,7 @@ function SelectField({
         id={id}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full h-11 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors"
+        className="w-full h-11 px-4 bg-white border border-[#e5e5e5] rounded-md text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors"
       >
         {placeholder && <option value="">{placeholder}</option>}
         {options.map((opt) => (
@@ -278,7 +278,7 @@ function TextareaField({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         rows={rows}
-        className="w-full px-4 py-3 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors resize-none leading-relaxed"
+        className="w-full px-4 py-3 bg-white border border-[#e5e5e5] rounded-md text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors resize-none leading-relaxed"
       />
       {hint && <p className="text-[10px] text-[#a3a3a3]">{hint}</p>}
     </div>
@@ -575,7 +575,7 @@ export function ProfileEditForm({
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.1 }}
-        className="bg-white border border-[#e5e5e5] mb-6"
+        className="bg-white border border-[#e5e5e5] rounded-lg mb-6"
       >
         <div className="p-6 sm:p-8">
           <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-center sm:items-start">
@@ -585,15 +585,15 @@ export function ProfileEditForm({
                 variant="ghost"
                 onClick={handleAvatarClick}
                 disabled={isUploading}
-                className="relative w-36 h-36 sm:w-44 sm:h-44 h-auto p-0 bg-[#f5f5f3] group block overflow-hidden hover:bg-[#f5f5f3]"
+                className="relative w-36 h-36 sm:w-44 sm:h-44 h-auto p-0 bg-[#f5f5f3] group block overflow-hidden hover:bg-[#f5f5f3] rounded-full"
               >
-                <Avatar className="absolute inset-0 size-full rounded-none">
+                <Avatar className="absolute inset-0 size-full rounded-full">
                   <OptimizedAvatarImage
                     src={avatarUrl}
                     context="edit"
                     alt={t("a11y.profilePhotoAlt", { name: formData.name || "?" })}
                     fallback={getInitials(formData.name || "?")}
-                    fallbackClassName="bg-[#f5f5f3] text-[#a3a3a3] text-4xl rounded-none"
+                    fallbackClassName="bg-[#f5f5f3] text-[#a3a3a3] text-4xl rounded-full"
                   />
                 </Avatar>
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -620,12 +620,12 @@ export function ProfileEditForm({
             </div>
 
             <div className="flex-1 w-full text-center sm:text-left">
-              <div className="mb-4 p-3 bg-[#fafaf8] border border-[#f0f0f0]">
+              <div className="mb-4 p-3 bg-[#fafaf8] border border-[#f0f0f0] rounded-md">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-[10px] text-[#737373] tracking-wide">{t("profile.completionLabel")}</p>
                   <p className="text-sm font-medium text-[#1a1a1a]">{completionPercentage}%</p>
                 </div>
-                <div className="h-1 bg-[#e5e5e5] overflow-hidden">
+                <div className="h-1 bg-[#e5e5e5] rounded-full overflow-hidden">
                   <m.div
                     className="h-full bg-[#1a1a1a]"
                     initial={{ width: 0 }}
@@ -637,7 +637,7 @@ export function ProfileEditForm({
                   {completionItems.map((item) => (
                     <span
                       key={item.label}
-                      className={`text-[10px] px-2 py-0.5 ${
+                      className={`text-[10px] px-2 py-0.5 rounded ${
                         item.completed
                           ? "bg-[#f0f8f0] text-[#6b8b6b]"
                           : "bg-[#f5f5f3] text-[#a3a3a3]"
@@ -709,7 +709,7 @@ export function ProfileEditForm({
                 animate={{
                   borderColor: "#e5e5e5",
                 }}
-                className="p-3 border mt-2"
+                className="p-3 border rounded-lg mt-2"
               >
                 <div className="flex items-center gap-2 mb-3">
                   <svg className="w-4 h-4 text-[#737373]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

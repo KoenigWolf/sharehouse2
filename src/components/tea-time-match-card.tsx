@@ -44,15 +44,15 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
   // 過去のマッチ（完了・スキップ済み）
   if (status !== "scheduled") {
     return (
-      <div className="bg-[#f5f5f3] p-3 border border-[#e5e5e5]">
+      <div className="bg-[#f5f5f3] p-3 border border-[#e5e5e5] rounded-lg">
         <div className="flex items-center gap-3">
-          <Avatar className="w-8 h-8 rounded-none">
+          <Avatar className="w-8 h-8 rounded-full">
             <OptimizedAvatarImage
               src={match.partner.avatar_url}
               context="card"
               alt={t("a11y.profilePhotoAlt", { name: match.partner.name })}
               fallback={getInitials(match.partner.name)}
-              fallbackClassName="bg-white text-[#a3a3a3] text-xs rounded-none"
+              fallbackClassName="bg-white text-[#a3a3a3] text-xs rounded-full"
             />
           </Avatar>
           <div className="flex-1 min-w-0">
@@ -76,17 +76,17 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="bg-white p-4 border border-[#e5e5e5]"
+      className="bg-white p-4 border border-[#e5e5e5] rounded-lg"
     >
       <div className="flex items-center gap-4 mb-4">
         <Link href={`/profile/${match.partner.id}`}>
-          <Avatar className="w-14 h-14 rounded-none">
+          <Avatar className="w-14 h-14 rounded-full">
             <OptimizedAvatarImage
               src={match.partner.avatar_url}
               context="card"
               alt={t("a11y.profilePhotoAlt", { name: match.partner.name })}
               fallback={getInitials(match.partner.name)}
-              fallbackClassName="bg-[#f5f5f3] text-[#a3a3a3] text-lg rounded-none"
+              fallbackClassName="bg-[#f5f5f3] text-[#a3a3a3] text-lg rounded-full"
             />
           </Avatar>
         </Link>

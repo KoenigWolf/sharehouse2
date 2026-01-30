@@ -192,7 +192,7 @@ export function ResidentsGrid({
 
   return (
     <div className="space-y-5 sm:space-y-6">
-      <div className="bg-white border border-[#e5e5e5] mb-4">
+      <div className="bg-white border border-[#e5e5e5] rounded-lg mb-4">
         <Button
           type="button"
           variant="ghost"
@@ -261,7 +261,7 @@ export function ResidentsGrid({
                               {floorStat.registered}/{floorStat.total}
                             </span>
                           </div>
-                          <div className="h-1.5 bg-[#f5f5f3] overflow-hidden">
+                          <div className="h-1.5 bg-[#f5f5f3] rounded-full overflow-hidden">
                             <motion.div
                               initial={{ width: 0 }}
                               animate={{ width: `${percentage}%` }}
@@ -294,7 +294,7 @@ export function ResidentsGrid({
             </p>
           </div>
 
-          <div className="flex gap-1 bg-[#f5f5f3] p-1">
+          <div className="flex gap-1 bg-[#f5f5f3] p-1 rounded-md">
             {viewModeOptions.map((option) => {
               const isActive = viewMode === option.value;
               const Icon = option.icon;
@@ -363,7 +363,7 @@ export function ResidentsGrid({
               placeholder={t("residents.searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full sm:w-64 h-11 sm:h-10 pl-10 pr-4 bg-white border border-[#e5e5e5] text-base sm:text-sm text-[#1a1a1a] placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
+              className="w-full sm:w-64 h-11 sm:h-10 pl-10 pr-4 bg-white border border-[#e5e5e5] rounded-md text-base sm:text-sm text-[#1a1a1a] placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
             />
             {searchQuery && (
               <Button
@@ -424,7 +424,7 @@ export function ResidentsGrid({
             exit={{ opacity: 0 }}
             className="text-center py-12 sm:py-16"
           >
-            <div className="w-16 h-16 mx-auto mb-4 bg-[#f5f5f3] flex items-center justify-center">
+            <div className="w-16 h-16 mx-auto mb-4 bg-[#f5f5f3] rounded-lg flex items-center justify-center">
               <SearchIcon className="w-8 h-8 text-[#d4d4d4]" />
             </div>
             <p className="text-[#737373] text-sm">{t("residents.noMatch")}</p>
@@ -566,7 +566,7 @@ function FloorView({
           >
             <div className={`flex items-center gap-3 mb-4 pb-3 border-b-2 ${colors.border}`}>
               <div
-                className={`w-12 h-12 flex items-center justify-center ${colors.bg} border ${colors.border}`}
+                className={`w-12 h-12 flex items-center justify-center rounded-md ${colors.bg} border ${colors.border}`}
               >
                 <span className={`text-base font-medium ${colors.text}`}>{floor}</span>
               </div>
@@ -578,9 +578,9 @@ function FloorView({
                   <span className="text-[10px] text-[#a3a3a3]">
                     {floorStat.registered}/{floorStat.total} {t("residents.registeredShort")}
                   </span>
-                  <div className="flex-1 max-w-20 h-1 bg-[#f5f5f3]">
+                  <div className="flex-1 max-w-20 h-1 bg-[#f5f5f3] rounded-full">
                     <div
-                      className="h-full transition-all duration-500"
+                      className="h-full rounded-full transition-all duration-500"
                       style={{
                         width: `${(floorStat.registered / floorStat.total) * 100}%`,
                         backgroundColor: colors.fill,
@@ -676,7 +676,7 @@ function ResidentListItem({
       aria-label={t("a11y.viewProfile", { name: profile.name })}
     >
       <article
-        className={`flex items-center gap-4 p-3 sm:p-4 bg-white border transition-all duration-200 active:scale-[0.995] ${
+        className={`flex items-center gap-4 p-3 sm:p-4 bg-white border rounded-lg transition-all duration-200 active:scale-[0.995] ${
           isCurrentUser
             ? "border-[#1a1a1a]"
             : isMockProfile
@@ -685,18 +685,18 @@ function ResidentListItem({
         }`}
       >
         <div className="relative shrink-0">
-          <Avatar className="w-12 h-12 sm:w-14 sm:h-14 rounded-none">
+          <Avatar className="w-12 h-12 sm:w-14 sm:h-14 rounded-full">
             <OptimizedAvatarImage
               src={profile.avatar_url}
               alt={profile.name}
               context="card"
               className="w-full h-full"
               fallback={getInitials(profile.name)}
-              fallbackClassName="bg-[#f5f5f3] text-[#a3a3a3] text-lg rounded-none w-full h-full flex items-center justify-center"
+              fallbackClassName="bg-[#f5f5f3] text-[#a3a3a3] text-lg rounded-full w-full h-full flex items-center justify-center"
             />
           </Avatar>
           {isCurrentUser && (
-            <span className="absolute -top-1 -right-1 bg-[#1a1a1a] text-white text-[8px] px-1.5 py-0.5">
+            <span className="absolute -top-1 -right-1 bg-[#1a1a1a] text-white text-[8px] px-1.5 py-0.5 rounded">
               {t("common.you")}
             </span>
           )}
@@ -709,18 +709,18 @@ function ResidentListItem({
             </h3>
             {profile.room_number && (
               <span
-                className={`text-[10px] sm:text-xs px-1.5 py-0.5 ${colors.bg} ${colors.text}`}
+                className={`text-[10px] sm:text-xs px-1.5 py-0.5 rounded ${colors.bg} ${colors.text}`}
               >
                 {profile.room_number}
               </span>
             )}
             {isNew && !isMockProfile && (
-              <span className="text-[10px] px-1.5 py-0.5 bg-[#f8faf8] text-[#6b8b6b] border border-[#a0c9a0]">
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#f8faf8] text-[#6b8b6b] border border-[#a0c9a0]">
                 NEW
               </span>
             )}
             {isTeaTimeParticipant && !isMockProfile && (
-              <span className="text-[10px] px-1.5 py-0.5 bg-[#5c7a6b] text-white flex items-center gap-0.5">
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#5c7a6b] text-white flex items-center gap-0.5">
                 <TeaCupIcon />
               </span>
             )}

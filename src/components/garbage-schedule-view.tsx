@@ -85,7 +85,7 @@ export function GarbageScheduleView({
               return (
                 <div
                   key={dayIndex}
-                  className="bg-white border border-[#e5e5e5] px-4 py-3"
+                  className="bg-white border border-[#e5e5e5] rounded-lg px-4 py-3"
                 >
                   <div className="flex items-center gap-4">
                     <div
@@ -155,7 +155,7 @@ export function GarbageScheduleView({
                   initial={{ opacity: 0, y: 4 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.15, delay: index * 0.03 }}
-                  className={`flex items-center gap-3 px-4 py-3 bg-white border ${
+                  className={`flex items-center gap-3 px-4 py-3 bg-white border rounded-lg ${
                     isOwn ? "border-[#1a1a1a]" : "border-[#e5e5e5]"
                   } ${duty.is_completed ? "opacity-50" : ""}`}
                 >

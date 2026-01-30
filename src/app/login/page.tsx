@@ -216,7 +216,7 @@ export default function LoginPage() {
                         onChange={(e) => setName(e.target.value)}
                         placeholder={t("auth.namePlaceholder")}
                         required
-                        className="w-full h-12 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
+                        className="w-full h-12 px-4 bg-white border border-[#e5e5e5] rounded-md text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
                       />
                     </div>
                   </m.div>
@@ -238,7 +238,7 @@ export default function LoginPage() {
                   placeholder="example@email.com"
                   required
                   autoComplete="email"
-                  className="w-full h-12 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
+                  className="w-full h-12 px-4 bg-white border border-[#e5e5e5] rounded-md text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
                 />
               </div>
 
@@ -256,7 +256,7 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   autoComplete={mode === "login" ? "current-password" : "new-password"}
-                  className="w-full h-12 px-4 bg-white border border-[#e5e5e5] text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
+                  className="w-full h-12 px-4 bg-white border border-[#e5e5e5] rounded-md text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
                 />
                 <AnimatePresence>
                   {mode === "signup" && (
@@ -399,7 +399,7 @@ function PasswordStrengthMeter({ password }: { password: string }) {
         {[0, 1, 2].map((i) => (
           <div
             key={i}
-            className="h-0.5 flex-1 transition-colors duration-300"
+            className="h-0.5 flex-1 rounded-full transition-colors duration-300"
             style={{
               backgroundColor: i < strength ? colors[strength] : "#e5e5e5",
             }}
