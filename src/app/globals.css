@@ -59,7 +59,7 @@
 }
 
 :root {
-  --radius: 0.25rem;
+  --radius: 0.625rem;
   --background: #fafaf8;
   --foreground: #1a1a1a;
   --card: #ffffff;
@@ -168,7 +168,7 @@ select {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  border-radius: 0;
+  border-radius: inherit;
 }
 
 /* Restore select dropdown arrow */

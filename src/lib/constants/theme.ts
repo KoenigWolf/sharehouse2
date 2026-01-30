@@ -63,12 +63,12 @@ export const typography = {
 
 export const components = {
   button: {
-    base: "rounded-none transition-colors",
+    base: "rounded-md transition-colors",
     primary: `bg-[${colors.primary}] hover:bg-[${colors.primaryHover}] text-white`,
     outline: `border border-[${colors.border.primary}] text-[${colors.text.secondary}] hover:border-[${colors.text.primary}]`,
   },
   input: {
-    base: `border-[${colors.border.primary}] rounded-none focus:border-[${colors.text.primary}] focus:ring-0`,
+    base: `border-[${colors.border.primary}] rounded-md focus:border-[${colors.text.primary}] focus:ring-0`,
   },
   card: {
     base: `bg-white border border-[${colors.border.primary}]`,
