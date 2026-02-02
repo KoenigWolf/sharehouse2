@@ -343,6 +343,7 @@ export async function registerBulkPhotos(
     }
 
     if ((count ?? 0) + storagePaths.length > MAX_PHOTOS_PER_USER) {
+      await supabase.storage.from("room-photos").remove(storagePaths);
       return { error: t("errors.maxPhotosReached") };
     }
 
@@ -364,6 +365,7 @@ export async function registerBulkPhotos(
         action: "registerBulkPhotos",
         userId: user.id,
       });
+      await supabase.storage.from("room-photos").remove(storagePaths);
       return { error: t("errors.saveFailed") };
     }
 
