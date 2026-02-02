@@ -3,10 +3,14 @@
  */
 
 export const FILE_UPLOAD = {
-  maxSizeBytes: 5 * 1024 * 1024, // 5MB
+  maxSizeBytes: 5 * 1024 * 1024, // 5MB (post-compression)
   maxSizeMB: 5,
+  /** サーバー側で受け付ける圧縮済み形式 */
   allowedTypes: ["image/jpeg", "image/png", "image/webp"] as const,
   allowedExtensions: [".jpg", ".jpeg", ".png", ".webp"] as const,
+  /** クライアント側 <input accept> で許可する入力形式（HEIC 等含む） */
+  inputAccept:
+    "image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif",
 } as const;
 
 export const TEA_TIME = {
@@ -69,7 +73,7 @@ export const ROOM_PHOTOS = {
   maxPhotosPerUser: 100,
   maxBulkUpload: 50,
   maxCaptionLength: 200,
-  maxSizeBytes: 5 * 1024 * 1024,
+  maxSizeBytes: 5 * 1024 * 1024, // post-compression
   maxSizeMB: 5,
   allowedTypes: ["image/jpeg", "image/png", "image/webp"] as const,
 } as const;
