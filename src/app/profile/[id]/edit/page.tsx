@@ -72,6 +72,9 @@ export default async function ProfileEditPage({ params }: ProfileEditPageProps) 
           >
             {t("myPage.backToMyPage")}
           </Link>
+          <h1 className="text-lg text-[#1a1a1a] tracking-wide font-light">
+            {t("profile.editTitle")}
+          </h1>
           <ProfileEditForm
             profile={profile as Profile}
             initialTeaTimeEnabled={teaTimeSetting?.is_enabled ?? false}
