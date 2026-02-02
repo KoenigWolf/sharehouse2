@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { useI18n } from "@/hooks/use-i18n";
+import { formatDate } from "@/lib/utils/formatting";
 import { ROOM_PHOTOS } from "@/lib/constants/config";
 import type { RoomPhoto } from "@/domain/room-photo";
 import type { Profile } from "@/domain/profile";
@@ -417,6 +418,12 @@ export function PhotoLightbox({
                     </p>
                   )}
                 </div>
+              )}
+
+              {photo.taken_at && (
+                <p className="mt-1.5 text-xs text-white/40">
+                  {formatDate(photo.taken_at)}
+                </p>
               )}
             </m.div>
           </m.div>
