@@ -185,6 +185,117 @@ describe("deleteRoomPhoto", () => {
   });
 });
 
+describe("registerBulkPhotos", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("should return error when user is not authenticated", async () => {
+    mockGetUser.mockResolvedValue({ data: { user: null } });
+
+    const { registerBulkPhotos } = await import("@/lib/room-photos/actions");
+    const result = await registerBulkPhotos(["user-123/file1.webp"]);
+
+    expect(result).toHaveProperty("error");
+    expect((result as { error: string }).error).toBe(t("errors.unauthorized"));
+  });
+
+  it("should reject empty array", async () => {
+    mockGetUser.mockResolvedValue({ data: { user: { id: "user-123" } } });
+
+    const { registerBulkPhotos } = await import("@/lib/room-photos/actions");
+    const result = await registerBulkPhotos([]);
+
+    expect(result).toHaveProperty("error");
+    expect((result as { error: string }).error).toBe(t("errors.invalidInput"));
+  });
+
+  it("should reject paths not owned by user", async () => {
+    mockGetUser.mockResolvedValue({ data: { user: { id: "user-123" } } });
+
+    const { registerBulkPhotos } = await import("@/lib/room-photos/actions");
+    const result = await registerBulkPhotos(["other-user/file1.webp"]);
+
+    expect(result).toHaveProperty("error");
+    expect((result as { error: string }).error).toBe(t("errors.invalidInput"));
+  });
+
+  it("should reject when max photos exceeded and clean up storage", async () => {
+    mockGetUser.mockResolvedValue({ data: { user: { id: "user-123" } } });
+
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockResolvedValue({ count: 99, error: null }),
+      }),
+    });
+
+    const mockRemove = vi.fn().mockResolvedValue({ error: null });
+    mockStorage.mockReturnValue({ remove: mockRemove });
+
+    const paths = ["user-123/a.webp", "user-123/b.webp"];
+    const { registerBulkPhotos } = await import("@/lib/room-photos/actions");
+    const result = await registerBulkPhotos(paths);
+
+    expect(result).toHaveProperty("error");
+    expect((result as { error: string }).error).toBe(t("errors.maxPhotosReached"));
+    expect(mockRemove).toHaveBeenCalledWith(paths);
+  });
+
+  it("should insert records and return success", async () => {
+    mockGetUser.mockResolvedValue({ data: { user: { id: "user-123" } } });
+
+    mockFrom
+      .mockReturnValueOnce({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockResolvedValue({ count: 0, error: null }),
+        }),
+      })
+      .mockReturnValueOnce({
+        insert: vi.fn().mockResolvedValue({ error: null }),
+      });
+
+    mockStorage.mockReturnValue({
+      getPublicUrl: vi.fn((path: string) => ({
+        data: { publicUrl: `https://example.com/storage/${path}` },
+      })),
+    });
+
+    const paths = ["user-123/a.webp", "user-123/b.webp"];
+    const { registerBulkPhotos } = await import("@/lib/room-photos/actions");
+    const result = await registerBulkPhotos(paths);
+
+    expect(result).toEqual({ success: true });
+  });
+
+  it("should clean up storage on DB insert failure", async () => {
+    mockGetUser.mockResolvedValue({ data: { user: { id: "user-123" } } });
+
+    mockFrom
+      .mockReturnValueOnce({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockResolvedValue({ count: 0, error: null }),
+        }),
+      })
+      .mockReturnValueOnce({
+        insert: vi.fn().mockResolvedValue({ error: { message: "insert failed" } }),
+      });
+
+    mockStorage.mockReturnValue({
+      getPublicUrl: vi.fn((path: string) => ({
+        data: { publicUrl: `https://example.com/storage/${path}` },
+      })),
+      remove: vi.fn().mockResolvedValue({ error: null }),
+    });
+
+    const paths = ["user-123/a.webp"];
+    const { registerBulkPhotos } = await import("@/lib/room-photos/actions");
+    const result = await registerBulkPhotos(paths);
+
+    expect(result).toHaveProperty("error");
+    expect(mockStorage().remove).toHaveBeenCalledWith(paths);
+  });
+});
+
 describe("getAllRoomPhotos", () => {
   beforeEach(() => {
     vi.clearAllMocks();
