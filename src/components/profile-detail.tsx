@@ -31,6 +31,8 @@ import {
 import type { RoomPhoto } from "@/domain/room-photo";
 import { getInitials, calculateResidenceDuration } from "@/lib/utils";
 import { uploadCoverPhoto } from "@/lib/profile/cover-photo-actions";
+import { prepareImageForUpload } from "@/lib/utils/image-compression";
+import { FILE_UPLOAD } from "@/lib/constants/config";
 import type { Translator } from "@/lib/i18n";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
 import { logError } from "@/lib/errors";
@@ -214,8 +216,9 @@ export function ProfileDetail({
     setFeedback(null);
 
     try {
+      const prepared = await prepareImageForUpload(file);
       const formData = new FormData();
-      formData.append("cover", file);
+      formData.append("cover", prepared.file);
       const result = await uploadCoverPhoto(formData);
 
       if ("error" in result) {
@@ -227,7 +230,7 @@ export function ProfileDetail({
       }
     } catch (error) {
       logError(error, { action: "handleCoverFileChange" });
-      setFeedback({ type: "error", message: t("errors.serverError") });
+      setFeedback({ type: "error", message: t("errors.compressionFailed") });
     } finally {
       setIsUploadingCover(false);
       if (coverInputRef.current) {
@@ -308,7 +311,7 @@ export function ProfileDetail({
         <input
           ref={coverInputRef}
           type="file"
-          accept="image/jpeg,image/png,image/webp"
+          accept={FILE_UPLOAD.inputAccept}
           onChange={handleCoverFileChange}
           className="hidden"
           aria-label={t("myPage.coverPhoto")}

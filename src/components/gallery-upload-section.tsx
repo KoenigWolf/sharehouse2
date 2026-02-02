@@ -6,6 +6,9 @@ import { m, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { uploadRoomPhoto } from "@/lib/room-photos/actions";
+import { prepareImageForUpload } from "@/lib/utils/image-compression";
+import { extractTakenAt } from "@/lib/utils/exif";
+import { FILE_UPLOAD } from "@/lib/constants/config";
 import { useI18n } from "@/hooks/use-i18n";
 
 export function GalleryUploadSection() {
@@ -31,21 +34,32 @@ export function GalleryUploadSection() {
       setError("");
       setSuccess("");
 
-      const formData = new FormData();
-      formData.append("photo", file);
-      if (caption.trim()) {
-        formData.append("caption", caption.trim());
-      }
+      try {
+        // Canvas 圧縮で EXIF が消えるため、圧縮前に抽出
+        const takenAt = await extractTakenAt(file);
+        const prepared = await prepareImageForUpload(file);
 
-      const result = await uploadRoomPhoto(formData);
+        const formData = new FormData();
+        formData.append("photo", prepared.file);
+        if (caption.trim()) {
+          formData.append("caption", caption.trim());
+        }
+        if (takenAt) {
+          formData.append("takenAt", takenAt);
+        }
 
-      if ("error" in result) {
-        setError(result.error);
-      } else {
-        setSuccess(t("roomPhotos.uploadSuccess"));
-        setCaption("");
-        router.refresh();
-        setTimeout(() => setSuccess(""), 3000);
+        const result = await uploadRoomPhoto(formData);
+
+        if ("error" in result) {
+          setError(result.error);
+        } else {
+          setSuccess(t("roomPhotos.uploadSuccess"));
+          setCaption("");
+          router.refresh();
+          setTimeout(() => setSuccess(""), 3000);
+        }
+      } catch {
+        setError(t("errors.compressionFailed"));
       }
 
       setIsUploading(false);
@@ -117,9 +131,10 @@ export function GalleryUploadSection() {
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/jpeg,image/png,image/webp"
+        accept={FILE_UPLOAD.inputAccept}
         onChange={handleFileChange}
         className="hidden"
+        aria-label={t("roomPhotos.uploadButton")}
       />
     </div>
   );

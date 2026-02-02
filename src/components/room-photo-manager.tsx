@@ -10,7 +10,7 @@ import { deleteRoomPhoto } from "@/lib/room-photos/actions";
 import { useI18n } from "@/hooks/use-i18n";
 import { useBulkUpload } from "@/hooks/use-bulk-upload";
 import { BulkUploadProgress } from "@/components/bulk-upload-progress";
-import { ROOM_PHOTOS } from "@/lib/constants/config";
+import { ROOM_PHOTOS, FILE_UPLOAD } from "@/lib/constants/config";
 import type { RoomPhoto } from "@/domain/room-photo";
 
 interface RoomPhotoManagerProps {
@@ -225,10 +225,11 @@ export function RoomPhotoManager({
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/jpeg,image/png,image/webp"
+          accept={FILE_UPLOAD.inputAccept}
           multiple
           onChange={handleFileChange}
           className="hidden"
+          aria-label={t("roomPhotos.upload")}
         />
       </div>
     </div>

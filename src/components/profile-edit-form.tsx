@@ -12,6 +12,8 @@ import { updateTeaTimeSetting } from "@/lib/tea-time/actions";
 import { updateNotificationSetting } from "@/lib/notifications/actions";
 import type { NotificationKey } from "@/domain/notification";
 import { getInitials } from "@/lib/utils";
+import { prepareImageForUpload } from "@/lib/utils/image-compression";
+import { FILE_UPLOAD } from "@/lib/constants/config";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
 
 interface NotificationSettingsData {
@@ -227,15 +229,20 @@ export function ProfileEditForm({
     setError("");
     setSuccess(false);
 
-    const formDataUpload = new FormData();
-    formDataUpload.append("avatar", file);
+    try {
+      const prepared = await prepareImageForUpload(file);
+      const formDataUpload = new FormData();
+      formDataUpload.append("avatar", prepared.file);
 
-    const result = await uploadAvatar(formDataUpload);
+      const result = await uploadAvatar(formDataUpload);
 
-    if ("error" in result) {
-      setError(result.error);
-    } else if ("url" in result) {
-      setAvatarUrl(result.url);
+      if ("error" in result) {
+        setError(result.error);
+      } else if ("url" in result) {
+        setAvatarUrl(result.url);
+      }
+    } catch {
+      setError(t("errors.compressionFailed"));
     }
 
     setIsUploading(false);
@@ -404,7 +411,7 @@ export function ProfileEditForm({
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/jpeg,image/png,image/webp"
+              accept={FILE_UPLOAD.inputAccept}
               onChange={handleAvatarChange}
               className="hidden"
               aria-label={t("profile.changePhoto")}
