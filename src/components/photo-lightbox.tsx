@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useCallback, useState, memo } from "react";
+import { useEffect, useCallback, useState, useRef, memo } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { useI18n } from "@/hooks/use-i18n";
+import { ROOM_PHOTOS } from "@/lib/constants/config";
 import type { RoomPhoto } from "@/domain/room-photo";
 import type { Profile } from "@/domain/profile";
 
@@ -16,6 +17,9 @@ interface PhotoLightboxProps {
   selectedIndex: number | null;
   onClose: () => void;
   onNavigate: (index: number) => void;
+  currentUserId?: string | null;
+  onDelete?: (photoId: string) => Promise<boolean>;
+  onUpdateCaption?: (photoId: string, caption: string | null) => Promise<boolean>;
 }
 
 function CloseIcon() {
@@ -39,6 +43,15 @@ function ChevronRightIcon() {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="9 18 15 12 9 6" />
+    </svg>
+  );
+}
+
+function TrashIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="3 6 5 6 21 6" />
+      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
     </svg>
   );
 }
@@ -123,11 +136,33 @@ export function PhotoLightbox({
   selectedIndex,
   onClose,
   onNavigate,
+  currentUserId = null,
+  onDelete,
+  onUpdateCaption,
 }: PhotoLightboxProps) {
   const t = useI18n();
+  const captionInputRef = useRef<HTMLInputElement>(null);
 
   const isOpen = selectedIndex !== null;
   const photo = selectedIndex !== null ? photos[selectedIndex] : null;
+  const isOwner =
+    photo !== null && currentUserId !== null && photo.user_id === currentUserId;
+
+  const [isEditingCaption, setIsEditingCaption] = useState(false);
+  const [captionDraft, setCaptionDraft] = useState("");
+  const [isSavingCaption, setIsSavingCaption] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // 写真切り替え時に編集状態をリセット（React推奨パターン: render中の条件付きsetState）
+  const [prevIndex, setPrevIndex] = useState(selectedIndex);
+  if (selectedIndex !== prevIndex) {
+    setPrevIndex(selectedIndex);
+    setIsEditingCaption(false);
+    setCaptionDraft("");
+    setIsSavingCaption(false);
+    setIsDeleting(false);
+  }
+
   const hasPrev = selectedIndex !== null && selectedIndex > 0;
   const hasNext = selectedIndex !== null && selectedIndex < photos.length - 1;
 
@@ -143,10 +178,66 @@ export function PhotoLightbox({
     }
   }, [selectedIndex, photos.length, onNavigate]);
 
+  const handleStartEdit = useCallback(() => {
+    if (!isOwner || !photo) return;
+    setCaptionDraft(photo.caption || "");
+    setIsEditingCaption(true);
+    setTimeout(() => captionInputRef.current?.focus(), 0);
+  }, [isOwner, photo]);
+
+  const handleSaveCaption = useCallback(async () => {
+    if (!photo || !onUpdateCaption) return;
+
+    const trimmed = captionDraft.trim() || null;
+    if (trimmed === (photo.caption || null)) {
+      setIsEditingCaption(false);
+      return;
+    }
+
+    setIsSavingCaption(true);
+    const success = await onUpdateCaption(photo.id, trimmed);
+    setIsSavingCaption(false);
+
+    if (success) {
+      setIsEditingCaption(false);
+    }
+  }, [photo, captionDraft, onUpdateCaption]);
+
+  const handleCancelEdit = useCallback(() => {
+    setIsEditingCaption(false);
+    setCaptionDraft("");
+  }, []);
+
+  const handleCaptionKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        handleSaveCaption();
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        handleCancelEdit();
+      }
+    },
+    [handleSaveCaption, handleCancelEdit]
+  );
+
+  const handleDelete = useCallback(async () => {
+    if (!photo || !onDelete) return;
+    if (!window.confirm(t("roomPhotos.deleteConfirm"))) return;
+
+    setIsDeleting(true);
+    await onDelete(photo.id);
+    setIsDeleting(false);
+  }, [photo, onDelete, t]);
+
   useEffect(() => {
     if (!isOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      // キャプション編集中はライトボックスのキーボード操作を抑止
+      if (isEditingCaption) return;
+
       switch (e.key) {
         case "Escape":
           onClose();
@@ -162,7 +253,7 @@ export function PhotoLightbox({
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose, handlePrev, handleNext]);
+  }, [isOpen, onClose, handlePrev, handleNext, isEditingCaption]);
 
   useEffect(() => {
     if (isOpen) {
@@ -274,7 +365,59 @@ export function PhotoLightbox({
                     {photo.profile?.name || t("roomPhotos.unknownUser")}
                   </p>
                 </div>
+
+                {isOwner && onDelete && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-xs"
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    aria-label={t("roomPhotos.delete")}
+                    className="text-white/40 hover:text-white/80 hover:bg-white/10 shrink-0"
+                  >
+                    {isDeleting ? (
+                      <Spinner size="xs" variant="light" />
+                    ) : (
+                      <TrashIcon />
+                    )}
+                  </Button>
+                )}
               </div>
+
+              {(photo.caption || isOwner) && (
+                <div className="mt-2">
+                  {isEditingCaption ? (
+                    <div className="flex items-center gap-2">
+                      <input
+                        ref={captionInputRef}
+                        type="text"
+                        value={captionDraft}
+                        onChange={(e) => setCaptionDraft(e.target.value)}
+                        onKeyDown={handleCaptionKeyDown}
+                        maxLength={ROOM_PHOTOS.maxCaptionLength}
+                        placeholder={t("roomPhotos.captionPlaceholder")}
+                        disabled={isSavingCaption}
+                        className="flex-1 bg-transparent border-b border-white/30 text-sm text-white/80 placeholder:text-white/30 outline-none py-1 focus:border-white/60 transition-colors"
+                      />
+                      {isSavingCaption && (
+                        <Spinner size="xs" variant="light" />
+                      )}
+                    </div>
+                  ) : (
+                    <p
+                      onClick={isOwner ? handleStartEdit : undefined}
+                      className={`text-sm ${
+                        photo.caption
+                          ? "text-white/60"
+                          : "text-white/30 italic"
+                      } ${isOwner ? "cursor-text hover:text-white/80 transition-colors" : ""}`}
+                    >
+                      {photo.caption || t("roomPhotos.captionPlaceholder")}
+                    </p>
+                  )}
+                </div>
+              )}
             </m.div>
           </m.div>
         </m.div>
