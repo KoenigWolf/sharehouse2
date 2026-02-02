@@ -868,7 +868,7 @@ export function ProfileEditForm({
         </div>
 
         {/* Save Button - sticky on mobile, normal flow on desktop */}
-        <div className="sticky bottom-20 sm:static z-30 mt-8 pt-4 pb-2 sm:pb-0 bg-[#fafafa] sm:bg-transparent border-t border-[#e4e4e7] sm:border-t-0">
+        <div className="sticky bottom-20 sm:static z-30 mt-8 pt-4 pb-2 sm:pb-0 bg-white sm:bg-transparent border-t border-[#e4e4e7] sm:border-t-0">
           <Button
             type="submit"
             size="xl"

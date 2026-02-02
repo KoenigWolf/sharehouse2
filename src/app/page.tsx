@@ -43,7 +43,7 @@ export default async function Home() {
   const mockCount = remainingMockProfiles.length;
 
   return (
-    <div className="min-h-screen bg-[#fafafa] flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       <Header />
 
       <main className="flex-1 pb-20 sm:pb-0">

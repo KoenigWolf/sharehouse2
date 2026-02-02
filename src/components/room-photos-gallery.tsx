@@ -142,7 +142,7 @@ function UploadCard({
         variant="dashed"
         onClick={handleClick}
         disabled={isUploading}
-        className="w-full h-auto p-0 flex-col aspect-square bg-[#fafafa] hover:bg-[#f4f4f5] hover:border-[#a1a1aa]"
+        className="w-full h-auto p-0 flex-col aspect-square bg-[#f4f4f5] hover:bg-[#e4e4e7] hover:border-[#a1a1aa]"
       >
         {isUploading ? (
           <Spinner />

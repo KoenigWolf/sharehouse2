@@ -23,7 +23,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="min-h-screen bg-[#fafafa] flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       <header className="border-b border-[#e4e4e7] bg-white">
         <div className="container mx-auto px-6 h-16 flex items-center">
           <Link href="/" className="text-lg tracking-wider text-[#18181b]">

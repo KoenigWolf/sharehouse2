@@ -32,7 +32,7 @@ export default function GlobalError({
         <div
           style={{
             minHeight: "100vh",
-            backgroundColor: "#fafafa",
+            backgroundColor: "#ffffff",
             display: "flex",
             flexDirection: "column",
             fontFamily:

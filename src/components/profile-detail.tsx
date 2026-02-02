@@ -296,7 +296,7 @@ export function ProfileDetail({
       {isMockProfile && (
         <m.div
           variants={itemVariants}
-          className="mb-6 py-3 px-4 border border-dashed border-[#d4d4d8] bg-[#fafafa] rounded-lg"
+          className="mb-6 py-3 px-4 border border-dashed border-[#d4d4d8] bg-[#f4f4f5] rounded-lg"
           role="alert"
         >
           <p className="text-sm text-[#71717a]">{t("profile.mockProfileBanner")}</p>

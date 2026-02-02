@@ -194,7 +194,7 @@ export function RoomPhotoManager({
               variant="dashed"
               onClick={handleUploadClick}
               disabled={isUploading}
-              className="aspect-square h-auto flex-col gap-1 bg-[#fafafa] hover:bg-[#f4f4f5]"
+              className="aspect-square h-auto flex-col gap-1 bg-[#f4f4f5] hover:bg-[#e4e4e7]"
             >
               {isUploading ? (
                 <Spinner />

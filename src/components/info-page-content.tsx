@@ -109,7 +109,7 @@ const WifiCard = memo(function WifiCard({ wifiInfos }: WifiCardProps) {
 
   return (
     <div className="bg-white border border-[#e4e4e7] rounded-lg overflow-hidden">
-      <div className="px-4 py-3 border-b border-[#e4e4e7] bg-[#fafafa]">
+      <div className="px-4 py-3 border-b border-[#e4e4e7] bg-[#f4f4f5]">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-[10px] text-[#a1a1aa] tracking-wide uppercase">
@@ -152,7 +152,7 @@ const WifiCard = memo(function WifiCard({ wifiInfos }: WifiCardProps) {
         ))}
       </div>
 
-      <div className="px-4 py-2 bg-[#fafafa] border-t border-[#e4e4e7]">
+      <div className="px-4 py-2 bg-[#f4f4f5] border-t border-[#e4e4e7]">
         <p className="text-[10px] text-[#a1a1aa]">
           {t("info.wifiNote")}
         </p>

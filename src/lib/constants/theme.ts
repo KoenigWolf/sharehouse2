@@ -17,7 +17,7 @@ export const colors = {
   },
 
   background: {
-    primary: "#fafafa",
+    primary: "#ffffff",
     secondary: "#f4f4f5",
     card: "#ffffff",
   },

@@ -197,7 +197,7 @@ export function ResidentsGrid({
           type="button"
           variant="ghost"
           onClick={() => setShowStats((prev) => !prev)}
-          className="w-full h-auto flex items-center justify-between px-4 sm:px-5 py-3 hover:bg-[#fafafa]"
+          className="w-full h-auto flex items-center justify-between px-4 sm:px-5 py-3 hover:bg-[#f4f4f5]"
         >
           <h3 className="text-sm text-[#18181b] tracking-wide">{t("residents.statsTitle")}</h3>
           <motion.span
@@ -410,7 +410,7 @@ export function ResidentsGrid({
                 );
               })}
             </div>
-            <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-[#fafafa] to-transparent pointer-events-none" />
+            <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-white to-transparent pointer-events-none" />
           </div>
         </div>
       </div>
