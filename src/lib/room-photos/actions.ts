@@ -91,10 +91,11 @@ export async function uploadRoomPhoto(formData: FormData): Promise<UploadRespons
     const sanitizedExt = sanitizeFileName(fileExt).slice(0, 10);
     const fileName = `${user.id}/${Date.now()}.${sanitizedExt}`;
 
+    // クライアント側で EXIF 抽出済みなら FormData から受け取る（圧縮後は EXIF 消失）
+    const clientTakenAt = (formData.get("takenAt") as string) || null;
     const arrayBuffer = await file.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
-
-    const takenAt = await extractTakenAt(uint8Array);
+    const takenAt = clientTakenAt || (await extractTakenAt(uint8Array));
 
     const { error: uploadError } = await supabase.storage
       .from("room-photos")
