@@ -7,6 +7,7 @@ import { logError } from "@/lib/errors";
 import { getServerTranslator } from "@/lib/i18n/server";
 import { RateLimiters, formatRateLimitError, isValidUUID } from "@/lib/security";
 import { enforceAllowedOrigin } from "@/lib/security/request";
+import { ROOM_PHOTOS } from "@/lib/constants/config";
 import type { RoomPhoto } from "@/domain/room-photo";
 import type { Profile } from "@/domain/profile";
 
@@ -16,7 +17,7 @@ import type { Profile } from "@/domain/profile";
 type UpdateResponse = { success: true } | { error: string };
 type UploadResponse = { success: true; url: string } | { error: string };
 
-const MAX_PHOTOS_PER_USER = 5;
+const MAX_PHOTOS_PER_USER = ROOM_PHOTOS.maxPhotosPerUser;
 
 /**
  * 部屋の写真をアップロードする
@@ -287,5 +288,89 @@ export async function getAllRoomPhotos(): Promise<
   } catch (error) {
     logError(error, { action: "getAllRoomPhotos" });
     return [];
+  }
+}
+
+/**
+ * 一括アップロードされた写真をDBに登録する
+ *
+ * クライアントから直接Supabase Storageにアップロード済みのファイルパスを受け取り、
+ * バッチでDB挿入する。1回のDB操作で全レコードを挿入するため効率的。
+ *
+ * @param storagePaths - Storageにアップロード済みのファイルパス配列
+ * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
+ */
+export async function registerBulkPhotos(
+  storagePaths: string[]
+): Promise<UpdateResponse> {
+  const t = await getServerTranslator();
+
+  const originError = await enforceAllowedOrigin(t, "registerBulkPhotos");
+  if (originError) return { error: originError };
+
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return { error: t("errors.unauthorized") };
+
+    if (
+      !Array.isArray(storagePaths) ||
+      storagePaths.length === 0 ||
+      storagePaths.length > ROOM_PHOTOS.maxBulkUpload
+    ) {
+      return { error: t("errors.invalidInput") };
+    }
+
+    const hasInvalidPath = storagePaths.some(
+      (p) => typeof p !== "string" || !p.startsWith(`${user.id}/`)
+    );
+    if (hasInvalidPath) return { error: t("errors.invalidInput") };
+
+    const { count, error: countError } = await supabase
+      .from("room_photos")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id);
+
+    if (countError) {
+      logError(countError, {
+        action: "registerBulkPhotos.countCheck",
+        userId: user.id,
+      });
+      return { error: t("errors.serverError") };
+    }
+
+    if ((count ?? 0) + storagePaths.length > MAX_PHOTOS_PER_USER) {
+      return { error: t("errors.maxPhotosReached") };
+    }
+
+    const records = storagePaths.map((path) => {
+      const { data } = supabase.storage.from("room-photos").getPublicUrl(path);
+      return {
+        user_id: user.id,
+        photo_url: data.publicUrl,
+        caption: null,
+      };
+    });
+
+    const { error: insertError } = await supabase
+      .from("room_photos")
+      .insert(records);
+
+    if (insertError) {
+      logError(insertError, {
+        action: "registerBulkPhotos",
+        userId: user.id,
+      });
+      return { error: t("errors.saveFailed") };
+    }
+
+    CacheStrategy.afterRoomPhotoUpdate();
+    return { success: true };
+  } catch (error) {
+    logError(error, { action: "registerBulkPhotos" });
+    return { error: t("errors.serverError") };
   }
 }
