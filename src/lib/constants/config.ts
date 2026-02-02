@@ -56,7 +56,7 @@ export const RATE_LIMIT = {
     maxRequestsPerMinute: 60,
   },
   upload: {
-    maxUploadsPerHour: 10,
+    maxUploadsPerHour: 100,
   },
 } as const;
 
@@ -66,7 +66,8 @@ export const CACHE = {
 } as const;
 
 export const ROOM_PHOTOS = {
-  maxPhotosPerUser: 5,
+  maxPhotosPerUser: 100,
+  maxBulkUpload: 50,
   maxSizeBytes: 5 * 1024 * 1024,
   maxSizeMB: 5,
   allowedTypes: ["image/jpeg", "image/png", "image/webp"] as const,
