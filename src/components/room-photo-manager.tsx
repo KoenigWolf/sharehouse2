@@ -6,8 +6,11 @@ import { m, AnimatePresence } from "framer-motion";
 import { X, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { uploadRoomPhoto, deleteRoomPhoto } from "@/lib/room-photos/actions";
+import { deleteRoomPhoto } from "@/lib/room-photos/actions";
 import { useI18n } from "@/hooks/use-i18n";
+import { useBulkUpload } from "@/hooks/use-bulk-upload";
+import { BulkUploadProgress } from "@/components/bulk-upload-progress";
+import { ROOM_PHOTOS } from "@/lib/constants/config";
 import type { RoomPhoto } from "@/domain/room-photo";
 
 interface RoomPhotoManagerProps {
@@ -20,23 +23,34 @@ interface RoomPhotoManagerProps {
  * 部屋写真管理コンポーネント
  *
  * 設定ページに組み込み、ユーザーが自分の部屋写真をアップロード・削除できるUIを提供。
- * 最大5枚までの写真をグリッド表示し、各写真には削除ボタンを配置。
- * アップロードはFormData経由のサーバーアクションで処理する。
+ * 複数枚の一括アップロードに対応。クライアント側で圧縮→直接Storageアップロード。
  *
  * @param props.photos - 現在の写真一覧
- * @param props.maxPhotos - 最大アップロード枚数（デフォルト: 5）
+ * @param props.maxPhotos - 最大アップロード枚数（デフォルト: config値）
  */
-export function RoomPhotoManager({ photos, maxPhotos = 5, compact = false }: RoomPhotoManagerProps) {
+export function RoomPhotoManager({
+  photos,
+  maxPhotos = ROOM_PHOTOS.maxPhotosPerUser,
+  compact = false,
+}: RoomPhotoManagerProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const t = useI18n();
 
   const [currentPhotos, setCurrentPhotos] = useState<RoomPhoto[]>(photos);
-  const [isUploading, setIsUploading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+
+  const {
+    items: uploadItems,
+    isUploading,
+    completedCount,
+    totalCount,
+    feedback: uploadFeedback,
+    startUpload,
+  } = useBulkUpload();
 
   const canUpload = currentPhotos.length < maxPhotos;
+  const maxRemaining = maxPhotos - currentPhotos.length;
 
   const handleUploadClick = () => {
     if (canUpload) {
@@ -44,60 +58,44 @@ export function RoomPhotoManager({ photos, maxPhotos = 5, compact = false }: Roo
     }
   };
 
-  const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = e.target.files;
+      if (!files || files.length === 0) return;
 
-    setIsUploading(true);
-    setError("");
-    setSuccess("");
+      setError("");
+      startUpload(Array.from(files), maxRemaining);
 
-    const formData = new FormData();
-    formData.append("photo", file);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    },
+    [startUpload, maxRemaining]
+  );
 
-    const result = await uploadRoomPhoto(formData);
+  const handleDelete = useCallback(
+    async (photoId: string) => {
+      if (!window.confirm(t("roomPhotos.deleteConfirm"))) {
+        return;
+      }
 
-    if ("error" in result) {
-      setError(result.error);
-    } else {
-      setSuccess(t("roomPhotos.uploadSuccess"));
-      const newPhoto: RoomPhoto = {
-        id: `temp-${Date.now()}`,
-        user_id: "",
-        photo_url: result.url,
-        caption: null,
-        display_order: currentPhotos.length,
-        created_at: new Date().toISOString(),
-      };
-      setCurrentPhotos((prev) => [...prev, newPhoto]);
-      setTimeout(() => setSuccess(""), 3000);
-    }
+      setDeletingId(photoId);
+      setError("");
 
-    setIsUploading(false);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  }, [currentPhotos.length, t]);
+      const result = await deleteRoomPhoto(photoId);
 
-  const handleDelete = useCallback(async (photoId: string) => {
-    if (!window.confirm(t("roomPhotos.deleteConfirm"))) {
-      return;
-    }
+      if ("error" in result) {
+        setError(result.error);
+      } else {
+        setCurrentPhotos((prev) => prev.filter((p) => p.id !== photoId));
+      }
 
-    setDeletingId(photoId);
-    setError("");
-    setSuccess("");
+      setDeletingId(null);
+    },
+    [t]
+  );
 
-    const result = await deleteRoomPhoto(photoId);
-
-    if ("error" in result) {
-      setError(result.error);
-    } else {
-      setCurrentPhotos((prev) => prev.filter((p) => p.id !== photoId));
-    }
-
-    setDeletingId(null);
-  }, [t]);
+  const activeFeedback = uploadFeedback || (error ? { type: "error" as const, message: error } : null);
 
   return (
     <div className={compact ? "" : "bg-white border border-[#e5e5e5]"}>
@@ -114,30 +112,38 @@ export function RoomPhotoManager({ photos, maxPhotos = 5, compact = false }: Roo
 
       <div className={compact ? "space-y-4" : "p-4 space-y-4"}>
         <AnimatePresence mode="wait">
-          {error && (
+          {isUploading && (
+            <BulkUploadProgress
+              key="progress"
+              items={uploadItems}
+              completedCount={completedCount}
+              totalCount={totalCount}
+            />
+          )}
+          {!isUploading && activeFeedback && (
             <m.div
-              key="error"
-              role="alert"
+              key={activeFeedback.type}
+              role={activeFeedback.type === "error" ? "alert" : undefined}
               aria-live="polite"
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.2 }}
-              className="py-3 px-4 bg-[#faf8f8] border-l-2 border-[#c9a0a0]"
+              className={`py-3 px-4 ${
+                activeFeedback.type === "error"
+                  ? "bg-[#faf8f8] border-l-2 border-[#c9a0a0]"
+                  : "bg-[#f8faf8] border-l-2 border-[#a0c9a0]"
+              }`}
             >
-              <p className="text-sm text-[#8b6b6b]">{error}</p>
-            </m.div>
-          )}
-          {success && (
-            <m.div
-              key="success"
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
-              className="py-3 px-4 bg-[#f8faf8] border-l-2 border-[#a0c9a0]"
-            >
-              <p className="text-sm text-[#6b8b6b]">{success}</p>
+              <p
+                className={`text-sm ${
+                  activeFeedback.type === "error"
+                    ? "text-[#8b6b6b]"
+                    : "text-[#6b8b6b]"
+                }`}
+              >
+                {activeFeedback.message}
+              </p>
             </m.div>
           )}
         </AnimatePresence>
@@ -190,7 +196,9 @@ export function RoomPhotoManager({ photos, maxPhotos = 5, compact = false }: Roo
               ) : (
                 <>
                   <Plus className="w-5 h-5 text-[#a3a3a3]" />
-                  <span className="text-[9px] text-[#a3a3a3]">{t("roomPhotos.upload")}</span>
+                  <span className="text-[9px] text-[#a3a3a3]">
+                    {t("roomPhotos.upload")}
+                  </span>
                 </>
               )}
             </Button>
@@ -199,7 +207,7 @@ export function RoomPhotoManager({ photos, maxPhotos = 5, compact = false }: Roo
 
         {canUpload && (
           <p className="text-[10px] text-[#a3a3a3]">
-            {t("profile.photoFormat")}
+            {t("profile.photoFormat")} — {t("roomPhotos.selectMultiple")}
           </p>
         )}
 
@@ -213,6 +221,7 @@ export function RoomPhotoManager({ photos, maxPhotos = 5, compact = false }: Roo
           ref={fileInputRef}
           type="file"
           accept="image/jpeg,image/png,image/webp"
+          multiple
           onChange={handleFileChange}
           className="hidden"
         />

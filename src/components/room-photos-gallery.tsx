@@ -1,15 +1,17 @@
 "use client";
 
 import { useState, useRef, useCallback, memo } from "react";
-import { useRouter } from "next/navigation";
 import { m, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { uploadRoomPhoto } from "@/lib/room-photos/actions";
 import { useI18n } from "@/hooks/use-i18n";
+import { useUser } from "@/hooks/use-user";
+import { useBulkUpload } from "@/hooks/use-bulk-upload";
+import { BulkUploadProgress } from "@/components/bulk-upload-progress";
 import { PhotoLightbox } from "@/components/photo-lightbox";
+import { ROOM_PHOTOS } from "@/lib/constants/config";
 import type { RoomPhoto } from "@/domain/room-photo";
 import type { Profile } from "@/domain/profile";
 
@@ -103,7 +105,13 @@ const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardPr
 
 PhotoCard.displayName = "PhotoCard";
 
-function UploadCard({ onUpload, isUploading }: { onUpload: (file: File) => void; isUploading: boolean }) {
+function UploadCard({
+  onSelectFiles,
+  isUploading,
+}: {
+  onSelectFiles: (files: File[]) => void;
+  isUploading: boolean;
+}) {
   const t = useI18n();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -112,9 +120,9 @@ function UploadCard({ onUpload, isUploading }: { onUpload: (file: File) => void;
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      onUpload(file);
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      onSelectFiles(Array.from(files));
     }
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -142,6 +150,9 @@ function UploadCard({ onUpload, isUploading }: { onUpload: (file: File) => void;
             <span className="text-[10px] text-[#a3a3a3] mt-1">
               {t("roomPhotos.uploadButton")}
             </span>
+            <span className="text-[9px] text-[#d4d4d4] mt-0.5">
+              {t("roomPhotos.selectMultiple")}
+            </span>
           </>
         )}
       </Button>
@@ -149,6 +160,7 @@ function UploadCard({ onUpload, isUploading }: { onUpload: (file: File) => void;
         ref={fileInputRef}
         type="file"
         accept="image/jpeg,image/png,image/webp"
+        multiple
         onChange={handleFileChange}
         className="hidden"
         aria-hidden="true"
@@ -181,10 +193,22 @@ SectionHeader.displayName = "SectionHeader";
 
 export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
   const t = useI18n();
-  const router = useRouter();
+  const { userId } = useUser();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
+
+  const {
+    items: uploadItems,
+    isUploading,
+    completedCount,
+    totalCount,
+    feedback,
+    startUpload,
+  } = useBulkUpload();
+
+  const userPhotoCount = userId
+    ? photos.filter((p) => p.user_id === userId).length
+    : 0;
+  const maxRemaining = ROOM_PHOTOS.maxPhotosPerUser - userPhotoCount;
 
   const handlePhotoClick = useCallback((index: number) => {
     setSelectedIndex(index);
@@ -198,25 +222,12 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
     setSelectedIndex(index);
   }, []);
 
-  const handleUpload = useCallback(async (file: File) => {
-    setIsUploading(true);
-    setFeedback(null);
-
-    const formData = new FormData();
-    formData.append("photo", file);
-
-    const result = await uploadRoomPhoto(formData);
-
-    if ("error" in result) {
-      setFeedback({ type: "error", message: result.error });
-    } else {
-      setFeedback({ type: "success", message: t("roomPhotos.uploadSuccess") });
-      router.refresh();
-      setTimeout(() => setFeedback(null), 3000);
-    }
-
-    setIsUploading(false);
-  }, [router, t]);
+  const handleSelectFiles = useCallback(
+    (files: File[]) => {
+      startUpload(files, maxRemaining);
+    },
+    [startUpload, maxRemaining]
+  );
 
   const hasPhotos = photos.length > 0;
 
@@ -234,7 +245,15 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
         />
 
         <AnimatePresence mode="wait">
-          {feedback && (
+          {isUploading && (
+            <BulkUploadProgress
+              key="progress"
+              items={uploadItems}
+              completedCount={completedCount}
+              totalCount={totalCount}
+            />
+          )}
+          {!isUploading && feedback && (
             <m.div
               key={feedback.type}
               role={feedback.type === "error" ? "alert" : undefined}
@@ -259,7 +278,10 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
         </AnimatePresence>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-          <UploadCard onUpload={handleUpload} isUploading={isUploading} />
+          <UploadCard
+            onSelectFiles={handleSelectFiles}
+            isUploading={isUploading}
+          />
           {photos.map((photo, index) => (
             <PhotoCard
               key={photo.id}
