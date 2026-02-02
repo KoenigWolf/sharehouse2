@@ -5,36 +5,36 @@
 
 export const colors = {
   // Brand colors (DESIGN_GUIDELINES.md: black-based, no red)
-  primary: "#272a26",
-  primaryHover: "#363933",
+  primary: "#18181b",
+  primaryHover: "#27272a",
 
   text: {
-    primary: "#272a26",
-    secondary: "#636861",
-    tertiary: "#959892",
-    inverse: "#fafbf9",
-    placeholder: "#bdc0ba",
+    primary: "#18181b",
+    secondary: "#71717a",
+    tertiary: "#a1a1aa",
+    inverse: "#ffffff",
+    placeholder: "#d4d4d8",
   },
 
   background: {
-    primary: "#f5f6f4",
-    secondary: "#eceee9",
-    card: "#fafbf9",
+    primary: "#fafafa",
+    secondary: "#f4f4f5",
+    card: "#ffffff",
   },
 
   border: {
-    primary: "#dddfd9",
-    secondary: "#bdc0ba",
+    primary: "#e4e4e7",
+    secondary: "#d4d4d8",
   },
 
   // Status colors (DESIGN_GUIDELINES.md: muted, low-saturation)
   status: {
-    success: "#4d7356",
-    successBg: "#edf5ee",
-    successBorder: "#8ab896",
-    error: "#856259",
-    errorBg: "#f9f2f0",
-    errorBorder: "#c7a099",
+    success: "#3d6b4a",
+    successBg: "#f0fdf4",
+    successBorder: "#93c5a0",
+    error: "#8b4040",
+    errorBg: "#fef2f2",
+    errorBorder: "#e5a0a0",
   },
 } as const;
 

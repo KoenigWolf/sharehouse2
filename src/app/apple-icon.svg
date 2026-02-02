@@ -1,4 +1,4 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
-  <circle cx="90" cy="90" r="85" fill="#272a26"/>
-  <text x="90" y="115" font-family="system-ui, sans-serif" font-size="80" font-weight="300" fill="#f5f6f4" text-anchor="middle">S</text>
+  <circle cx="90" cy="90" r="85" fill="#18181b"/>
+  <text x="90" y="115" font-family="system-ui, sans-serif" font-size="80" font-weight="300" fill="#fafafa" text-anchor="middle">S</text>
 </svg>
