@@ -22,16 +22,16 @@ export default async function RoomPhotosPage() {
   const photos = await getAllRoomPhotos();
 
   return (
-    <div className="min-h-screen bg-[#fafaf8] flex flex-col">
+    <div className="min-h-screen bg-[#f5f6f4] flex flex-col">
       <Header />
 
       <main className="flex-1 pb-20 sm:pb-0">
         <div className="container mx-auto px-4 sm:px-6 py-5 sm:py-8 max-w-4xl">
           <div className="mb-6 sm:mb-8">
-            <h1 className="text-xl text-[#1a1a1a] tracking-wide font-light">
+            <h1 className="text-xl text-[#272a26] tracking-wide font-light">
               {t("roomPhotos.title")}
             </h1>
-            <p className="text-xs text-[#a3a3a3] mt-1">
+            <p className="text-xs text-[#959892] mt-1">
               {t("roomPhotos.subtitle")}
             </p>
           </div>

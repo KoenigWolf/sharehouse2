@@ -85,7 +85,7 @@ export function WifiInfoList({ wifiInfos, isAdmin }: WifiInfoListProps) {
   if (wifiInfos.length === 0 && !isAdmin) {
     return (
       <div className="text-center py-12">
-        <p className="text-sm text-[#737373]">{t("wifi.noInfo")}</p>
+        <p className="text-sm text-[#636861]">{t("wifi.noInfo")}</p>
       </div>
     );
   }
@@ -93,7 +93,7 @@ export function WifiInfoList({ wifiInfos, isAdmin }: WifiInfoListProps) {
   return (
     <div className="space-y-4">
       {error && (
-        <div className="py-3 px-4 border-l-2 border-[#c9a0a0] bg-[#faf8f8] text-sm text-[#8b6b6b]">
+        <div className="py-3 px-4 border-l-2 border-[#c7a099] bg-[#f9f2f0] text-sm text-[#856259]">
           {error}
         </div>
       )}
@@ -122,7 +122,7 @@ export function WifiInfoList({ wifiInfos, isAdmin }: WifiInfoListProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2, delay: index * 0.05 }}
-            className="bg-white border border-[#e5e5e5] rounded-lg p-4"
+            className="bg-white border border-[#dddfd9] rounded-lg p-4"
           >
             {editingId === wifi.id ? (
               <WifiInfoForm
@@ -133,28 +133,28 @@ export function WifiInfoList({ wifiInfos, isAdmin }: WifiInfoListProps) {
             ) : (
               <div>
                 {/* エリア名 */}
-                <h3 className="text-sm text-[#1a1a1a] font-medium tracking-wide mb-3">
+                <h3 className="text-sm text-[#272a26] font-medium tracking-wide mb-3">
                   {wifi.area_name}
                 </h3>
 
                 {/* SSID */}
                 <dl className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <dt className="text-[10px] text-[#a3a3a3] tracking-wide">
+                    <dt className="text-[10px] text-[#959892] tracking-wide">
                       SSID
                     </dt>
-                    <dd className="text-sm text-[#1a1a1a] font-mono">
+                    <dd className="text-sm text-[#272a26] font-mono">
                       {wifi.ssid}
                     </dd>
                   </div>
 
                   {/* パスワード */}
                   <div className="flex items-center justify-between">
-                    <dt className="text-[10px] text-[#a3a3a3] tracking-wide">
+                    <dt className="text-[10px] text-[#959892] tracking-wide">
                       {t("wifi.password")}
                     </dt>
                     <dd className="flex items-center gap-2">
-                      <span className="text-sm text-[#1a1a1a] font-mono">
+                      <span className="text-sm text-[#272a26] font-mono">
                         {visiblePasswords.has(wifi.id)
                           ? wifi.password
                           : "\u2022".repeat(8)}
@@ -182,7 +182,7 @@ export function WifiInfoList({ wifiInfos, isAdmin }: WifiInfoListProps) {
 
                 {/* 管理者アクション */}
                 {isAdmin && (
-                  <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[#e5e5e5]">
+                  <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[#dddfd9]">
                     <Button
                       type="button"
                       variant="outline"
@@ -214,7 +214,7 @@ export function WifiInfoList({ wifiInfos, isAdmin }: WifiInfoListProps) {
             <m.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white border border-[#e5e5e5] rounded-lg p-4"
+              className="bg-white border border-[#dddfd9] rounded-lg p-4"
             >
               <WifiInfoForm
                 onSave={handleSaved}

@@ -29,7 +29,7 @@ export default async function InfoPage() {
   ]);
 
   return (
-    <div className="min-h-screen bg-[#fafaf8] flex flex-col">
+    <div className="min-h-screen bg-[#f5f6f4] flex flex-col">
       <Header />
 
       <main className="flex-1 pb-20 sm:pb-0">

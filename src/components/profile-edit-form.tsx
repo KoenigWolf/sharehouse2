@@ -29,10 +29,10 @@ interface ProfileEditFormProps {
 function SectionLabel({ label }: { label: string }) {
   return (
     <div className="flex items-center gap-3 pt-8 pb-4">
-      <span className="text-[11px] tracking-wider text-[#a3a3a3] whitespace-nowrap">
+      <span className="text-[11px] tracking-wider text-[#959892] whitespace-nowrap">
         {label}
       </span>
-      <div className="flex-1 border-b border-[#e5e5e5]" />
+      <div className="flex-1 border-b border-[#dddfd9]" />
     </div>
   );
 }
@@ -56,9 +56,9 @@ function InputField({
 }) {
   return (
     <div className="space-y-2">
-      <label htmlFor={id} className="block text-xs text-[#737373] tracking-wide">
+      <label htmlFor={id} className="block text-xs text-[#636861] tracking-wide">
         {label}
-        {required && <span className="text-[#c9a0a0] ml-0.5">*</span>}
+        {required && <span className="text-[#c7a099] ml-0.5">*</span>}
       </label>
       <input
         id={id}
@@ -67,7 +67,7 @@ function InputField({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         required={required}
-        className="w-full h-11 px-4 bg-white border border-[#e5e5e5] rounded-md text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
+        className="w-full h-11 px-4 bg-white border border-[#dddfd9] rounded-md text-[#272a26] text-sm placeholder:text-[#bdc0ba] focus:outline-none focus:border-[#272a26] transition-colors"
       />
     </div>
   );
@@ -90,14 +90,14 @@ function SelectField({
 }) {
   return (
     <div className="space-y-2">
-      <label htmlFor={id} className="block text-xs text-[#737373] tracking-wide">
+      <label htmlFor={id} className="block text-xs text-[#636861] tracking-wide">
         {label}
       </label>
       <select
         id={id}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full h-11 px-4 bg-white border border-[#e5e5e5] rounded-md text-[#1a1a1a] text-sm focus:outline-none focus:border-[#1a1a1a] transition-colors"
+        className="w-full h-11 px-4 bg-white border border-[#dddfd9] rounded-md text-[#272a26] text-sm focus:outline-none focus:border-[#272a26] transition-colors"
       >
         {placeholder && <option value="">{placeholder}</option>}
         {options.map((opt) => (
@@ -129,7 +129,7 @@ function TextareaField({
 }) {
   return (
     <div className="space-y-2">
-      <label htmlFor={id} className="block text-xs text-[#737373] tracking-wide">
+      <label htmlFor={id} className="block text-xs text-[#636861] tracking-wide">
         {label}
       </label>
       <textarea
@@ -138,9 +138,9 @@ function TextareaField({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         rows={rows}
-        className="w-full px-4 py-3 bg-white border border-[#e5e5e5] rounded-md text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors resize-none leading-relaxed"
+        className="w-full px-4 py-3 bg-white border border-[#dddfd9] rounded-md text-[#272a26] text-sm placeholder:text-[#bdc0ba] focus:outline-none focus:border-[#272a26] transition-colors resize-none leading-relaxed"
       />
-      {hint && <p className="text-[10px] text-[#a3a3a3]">{hint}</p>}
+      {hint && <p className="text-[10px] text-[#959892]">{hint}</p>}
     </div>
   );
 }
@@ -351,9 +351,9 @@ export function ProfileEditForm({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="mb-6 py-3 px-4 bg-[#faf8f8] border-l-2 border-[#c9a0a0]"
+            className="mb-6 py-3 px-4 bg-[#f9f2f0] border-l-2 border-[#c7a099]"
           >
-            <p className="text-sm text-[#8b6b6b]">{error}</p>
+            <p className="text-sm text-[#856259]">{error}</p>
           </m.div>
         )}
         {success && (
@@ -363,9 +363,9 @@ export function ProfileEditForm({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="mb-6 py-3 px-4 bg-[#f8faf8] border-l-2 border-[#a0c9a0]"
+            className="mb-6 py-3 px-4 bg-[#edf5ee] border-l-2 border-[#8ab896]"
           >
-            <p className="text-sm text-[#6b8b6b]">{t("profile.saved")}</p>
+            <p className="text-sm text-[#4d7356]">{t("profile.saved")}</p>
           </m.div>
         )}
       </AnimatePresence>
@@ -379,7 +379,7 @@ export function ProfileEditForm({
               variant="ghost"
               onClick={handleAvatarClick}
               disabled={isUploading}
-              className="relative w-36 h-36 sm:w-44 sm:h-44 h-auto p-0 bg-[#f5f5f3] group block overflow-hidden hover:bg-[#f5f5f3] rounded-full"
+              className="relative w-36 h-36 sm:w-44 sm:h-44 p-0 bg-[#eceee9] group block overflow-hidden hover:bg-[#eceee9] rounded-full"
             >
               <Avatar className="absolute inset-0 size-full rounded-full">
                 <OptimizedAvatarImage
@@ -387,7 +387,7 @@ export function ProfileEditForm({
                   context="edit"
                   alt={t("a11y.profilePhotoAlt", { name: formData.name || "?" })}
                   fallback={getInitials(formData.name || "?")}
-                  fallbackClassName="bg-[#f5f5f3] text-[#a3a3a3] text-4xl rounded-full"
+                  fallbackClassName="bg-[#eceee9] text-[#959892] text-4xl rounded-full"
                 />
               </Avatar>
               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -407,8 +407,9 @@ export function ProfileEditForm({
               accept="image/jpeg,image/png,image/webp"
               onChange={handleAvatarChange}
               className="hidden"
+              aria-label={t("profile.changePhoto")}
             />
-            <p className="text-[10px] text-[#a3a3a3] text-center mt-2">
+            <p className="text-[10px] text-[#959892] text-center mt-2">
               {t("profile.photoFormat")}
             </p>
           </div>
@@ -461,7 +462,7 @@ export function ProfileEditForm({
           {interestsArray.length > 0 && (
             <div className="flex flex-wrap gap-1.5">
               {interestsArray.map((interest, i) => (
-                <span key={i} className="text-[10px] px-2 py-0.5 bg-[#f5f5f3] text-[#737373] rounded">
+                <span key={i} className="text-[10px] px-2 py-0.5 bg-[#eceee9] text-[#636861] rounded">
                   {interest}
                 </span>
               ))}
@@ -762,7 +763,7 @@ export function ProfileEditForm({
         {/* SNS */}
         <SectionLabel label={t("profile.sectionSns")} />
         <div className="space-y-4">
-          <p className="text-[10px] text-[#a3a3a3]">{t("profile.snsHint")}</p>
+          <p className="text-[10px] text-[#959892]">{t("profile.snsHint")}</p>
           <div className="grid grid-cols-2 gap-4">
             <InputField
               id="sns_x"
@@ -815,11 +816,11 @@ export function ProfileEditForm({
 
         {/* Tea Time & Notifications */}
         <SectionLabel label={`${t("teaTime.title")} & ${t("notifications.sectionTitle")}`} />
-        <div className="divide-y divide-[#f5f5f3]">
+        <div className="divide-y divide-[#eceee9]">
           <div className="flex items-center justify-between py-3">
             <div>
-              <p className="text-xs tracking-wide text-[#737373]">{t("teaTime.title")}</p>
-              <p className="text-[10px] text-[#a3a3a3]">
+              <p className="text-xs tracking-wide text-[#636861]">{t("teaTime.title")}</p>
+              <p className="text-[10px] text-[#959892]">
                 {teaTimeEnabled ? t("teaTime.participating") : t("teaTime.notParticipating")}
               </p>
             </div>
@@ -827,7 +828,7 @@ export function ProfileEditForm({
               <m.span
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                className="inline-block w-5 h-5 border border-[#d4d4d4] border-t-[#1a1a1a] rounded-full shrink-0"
+                className="inline-block w-5 h-5 border border-[#bdc0ba] border-t-[#272a26] rounded-full shrink-0"
               />
             ) : (
               <Switch
@@ -845,14 +846,14 @@ export function ProfileEditForm({
           ]).map((item) => (
             <div key={item.key} className="flex items-center justify-between py-3">
               <div>
-                <p className="text-xs tracking-wide text-[#737373]">{item.label}</p>
-                <p className="text-[10px] text-[#a3a3a3]">{item.description}</p>
+                <p className="text-xs tracking-wide text-[#636861]">{item.label}</p>
+                <p className="text-[10px] text-[#959892]">{item.description}</p>
               </div>
               {notificationLoading === item.key ? (
                 <m.span
                   animate={{ rotate: 360 }}
                   transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                  className="inline-block w-5 h-5 border border-[#d4d4d4] border-t-[#1a1a1a] rounded-full shrink-0"
+                  className="inline-block w-5 h-5 border border-[#bdc0ba] border-t-[#272a26] rounded-full shrink-0"
                 />
               ) : (
                 <Switch
@@ -867,7 +868,7 @@ export function ProfileEditForm({
         </div>
 
         {/* Save Button - sticky on mobile, normal flow on desktop */}
-        <div className="sticky bottom-20 sm:static z-[30] mt-8 pt-4 pb-2 sm:pb-0 bg-[#fafaf8] sm:bg-transparent border-t border-[#e5e5e5] sm:border-t-0">
+        <div className="sticky bottom-20 sm:static z-30 mt-8 pt-4 pb-2 sm:pb-0 bg-[#f5f6f4] sm:bg-transparent border-t border-[#dddfd9] sm:border-t-0">
           <Button
             type="submit"
             size="xl"

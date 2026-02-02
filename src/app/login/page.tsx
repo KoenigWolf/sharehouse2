@@ -118,20 +118,20 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafaf8] flex flex-col">
+    <div className="min-h-screen bg-[#f5f6f4] flex flex-col">
       <main className="flex-1 flex">
-        <div className="hidden lg:flex lg:w-1/2 bg-[#f5f5f3] items-center justify-center p-12">
+        <div className="hidden lg:flex lg:w-1/2 bg-[#eceee9] items-center justify-center p-12">
           <div className="max-w-md">
-            <h1 className="text-3xl font-light text-[#1a1a1a] tracking-wider mb-6">
+            <h1 className="text-3xl font-light text-[#272a26] tracking-wider mb-6">
               SHARE HOUSE
             </h1>
-            <p className="text-[#737373] leading-relaxed text-sm">
+            <p className="text-[#636861] leading-relaxed text-sm">
               {t("auth.portalLead")}
               <br />
               {t("auth.portalSublead")}
             </p>
-            <div className="mt-12 pt-12 border-t border-[#e5e5e5]">
-              <p className="text-xs text-[#a3a3a3] leading-loose">
+            <div className="mt-12 pt-12 border-t border-[#dddfd9]">
+              <p className="text-xs text-[#959892] leading-loose">
                 {t("auth.portalDescriptionLine1")}
                 <br />
                 {t("auth.portalDescriptionLine2")}
@@ -145,10 +145,10 @@ export default function LoginPage() {
         <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12">
           <div className="w-full max-w-sm">
             <div className="lg:hidden text-center mb-12">
-              <h1 className="text-xl font-light text-[#1a1a1a] tracking-wider">
+              <h1 className="text-xl font-light text-[#272a26] tracking-wider">
                 SHARE HOUSE
               </h1>
-              <p className="text-xs text-[#a3a3a3] mt-2">
+              <p className="text-xs text-[#959892] mt-2">
                 {t("auth.residentPortal")}
               </p>
             </div>
@@ -160,7 +160,7 @@ export default function LoginPage() {
                   variant="ghost"
                   onClick={() => switchMode("login")}
                   className={`flex-1 h-auto py-3 relative z-10 hover:bg-transparent ${
-                    mode === "login" ? "text-[#1a1a1a]" : "text-[#a3a3a3]"
+                    mode === "login" ? "text-[#272a26]" : "text-[#959892]"
                   }`}
                 >
                   {t("auth.login")}
@@ -170,15 +170,15 @@ export default function LoginPage() {
                   variant="ghost"
                   onClick={() => switchMode("signup")}
                   className={`flex-1 h-auto py-3 relative z-10 hover:bg-transparent ${
-                    mode === "signup" ? "text-[#1a1a1a]" : "text-[#a3a3a3]"
+                    mode === "signup" ? "text-[#272a26]" : "text-[#959892]"
                   }`}
                 >
                   {t("auth.signup")}
                 </Button>
               </div>
-              <div className="absolute bottom-0 left-0 right-0 h-px bg-[#e5e5e5]" />
+              <div className="absolute bottom-0 left-0 right-0 h-px bg-[#dddfd9]" />
               <m.div
-                className="absolute bottom-0 h-px bg-[#1a1a1a]"
+                className="absolute bottom-0 h-px bg-[#272a26]"
                 initial={false}
                 animate={{
                   left: mode === "login" ? "0%" : "50%",
@@ -205,7 +205,7 @@ export default function LoginPage() {
                     <div className="space-y-2 pb-6">
                       <label
                         htmlFor="name"
-                        className="block text-xs text-[#737373] tracking-wide"
+                        className="block text-xs text-[#636861] tracking-wide"
                       >
                         {t("auth.name")}
                       </label>
@@ -216,7 +216,7 @@ export default function LoginPage() {
                         onChange={(e) => setName(e.target.value)}
                         placeholder={t("auth.namePlaceholder")}
                         required
-                        className="w-full h-12 px-4 bg-white border border-[#e5e5e5] rounded-md text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
+                        className="w-full h-12 px-4 bg-white border border-[#dddfd9] rounded-md text-[#272a26] text-sm placeholder:text-[#bdc0ba] focus:outline-none focus:border-[#272a26] transition-colors"
                       />
                     </div>
                   </m.div>
@@ -226,7 +226,7 @@ export default function LoginPage() {
               <div className="space-y-2">
                 <label
                   htmlFor="email"
-                  className="block text-xs text-[#737373] tracking-wide"
+                  className="block text-xs text-[#636861] tracking-wide"
                 >
                   {t("auth.email")}
                 </label>
@@ -238,14 +238,14 @@ export default function LoginPage() {
                   placeholder="example@email.com"
                   required
                   autoComplete="email"
-                  className="w-full h-12 px-4 bg-white border border-[#e5e5e5] rounded-md text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
+                  className="w-full h-12 px-4 bg-white border border-[#dddfd9] rounded-md text-[#272a26] text-sm placeholder:text-[#bdc0ba] focus:outline-none focus:border-[#272a26] transition-colors"
                 />
               </div>
 
               <div className="space-y-2">
                 <label
                   htmlFor="password"
-                  className="block text-xs text-[#737373] tracking-wide"
+                  className="block text-xs text-[#636861] tracking-wide"
                 >
                   {t("auth.password")}
                 </label>
@@ -256,7 +256,7 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   autoComplete={mode === "login" ? "current-password" : "new-password"}
-                  className="w-full h-12 px-4 bg-white border border-[#e5e5e5] rounded-md text-[#1a1a1a] text-sm placeholder:text-[#d4d4d4] focus:outline-none focus:border-[#1a1a1a] transition-colors"
+                  className="w-full h-12 px-4 bg-white border border-[#dddfd9] rounded-md text-[#272a26] text-sm placeholder:text-[#bdc0ba] focus:outline-none focus:border-[#272a26] transition-colors"
                 />
                 <AnimatePresence>
                   {mode === "signup" && (
@@ -266,7 +266,7 @@ export default function LoginPage() {
                       exit={{ opacity: 0 }}
                       className="pt-1 space-y-2"
                     >
-                      <p className="text-xs text-[#a3a3a3]">
+                      <p className="text-xs text-[#959892]">
                         {t("auth.passwordHint")}
                       </p>
                       {password.length > 0 && (
@@ -285,9 +285,9 @@ export default function LoginPage() {
                     initial={{ opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
-                    className="py-3 px-4 bg-[#faf8f8] border-l-2 border-[#c9a0a0]"
+                    className="py-3 px-4 bg-[#f9f2f0] border-l-2 border-[#c7a099]"
                   >
-                    <p className="text-sm text-[#8b6b6b]">{error}</p>
+                    <p className="text-sm text-[#856259]">{error}</p>
                   </m.div>
                 )}
               </AnimatePresence>
@@ -300,9 +300,9 @@ export default function LoginPage() {
                     initial={{ opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
-                    className="py-3 px-4 bg-[#f8faf8] border-l-2 border-[#a0c9a0]"
+                    className="py-3 px-4 bg-[#edf5ee] border-l-2 border-[#8ab896]"
                   >
-                    <p className="text-sm text-[#6b8b6b]">{success}</p>
+                    <p className="text-sm text-[#4d7356]">{success}</p>
                   </m.div>
                 )}
               </AnimatePresence>
@@ -337,10 +337,10 @@ export default function LoginPage() {
             </form>
 
             <div className="mt-6">
-              <div className="flex items-center gap-3 text-[#a3a3a3] text-xs">
-                <span className="flex-1 h-px bg-[#e5e5e5]" />
+              <div className="flex items-center gap-3 text-[#959892] text-xs">
+                <span className="flex-1 h-px bg-[#dddfd9]" />
                 <span>{t("auth.orContinueWith")}</span>
-                <span className="flex-1 h-px bg-[#e5e5e5]" />
+                <span className="flex-1 h-px bg-[#dddfd9]" />
               </div>
               <Button
                 type="button"
@@ -364,7 +364,7 @@ export default function LoginPage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                className="text-xs text-[#a3a3a3] text-center mt-8 leading-relaxed"
+                className="text-xs text-[#959892] text-center mt-8 leading-relaxed"
               >
                   {t("auth.signupHint")}
               </m.p>
@@ -375,7 +375,7 @@ export default function LoginPage() {
       </main>
 
       <footer className="py-6">
-        <p className="text-xs text-[#a3a3a3] text-center">Share House Portal</p>
+        <p className="text-xs text-[#959892] text-center">Share House Portal</p>
       </footer>
     </div>
   );
@@ -391,7 +391,7 @@ function PasswordStrengthMeter({ password }: { password: string }) {
     t("auth.passwordStrength.fair"),
     t("auth.passwordStrength.strong"),
   ];
-  const colors = ["#c9a0a0", "#c9a0a0", "#c9b980", "#a0c9a0"];
+  const colors = ["#c7a099", "#c7a099", "#c9b980", "#8ab896"];
 
   return (
     <div className="space-y-1">
@@ -401,7 +401,7 @@ function PasswordStrengthMeter({ password }: { password: string }) {
             key={i}
             className="h-0.5 flex-1 rounded-full transition-colors duration-300"
             style={{
-              backgroundColor: i < strength ? colors[strength] : "#e5e5e5",
+              backgroundColor: i < strength ? colors[strength] : "#dddfd9",
             }}
           />
         ))}

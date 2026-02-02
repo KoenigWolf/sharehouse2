@@ -51,11 +51,11 @@ export const ResidentsFilter = memo(function ResidentsFilter({
         value={searchQuery}
         onChange={(e) => onSearchChange(e.target.value)}
         aria-label={t("a11y.searchResidents")}
-        className="h-7 sm:h-8 w-24 sm:w-40 text-xs sm:text-sm border-[#e5e5e5] rounded-md focus:border-[#1a1a1a] focus:ring-0"
+        className="h-7 sm:h-8 w-24 sm:w-40 text-xs sm:text-sm border-[#dddfd9] rounded-md focus:border-[#272a26] focus:ring-0"
       />
 
       <div
-        className="flex border border-[#e5e5e5] rounded-md divide-x divide-[#e5e5e5] overflow-hidden"
+        className="flex border border-[#dddfd9] rounded-md divide-x divide-[#dddfd9] overflow-hidden"
         role="group"
         aria-label={t("a11y.sortOptions")}
       >
@@ -70,7 +70,7 @@ export const ResidentsFilter = memo(function ResidentsFilter({
               aria-label={t(option.ariaKey)}
               aria-pressed={isSelected}
               className={`h-auto text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-1 ${
-                !isSelected ? "bg-white text-[#737373] hover:bg-[#f5f5f3]" : ""
+                !isSelected ? "bg-white text-[#636861] hover:bg-[#eceee9]" : ""
               }`}
             >
               {t(option.labelKey)}

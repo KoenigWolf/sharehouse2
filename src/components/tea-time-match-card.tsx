@@ -44,7 +44,7 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
   // 過去のマッチ（完了・スキップ済み）
   if (status !== "scheduled") {
     return (
-      <div className="bg-[#f5f5f3] p-3 border border-[#e5e5e5] rounded-lg">
+      <div className="bg-[#eceee9] p-3 border border-[#dddfd9] rounded-lg">
         <div className="flex items-center gap-3">
           <Avatar className="w-8 h-8 rounded-full">
             <OptimizedAvatarImage
@@ -52,15 +52,15 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
               context="card"
               alt={t("a11y.profilePhotoAlt", { name: match.partner.name })}
               fallback={getInitials(match.partner.name)}
-              fallbackClassName="bg-white text-[#a3a3a3] text-xs rounded-full"
+              fallbackClassName="bg-white text-[#959892] text-xs rounded-full"
             />
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="text-sm text-[#737373] truncate">
+            <p className="text-sm text-[#636861] truncate">
               {match.partner.name}
             </p>
           </div>
-          <span className="text-[10px] text-[#a3a3a3]">
+          <span className="text-[10px] text-[#959892]">
             {formatDate(match.matched_at)}
             <span className="mx-1">·</span>
             {status === "done" ? t("teaTime.done") : t("teaTime.skipped")}
@@ -76,7 +76,7 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="bg-white p-4 border border-[#e5e5e5] rounded-lg"
+      className="bg-white p-4 border border-[#dddfd9] rounded-lg"
     >
       <div className="flex items-center gap-4 mb-4">
         <Link href={`/profile/${match.partner.id}`}>
@@ -86,18 +86,18 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
               context="card"
               alt={t("a11y.profilePhotoAlt", { name: match.partner.name })}
               fallback={getInitials(match.partner.name)}
-              fallbackClassName="bg-[#f5f5f3] text-[#a3a3a3] text-lg rounded-full"
+              fallbackClassName="bg-[#eceee9] text-[#959892] text-lg rounded-full"
             />
           </Avatar>
         </Link>
         <div className="flex-1 min-w-0">
           <Link
             href={`/profile/${match.partner.id}`}
-            className="text-sm text-[#1a1a1a] hover:text-[#737373] transition-colors"
+            className="text-sm text-[#272a26] hover:text-[#636861] transition-colors"
           >
             {match.partner.name}
           </Link>
-          <p className="text-[10px] text-[#a3a3a3] mt-1">
+          <p className="text-[10px] text-[#959892] mt-1">
             {match.partner.room_number &&
               `${match.partner.room_number}${t("profile.room")}`}
             {match.partner.room_number && <span className="mx-1">·</span>}

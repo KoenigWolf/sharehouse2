@@ -2,7 +2,7 @@ import { Profile } from "@/domain/profile";
 
 /**
  * DESIGN_GUIDELINES.md準拠のミニマルなアバター生成
- * - 背景: 生成り系の落ち着いた色（#f5f5f3, #fafaf8）
+ * - 背景: 生成り系の落ち着いた色（#eceee9, #f5f6f4）
  * - 人物: シンプルな線画風
  * - 色: 低彩度、静かなトーン
  */
@@ -12,10 +12,10 @@ const generateMinimalAvatar = (
   clothesColor: string
 ) => {
   const bgColors: Record<string, string> = {
-    a: "#f5f5f3",
+    a: "#eceee9",
     b: "#f8f8f6",
     c: "#f3f3f1",
-    d: "#fafaf8",
+    d: "#f5f6f4",
   };
 
   const bg = bgColors[variant];
@@ -64,7 +64,7 @@ const avatarConfigs: Array<{
   hairColor: string;
   clothesColor: string;
 }> = [
-  { variant: "b", hairColor: "#3d3530", clothesColor: "#d4d4d4" },
+  { variant: "b", hairColor: "#3d3530", clothesColor: "#bdc0ba" },
   { variant: "a", hairColor: "#2d2a28", clothesColor: "#c9c5c0" },
   { variant: "d", hairColor: "#4a4540", clothesColor: "#d8d4d0" },
   { variant: "a", hairColor: "#3a3632", clothesColor: "#ccc8c4" },

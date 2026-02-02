@@ -32,7 +32,7 @@ export default function GlobalError({
         <div
           style={{
             minHeight: "100vh",
-            backgroundColor: "#fafaf8",
+            backgroundColor: "#f5f6f4",
             display: "flex",
             flexDirection: "column",
             fontFamily:
@@ -41,7 +41,7 @@ export default function GlobalError({
         >
           <header
             style={{
-              borderBottom: "1px solid #e5e5e5",
+              borderBottom: "1px solid #dddfd9",
               backgroundColor: "white",
             }}
           >
@@ -59,7 +59,7 @@ export default function GlobalError({
                 style={{
                   fontSize: "18px",
                   letterSpacing: "0.05em",
-                  color: "#1a1a1a",
+                  color: "#272a26",
                 }}
               >
                 SHARE HOUSE
@@ -80,7 +80,7 @@ export default function GlobalError({
               <p
                 style={{
                   fontSize: "60px",
-                  color: "#d4d4d4",
+                  color: "#bdc0ba",
                   marginBottom: "24px",
                   fontWeight: 300,
                 }}
@@ -90,7 +90,7 @@ export default function GlobalError({
               <h1
                 style={{
                   fontSize: "20px",
-                  color: "#1a1a1a",
+                  color: "#272a26",
                   marginBottom: "12px",
                   letterSpacing: "0.05em",
                   fontWeight: 400,
@@ -101,7 +101,7 @@ export default function GlobalError({
               <p
                 style={{
                   fontSize: "14px",
-                  color: "#737373",
+                  color: "#636861",
                   marginBottom: "32px",
                 lineHeight: 1.6,
               }}
@@ -112,7 +112,7 @@ export default function GlobalError({
                 onClick={reset}
                 style={{
                   padding: "12px 32px",
-                  backgroundColor: "#1a1a1a",
+                  backgroundColor: "#272a26",
                   color: "white",
                   fontSize: "14px",
                   letterSpacing: "0.05em",
@@ -127,7 +127,7 @@ export default function GlobalError({
 
           <footer
             style={{
-              borderTop: "1px solid #e5e5e5",
+              borderTop: "1px solid #dddfd9",
               backgroundColor: "white",
             }}
           >
@@ -141,7 +141,7 @@ export default function GlobalError({
               <p
                 style={{
                   fontSize: "12px",
-                  color: "#a3a3a3",
+                  color: "#959892",
                   textAlign: "center",
                 }}
               >

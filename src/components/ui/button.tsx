@@ -5,23 +5,23 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm tracking-wide transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[#1a1a1a] focus-visible:ring-offset-2",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm tracking-wide transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[#272a26] focus-visible:ring-offset-2",
   {
     variants: {
       variant: {
         default:
-          "bg-[#1a1a1a] text-white hover:bg-[#333] disabled:bg-[#a3a3a3] disabled:opacity-100",
+          "bg-[#272a26] text-white hover:bg-[#363933] disabled:bg-[#959892] disabled:opacity-100",
         destructive:
-          "border border-[#c9a0a0] text-[#8b6b6b] bg-transparent hover:border-[#8b6b6b]",
+          "border border-[#c7a099] text-[#856259] bg-transparent hover:border-[#856259]",
         outline:
-          "border border-[#e5e5e5] text-[#737373] bg-transparent hover:border-[#1a1a1a] hover:text-[#1a1a1a]",
+          "border border-[#dddfd9] text-[#636861] bg-transparent hover:border-[#272a26] hover:text-[#272a26]",
         secondary:
-          "bg-[#f5f5f3] text-[#1a1a1a] hover:bg-[#f0f0ee]",
+          "bg-[#eceee9] text-[#272a26] hover:bg-[#e5e8e2]",
         ghost:
-          "text-[#a3a3a3] hover:text-[#737373]",
-        link: "text-[#1a1a1a] underline-offset-4 hover:underline",
+          "text-[#959892] hover:text-[#636861]",
+        link: "text-[#272a26] underline-offset-4 hover:underline",
         dashed:
-          "border border-dashed border-[#d4d4d4] text-[#a3a3a3] bg-transparent hover:border-[#a3a3a3] hover:text-[#737373]",
+          "border border-dashed border-[#bdc0ba] text-[#959892] bg-transparent hover:border-[#959892] hover:text-[#636861]",
       },
       size: {
         default: "h-9 px-4 py-2 text-xs has-[>svg]:px-3",
