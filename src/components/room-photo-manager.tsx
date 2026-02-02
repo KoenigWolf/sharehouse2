@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { m, AnimatePresence } from "framer-motion";
 import { X, Plus } from "lucide-react";
@@ -39,6 +39,11 @@ export function RoomPhotoManager({
   const [currentPhotos, setCurrentPhotos] = useState<RoomPhoto[]>(photos);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [error, setError] = useState("");
+
+  // Sync local state when server data changes (e.g., after router.refresh from bulk upload)
+  useEffect(() => {
+    setCurrentPhotos(photos);
+  }, [photos]);
 
   const {
     items: uploadItems,

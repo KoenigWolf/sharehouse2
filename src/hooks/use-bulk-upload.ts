@@ -100,21 +100,14 @@ export function useBulkUpload() {
     async (files: File[], maxRemaining?: number) => {
       if (files.length === 0) return;
 
-      const limit = maxRemaining ?? ROOM_PHOTOS.maxBulkUpload;
+      const limit = Math.min(
+        maxRemaining ?? ROOM_PHOTOS.maxBulkUpload,
+        ROOM_PHOTOS.maxBulkUpload
+      );
       if (files.length > limit) {
         setFeedback({
           type: "error",
           message: t("roomPhotos.tooManyFiles"),
-        });
-        return;
-      }
-
-      if (files.length > ROOM_PHOTOS.maxBulkUpload) {
-        setFeedback({
-          type: "error",
-          message: t("roomPhotos.bulkUploadLimit", {
-            count: ROOM_PHOTOS.maxBulkUpload,
-          }),
         });
         return;
       }
@@ -192,12 +185,6 @@ export function useBulkUpload() {
     [processFile, router, t]
   );
 
-  const reset = useCallback(() => {
-    setItems([]);
-    setCompletedCount(0);
-    setFeedback(null);
-  }, []);
-
   return {
     items,
     isUploading,
@@ -205,7 +192,5 @@ export function useBulkUpload() {
     totalCount: items.length,
     feedback,
     startUpload,
-    reset,
-    setFeedback,
   };
 }
