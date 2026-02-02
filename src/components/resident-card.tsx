@@ -95,9 +95,9 @@ function isMockProfile(profileId: string): boolean {
 }
 
 function getCardBorderClass(isCurrentUser: boolean, isMock: boolean): string {
-  if (isCurrentUser) return "border-[#272a26]";
-  if (isMock) return "border-dashed border-[#bdc0ba] hover:border-[#959892]";
-  return "border-[#dddfd9] hover:border-[#272a26]";
+  if (isCurrentUser) return "border-[#18181b]";
+  if (isMock) return "border-dashed border-[#d4d4d8] hover:border-[#a1a1aa]";
+  return "border-[#e4e4e7] hover:border-[#18181b]";
 }
 
 function Badge({
@@ -110,10 +110,10 @@ function Badge({
   className?: string;
 }) {
   const variantStyles: Record<BadgeVariant, string> = {
-    default: "bg-[#eceee9] text-[#959892]",
-    dark: "bg-[#272a26] text-white",
-    success: "bg-[#edf5ee] text-[#4d7356] border border-[#8ab896]",
-    muted: "bg-white/90 backdrop-blur-sm text-[#636861]",
+    default: "bg-[#f4f4f5] text-[#a1a1aa]",
+    dark: "bg-[#18181b] text-white",
+    success: "bg-[#f0fdf4] text-[#3d6b4a] border border-[#93c5a0]",
+    muted: "bg-white/90 backdrop-blur-sm text-[#71717a]",
   };
 
   return (
@@ -211,7 +211,7 @@ function InterestTagList({
       {interests.map((interest, index) => (
         <li
           key={`${interest}-${index}`}
-          className="text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded bg-[#eceee9] text-[#636861]"
+          className="text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded bg-[#f4f4f5] text-[#71717a]"
         >
           {interest}
         </li>
@@ -296,14 +296,14 @@ export const ResidentCard = memo(function ResidentCard({
     <Link
       href={`/profile/${profile.id}`}
       aria-label={t("a11y.viewProfile", { name: profile.name })}
-      className="block group select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#272a26] focus-visible:ring-offset-2"
+      className="block group select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#18181b] focus-visible:ring-offset-2"
       prefetch={false}
     >
       <article
         className={`bg-white border rounded-lg transition-all duration-200 active:scale-[0.98] active:opacity-95 relative overflow-hidden ${borderClass}`}
         style={floorAccentStyle}
       >
-        <div className="aspect-square bg-[#eceee9] relative overflow-hidden">
+        <div className="aspect-square bg-[#f4f4f5] relative overflow-hidden">
           <Avatar className="w-full h-full rounded-none">
             <OptimizedAvatarImage
               src={profile.avatar_url}
@@ -311,7 +311,7 @@ export const ResidentCard = memo(function ResidentCard({
               context="card"
               className="w-full h-full group-hover:scale-[1.02] transition-transform duration-300"
               fallback={getInitials(profile.name)}
-              fallbackClassName="bg-[#eceee9] text-[#959892] text-3xl sm:text-4xl rounded-none w-full h-full flex items-center justify-center"
+              fallbackClassName="bg-[#f4f4f5] text-[#a1a1aa] text-3xl sm:text-4xl rounded-none w-full h-full flex items-center justify-center"
               fallbackAriaLabel={t("a11y.profileInitials", { name: profile.name })}
             />
           </Avatar>
@@ -330,7 +330,7 @@ export const ResidentCard = memo(function ResidentCard({
               <Badge variant="dark">{t("common.you")}</Badge>
             )}
             {showTeaTime && teaTimeEnabled && !isMock && (
-              <span className="bg-[#476e52] text-white text-[10px] px-1.5 py-0.5 rounded flex items-center gap-1">
+              <span className="bg-[#3d6b4a] text-white text-[10px] px-1.5 py-0.5 rounded flex items-center gap-1">
                 <OverlayIcons.TeaCup />
               </span>
             )}
@@ -347,7 +347,7 @@ export const ResidentCard = memo(function ResidentCard({
               {snsLinks.slice(0, 3).map((link) => (
                 <span
                   key={link.platform}
-                  className="w-5 h-5 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-[#636861]"
+                  className="w-5 h-5 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-[#71717a]"
                   aria-label={link.platform}
                 >
                   <SnsIcon platform={link.platform} />
@@ -362,7 +362,7 @@ export const ResidentCard = memo(function ResidentCard({
                 variants={ANIMATION_VARIANTS}
                 initial="hidden"
                 whileHover="visible"
-                className="absolute inset-0 bg-linear-to-t from-[#272a26]/80 via-[#272a26]/40 to-transparent hidden sm:flex flex-col justify-end p-3 opacity-0 hover:opacity-100 transition-opacity duration-150"
+                className="absolute inset-0 bg-linear-to-t from-[#18181b]/80 via-[#18181b]/40 to-transparent hidden sm:flex flex-col justify-end p-3 opacity-0 hover:opacity-100 transition-opacity duration-150"
               >
                 <div className="space-y-1.5">
                   {residenceDuration && (
@@ -393,18 +393,18 @@ export const ResidentCard = memo(function ResidentCard({
 
         <div className={`p-3 sm:p-4 ${CARD_HEIGHTS.mobile} ${CARD_HEIGHTS.desktop} flex flex-col overflow-hidden`}>
           <div className="flex items-baseline justify-between gap-2 shrink-0">
-            <h3 className="text-sm sm:text-base text-[#272a26] tracking-wide truncate font-normal">
+            <h3 className="text-sm sm:text-base text-[#18181b] tracking-wide truncate font-normal">
               {displayName}
             </h3>
             {profile.room_number && (
-              <span className="text-[10px] sm:text-[11px] text-[#959892] shrink-0">
+              <span className="text-[10px] sm:text-[11px] text-[#a1a1aa] shrink-0">
                 {profile.room_number}
               </span>
             )}
           </div>
 
           {occupationLabel && !isMock && (
-            <p className="text-[10px] sm:text-[11px] text-[#636861] mt-1 truncate shrink-0">
+            <p className="text-[10px] sm:text-[11px] text-[#71717a] mt-1 truncate shrink-0">
               {occupationLabel}
             </p>
           )}

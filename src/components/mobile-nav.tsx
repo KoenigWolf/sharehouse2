@@ -41,7 +41,7 @@ export const MobileNav = memo(function MobileNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 sm:hidden bg-white border-t border-[#dddfd9] pb-safe"
+      className="fixed bottom-0 left-0 right-0 z-50 sm:hidden bg-white border-t border-[#e4e4e7] pb-safe"
       aria-label={t("a11y.mainNavigation")}
     >
       <div className="flex items-center justify-around h-16">
@@ -54,20 +54,20 @@ export const MobileNav = memo(function MobileNav() {
               key={item.href}
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className="relative flex flex-col items-center justify-center flex-1 h-full px-1 py-3 transition-colors active:bg-[#eceee9]"
+              className="relative flex flex-col items-center justify-center flex-1 h-full px-1 py-3 transition-colors active:bg-[#f4f4f5]"
             >
               <div className="relative">
                 <Icon
                   size={24}
                   strokeWidth={active ? 2 : 1.5}
                   className={`transition-colors ${
-                    active ? "text-[#272a26]" : "text-[#959892]"
+                    active ? "text-[#18181b]" : "text-[#a1a1aa]"
                   }`}
                 />
                 {active && (
                   <motion.span
                     layoutId="mobile-nav-indicator"
-                    className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#272a26]"
+                    className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#18181b]"
                     transition={{ duration: 0.2 }}
                   />
                 )}

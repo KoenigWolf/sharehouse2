@@ -188,7 +188,7 @@ describe("ProfileDetail", () => {
         />
       );
       const statusText = screen.getByText(/参加中/);
-      expect(statusText).toHaveClass("text-[#476e52]");
+      expect(statusText).toHaveClass("text-[#3d6b4a]");
     });
 
     it("applies gray color for not participating", () => {
@@ -200,7 +200,7 @@ describe("ProfileDetail", () => {
         />
       );
       const statusText = screen.getByText(/不参加/);
-      expect(statusText).toHaveClass("text-[#636861]");
+      expect(statusText).toHaveClass("text-[#71717a]");
     });
   });
 

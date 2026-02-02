@@ -29,8 +29,8 @@ function FeedbackMessage({ feedback }: { feedback: Feedback | null }) {
           transition={{ duration: 0.2 }}
           className={`text-sm px-3 py-2 border-l-2 ${
             feedback.type === "success"
-              ? "bg-[#edf5ee] border-[#8ab896] text-[#4d7356]"
-              : "bg-[#f9f2f0] border-[#c7a099] text-[#856259]"
+              ? "bg-[#f0fdf4] border-[#93c5a0] text-[#3d6b4a]"
+              : "bg-[#fef2f2] border-[#e5a0a0] text-[#8b4040]"
           }`}
         >
           {feedback.message}
@@ -82,15 +82,15 @@ function PasswordSection() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="border border-[#dddfd9] rounded-lg p-5 space-y-4"
+      className="border border-[#e4e4e7] rounded-lg p-5 space-y-4"
     >
-      <h3 className="text-sm font-medium text-[#272a26]">
+      <h3 className="text-sm font-medium text-[#18181b]">
         {t("account.password")}
       </h3>
 
       <div className="space-y-3">
         <div>
-          <label htmlFor="current-password" className="block text-xs text-[#636861] mb-1">
+          <label htmlFor="current-password" className="block text-xs text-[#71717a] mb-1">
             {t("account.currentPassword")}
           </label>
           <Input
@@ -104,7 +104,7 @@ function PasswordSection() {
         </div>
 
         <div>
-          <label htmlFor="new-password" className="block text-xs text-[#636861] mb-1">
+          <label htmlFor="new-password" className="block text-xs text-[#71717a] mb-1">
             {t("account.newPassword")}
           </label>
           <Input
@@ -118,7 +118,7 @@ function PasswordSection() {
         </div>
 
         <div>
-          <label htmlFor="confirm-password" className="block text-xs text-[#636861] mb-1">
+          <label htmlFor="confirm-password" className="block text-xs text-[#71717a] mb-1">
             {t("account.confirmPassword")}
           </label>
           <Input
@@ -172,15 +172,15 @@ function EmailSection({ userEmail }: { userEmail: string | undefined }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="border border-[#dddfd9] rounded-lg p-5 space-y-4"
+      className="border border-[#e4e4e7] rounded-lg p-5 space-y-4"
     >
-      <h3 className="text-sm font-medium text-[#272a26]">
+      <h3 className="text-sm font-medium text-[#18181b]">
         {t("account.email")}
       </h3>
 
       {userEmail && (
-        <p className="text-sm text-[#636861]">
-          <span className="text-xs text-[#959892]">
+        <p className="text-sm text-[#71717a]">
+          <span className="text-xs text-[#a1a1aa]">
             {t("account.currentEmail")}:
           </span>{" "}
           {userEmail}
@@ -188,7 +188,7 @@ function EmailSection({ userEmail }: { userEmail: string | undefined }) {
       )}
 
       <div>
-        <label htmlFor="new-email" className="block text-xs text-[#636861] mb-1">
+        <label htmlFor="new-email" className="block text-xs text-[#71717a] mb-1">
           {t("account.newEmail")}
         </label>
         <Input
@@ -243,18 +243,18 @@ function DeleteSection() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="border border-[#c7a099] rounded-lg p-5 space-y-4"
+      className="border border-[#e5a0a0] rounded-lg p-5 space-y-4"
     >
-      <h3 className="text-sm font-medium text-[#856259]">
+      <h3 className="text-sm font-medium text-[#8b4040]">
         {t("account.deleteAccount")}
       </h3>
 
-      <p className="text-sm text-[#856259] leading-relaxed">
+      <p className="text-sm text-[#8b4040] leading-relaxed">
         {t("account.deleteWarning")}
       </p>
 
       <div>
-        <label htmlFor="delete-confirm" className="block text-xs text-[#636861] mb-1">
+        <label htmlFor="delete-confirm" className="block text-xs text-[#71717a] mb-1">
           {t("account.deleteConfirmLabel")}
         </label>
         <Input
@@ -299,7 +299,7 @@ export function AccountSettings({ userEmail, hasPassword }: AccountSettingsProps
       transition={{ duration: 0.2 }}
       className="space-y-4"
     >
-      <h2 className="text-xs tracking-wide text-[#959892] uppercase">
+      <h2 className="text-xs tracking-wide text-[#a1a1aa] uppercase">
         {t("account.sectionTitle")}
       </h2>
 
@@ -308,11 +308,11 @@ export function AccountSettings({ userEmail, hasPassword }: AccountSettingsProps
       {hasPassword ? (
         <PasswordSection />
       ) : (
-        <div className="border border-[#dddfd9] rounded-lg p-5">
-          <h3 className="text-sm font-medium text-[#272a26] mb-2">
+        <div className="border border-[#e4e4e7] rounded-lg p-5">
+          <h3 className="text-sm font-medium text-[#18181b] mb-2">
             {t("account.password")}
           </h3>
-          <p className="text-sm text-[#959892]">
+          <p className="text-sm text-[#a1a1aa]">
             {t("account.noPasswordProvider")}
           </p>
         </div>

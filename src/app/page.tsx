@@ -43,7 +43,7 @@ export default async function Home() {
   const mockCount = remainingMockProfiles.length;
 
   return (
-    <div className="min-h-screen bg-[#f5f6f4] flex flex-col">
+    <div className="min-h-screen bg-[#fafafa] flex flex-col">
       <Header />
 
       <main className="flex-1 pb-20 sm:pb-0">
@@ -55,7 +55,7 @@ export default async function Home() {
           )}
 
           {mockCount > 0 && (
-            <p className="text-xs text-[#959892] mb-5 sm:mb-6">
+            <p className="text-xs text-[#a1a1aa] mb-5 sm:mb-6">
               {t("residents.registeredLabel", { count: dbProfiles.length })} /{" "}
               {t("residents.unregisteredLabel", { count: mockCount })}
             </p>

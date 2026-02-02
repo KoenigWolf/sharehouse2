@@ -43,13 +43,13 @@ const NavLink = memo(function NavLink({ item, isActive }: NavLinkProps) {
     <Link
       href={item.href}
       aria-current={isActive ? "page" : undefined}
-      className="relative px-2 sm:px-4 py-2 text-xs sm:text-sm tracking-wide transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#272a26] focus-visible:ring-offset-2 group"
+      className="relative px-2 sm:px-4 py-2 text-xs sm:text-sm tracking-wide transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#18181b] focus-visible:ring-offset-2 group"
     >
       <span
         className={
           isActive
-            ? "text-[#272a26]"
-            : "text-[#959892] group-hover:text-[#636861] transition-colors"
+            ? "text-[#18181b]"
+            : "text-[#a1a1aa] group-hover:text-[#71717a] transition-colors"
         }
       >
         {t(item.labelKey)}
@@ -57,7 +57,7 @@ const NavLink = memo(function NavLink({ item, isActive }: NavLinkProps) {
       {isActive && (
         <m.span
           layoutId="nav-underline"
-          className="absolute bottom-0 left-2 right-2 sm:left-4 sm:right-4 h-px bg-[#272a26]"
+          className="absolute bottom-0 left-2 right-2 sm:left-4 sm:right-4 h-px bg-[#18181b]"
           transition={{ duration: 0.25, ease: "easeOut" }}
         />
       )}
@@ -91,13 +91,13 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
         <button
           type="button"
           aria-label={t("nav.myPage")}
-          className="relative shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[#272a26] focus-visible:ring-offset-2 rounded-full cursor-pointer"
+          className="relative shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[#18181b] focus-visible:ring-offset-2 rounded-full cursor-pointer"
         >
           <div
             className={`w-8 h-8 rounded-full overflow-hidden transition-all ${
               isActive
-                ? "ring-2 ring-[#272a26] ring-offset-1"
-                : "ring-1 ring-[#dddfd9] hover:ring-[#959892]"
+                ? "ring-2 ring-[#18181b] ring-offset-1"
+                : "ring-1 ring-[#e4e4e7] hover:ring-[#a1a1aa]"
             }`}
           >
             {optimizedSrc ? (
@@ -109,8 +109,8 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
                 className="object-cover w-full h-full"
               />
             ) : (
-              <div className="w-full h-full bg-[#eceee9] flex items-center justify-center">
-                <User size={16} className="text-[#959892]" strokeWidth={1.5} />
+              <div className="w-full h-full bg-[#f4f4f5] flex items-center justify-center">
+                <User size={16} className="text-[#a1a1aa]" strokeWidth={1.5} />
               </div>
             )}
           </div>
@@ -124,7 +124,7 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-[#959892]">
+        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-[#a1a1aa]">
           <LogOut size={14} strokeWidth={1.5} />
           {t("nav.logout")}
         </DropdownMenuItem>
@@ -146,14 +146,14 @@ export const Header = memo(function Header() {
 
   return (
     <header
-      className="sticky top-0 z-40 border-b border-[#dddfd9] bg-white/95 backdrop-blur-sm"
+      className="sticky top-0 z-40 border-b border-[#e4e4e7] bg-white/95 backdrop-blur-sm"
       role="banner"
     >
       <div className="container mx-auto px-4 sm:px-6 py-3 flex items-center justify-between max-w-5xl">
         <div className="flex items-center gap-4 sm:gap-8">
           <Link
             href="/"
-            className="text-[13px] leading-none sm:text-base tracking-[0.15em] sm:tracking-wider text-[#272a26] font-light outline-none focus-visible:ring-2 focus-visible:ring-[#272a26] focus-visible:ring-offset-2"
+            className="text-[13px] leading-none sm:text-base tracking-[0.15em] sm:tracking-wider text-[#18181b] font-light outline-none focus-visible:ring-2 focus-visible:ring-[#18181b] focus-visible:ring-offset-2"
             aria-label={t("a11y.goHome")}
           >
             <span className="sm:hidden flex flex-col leading-none gap-0.5">

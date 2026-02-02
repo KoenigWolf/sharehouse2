@@ -64,7 +64,7 @@ describe("ResidentsFilter", () => {
       render(<ResidentsFilter {...defaultProps} sortBy="name" />);
 
       const nameButton = screen.getByText("名前");
-      expect(nameButton).toHaveClass("bg-[#272a26]");
+      expect(nameButton).toHaveClass("bg-[#18181b]");
       expect(nameButton).toHaveClass("text-white");
     });
 

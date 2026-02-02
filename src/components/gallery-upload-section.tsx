@@ -65,7 +65,7 @@ export function GalleryUploadSection() {
           onChange={(e) => setCaption(e.target.value)}
           placeholder={t("roomPhotos.captionPlaceholder")}
           maxLength={200}
-          className="flex-1 h-10 px-3 bg-white border border-[#dddfd9] text-[#272a26] text-sm placeholder:text-[#bdc0ba] focus:outline-none focus:border-[#272a26] transition-colors"
+          className="flex-1 h-10 px-3 bg-white border border-[#e4e4e7] text-[#18181b] text-sm placeholder:text-[#d4d4d8] focus:outline-none focus:border-[#18181b] transition-colors"
         />
         <Button
           type="button"
@@ -81,7 +81,7 @@ export function GalleryUploadSection() {
         </Button>
       </div>
 
-      <p className="text-[10px] text-[#959892]">
+      <p className="text-[10px] text-[#a1a1aa]">
         {t("profile.photoFormat")}
       </p>
 
@@ -95,9 +95,9 @@ export function GalleryUploadSection() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="py-3 px-4 bg-[#f9f2f0] border-l-2 border-[#c7a099]"
+            className="py-3 px-4 bg-[#fef2f2] border-l-2 border-[#e5a0a0]"
           >
-            <p className="text-sm text-[#856259]">{error}</p>
+            <p className="text-sm text-[#8b4040]">{error}</p>
           </m.div>
         )}
         {success && (
@@ -107,9 +107,9 @@ export function GalleryUploadSection() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="py-3 px-4 bg-[#edf5ee] border-l-2 border-[#8ab896]"
+            className="py-3 px-4 bg-[#f0fdf4] border-l-2 border-[#93c5a0]"
           >
-            <p className="text-sm text-[#4d7356]">{success}</p>
+            <p className="text-sm text-[#3d6b4a]">{success}</p>
           </m.div>
         )}
       </AnimatePresence>

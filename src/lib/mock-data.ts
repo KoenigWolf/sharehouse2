@@ -2,9 +2,9 @@ import { Profile } from "@/domain/profile";
 
 /**
  * DESIGN_GUIDELINES.md準拠のミニマルなアバター生成
- * - 背景: 生成り系の落ち着いた色（#eceee9, #f5f6f4）
+ * - 背景: zinc スケールの落ち着いた色
  * - 人物: シンプルな線画風
- * - 色: 低彩度、静かなトーン
+ * - 色: 低彩度、ニュートラルトーン
  */
 const generateMinimalAvatar = (
   variant: "a" | "b" | "c" | "d",
@@ -12,14 +12,14 @@ const generateMinimalAvatar = (
   clothesColor: string
 ) => {
   const bgColors: Record<string, string> = {
-    a: "#eceee9",
-    b: "#f8f8f6",
-    c: "#f3f3f1",
-    d: "#f5f6f4",
+    a: "#f4f4f5",
+    b: "#fafafa",
+    c: "#f4f4f5",
+    d: "#fafafa",
   };
 
   const bg = bgColors[variant];
-  const skinTone = "#f0e6dc"; // 統一された肌色（温かみのあるベージュ）
+  const skinTone = "#e8e0d8";
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
     <!-- 背景 -->
@@ -49,11 +49,11 @@ const generateMinimalAvatar = (
     }
 
     <!-- 目（シンプルな点） -->
-    <circle cx="42" cy="48" r="2.5" fill="#4a4a4a"/>
-    <circle cx="58" cy="48" r="2.5" fill="#4a4a4a"/>
+    <circle cx="42" cy="48" r="2.5" fill="#3f3f46"/>
+    <circle cx="58" cy="48" r="2.5" fill="#3f3f46"/>
 
     <!-- 口（控えめな線） -->
-    <path d="M46 58 Q50 61 54 58" stroke="#c9a090" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M46 58 Q50 61 54 58" stroke="#a1a1aa" stroke-width="1.5" fill="none" stroke-linecap="round"/>
   </svg>`;
 
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
@@ -64,26 +64,26 @@ const avatarConfigs: Array<{
   hairColor: string;
   clothesColor: string;
 }> = [
-  { variant: "b", hairColor: "#3d3530", clothesColor: "#bdc0ba" },
-  { variant: "a", hairColor: "#2d2a28", clothesColor: "#c9c5c0" },
-  { variant: "d", hairColor: "#4a4540", clothesColor: "#d8d4d0" },
-  { variant: "a", hairColor: "#3a3632", clothesColor: "#ccc8c4" },
-  { variant: "b", hairColor: "#454140", clothesColor: "#d0ccc8" },
-  { variant: "a", hairColor: "#2d2a28", clothesColor: "#dcd8d4" },
-  { variant: "c", hairColor: "#3d3530", clothesColor: "#c5c1bc" },
-  { variant: "a", hairColor: "#4a4540", clothesColor: "#d4d0cc" },
-  { variant: "b", hairColor: "#3a3632", clothesColor: "#ccc8c4" },
-  { variant: "a", hairColor: "#2d2a28", clothesColor: "#d8d4d0" },
-  { variant: "d", hairColor: "#454140", clothesColor: "#c9c5c0" },
-  { variant: "a", hairColor: "#3d3530", clothesColor: "#d0ccc8" },
-  { variant: "c", hairColor: "#3a3632", clothesColor: "#dcd8d4" },
-  { variant: "a", hairColor: "#2d2a28", clothesColor: "#c5c1bc" },
-  { variant: "b", hairColor: "#4a4540", clothesColor: "#d4d0cc" },
-  { variant: "a", hairColor: "#454140", clothesColor: "#ccc8c4" },
-  { variant: "d", hairColor: "#3d3530", clothesColor: "#d8d4d0" },
-  { variant: "a", hairColor: "#3a3632", clothesColor: "#c9c5c0" },
-  { variant: "c", hairColor: "#2d2a28", clothesColor: "#d0ccc8" },
-  { variant: "a", hairColor: "#4a4540", clothesColor: "#dcd8d4" },
+  { variant: "b", hairColor: "#3f3f46", clothesColor: "#d4d4d8" },
+  { variant: "a", hairColor: "#27272a", clothesColor: "#e4e4e7" },
+  { variant: "d", hairColor: "#52525b", clothesColor: "#d4d4d8" },
+  { variant: "a", hairColor: "#3f3f46", clothesColor: "#e4e4e7" },
+  { variant: "b", hairColor: "#27272a", clothesColor: "#d4d4d8" },
+  { variant: "a", hairColor: "#3f3f46", clothesColor: "#e4e4e7" },
+  { variant: "c", hairColor: "#52525b", clothesColor: "#d4d4d8" },
+  { variant: "a", hairColor: "#27272a", clothesColor: "#e4e4e7" },
+  { variant: "b", hairColor: "#3f3f46", clothesColor: "#d4d4d8" },
+  { variant: "a", hairColor: "#52525b", clothesColor: "#e4e4e7" },
+  { variant: "d", hairColor: "#27272a", clothesColor: "#d4d4d8" },
+  { variant: "a", hairColor: "#3f3f46", clothesColor: "#e4e4e7" },
+  { variant: "c", hairColor: "#52525b", clothesColor: "#d4d4d8" },
+  { variant: "a", hairColor: "#27272a", clothesColor: "#d4d4d8" },
+  { variant: "b", hairColor: "#52525b", clothesColor: "#e4e4e7" },
+  { variant: "a", hairColor: "#3f3f46", clothesColor: "#d4d4d8" },
+  { variant: "d", hairColor: "#27272a", clothesColor: "#e4e4e7" },
+  { variant: "a", hairColor: "#52525b", clothesColor: "#d4d4d8" },
+  { variant: "c", hairColor: "#3f3f46", clothesColor: "#e4e4e7" },
+  { variant: "a", hairColor: "#27272a", clothesColor: "#d4d4d8" },
 ];
 
 const avatars = avatarConfigs.map((config) =>

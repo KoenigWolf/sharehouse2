@@ -37,11 +37,11 @@ function isNewResident(moveInDate: string | null): boolean {
 }
 
 const floorColors: Record<string, { bg: string; border: string; text: string; accent: string; fill: string }> = {
-  "2F": { bg: "bg-[#edf5ee]", border: "border-[#8ab896]", text: "text-[#4d7356]", accent: "#8ab896", fill: "#8ab896" },
-  "3F": { bg: "bg-[#f8f9fa]", border: "border-[#a0b4c9]", text: "text-[#6b7a8b]", accent: "#a0b4c9", fill: "#a0b4c9" },
-  "4F": { bg: "bg-[#faf8fa]", border: "border-[#c9a0c4]", text: "text-[#8b6b87]", accent: "#c9a0c4", fill: "#c9a0c4" },
-  "5F": { bg: "bg-[#f5f6f4]", border: "border-[#c9c0a0]", text: "text-[#8b836b]", accent: "#c9c0a0", fill: "#c9c0a0" },
-  "?": { bg: "bg-[#eceee9]", border: "border-[#bdc0ba]", text: "text-[#959892]", accent: "#bdc0ba", fill: "#bdc0ba" },
+  "2F": { bg: "bg-[#f0fdf4]", border: "border-[#86efac]", text: "text-[#166534]", accent: "#86efac", fill: "#86efac" },
+  "3F": { bg: "bg-[#eff6ff]", border: "border-[#93c5fd]", text: "text-[#1e40af]", accent: "#93c5fd", fill: "#93c5fd" },
+  "4F": { bg: "bg-[#faf5ff]", border: "border-[#c4b5fd]", text: "text-[#6b21a8]", accent: "#c4b5fd", fill: "#c4b5fd" },
+  "5F": { bg: "bg-[#fffbeb]", border: "border-[#fcd34d]", text: "text-[#92400e]", accent: "#fcd34d", fill: "#fcd34d" },
+  "?": { bg: "bg-[#f4f4f5]", border: "border-[#d4d4d8]", text: "text-[#a1a1aa]", accent: "#d4d4d8", fill: "#d4d4d8" },
 };
 
 /**
@@ -185,25 +185,25 @@ export function ResidentsGrid({
   if (profiles.length === 0) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <p className="text-[#636861] text-sm">{t("residents.noResidents")}</p>
+        <p className="text-[#71717a] text-sm">{t("residents.noResidents")}</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-5 sm:space-y-6">
-      <div className="bg-white border border-[#dddfd9] rounded-lg mb-4">
+      <div className="bg-white border border-[#e4e4e7] rounded-lg mb-4">
         <Button
           type="button"
           variant="ghost"
           onClick={() => setShowStats((prev) => !prev)}
-          className="w-full h-auto flex items-center justify-between px-4 sm:px-5 py-3 hover:bg-[#f5f6f4]"
+          className="w-full h-auto flex items-center justify-between px-4 sm:px-5 py-3 hover:bg-[#fafafa]"
         >
-          <h3 className="text-sm text-[#272a26] tracking-wide">{t("residents.statsTitle")}</h3>
+          <h3 className="text-sm text-[#18181b] tracking-wide">{t("residents.statsTitle")}</h3>
           <motion.span
             animate={{ rotate: showStats ? 180 : 0 }}
             transition={{ duration: 0.2 }}
-            className="text-[#959892]"
+            className="text-[#a1a1aa]"
           >
             <ChevronIcon />
           </motion.span>
@@ -224,30 +224,30 @@ export function ResidentsGrid({
                     label={t("residents.statsRegistered")}
                     value={stats.registered}
                     subValue={`/ ${stats.total}`}
-                    color="#272a26"
+                    color="#18181b"
                   />
                   <StatCard
                     label={t("residents.statsNew")}
                     value={stats.newResidents}
                     subValue={t("residents.statsNewSub")}
-                    color="#4d7356"
+                    color="#3d6b4a"
                   />
                   <StatCard
                     label={t("residents.statsTeaTime")}
                     value={stats.teaTimeCount}
                     subValue={t("residents.statsParticipants")}
-                    color="#476e52"
+                    color="#3d6b4a"
                   />
                   <StatCard
                     label={t("residents.statsUnregistered")}
                     value={stats.unregistered}
                     subValue={t("residents.statsRooms")}
-                    color="#959892"
+                    color="#a1a1aa"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <p className="text-[10px] text-[#959892] tracking-wide">{t("residents.floorOccupancy")}</p>
+                  <p className="text-[10px] text-[#a1a1aa] tracking-wide">{t("residents.floorOccupancy")}</p>
                   <div className="flex gap-2">
                     {(["5F", "4F", "3F", "2F"] as const).map((floor) => {
                       const floorStat = stats.floorStats[floor];
@@ -257,11 +257,11 @@ export function ResidentsGrid({
                         <div key={floor} className="flex-1">
                           <div className="flex items-center justify-between mb-1">
                             <span className={`text-[10px] ${colors.text}`}>{floor}</span>
-                            <span className="text-[10px] text-[#959892]">
+                            <span className="text-[10px] text-[#a1a1aa]">
                               {floorStat.registered}/{floorStat.total}
                             </span>
                           </div>
-                          <div className="h-1.5 bg-[#eceee9] rounded-full overflow-hidden">
+                          <div className="h-1.5 bg-[#f4f4f5] rounded-full overflow-hidden">
                             <motion.div
                               initial={{ width: 0 }}
                               animate={{ width: `${percentage}%` }}
@@ -284,17 +284,17 @@ export function ResidentsGrid({
       <div className="flex flex-col gap-4">
         <div className="flex items-end justify-between">
           <div>
-            <h2 className="text-lg sm:text-xl text-[#272a26] tracking-wide font-light">
+            <h2 className="text-lg sm:text-xl text-[#18181b] tracking-wide font-light">
               {t("residents.title")}
             </h2>
-            <p className="text-[11px] sm:text-xs text-[#959892] mt-1">
+            <p className="text-[11px] sm:text-xs text-[#a1a1aa] mt-1">
               {t("residents.countLabel", { count: filteredAndSortedProfiles.length })}
               {(searchQuery || floorFilter !== "all") &&
                 ` ${t("residents.countOf", { total: profiles.length })}`}
             </p>
           </div>
 
-          <div className="flex gap-1 bg-[#eceee9] p-1 rounded-md">
+          <div className="flex gap-1 bg-[#f4f4f5] p-1 rounded-md">
             {viewModeOptions.map((option) => {
               const isActive = viewMode === option.value;
               const Icon = option.icon;
@@ -307,8 +307,8 @@ export function ResidentsGrid({
                   onClick={() => setViewMode(option.value)}
                   className={`${
                     isActive
-                      ? "bg-white text-[#272a26] hover:bg-white"
-                      : "text-[#959892] hover:text-[#636861]"
+                      ? "bg-white text-[#18181b] hover:bg-white"
+                      : "text-[#a1a1aa] hover:text-[#71717a]"
                   }`}
                   title={option.label}
                   aria-label={option.label}
@@ -338,7 +338,7 @@ export function ResidentsGrid({
                   isActive && !isAll
                     ? `${colors?.bg} ${colors?.border} ${colors?.text} hover:${colors?.bg}`
                     : !isActive
-                      ? "bg-white border-[#dddfd9] text-[#636861] hover:border-[#959892]"
+                      ? "bg-white border-[#e4e4e7] text-[#71717a] hover:border-[#a1a1aa]"
                       : ""
                 }`}
               >
@@ -346,7 +346,7 @@ export function ResidentsGrid({
                   {isAll ? t("residents.filterAll") : floor}
                 </span>
                 {floorStat && (
-                  <span className={`ml-1.5 text-[10px] sm:text-xs ${isActive ? "" : "text-[#959892]"}`}>
+                  <span className={`ml-1.5 text-[10px] sm:text-xs ${isActive ? "" : "text-[#a1a1aa]"}`}>
                     {floorStat.registered}/{floorStat.total}
                   </span>
                 )}
@@ -355,15 +355,15 @@ export function ResidentsGrid({
           })}
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-4 border-b border-[#dddfd9]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-4 border-b border-[#e4e4e7]">
           <div className="relative">
-            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-[#959892]" />
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-[#a1a1aa]" />
             <input
               type="search"
               placeholder={t("residents.searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full sm:w-64 h-11 sm:h-10 pl-10 pr-4 bg-white border border-[#dddfd9] rounded-md text-base sm:text-sm text-[#272a26] placeholder:text-[#bdc0ba] focus:outline-none focus:border-[#272a26] transition-colors"
+              className="w-full sm:w-64 h-11 sm:h-10 pl-10 pr-4 bg-white border border-[#e4e4e7] rounded-md text-base sm:text-sm text-[#18181b] placeholder:text-[#d4d4d8] focus:outline-none focus:border-[#18181b] transition-colors"
             />
             {searchQuery && (
               <Button
@@ -393,8 +393,8 @@ export function ResidentsGrid({
                     <span
                       className={`text-sm ${
                         isActive
-                          ? "text-[#272a26] font-medium"
-                          : "text-[#959892] group-hover:text-[#636861]"
+                          ? "text-[#18181b] font-medium"
+                          : "text-[#a1a1aa] group-hover:text-[#71717a]"
                       }`}
                     >
                       {option.label}
@@ -402,7 +402,7 @@ export function ResidentsGrid({
                     {isActive && (
                       <motion.span
                         layoutId="sort-underline"
-                        className="absolute bottom-0 left-3 right-3 sm:left-4 sm:right-4 h-px bg-[#272a26]"
+                        className="absolute bottom-0 left-3 right-3 sm:left-4 sm:right-4 h-px bg-[#18181b]"
                         transition={{ duration: 0.3, ease: "easeInOut" }}
                       />
                     )}
@@ -410,7 +410,7 @@ export function ResidentsGrid({
                 );
               })}
             </div>
-            <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-[#f5f6f4] to-transparent pointer-events-none" />
+            <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-[#fafafa] to-transparent pointer-events-none" />
           </div>
         </div>
       </div>
@@ -424,10 +424,10 @@ export function ResidentsGrid({
             exit={{ opacity: 0 }}
             className="text-center py-12 sm:py-16"
           >
-            <div className="w-16 h-16 mx-auto mb-4 bg-[#eceee9] rounded-lg flex items-center justify-center">
-              <SearchIcon className="w-8 h-8 text-[#bdc0ba]" />
+            <div className="w-16 h-16 mx-auto mb-4 bg-[#f4f4f5] rounded-lg flex items-center justify-center">
+              <SearchIcon className="w-8 h-8 text-[#d4d4d8]" />
             </div>
-            <p className="text-[#636861] text-sm">{t("residents.noMatch")}</p>
+            <p className="text-[#71717a] text-sm">{t("residents.noMatch")}</p>
             <Button
               type="button"
               variant="outline"
@@ -484,10 +484,10 @@ function StatCard({
 }) {
   return (
     <div className="text-center">
-      <p className="text-[10px] text-[#959892] mb-1 tracking-wide">{label}</p>
+      <p className="text-[10px] text-[#a1a1aa] mb-1 tracking-wide">{label}</p>
       <p className="text-2xl sm:text-3xl font-light" style={{ color }}>
         {value}
-        <span className="text-sm text-[#959892] ml-1">{subValue}</span>
+        <span className="text-sm text-[#a1a1aa] ml-1">{subValue}</span>
       </p>
     </div>
   );
@@ -575,10 +575,10 @@ function FloorView({
                   {t("residents.floorLabel", { floor: floor.replace("F", "") })}
                 </h3>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="text-[10px] text-[#959892]">
+                  <span className="text-[10px] text-[#a1a1aa]">
                     {floorStat.registered}/{floorStat.total} {t("residents.registeredShort")}
                   </span>
-                  <div className="flex-1 max-w-20 h-1 bg-[#eceee9] rounded-full">
+                  <div className="flex-1 max-w-20 h-1 bg-[#f4f4f5] rounded-full">
                     <div
                       className="h-full rounded-full transition-all duration-500"
                       style={{
@@ -678,10 +678,10 @@ function ResidentListItem({
       <article
         className={`flex items-center gap-4 p-3 sm:p-4 bg-white border rounded-lg transition-all duration-200 active:scale-[0.995] ${
           isCurrentUser
-            ? "border-[#272a26]"
+            ? "border-[#18181b]"
             : isMockProfile
-            ? "border-dashed border-[#bdc0ba] hover:border-[#959892]"
-            : "border-[#dddfd9] hover:border-[#272a26]"
+            ? "border-dashed border-[#d4d4d8] hover:border-[#a1a1aa]"
+            : "border-[#e4e4e7] hover:border-[#18181b]"
         }`}
       >
         <div className="relative shrink-0">
@@ -692,11 +692,11 @@ function ResidentListItem({
               context="card"
               className="w-full h-full"
               fallback={getInitials(profile.name)}
-              fallbackClassName="bg-[#eceee9] text-[#959892] text-lg rounded-full w-full h-full flex items-center justify-center"
+              fallbackClassName="bg-[#f4f4f5] text-[#a1a1aa] text-lg rounded-full w-full h-full flex items-center justify-center"
             />
           </Avatar>
           {isCurrentUser && (
-            <span className="absolute -top-1 -right-1 bg-[#272a26] text-white text-[8px] px-1.5 py-0.5 rounded">
+            <span className="absolute -top-1 -right-1 bg-[#18181b] text-white text-[8px] px-1.5 py-0.5 rounded">
               {t("common.you")}
             </span>
           )}
@@ -704,7 +704,7 @@ function ResidentListItem({
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="text-sm sm:text-base text-[#272a26] truncate">
+            <h3 className="text-sm sm:text-base text-[#18181b] truncate">
               {profile.nickname || profile.name}
             </h3>
             {profile.room_number && (
@@ -715,36 +715,36 @@ function ResidentListItem({
               </span>
             )}
             {isNew && !isMockProfile && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#edf5ee] text-[#4d7356] border border-[#8ab896]">
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#f0fdf4] text-[#3d6b4a] border border-[#93c5a0]">
                 NEW
               </span>
             )}
             {isTeaTimeParticipant && !isMockProfile && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#476e52] text-white flex items-center gap-0.5">
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#3d6b4a] text-white flex items-center gap-0.5">
                 <TeaCupIcon />
               </span>
             )}
             {isMockProfile && (
-              <span className="text-[10px] text-[#959892]">
+              <span className="text-[10px] text-[#a1a1aa]">
                 {t("common.unregistered")}
               </span>
             )}
           </div>
 
-          <div className="flex items-center gap-3 mt-1 text-[11px] sm:text-xs text-[#636861]">
+          <div className="flex items-center gap-3 mt-1 text-[11px] sm:text-xs text-[#71717a]">
             {profile.occupation && (
               <span>{t(`profileOptions.occupation.${profile.occupation}` as Parameters<typeof t>[0])}</span>
             )}
-            {profile.mbti && <span className="text-[#959892]">{profile.mbti}</span>}
+            {profile.mbti && <span className="text-[#a1a1aa]">{profile.mbti}</span>}
             {profile.interests && profile.interests.length > 0 && (
-              <span className="truncate text-[#959892]">
+              <span className="truncate text-[#a1a1aa]">
                 {profile.interests.slice(0, 3).join(", ")}
               </span>
             )}
           </div>
         </div>
 
-        <div className="text-[#bdc0ba] group-hover:text-[#959892] transition-colors shrink-0">
+        <div className="text-[#d4d4d8] group-hover:text-[#a1a1aa] transition-colors shrink-0">
           <ChevronRightIcon />
         </div>
       </article>

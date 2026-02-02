@@ -12,11 +12,11 @@ interface BulkUploadProgressProps {
 }
 
 const statusColorMap: Record<UploadItemStatus, string> = {
-  pending: "text-[#959892]",
-  compressing: "text-[#636861]",
-  uploading: "text-[#636861]",
-  done: "text-[#4d7356]",
-  error: "text-[#856259]",
+  pending: "text-[#a1a1aa]",
+  compressing: "text-[#71717a]",
+  uploading: "text-[#71717a]",
+  done: "text-[#3d6b4a]",
+  error: "text-[#8b4040]",
 };
 
 function getStatusText(status: UploadItemStatus, t: ReturnType<typeof useI18n>): string {
@@ -57,20 +57,20 @@ export const BulkUploadProgress = memo(function BulkUploadProgress({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.2 }}
-      className="mb-4 py-3 px-4 bg-white border border-[#dddfd9] rounded-lg"
+      className="mb-4 py-3 px-4 bg-white border border-[#e4e4e7] rounded-lg"
     >
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs text-[#636861] font-mono">
+        <span className="text-xs text-[#71717a] font-mono">
           {completedCount} / {totalCount}
         </span>
-        <span className="text-xs text-[#959892]">
+        <span className="text-xs text-[#a1a1aa]">
           {Math.round(progress)}%
         </span>
       </div>
 
-      <div className="w-full h-1 bg-[#dddfd9] rounded-full overflow-hidden mb-3">
+      <div className="w-full h-1 bg-[#e4e4e7] rounded-full overflow-hidden mb-3">
         <m.div
-          className="h-full bg-[#272a26]"
+          className="h-full bg-[#18181b]"
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.3, ease: "easeOut" }}
@@ -83,7 +83,7 @@ export const BulkUploadProgress = memo(function BulkUploadProgress({
             key={item.id}
             className="flex items-center justify-between gap-2 py-0.5"
           >
-            <span className="text-[11px] text-[#636861] truncate min-w-0">
+            <span className="text-[11px] text-[#71717a] truncate min-w-0">
               {item.fileName}
             </span>
             <StatusLabel status={item.status} />

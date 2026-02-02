@@ -103,13 +103,13 @@ export function RoomPhotoManager({
   const activeFeedback = uploadFeedback || (error ? { type: "error" as const, message: error } : null);
 
   return (
-    <div className={compact ? "" : "bg-white border border-[#dddfd9]"}>
+    <div className={compact ? "" : "bg-white border border-[#e4e4e7]"}>
       {!compact && (
-        <div className="px-4 py-3 border-b border-[#dddfd9] flex items-center justify-between">
-          <p className="text-xs text-[#959892] tracking-wide">
+        <div className="px-4 py-3 border-b border-[#e4e4e7] flex items-center justify-between">
+          <p className="text-xs text-[#a1a1aa] tracking-wide">
             {t("roomPhotos.roomPhotosSection")}
           </p>
-          <span className="text-[10px] text-[#959892]">
+          <span className="text-[10px] text-[#a1a1aa]">
             {currentPhotos.length}/{maxPhotos} {t("roomPhotos.maxPhotos")}
           </span>
         </div>
@@ -136,15 +136,15 @@ export function RoomPhotoManager({
               transition={{ duration: 0.2 }}
               className={`py-3 px-4 ${
                 activeFeedback.type === "error"
-                  ? "bg-[#f9f2f0] border-l-2 border-[#c7a099]"
-                  : "bg-[#edf5ee] border-l-2 border-[#8ab896]"
+                  ? "bg-[#fef2f2] border-l-2 border-[#e5a0a0]"
+                  : "bg-[#f0fdf4] border-l-2 border-[#93c5a0]"
               }`}
             >
               <p
                 className={`text-sm ${
                   activeFeedback.type === "error"
-                    ? "text-[#856259]"
-                    : "text-[#4d7356]"
+                    ? "text-[#8b4040]"
+                    : "text-[#3d6b4a]"
                 }`}
               >
                 {activeFeedback.message}
@@ -161,7 +161,7 @@ export function RoomPhotoManager({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="relative aspect-square bg-[#eceee9] group"
+              className="relative aspect-square bg-[#f4f4f5] group"
             >
               <Image
                 src={photo.photo_url}
@@ -194,14 +194,14 @@ export function RoomPhotoManager({
               variant="dashed"
               onClick={handleUploadClick}
               disabled={isUploading}
-              className="aspect-square h-auto flex-col gap-1 bg-[#f5f6f4] hover:bg-[#eceee9]"
+              className="aspect-square h-auto flex-col gap-1 bg-[#fafafa] hover:bg-[#f4f4f5]"
             >
               {isUploading ? (
                 <Spinner />
               ) : (
                 <>
-                  <Plus className="w-5 h-5 text-[#959892]" />
-                  <span className="text-[9px] text-[#959892]">
+                  <Plus className="w-5 h-5 text-[#a1a1aa]" />
+                  <span className="text-[9px] text-[#a1a1aa]">
                     {t("roomPhotos.upload")}
                   </span>
                 </>
@@ -211,13 +211,13 @@ export function RoomPhotoManager({
         </div>
 
         {canUpload && (
-          <p className="text-[10px] text-[#959892]">
+          <p className="text-[10px] text-[#a1a1aa]">
             {t("profile.photoFormat")} — {t("roomPhotos.selectMultiple")}
           </p>
         )}
 
         {currentPhotos.length === 0 && (
-          <p className="text-xs text-[#959892] text-center py-4">
+          <p className="text-xs text-[#a1a1aa] text-center py-4">
             {t("roomPhotos.noPhotosHint")}
           </p>
         )}
