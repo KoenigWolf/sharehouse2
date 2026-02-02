@@ -23,10 +23,10 @@ Next.js 16 (App Router) / TypeScript / Tailwind CSS 4 / shadcn/ui / Supabase / F
 
 ## デザイン指針
 
-- 背景 `#fafaf8` / テキスト `#1a1a1a` / ボーダー `#e5e5e5`
+- 背景 `#f5f6f4` / テキスト `#272a26` / ボーダー `#dddfd9`
 - 角丸は控えめに（アバター: `rounded-full` / ボタン・入力: `rounded-md` / カード: `rounded-lg`）。影は極力使わない。装飾禁止
 - アニメーションは 0.2〜0.3秒、静かに
-- フィードバックは左ボーダーのみ（エラー `#c9a0a0` / 成功 `#a0c9a0`）
+- フィードバックは左ボーダーのみ（エラー `#c7a099` / 成功 `#8ab896`）
 - 詳細: @DESIGN_GUIDELINES.md
 
 ## プロジェクト構成
