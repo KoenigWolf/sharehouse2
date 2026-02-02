@@ -292,6 +292,71 @@ export async function getAllRoomPhotos(): Promise<
 }
 
 /**
+ * 部屋の写真キャプションを更新する
+ *
+ * オリジン検証 → 認証確認 → UUID検証 → 所有権チェック付きUPDATE →
+ * キャッシュ再検証の順に処理。
+ *
+ * @param photoId - 更新対象の写真ID（UUID）
+ * @param caption - 新しいキャプション（null で削除）
+ * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
+ */
+export async function updateRoomPhotoCaption(
+  photoId: string,
+  caption: string | null
+): Promise<UpdateResponse> {
+  const t = await getServerTranslator();
+
+  const originError = await enforceAllowedOrigin(t, "updateRoomPhotoCaption");
+  if (originError) {
+    return { error: originError };
+  }
+
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { error: t("errors.unauthorized") };
+    }
+
+    if (!isValidUUID(photoId)) {
+      return { error: t("errors.invalidInput") };
+    }
+
+    const sanitized =
+      caption?.trim().slice(0, ROOM_PHOTOS.maxCaptionLength) || null;
+
+    const { data, error } = await supabase
+      .from("room_photos")
+      .update({ caption: sanitized })
+      .eq("id", photoId)
+      .eq("user_id", user.id)
+      .select("id")
+      .single();
+
+    if (error || !data) {
+      if (error) {
+        logError(error, {
+          action: "updateRoomPhotoCaption",
+          userId: user.id,
+          metadata: { photoId },
+        });
+      }
+      return { error: t("errors.notFound") };
+    }
+
+    CacheStrategy.afterRoomPhotoUpdate();
+    return { success: true };
+  } catch (error) {
+    logError(error, { action: "updateRoomPhotoCaption" });
+    return { error: t("errors.serverError") };
+  }
+}
+
+/**
  * 一括アップロードされた写真をDBに登録する
  *
  * クライアントから直接Supabase Storageにアップロード済みのファイルパスを受け取り、

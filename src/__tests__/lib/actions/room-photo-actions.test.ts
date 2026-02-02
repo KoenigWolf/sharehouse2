@@ -296,6 +296,94 @@ describe("registerBulkPhotos", () => {
   });
 });
 
+describe("updateRoomPhotoCaption", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("should return error when user is not authenticated", async () => {
+    mockGetUser.mockResolvedValue({ data: { user: null } });
+
+    const { updateRoomPhotoCaption } = await import("@/lib/room-photos/actions");
+    const result = await updateRoomPhotoCaption("12345678-1234-1234-1234-123456789012", "test");
+
+    expect(result).toHaveProperty("error");
+    expect((result as { error: string }).error).toBe(t("errors.unauthorized"));
+  });
+
+  it("should reject invalid UUID", async () => {
+    mockGetUser.mockResolvedValue({ data: { user: { id: "user-123" } } });
+
+    const { updateRoomPhotoCaption } = await import("@/lib/room-photos/actions");
+    const result = await updateRoomPhotoCaption("not-a-uuid", "test");
+
+    expect(result).toHaveProperty("error");
+    expect((result as { error: string }).error).toBe(t("errors.invalidInput"));
+  });
+
+  it("should update caption successfully", async () => {
+    mockGetUser.mockResolvedValue({ data: { user: { id: "user-123" } } });
+    mockFrom.mockReturnValue({
+      update: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            select: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({ data: { id: "photo-1" }, error: null }),
+            }),
+          }),
+        }),
+      }),
+    });
+
+    const { updateRoomPhotoCaption } = await import("@/lib/room-photos/actions");
+    const result = await updateRoomPhotoCaption("12345678-1234-1234-1234-123456789012", "New caption");
+
+    expect(result).toEqual({ success: true });
+  });
+
+  it("should return notFound when photo not owned by user", async () => {
+    mockGetUser.mockResolvedValue({ data: { user: { id: "user-123" } } });
+    mockFrom.mockReturnValue({
+      update: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            select: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({ data: null, error: { code: "PGRST116" } }),
+            }),
+          }),
+        }),
+      }),
+    });
+
+    const { updateRoomPhotoCaption } = await import("@/lib/room-photos/actions");
+    const result = await updateRoomPhotoCaption("12345678-1234-1234-1234-123456789012", "test");
+
+    expect(result).toHaveProperty("error");
+    expect((result as { error: string }).error).toBe(t("errors.notFound"));
+  });
+
+  it("should set null for empty caption", async () => {
+    mockGetUser.mockResolvedValue({ data: { user: { id: "user-123" } } });
+
+    const mockUpdate = vi.fn().mockReturnValue({
+      eq: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({ data: { id: "photo-1" }, error: null }),
+          }),
+        }),
+      }),
+    });
+    mockFrom.mockReturnValue({ update: mockUpdate });
+
+    const { updateRoomPhotoCaption } = await import("@/lib/room-photos/actions");
+    const result = await updateRoomPhotoCaption("12345678-1234-1234-1234-123456789012", "  ");
+
+    expect(result).toEqual({ success: true });
+    expect(mockUpdate).toHaveBeenCalledWith({ caption: null });
+  });
+});
+
 describe("getAllRoomPhotos", () => {
   beforeEach(() => {
     vi.clearAllMocks();
