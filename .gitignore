@@ -83,8 +83,8 @@ analyze/
 # Sentry
 .sentryclirc
 
-# Claude / Cursor local settings (個人のローカル設定は無視)
-.claude/settings.local.json
+# Claude / Cursor (plans やローカル設定はリポジトリに含めない)
+.claude/
 .cursor/settings.local.json
 
 # Local configuration files (共有設定はsettings.json、ローカル設定はsettings.local.json)
