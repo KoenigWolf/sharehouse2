@@ -7,7 +7,9 @@ import {
   compressImage,
   getOutputFormat,
 } from "@/lib/utils/image-compression";
+import { extractTakenAt } from "@/lib/utils/exif";
 import { registerBulkPhotos } from "@/lib/room-photos/actions";
+import type { BulkPhotoItem } from "@/lib/room-photos/actions";
 import { useI18n } from "@/hooks/use-i18n";
 import { ROOM_PHOTOS } from "@/lib/constants/config";
 
@@ -63,9 +65,15 @@ export function useBulkUpload() {
       file: File,
       userId: string,
       supabase: ReturnType<typeof createClient>
-    ): Promise<string | null> => {
+    ): Promise<BulkPhotoItem | null> => {
       try {
         updateItem(item.id, { status: "compressing" });
+
+        // Canvas 圧縮で EXIF が消えるため、圧縮前に抽出
+        const takenAt =
+          (await extractTakenAt(file)) ??
+          new Date(file.lastModified).toISOString();
+
         const compressed = await compressImage(file);
 
         updateItem(item.id, { status: "uploading" });
@@ -84,7 +92,7 @@ export function useBulkUpload() {
 
         updateItem(item.id, { status: "done" });
         setCompletedCount((prev) => prev + 1);
-        return fileName;
+        return { storagePath: fileName, takenAt };
       } catch (err) {
         const message =
           err instanceof Error ? err.message : "Upload failed";
@@ -136,14 +144,14 @@ export function useBulkUpload() {
 
       const queue = newItems.map((item, i) => ({ item, file: files[i] }));
       let queueIndex = 0;
-      const storagePaths: string[] = [];
+      const uploadedItems: BulkPhotoItem[] = [];
 
       const processNext = async (): Promise<void> => {
         while (queueIndex < queue.length) {
           const currentIndex = queueIndex++;
           const { item, file } = queue[currentIndex];
-          const path = await processFile(item, file, user.id, supabase);
-          if (path) storagePaths.push(path);
+          const result = await processFile(item, file, user.id, supabase);
+          if (result) uploadedItems.push(result);
         }
       };
 
@@ -152,8 +160,8 @@ export function useBulkUpload() {
         Array.from({ length: workerCount }, () => processNext())
       );
 
-      if (storagePaths.length > 0) {
-        const result = await registerBulkPhotos(storagePaths);
+      if (uploadedItems.length > 0) {
+        const result = await registerBulkPhotos(uploadedItems);
         if ("error" in result) {
           setFeedback({ type: "error", message: result.error });
           setIsUploading(false);
@@ -161,12 +169,12 @@ export function useBulkUpload() {
         }
       }
 
-      const failedCount = files.length - storagePaths.length;
+      const failedCount = files.length - uploadedItems.length;
       if (failedCount > 0) {
         setFeedback({
           type: "error",
           message: t("roomPhotos.bulkUploadPartial", {
-            success: storagePaths.length,
+            success: uploadedItems.length,
             failed: failedCount,
           }),
         });
@@ -174,7 +182,7 @@ export function useBulkUpload() {
         setFeedback({
           type: "success",
           message: t("roomPhotos.bulkUploadComplete", {
-            count: storagePaths.length,
+            count: uploadedItems.length,
           }),
         });
       }

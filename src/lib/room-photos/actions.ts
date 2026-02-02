@@ -7,6 +7,7 @@ import { logError } from "@/lib/errors";
 import { getServerTranslator } from "@/lib/i18n/server";
 import { RateLimiters, formatRateLimitError, isValidUUID } from "@/lib/security";
 import { enforceAllowedOrigin } from "@/lib/security/request";
+import { extractTakenAt } from "@/lib/utils/exif";
 import { ROOM_PHOTOS } from "@/lib/constants/config";
 import type { RoomPhoto } from "@/domain/room-photo";
 import type { Profile } from "@/domain/profile";
@@ -16,6 +17,11 @@ import type { Profile } from "@/domain/profile";
  */
 type UpdateResponse = { success: true } | { error: string };
 type UploadResponse = { success: true; url: string } | { error: string };
+
+export interface BulkPhotoItem {
+  storagePath: string;
+  takenAt: string | null;
+}
 
 const MAX_PHOTOS_PER_USER = ROOM_PHOTOS.maxPhotosPerUser;
 
@@ -88,6 +94,8 @@ export async function uploadRoomPhoto(formData: FormData): Promise<UploadRespons
     const arrayBuffer = await file.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
 
+    const takenAt = await extractTakenAt(uint8Array);
+
     const { error: uploadError } = await supabase.storage
       .from("room-photos")
       .upload(fileName, uint8Array, {
@@ -111,6 +119,7 @@ export async function uploadRoomPhoto(formData: FormData): Promise<UploadRespons
       user_id: user.id,
       photo_url: urlData.publicUrl,
       caption,
+      taken_at: takenAt,
     });
 
     if (insertError) {
@@ -359,14 +368,14 @@ export async function updateRoomPhotoCaption(
 /**
  * 一括アップロードされた写真をDBに登録する
  *
- * クライアントから直接Supabase Storageにアップロード済みのファイルパスを受け取り、
- * バッチでDB挿入する。1回のDB操作で全レコードを挿入するため効率的。
+ * クライアントから直接Supabase Storageにアップロード済みのファイルパスと
+ * EXIF 撮影日時を受け取り、バッチでDB挿入する。
  *
- * @param storagePaths - Storageにアップロード済みのファイルパス配列
+ * @param items - アップロード済みファイルのパスと撮影日時の配列
  * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
  */
 export async function registerBulkPhotos(
-  storagePaths: string[]
+  items: BulkPhotoItem[]
 ): Promise<UpdateResponse> {
   const t = await getServerTranslator();
 
@@ -382,17 +391,21 @@ export async function registerBulkPhotos(
     if (!user) return { error: t("errors.unauthorized") };
 
     if (
-      !Array.isArray(storagePaths) ||
-      storagePaths.length === 0 ||
-      storagePaths.length > ROOM_PHOTOS.maxBulkUpload
+      !Array.isArray(items) ||
+      items.length === 0 ||
+      items.length > ROOM_PHOTOS.maxBulkUpload
     ) {
       return { error: t("errors.invalidInput") };
     }
 
-    const hasInvalidPath = storagePaths.some(
-      (p) => typeof p !== "string" || !p.startsWith(`${user.id}/`)
+    const hasInvalidPath = items.some(
+      (item) =>
+        typeof item.storagePath !== "string" ||
+        !item.storagePath.startsWith(`${user.id}/`)
     );
     if (hasInvalidPath) return { error: t("errors.invalidInput") };
+
+    const storagePaths = items.map((item) => item.storagePath);
 
     const { count, error: countError } = await supabase
       .from("room_photos")
@@ -407,17 +420,20 @@ export async function registerBulkPhotos(
       return { error: t("errors.serverError") };
     }
 
-    if ((count ?? 0) + storagePaths.length > MAX_PHOTOS_PER_USER) {
+    if ((count ?? 0) + items.length > MAX_PHOTOS_PER_USER) {
       await supabase.storage.from("room-photos").remove(storagePaths);
       return { error: t("errors.maxPhotosReached") };
     }
 
-    const records = storagePaths.map((path) => {
-      const { data } = supabase.storage.from("room-photos").getPublicUrl(path);
+    const records = items.map((item) => {
+      const { data } = supabase.storage
+        .from("room-photos")
+        .getPublicUrl(item.storagePath);
       return {
         user_id: user.id,
         photo_url: data.publicUrl,
         caption: null,
+        taken_at: item.takenAt,
       };
     });
 

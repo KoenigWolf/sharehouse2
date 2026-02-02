@@ -31,6 +31,10 @@ vi.mock("@/lib/errors", () => ({
   logError: vi.fn(),
 }));
 
+vi.mock("@/lib/utils/exif", () => ({
+  extractTakenAt: vi.fn(() => null),
+}));
+
 vi.mock("@/lib/security", () => ({
   isValidUUID: vi.fn((id: string) =>
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
@@ -194,7 +198,9 @@ describe("registerBulkPhotos", () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
 
     const { registerBulkPhotos } = await import("@/lib/room-photos/actions");
-    const result = await registerBulkPhotos(["user-123/file1.webp"]);
+    const result = await registerBulkPhotos([
+      { storagePath: "user-123/file1.webp", takenAt: null },
+    ]);
 
     expect(result).toHaveProperty("error");
     expect((result as { error: string }).error).toBe(t("errors.unauthorized"));
@@ -214,7 +220,9 @@ describe("registerBulkPhotos", () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: "user-123" } } });
 
     const { registerBulkPhotos } = await import("@/lib/room-photos/actions");
-    const result = await registerBulkPhotos(["other-user/file1.webp"]);
+    const result = await registerBulkPhotos([
+      { storagePath: "other-user/file1.webp", takenAt: null },
+    ]);
 
     expect(result).toHaveProperty("error");
     expect((result as { error: string }).error).toBe(t("errors.invalidInput"));
@@ -232,13 +240,16 @@ describe("registerBulkPhotos", () => {
     const mockRemove = vi.fn().mockResolvedValue({ error: null });
     mockStorage.mockReturnValue({ remove: mockRemove });
 
-    const paths = ["user-123/a.webp", "user-123/b.webp"];
+    const items = [
+      { storagePath: "user-123/a.webp", takenAt: null },
+      { storagePath: "user-123/b.webp", takenAt: "2024-03-15T10:00:00.000Z" },
+    ];
     const { registerBulkPhotos } = await import("@/lib/room-photos/actions");
-    const result = await registerBulkPhotos(paths);
+    const result = await registerBulkPhotos(items);
 
     expect(result).toHaveProperty("error");
     expect((result as { error: string }).error).toBe(t("errors.maxPhotosReached"));
-    expect(mockRemove).toHaveBeenCalledWith(paths);
+    expect(mockRemove).toHaveBeenCalledWith(["user-123/a.webp", "user-123/b.webp"]);
   });
 
   it("should insert records and return success", async () => {
@@ -260,9 +271,12 @@ describe("registerBulkPhotos", () => {
       })),
     });
 
-    const paths = ["user-123/a.webp", "user-123/b.webp"];
+    const items = [
+      { storagePath: "user-123/a.webp", takenAt: "2024-03-15T10:00:00.000Z" },
+      { storagePath: "user-123/b.webp", takenAt: null },
+    ];
     const { registerBulkPhotos } = await import("@/lib/room-photos/actions");
-    const result = await registerBulkPhotos(paths);
+    const result = await registerBulkPhotos(items);
 
     expect(result).toEqual({ success: true });
   });
@@ -287,12 +301,12 @@ describe("registerBulkPhotos", () => {
       remove: vi.fn().mockResolvedValue({ error: null }),
     });
 
-    const paths = ["user-123/a.webp"];
+    const items = [{ storagePath: "user-123/a.webp", takenAt: null }];
     const { registerBulkPhotos } = await import("@/lib/room-photos/actions");
-    const result = await registerBulkPhotos(paths);
+    const result = await registerBulkPhotos(items);
 
     expect(result).toHaveProperty("error");
-    expect(mockStorage().remove).toHaveBeenCalledWith(paths);
+    expect(mockStorage().remove).toHaveBeenCalledWith(["user-123/a.webp"]);
   });
 });
 
