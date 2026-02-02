@@ -6,6 +6,7 @@ import { Footer } from "@/components/footer";
 import { MobileNav } from "@/components/mobile-nav";
 import { ProfileEditForm } from "@/components/profile-edit-form";
 import { RoomPhotoManager } from "@/components/room-photo-manager";
+import { AccountSettings } from "@/components/account-settings";
 import { Profile } from "@/domain/profile";
 import { getTeaTimeSetting } from "@/lib/tea-time/actions";
 import { getNotificationSettings } from "@/lib/notifications/actions";
@@ -77,6 +78,10 @@ export default async function ProfileEditPage({ params }: ProfileEditPageProps) 
             initialNotificationSettings={notificationSettings}
           />
           <RoomPhotoManager photos={roomPhotos} />
+          <AccountSettings
+            userEmail={user.email}
+            hasPassword={user.app_metadata?.providers?.includes("email") ?? false}
+          />
         </div>
       </main>
 
