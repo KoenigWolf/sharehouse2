@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useRef, useCallback, memo } from "react";
+import { useState, useEffect, useRef, useCallback, memo } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -11,6 +12,7 @@ import { useUser } from "@/hooks/use-user";
 import { useBulkUpload } from "@/hooks/use-bulk-upload";
 import { BulkUploadProgress } from "@/components/bulk-upload-progress";
 import { PhotoLightbox } from "@/components/photo-lightbox";
+import { deleteRoomPhoto, updateRoomPhotoCaption } from "@/lib/room-photos/actions";
 import { ROOM_PHOTOS } from "@/lib/constants/config";
 import type { RoomPhoto } from "@/domain/room-photo";
 import type { Profile } from "@/domain/profile";
@@ -193,8 +195,24 @@ SectionHeader.displayName = "SectionHeader";
 
 export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
   const t = useI18n();
+  const router = useRouter();
   const { userId } = useUser();
+  const [localPhotos, setLocalPhotos] = useState(photos);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    setLocalPhotos(photos);
+  }, [photos]);
+
+  // 削除後に selectedIndex が範囲外になった場合の補正
+  useEffect(() => {
+    if (selectedIndex === null) return;
+    if (localPhotos.length === 0) {
+      setSelectedIndex(null);
+    } else if (selectedIndex >= localPhotos.length) {
+      setSelectedIndex(localPhotos.length - 1);
+    }
+  }, [localPhotos.length, selectedIndex]);
 
   const {
     items: uploadItems,
@@ -206,7 +224,7 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
   } = useBulkUpload();
 
   const userPhotoCount = userId
-    ? photos.filter((p) => p.user_id === userId).length
+    ? localPhotos.filter((p) => p.user_id === userId).length
     : 0;
   const maxRemaining = ROOM_PHOTOS.maxPhotosPerUser - userPhotoCount;
 
@@ -229,7 +247,33 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
     [startUpload, maxRemaining]
   );
 
-  const hasPhotos = photos.length > 0;
+  const handleDeletePhoto = useCallback(
+    async (photoId: string): Promise<boolean> => {
+      const result = await deleteRoomPhoto(photoId);
+      if ("error" in result) return false;
+
+      setLocalPhotos((prev) => prev.filter((p) => p.id !== photoId));
+      router.refresh();
+      return true;
+    },
+    [router]
+  );
+
+  const handleUpdateCaption = useCallback(
+    async (photoId: string, caption: string | null): Promise<boolean> => {
+      const result = await updateRoomPhotoCaption(photoId, caption);
+      if ("error" in result) return false;
+
+      setLocalPhotos((prev) =>
+        prev.map((p) => (p.id === photoId ? { ...p, caption } : p))
+      );
+      router.refresh();
+      return true;
+    },
+    [router]
+  );
+
+  const hasPhotos = localPhotos.length > 0;
 
   return (
     <>
@@ -241,7 +285,7 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
         <SectionHeader
           icon={<CameraIcon />}
           title={t("roomPhotos.gallery")}
-          count={hasPhotos ? photos.length : undefined}
+          count={hasPhotos ? localPhotos.length : undefined}
         />
 
         <AnimatePresence mode="wait">
@@ -282,7 +326,7 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
             onSelectFiles={handleSelectFiles}
             isUploading={isUploading}
           />
-          {photos.map((photo, index) => (
+          {localPhotos.map((photo, index) => (
             <PhotoCard
               key={photo.id}
               photo={photo}
@@ -306,10 +350,13 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
       </m.section>
 
       <PhotoLightbox
-        photos={photos}
+        photos={localPhotos}
         selectedIndex={selectedIndex}
         onClose={handleClose}
         onNavigate={handleNavigate}
+        currentUserId={userId}
+        onDelete={handleDeletePhoto}
+        onUpdateCaption={handleUpdateCaption}
       />
     </>
   );
