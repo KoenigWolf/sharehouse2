@@ -79,6 +79,20 @@ export const ja = {
     loginWithLine: "LINEでログイン",
     signupWithLine: "LINEで新規登録",
     lineLoginFailed: "LINEログインに失敗しました",
+    forgotPassword: "パスワードを忘れた方",
+    sendResetLink: "リセットメールを送信",
+    sendingResetLink: "送信中...",
+    resetLinkSent:
+      "パスワードリセット用のメールを送信しました。メール内のリンクから再設定してください。",
+    backToLogin: "ログインに戻る",
+    resetPassword: "パスワードの再設定",
+    resetPasswordDescription: "新しいパスワードを入力してください",
+    newPassword: "新しいパスワード",
+    confirmNewPassword: "新しいパスワード（確認）",
+    setNewPassword: "パスワードを再設定",
+    settingNewPassword: "再設定中...",
+    passwordResetSuccess: "パスワードを再設定しました",
+    passwordMismatch: "パスワードが一致しません",
   },
 
   profile: {

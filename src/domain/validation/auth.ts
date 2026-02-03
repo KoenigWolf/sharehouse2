@@ -117,6 +117,28 @@ export function validateSignUp(
 }
 
 /**
+ * Validate password for reset flow
+ */
+export function validatePasswordResetInput(
+  password: unknown,
+  t: Translator
+): {
+  success: boolean;
+  data?: string;
+  error?: string;
+} {
+  const result = passwordSchema.safeParse(password);
+  if (result.success) {
+    return { success: true, data: result.data };
+  }
+  const issue = result.error.issues[0];
+  return {
+    success: false,
+    error: issue ? formatValidationError(issue, t) : t("errors.invalidInput"),
+  };
+}
+
+/**
  * Validate sign in input
  */
 export function validateSignIn(

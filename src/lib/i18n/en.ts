@@ -79,6 +79,20 @@ export const en: Translations = {
     loginWithLine: "Continue with LINE",
     signupWithLine: "Sign up with LINE",
     lineLoginFailed: "LINE login failed",
+    forgotPassword: "Forgot password?",
+    sendResetLink: "Send reset link",
+    sendingResetLink: "Sending...",
+    resetLinkSent:
+      "We sent a password reset email. Please follow the link to set a new password.",
+    backToLogin: "Back to login",
+    resetPassword: "Reset password",
+    resetPasswordDescription: "Enter your new password",
+    newPassword: "New password",
+    confirmNewPassword: "Confirm new password",
+    setNewPassword: "Set new password",
+    settingNewPassword: "Resetting...",
+    passwordResetSuccess: "Password has been reset",
+    passwordMismatch: "Passwords do not match",
   },
 
   profile: {

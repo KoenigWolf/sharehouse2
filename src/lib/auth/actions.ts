@@ -1,8 +1,14 @@
 "use server";
 
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { CacheStrategy } from "@/lib/utils/cache";
-import { validateSignUp, validateSignIn } from "@/domain/validation/auth";
+import {
+  validateSignUp,
+  validateSignIn,
+  emailSchema,
+  validatePasswordResetInput,
+} from "@/domain/validation/auth";
 import { logError } from "@/lib/errors";
 import { getServerTranslator } from "@/lib/i18n/server";
 import {
@@ -243,6 +249,142 @@ export async function signIn(
     return { success: true };
   } catch (error) {
     logError(error, { action: "signIn" });
+    return { error: t("errors.serverError") };
+  }
+}
+
+/**
+ * パスワードリセット用のメールを送信する
+ *
+ * メールアドレスの存在有無に関わらず常に成功を返す（列挙攻撃防止）。
+ */
+type PasswordResetRequestResponse = { success: true } | { error: string };
+
+export async function requestPasswordReset(
+  email: string
+): Promise<PasswordResetRequestResponse> {
+  const t = await getServerTranslator();
+
+  const originError = await enforceAllowedOrigin(t, "requestPasswordReset");
+  if (originError) return { error: originError };
+
+  const emailResult = emailSchema.safeParse(email);
+  if (!emailResult.success) return { error: t("validation.emailInvalid") };
+
+  const validatedEmail = emailResult.data;
+  const ipAddress = await getRequestIp();
+  const rateLimitKey = ipAddress
+    ? `reset:${validatedEmail}:${ipAddress}`
+    : `reset:${validatedEmail}`;
+  const rateLimitResult = RateLimiters.passwordReset(rateLimitKey);
+  if (!rateLimitResult.success) {
+    AuditActions.rateLimited(
+      validatedEmail,
+      "requestPasswordReset",
+      ipAddress || undefined
+    );
+    return { error: formatRateLimitError(rateLimitResult.retryAfter, t) };
+  }
+
+  try {
+    const supabase = await createClient();
+
+    const headersList = await headers();
+    const host = headersList.get("host") || "localhost:3000";
+    const proto = headersList.get("x-forwarded-proto") || "https";
+    const siteUrl = `${proto}://${host}`;
+
+    const { error } = await supabase.auth.resetPasswordForEmail(
+      validatedEmail,
+      { redirectTo: `${siteUrl}/auth/callback?type=recovery` }
+    );
+
+    if (error) {
+      logError(error, { action: "requestPasswordReset" });
+    }
+
+    // Always return success to prevent email enumeration
+    auditLog({
+      timestamp: new Date().toISOString(),
+      eventType: AuditEventType.AUTH_PASSWORD_RESET_REQUEST,
+      action: "Password reset requested",
+      outcome: "success",
+      ipAddress: ipAddress || undefined,
+      metadata: { email: validatedEmail.slice(0, 3) + "***" },
+    });
+
+    return { success: true };
+  } catch (error) {
+    logError(error, { action: "requestPasswordReset" });
+    return { error: t("errors.serverError") };
+  }
+}
+
+/**
+ * リカバリーセッション後にパスワードを再設定する
+ */
+type PasswordResetResponse = { success: true } | { error: string };
+
+export async function updatePasswordAfterReset(
+  newPassword: string
+): Promise<PasswordResetResponse> {
+  const t = await getServerTranslator();
+
+  const originError = await enforceAllowedOrigin(t, "updatePasswordAfterReset");
+  if (originError) return { error: originError };
+
+  const validation = validatePasswordResetInput(newPassword, t);
+  if (!validation.success) {
+    return { error: validation.error || t("errors.invalidInput") };
+  }
+
+  const ipAddress = await getRequestIp();
+
+  try {
+    const supabase = await createClient();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      return { error: t("errors.unauthorized") };
+    }
+
+    const { error } = await supabase.auth.updateUser({
+      password: validation.data!,
+    });
+
+    if (error) {
+      logError(error, {
+        action: "updatePasswordAfterReset",
+        userId: user.id,
+      });
+
+      auditLog({
+        timestamp: new Date().toISOString(),
+        eventType: AuditEventType.AUTH_PASSWORD_RESET_COMPLETE,
+        userId: user.id,
+        action: "Password reset failed",
+        outcome: "failure",
+        errorMessage: error.message,
+        ipAddress: ipAddress || undefined,
+      });
+
+      return { error: t("errors.serverError") };
+    }
+
+    auditLog({
+      timestamp: new Date().toISOString(),
+      eventType: AuditEventType.AUTH_PASSWORD_RESET_COMPLETE,
+      userId: user.id,
+      action: "Password reset completed",
+      outcome: "success",
+      ipAddress: ipAddress || undefined,
+    });
+
+    return { success: true };
+  } catch (error) {
+    logError(error, { action: "updatePasswordAfterReset" });
     return { error: t("errors.serverError") };
   }
 }

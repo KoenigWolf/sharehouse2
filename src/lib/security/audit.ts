@@ -17,6 +17,8 @@ export const AuditEventType = {
   AUTH_EMAIL_CHANGE: "AUTH_EMAIL_CHANGE",
   AUTH_ACCOUNT_DELETE: "AUTH_ACCOUNT_DELETE",
   AUTH_RATE_LIMITED: "AUTH_RATE_LIMITED",
+  AUTH_PASSWORD_RESET_REQUEST: "AUTH_PASSWORD_RESET_REQUEST",
+  AUTH_PASSWORD_RESET_COMPLETE: "AUTH_PASSWORD_RESET_COMPLETE",
 
   PROFILE_UPDATE: "PROFILE_UPDATE",
   PROFILE_VIEW: "PROFILE_VIEW",
@@ -92,6 +94,8 @@ function getSeverity(eventType: AuditEventTypeValue): AuditSeverityValue {
     [AuditEventType.AUTH_EMAIL_CHANGE]: AuditSeverity.WARNING,
     [AuditEventType.AUTH_ACCOUNT_DELETE]: AuditSeverity.CRITICAL,
     [AuditEventType.AUTH_RATE_LIMITED]: AuditSeverity.WARNING,
+    [AuditEventType.AUTH_PASSWORD_RESET_REQUEST]: AuditSeverity.INFO,
+    [AuditEventType.AUTH_PASSWORD_RESET_COMPLETE]: AuditSeverity.WARNING,
     [AuditEventType.PROFILE_UPDATE]: AuditSeverity.INFO,
     [AuditEventType.PROFILE_VIEW]: AuditSeverity.INFO,
     [AuditEventType.AVATAR_UPLOAD]: AuditSeverity.INFO,

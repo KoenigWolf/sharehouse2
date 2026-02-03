@@ -5,7 +5,10 @@ import { cookies } from "next/headers";
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
-  const redirectTo = requestUrl.searchParams.get("redirect") || "/";
+  const type = requestUrl.searchParams.get("type");
+  const redirectTo = type === "recovery"
+    ? "/auth/reset-password"
+    : (requestUrl.searchParams.get("redirect") || "/");
 
   let response = NextResponse.redirect(new URL(redirectTo, requestUrl));
 

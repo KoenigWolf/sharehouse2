@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { m, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { signIn, signUp } from "@/lib/auth/actions";
+import { signIn, signUp, requestPasswordReset } from "@/lib/auth/actions";
 import { AUTH } from "@/lib/constants/config";
 import { useI18n } from "@/hooks/use-i18n";
 import { createClient } from "@/lib/supabase/client";
@@ -34,6 +34,26 @@ export default function LoginPage() {
   const [isLineLoading, setIsLineLoading] = useState(false);
   const router = useRouter();
   const t = useI18n();
+  const [isForgotMode, setIsForgotMode] = useState(false);
+
+  const handleResetRequest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    const result = await requestPasswordReset(email);
+
+    if ("error" in result) {
+      setError(result.error);
+      setIsLoading(false);
+      return;
+    }
+
+    setSuccess(t("auth.resetLinkSent"));
+    setIsForgotMode(false);
+    setIsLoading(false);
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,6 +115,7 @@ export default function LoginPage() {
   const switchMode = (newMode: "login" | "signup") => {
     if (mode === newMode) return;
     setMode(newMode);
+    setIsForgotMode(false);
     setError(null);
     setSuccess(null);
   };
@@ -189,7 +210,13 @@ export default function LoginPage() {
             </div>
 
             <form
-              onSubmit={mode === "login" ? handleLogin : handleSignup}
+              onSubmit={
+                mode === "signup"
+                  ? handleSignup
+                  : isForgotMode
+                  ? handleResetRequest
+                  : handleLogin
+              }
               className="space-y-6"
             >
               <AnimatePresence mode="wait">
@@ -242,40 +269,70 @@ export default function LoginPage() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <label
-                  htmlFor="password"
-                  className="block text-xs text-[#71717a] tracking-wide"
-                >
-                  {t("auth.password")}
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  autoComplete={mode === "login" ? "current-password" : "new-password"}
-                  className="w-full h-12 px-4 bg-white border border-[#e4e4e7] rounded-md text-[#18181b] text-sm placeholder:text-[#d4d4d8] focus:outline-none focus:border-[#18181b] transition-colors"
-                />
-                <AnimatePresence>
-                  {mode === "signup" && (
-                    <m.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="pt-1 space-y-2"
+              {!(mode === "login" && isForgotMode) && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label
+                      htmlFor="password"
+                      className="block text-xs text-[#71717a] tracking-wide"
                     >
-                      <p className="text-xs text-[#a1a1aa]">
-                        {t("auth.passwordHint")}
-                      </p>
-                      {password.length > 0 && (
-                        <PasswordStrengthMeter password={password} />
-                      )}
-                    </m.div>
-                  )}
-                </AnimatePresence>
-              </div>
+                      {t("auth.password")}
+                    </label>
+                    {mode === "login" && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsForgotMode(true);
+                          setError(null);
+                          setSuccess(null);
+                        }}
+                        className="text-xs text-[#a1a1aa] hover:text-[#71717a] transition-colors"
+                      >
+                        {t("auth.forgotPassword")}
+                      </button>
+                    )}
+                  </div>
+                  <input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    autoComplete={mode === "login" ? "current-password" : "new-password"}
+                    className="w-full h-12 px-4 bg-white border border-[#e4e4e7] rounded-md text-[#18181b] text-sm placeholder:text-[#d4d4d8] focus:outline-none focus:border-[#18181b] transition-colors"
+                  />
+                  <AnimatePresence>
+                    {mode === "signup" && (
+                      <m.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="pt-1 space-y-2"
+                      >
+                        <p className="text-xs text-[#a1a1aa]">
+                          {t("auth.passwordHint")}
+                        </p>
+                        {password.length > 0 && (
+                          <PasswordStrengthMeter password={password} />
+                        )}
+                      </m.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
+
+              {mode === "login" && isForgotMode && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsForgotMode(false);
+                    setError(null);
+                  }}
+                  className="text-xs text-[#a1a1aa] hover:text-[#71717a] transition-colors"
+                >
+                  {t("auth.backToLogin")}
+                </button>
+              )}
 
               <AnimatePresence>
                 {error && (
@@ -312,22 +369,17 @@ export default function LoginPage() {
                 size="xl"
                 disabled={isLoading}
                 aria-busy={isLoading}
-                aria-label={
-                  isLoading
-                    ? mode === "login"
-                      ? t("a11y.loggingIn")
-                      : t("a11y.signingUp")
-                    : mode === "login"
-                    ? t("auth.login")
-                    : t("auth.register")
-                }
                 className="w-full"
               >
                 {isLoading ? (
                   <span className="inline-flex items-center gap-2">
                     <Spinner size="sm" variant="light" />
-                    {t("common.processing")}
+                    {isForgotMode
+                      ? t("auth.sendingResetLink")
+                      : t("common.processing")}
                   </span>
+                ) : isForgotMode ? (
+                  t("auth.sendResetLink")
                 ) : mode === "login" ? (
                   t("auth.login")
                 ) : (
@@ -336,27 +388,29 @@ export default function LoginPage() {
               </Button>
             </form>
 
-            <div className="mt-6">
-              <div className="flex items-center gap-3 text-[#a1a1aa] text-xs">
-                <span className="flex-1 h-px bg-[#e4e4e7]" />
-                <span>{t("auth.orContinueWith")}</span>
-                <span className="flex-1 h-px bg-[#e4e4e7]" />
+            {!isForgotMode && (
+              <div className="mt-6">
+                <div className="flex items-center gap-3 text-[#a1a1aa] text-xs">
+                  <span className="flex-1 h-px bg-[#e4e4e7]" />
+                  <span>{t("auth.orContinueWith")}</span>
+                  <span className="flex-1 h-px bg-[#e4e4e7]" />
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="xl"
+                  onClick={handleLineLogin}
+                  disabled={isLineLoading}
+                  className="mt-4 w-full"
+                >
+                  {isLineLoading
+                    ? t("common.processing")
+                    : mode === "signup"
+                      ? t("auth.signupWithLine")
+                      : t("auth.loginWithLine")}
+                </Button>
               </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="xl"
-                onClick={handleLineLogin}
-                disabled={isLineLoading}
-                className="mt-4 w-full"
-              >
-                {isLineLoading
-                  ? t("common.processing")
-                  : mode === "signup"
-                    ? t("auth.signupWithLine")
-                    : t("auth.loginWithLine")}
-              </Button>
-            </div>
+            )}
 
             <AnimatePresence>
               {mode === "signup" && (
