@@ -36,6 +36,7 @@ export const ja = {
     logout: "ログアウト",
     gallery: "ギャラリー",
     info: "情報",
+    floorPlan: "フロアマップ",
   },
 
   auth: {
@@ -563,6 +564,19 @@ export const ja = {
     copyright: "© {{year}} All rights reserved",
     navigation: "フッターナビゲーション",
     tagline: "住民同士のつながりを大切にするシェアハウスポータル",
+  },
+
+  floorPlan: {
+    title: "フロアマップ",
+    subtitle: "各階の部屋と住民",
+    vacant: "空き",
+    vacantDescription: "この部屋にはまだ住民が登録されていません",
+    viewProfile: "プロフィールを見る",
+    moveInDate: "入居日",
+    floor: "{{floor}}階",
+    occupancy: "入居 {{count}}/5",
+    closeDetail: "閉じる",
+    occupation: "職業",
   },
 
   a11y: {

@@ -34,6 +34,7 @@ export const en: Translations = {
     logout: "Log out",
     gallery: "Gallery",
     info: "Info",
+    floorPlan: "Floor Map",
   },
 
   auth: {
@@ -564,6 +565,19 @@ export const en: Translations = {
     copyright: "© {{year}} All rights reserved",
     navigation: "Footer navigation",
     tagline: "A portal that values resident connections",
+  },
+
+  floorPlan: {
+    title: "Floor Map",
+    subtitle: "Rooms and residents by floor",
+    vacant: "Vacant",
+    vacantDescription: "No resident is registered for this room yet",
+    viewProfile: "View profile",
+    moveInDate: "Move-in date",
+    floor: "Floor {{floor}}",
+    occupancy: "{{count}}/5 occupied",
+    closeDetail: "Close",
+    occupation: "Occupation",
   },
 
   a11y: {
