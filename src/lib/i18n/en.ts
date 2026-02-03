@@ -573,8 +573,8 @@ export const en: Translations = {
   },
 
   bulletin: {
-    title: "Bulletin Board",
-    placeholder: "Say something to everyone...",
+    title: "Vibe",
+    placeholder: "What's your vibe?",
     post: "Post",
     update: "Update",
     empty: "No posts yet",
@@ -629,7 +629,7 @@ export const en: Translations = {
   digest: {
     title: "Good morning",
     garbageToday: "Today is {{type}} day",
-    newBulletins: "New bulletins: {{count}}",
+    newBulletins: "New vibes: {{count}}",
     upcomingEvents: "Upcoming events: {{count}}",
     shareItems: "Shared items: {{count}}",
   },

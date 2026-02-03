@@ -572,8 +572,8 @@ export const ja = {
   },
 
   bulletin: {
-    title: "ひとこと掲示板",
-    placeholder: "シェアハウスのみんなにひとこと...",
+    title: "Vibe",
+    placeholder: "What's your vibe?",
     post: "投稿",
     update: "更新",
     empty: "まだ投稿がありません",
@@ -628,7 +628,7 @@ export const ja = {
   digest: {
     title: "おはようございます",
     garbageToday: "今日は{{type}}の日です",
-    newBulletins: "新しい掲示板: {{count}}件",
+    newBulletins: "新しいVibe: {{count}}件",
     upcomingEvents: "近日のイベント: {{count}}件",
     shareItems: "おすそわけ: {{count}}件",
   },
