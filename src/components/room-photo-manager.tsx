@@ -40,7 +40,6 @@ export function RoomPhotoManager({
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [error, setError] = useState("");
 
-  // Sync local state when server data changes (e.g., after router.refresh from bulk upload)
   useEffect(() => {
     setCurrentPhotos(photos);
   }, [photos]);
@@ -54,8 +53,10 @@ export function RoomPhotoManager({
     startUpload,
   } = useBulkUpload();
 
-  const canUpload = currentPhotos.length < maxPhotos;
-  const maxRemaining = maxPhotos - currentPhotos.length;
+
+  const remainingTotal = Math.max(0, maxPhotos - currentPhotos.length);
+  const effectiveBulkLimit = Math.min(ROOM_PHOTOS.maxBulkUpload, remainingTotal);
+  const canUpload = !isUploading && remainingTotal > 0;
 
   const handleUploadClick = () => {
     if (canUpload) {
@@ -69,13 +70,13 @@ export function RoomPhotoManager({
       if (!files || files.length === 0) return;
 
       setError("");
-      startUpload(Array.from(files), maxRemaining);
+      startUpload(Array.from(files), remainingTotal);
 
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
     },
-    [startUpload, maxRemaining]
+    [startUpload, remainingTotal]
   );
 
   const handleDelete = useCallback(
@@ -100,22 +101,26 @@ export function RoomPhotoManager({
     [t]
   );
 
+
   const activeFeedback = uploadFeedback || (error ? { type: "error" as const, message: error } : null);
 
   return (
-    <div className={compact ? "" : "bg-white border border-[#e4e4e7]"}>
+    <div className={compact ? "" : "premium-surface rounded-[2rem] overflow-hidden"}>
       {!compact && (
-        <div className="px-4 py-3 border-b border-[#e4e4e7] flex items-center justify-between">
-          <p className="text-xs text-[#a1a1aa] tracking-wide">
+        <div className="px-6 py-4 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
+          <p className="text-[10px] text-slate-400 font-bold tracking-widest uppercase flex items-center gap-2">
+            <svg className="w-3.5 h-3.5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+            </svg>
             {t("roomPhotos.roomPhotosSection")}
           </p>
-          <span className="text-[10px] text-[#a1a1aa]">
-            {currentPhotos.length}/{maxPhotos} {t("roomPhotos.maxPhotos")}
+          <span className="text-[10px] text-indigo-500 font-bold tracking-wider bg-indigo-50 px-2.5 py-1 rounded-full">
+            {currentPhotos.length} / {maxPhotos}
           </span>
         </div>
       )}
 
-      <div className={compact ? "space-y-4" : "p-4 space-y-4"}>
+      <div className={compact ? "space-y-6" : "p-6 space-y-6"}>
         <AnimatePresence mode="wait">
           {isUploading && (
             <BulkUploadProgress
@@ -134,42 +139,34 @@ export function RoomPhotoManager({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.2 }}
-              className={`py-3 px-4 ${
-                activeFeedback.type === "error"
-                  ? "bg-[#fef2f2] border-l-2 border-[#e5a0a0]"
-                  : "bg-[#f0fdf4] border-l-2 border-[#93c5a0]"
-              }`}
-            >
-              <p
-                className={`text-sm ${
-                  activeFeedback.type === "error"
-                    ? "text-[#8b4040]"
-                    : "text-[#3d6b4a]"
+              className={`py-3 px-4 rounded-2xl border-l-4 ${activeFeedback.type === "error"
+                ? "bg-red-50/50 border-red-200 text-red-600"
+                : "bg-green-50/50 border-green-200 text-green-600"
                 }`}
-              >
-                {activeFeedback.message}
-              </p>
+            >
+              <p className="text-xs font-medium">{activeFeedback.message}</p>
             </m.div>
           )}
         </AnimatePresence>
 
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 gap-4">
           {currentPhotos.map((photo) => (
             <m.div
               key={photo.id}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-              className="relative aspect-square bg-[#f4f4f5] group"
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="relative aspect-square bg-slate-50 rounded-2xl overflow-hidden ring-1 ring-slate-100 group shadow-sm"
             >
               <Image
                 src={photo.photo_url}
                 alt={photo.caption || t("roomPhotos.photoAlt")}
                 fill
-                sizes="(max-width: 640px) 33vw, 20vw"
-                className="object-cover"
+                sizes="(max-width: 640px) 50vw, 25vw"
+                className="object-cover transition-transform duration-700 group-hover:scale-110"
               />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
               <Button
                 type="button"
                 variant="ghost"
@@ -177,10 +174,10 @@ export function RoomPhotoManager({
                 onClick={() => handleDelete(photo.id)}
                 disabled={deletingId === photo.id}
                 aria-label={t("roomPhotos.delete")}
-                className="absolute top-1 right-1 bg-black/60 text-white opacity-0 group-hover:opacity-100 focus:opacity-100 hover:bg-black/80 hover:text-white"
+                className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-slate-500 opacity-0 group-hover:opacity-100 focus:opacity-100 hover:bg-red-50 hover:text-red-500 shadow-sm transition-all duration-300 rounded-lg scale-90 group-hover:scale-100"
               >
                 {deletingId === photo.id ? (
-                  <Spinner size="xs" variant="light" />
+                  <Spinner size="xs" variant="dark" />
                 ) : (
                   <X className="w-3.5 h-3.5" />
                 )}
@@ -189,37 +186,51 @@ export function RoomPhotoManager({
           ))}
 
           {canUpload && (
-            <Button
+            <m.button
               type="button"
-              variant="dashed"
+              whileHover={{ scale: 0.98 }}
+              whileTap={{ scale: 0.95 }}
               onClick={handleUploadClick}
               disabled={isUploading}
-              className="aspect-square h-auto flex-col gap-1 bg-[#f4f4f5] hover:bg-[#e4e4e7]"
+              className="aspect-square rounded-2xl border-2 border-dashed border-slate-100 bg-slate-50/50 hover:bg-white hover:border-indigo-200 hover:shadow-md transition-all duration-300 flex flex-col items-center justify-center gap-2 group"
             >
               {isUploading ? (
-                <Spinner />
+                <Spinner variant="dark" />
               ) : (
                 <>
-                  <Plus className="w-5 h-5 text-[#a1a1aa]" />
-                  <span className="text-[9px] text-[#a1a1aa]">
+                  <div className="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center group-hover:bg-indigo-100 transition-colors">
+                    <Plus className="w-5 h-5 text-indigo-500" />
+                  </div>
+                  <span className="text-[10px] text-slate-400 font-bold tracking-wider uppercase group-hover:text-indigo-500 transition-colors">
                     {t("roomPhotos.upload")}
                   </span>
                 </>
               )}
-            </Button>
+            </m.button>
           )}
         </div>
 
-        {canUpload && (
-          <p className="text-[10px] text-[#a1a1aa]">
-            {t("profile.photoFormat")} — {t("roomPhotos.selectMultiple")}
+        {canUpload ? (
+          <div className="pt-2">
+            <p className="text-[10px] text-slate-400 leading-relaxed font-medium">
+              <span className="text-indigo-500 font-bold mr-1">INFO:</span>
+              {t("roomPhotos.uploadLimit", { max: maxPhotos, bulk: effectiveBulkLimit })}
+              <br />
+              {t("roomPhotos.supportedFormats")} — {t("roomPhotos.uploadInstructions")}
+            </p>
+          </div>
+        ) : (
+          <p className="text-[10px] text-amber-500 font-bold tracking-wider uppercase bg-amber-50 px-3 py-1.5 rounded-full inline-block">
+            {t("errors.maxPhotosReached")}
           </p>
         )}
 
-        {currentPhotos.length === 0 && (
-          <p className="text-xs text-[#a1a1aa] text-center py-4">
-            {t("roomPhotos.noPhotosHint")}
-          </p>
+        {currentPhotos.length === 0 && !isUploading && (
+          <div className="py-8 text-center bg-slate-50/30 rounded-2xl border border-dashed border-slate-100">
+            <p className="text-sm text-slate-400 italic">
+              {t("roomPhotos.noPhotosHint")}
+            </p>
+          </div>
         )}
 
         <input

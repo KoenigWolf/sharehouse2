@@ -226,7 +226,8 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
   const userPhotoCount = userId
     ? localPhotos.filter((p) => p.user_id === userId).length
     : 0;
-  const maxRemaining = ROOM_PHOTOS.maxPhotosPerUser - userPhotoCount;
+  const remainingTotal = Math.max(0, ROOM_PHOTOS.maxPhotosPerUser - userPhotoCount);
+  const effectiveBulkLimit = Math.min(ROOM_PHOTOS.maxBulkUpload, remainingTotal);
 
   const handlePhotoClick = useCallback((index: number) => {
     setSelectedIndex(index);
@@ -242,9 +243,9 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
 
   const handleSelectFiles = useCallback(
     (files: File[]) => {
-      startUpload(files, maxRemaining);
+      startUpload(files, remainingTotal);
     },
-    [startUpload, maxRemaining]
+    [startUpload, remainingTotal]
   );
 
   const handleDeletePhoto = useCallback(
@@ -306,15 +307,13 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.2 }}
-              className={`mb-4 py-3 px-4 ${
-                feedback.type === "error"
-                  ? "bg-[#fef2f2] border-l-2 border-[#e5a0a0]"
-                  : "bg-[#f0fdf4] border-l-2 border-[#93c5a0]"
-              }`}
+              className={`mb-4 py-3 px-4 ${feedback.type === "error"
+                ? "bg-[#fef2f2] border-l-2 border-[#e5a0a0]"
+                : "bg-[#f0fdf4] border-l-2 border-[#93c5a0]"
+                }`}
             >
-              <p className={`text-sm ${
-                feedback.type === "error" ? "text-[#8b4040]" : "text-[#3d6b4a]"
-              }`}>
+              <p className={`text-sm ${feedback.type === "error" ? "text-[#8b4040]" : "text-[#3d6b4a]"
+                }`}>
                 {feedback.message}
               </p>
             </m.div>
@@ -322,10 +321,12 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
         </AnimatePresence>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-          <UploadCard
-            onSelectFiles={handleSelectFiles}
-            isUploading={isUploading}
-          />
+          {remainingTotal > 0 && (
+            <UploadCard
+              onSelectFiles={handleSelectFiles}
+              isUploading={isUploading}
+            />
+          )}
           {localPhotos.map((photo, index) => (
             <PhotoCard
               key={photo.id}
@@ -342,8 +343,17 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
           </p>
         )}
 
+        <div className="mt-8 pt-6 border-t border-slate-50">
+          <p className="text-[10px] text-slate-400 leading-relaxed font-medium">
+            <span className="text-indigo-500 font-bold mr-1">INFO:</span>
+            {t("roomPhotos.uploadLimit", { max: ROOM_PHOTOS.maxPhotosPerUser, bulk: effectiveBulkLimit })}
+            <br />
+            {t("roomPhotos.supportedFormats")} — {t("roomPhotos.uploadInstructions")}
+          </p>
+        </div>
+
         {!hasPhotos && (
-          <p className="text-xs text-[#a1a1aa] mt-4">
+          <p className="text-xs text-slate-400 mt-4 italic">
             {t("roomPhotos.noPhotosHint")}
           </p>
         )}

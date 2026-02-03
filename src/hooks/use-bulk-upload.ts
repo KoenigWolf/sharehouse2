@@ -115,7 +115,7 @@ export function useBulkUpload() {
       if (files.length > limit) {
         setFeedback({
           type: "error",
-          message: t("roomPhotos.tooManyFiles"),
+          message: t("roomPhotos.tooManyFiles", { count: limit }),
         });
         return;
       }

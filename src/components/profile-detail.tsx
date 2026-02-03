@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { m } from "framer-motion";
+import { m, type Variants } from "framer-motion";
 import { Camera } from "lucide-react";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -52,9 +52,13 @@ const containerVariants = {
   },
 } as const;
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 12 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" as const } },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: "easeOut" }
+  },
 };
 
 function translateOption(
@@ -352,11 +356,10 @@ export function ProfileDetail({
           )}
           {isOwnProfile && feedback && (
             <div
-              className={`absolute top-3 left-3 right-3 sm:left-auto sm:right-3 sm:max-w-xs px-3 py-2 text-xs border-l-2 ${
-                feedback.type === "success"
-                  ? "bg-[#f0fdf4]/95 border-[#93c5a0] text-[#3d6b4a]"
-                  : "bg-[#fef2f2]/95 border-[#e5a0a0] text-[#8b4040]"
-              } backdrop-blur-sm`}
+              className={`absolute top-3 left-3 right-3 sm:left-auto sm:right-3 sm:max-w-xs px-3 py-2 text-xs border-l-2 ${feedback.type === "success"
+                ? "bg-[#f0fdf4]/95 border-[#93c5a0] text-[#3d6b4a]"
+                : "bg-[#fef2f2]/95 border-[#e5a0a0] text-[#8b4040]"
+                } backdrop-blur-sm`}
             >
               {feedback.message}
             </div>
@@ -487,11 +490,10 @@ export function ProfileDetail({
                     </span>
                   </span>
                 )}
-                <span className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded ${
-                  teaTimeEnabled
-                    ? "bg-[#f0fdf4] text-[#3d6b4a]"
-                    : "bg-[#f4f4f5] text-[#71717a]"
-                }`}>
+                <span className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded ${teaTimeEnabled
+                  ? "bg-[#f0fdf4] text-[#3d6b4a]"
+                  : "bg-[#f4f4f5] text-[#71717a]"
+                  }`}>
                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z" />
                   </svg>
@@ -508,18 +510,18 @@ export function ProfileDetail({
           </div>
 
           {profile.interests && profile.interests.length > 0 && (
-            <div className="mt-6 pt-6 border-t border-[#e4e4e7]">
-              <p className="text-[10px] text-[#a1a1aa] tracking-wide uppercase mb-3 flex items-center gap-1.5">
-                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <div className="mt-10 pt-10 border-t border-slate-100/80">
+              <p className="text-[10px] text-slate-400 font-bold tracking-widest uppercase mb-4 flex items-center gap-2">
+                <svg className="w-3.5 h-3.5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
                 </svg>
                 {t("profile.interests")}
               </p>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2.5">
                 {profile.interests.map((interest, index) => (
                   <span
                     key={index}
-                    className="text-xs px-3 py-1.5 rounded bg-[#f4f4f5] text-[#71717a] border border-[#e4e4e7]"
+                    className="text-[13px] px-4 py-2 rounded-xl bg-slate-50 text-slate-600 font-medium border border-slate-100/50 hover:bg-white hover:shadow-sm hover:border-indigo-100 transition-all cursor-default"
                   >
                     {interest}
                   </span>
@@ -529,22 +531,22 @@ export function ProfileDetail({
           )}
 
           {(isOwnProfile || roomPhotos.length > 0) && (
-            <div className="mt-6 pt-6 border-t border-[#e4e4e7]">
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-[10px] text-[#a1a1aa] tracking-wide uppercase flex items-center gap-1.5">
-                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <div className="mt-10 pt-10 border-t border-slate-100/80">
+              <div className="flex items-center justify-between mb-5">
+                <p className="text-[10px] text-slate-400 font-bold tracking-widest uppercase flex items-center gap-2">
+                  <svg className="w-3.5 h-3.5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
                   </svg>
                   {t("roomPhotos.roomPhotosSection")}
                   {isOwnProfile && (
-                    <span className="text-[#d4d4d8] ml-1">
+                    <span className="text-slate-300 ml-1 font-medium">
                       {roomPhotos.length}/5
                     </span>
                   )}
                 </p>
                 <Link
                   href="/room-photos"
-                  className="text-[10px] text-[#a1a1aa] hover:text-[#18181b] transition-colors"
+                  className="text-[10px] text-indigo-500 font-bold tracking-wider uppercase hover:text-indigo-600 transition-colors bg-indigo-50 px-3 py-1.5 rounded-full"
                 >
                   {t("roomPhotos.viewGallery")}
                 </Link>
@@ -553,16 +555,21 @@ export function ProfileDetail({
               {isOwnProfile ? (
                 <RoomPhotoManager photos={roomPhotos} compact />
               ) : (
-                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {roomPhotos.map((photo) => (
-                    <div key={photo.id} className="aspect-square bg-[#f4f4f5] overflow-hidden">
+                    <div key={photo.id} className="aspect-square bg-slate-50 rounded-2xl overflow-hidden ring-1 ring-slate-100 group">
                       <img
                         src={photo.photo_url}
                         alt={photo.caption || t("roomPhotos.roomPhotosSection")}
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
                     </div>
                   ))}
+                  {roomPhotos.length === 0 && (
+                    <div className="col-span-full py-12 text-center bg-slate-50/50 rounded-[2rem] border-2 border-dashed border-slate-100">
+                      <p className="text-sm text-slate-400 font-medium">{t("roomPhotos.noPhotos")}</p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -571,10 +578,10 @@ export function ProfileDetail({
       </m.div>
 
       {hasExtendedInfo && (
-        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {basicInfo.length > 0 && (
             <ProfileSection title={t("profile.sectionBasicInfo")} category="basic">
-              <dl className="grid grid-cols-2 gap-4">
+              <dl className="grid grid-cols-2 gap-y-6 gap-x-4">
                 {basicInfo.map((field, i) => (
                   <CompactField key={i} label={field.label} value={field.value} />
                 ))}
@@ -584,7 +591,7 @@ export function ProfileDetail({
 
           {workInfo.length > 0 && (
             <ProfileSection title={t("profile.sectionWork")} category="work">
-              <dl className="grid grid-cols-2 gap-4">
+              <dl className="grid grid-cols-2 gap-y-6 gap-x-4">
                 {workInfo.map((field, i) => (
                   <CompactField key={i} label={field.label} value={field.value} />
                 ))}
@@ -594,7 +601,7 @@ export function ProfileDetail({
 
           {lifestyleInfo.length > 0 && (
             <ProfileSection title={t("profile.sectionLifestyle")} category="lifestyle">
-              <dl className="grid grid-cols-2 gap-4">
+              <dl className="grid grid-cols-2 gap-y-6 gap-x-4">
                 {lifestyleInfo.map((field, i) => (
                   <CompactField key={i} label={field.label} value={field.value} />
                 ))}
@@ -604,32 +611,36 @@ export function ProfileDetail({
 
           {(communalInfo.length > 0 || sharedSpaceUsage) && (
             <ProfileSection title={t("profile.sectionCommunal")} category="communal">
-              <dl className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+              <dl className="space-y-6">
+                <div className="grid grid-cols-2 gap-y-6 gap-x-4">
                   {communalInfo.map((field, i) => (
                     <CompactField key={i} label={field.label} value={field.value} />
                   ))}
                 </div>
                 {sharedSpaceUsage && (
-                  <FieldRow label={t("profile.sharedSpaceUsage")} value={sharedSpaceUsage} />
+                  <div className="pt-4 border-t border-slate-50">
+                    <FieldRow label={t("profile.sharedSpaceUsage")} value={sharedSpaceUsage} />
+                  </div>
                 )}
               </dl>
             </ProfileSection>
           )}
 
           {personalityInfo.length > 0 && (
-            <ProfileSection title={t("profile.sectionPersonality")} category="personality" className="sm:col-span-2 lg:col-span-3">
-              <dl className="grid sm:grid-cols-2 gap-4">
+            <ProfileSection
+              title={t("profile.sectionPersonality")}
+              category="personality"
+              className="sm:col-span-2 lg:col-span-3"
+            >
+              <dl className="grid sm:grid-cols-2 gap-x-12">
                 {personalityInfo.map((field, i) => (
                   <FieldRow key={i} label={field.label} value={field.value} />
                 ))}
               </dl>
             </ProfileSection>
           )}
-
         </div>
       )}
-
     </m.article>
   );
 }
