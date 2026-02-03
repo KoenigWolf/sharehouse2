@@ -30,6 +30,8 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/info", labelKey: "nav.info" },
   { href: "/tea-time", labelKey: "nav.teaTime" },
   { href: "/floor-plan", labelKey: "nav.floorPlan" },
+  { href: "/share", labelKey: "nav.share" },
+  { href: "/events", labelKey: "nav.events" },
 ];
 
 interface NavLinkProps {

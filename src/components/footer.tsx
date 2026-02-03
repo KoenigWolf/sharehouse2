@@ -16,6 +16,8 @@ const NAV_LINKS: { href: string; labelKey: Parameters<Translator>[0] }[] = [
   { href: "/room-photos", labelKey: "nav.gallery" },
   { href: "/info", labelKey: "nav.info" },
   { href: "/floor-plan", labelKey: "nav.floorPlan" },
+  { href: "/share", labelKey: "nav.share" },
+  { href: "/events", labelKey: "nav.events" },
 ];
 
 export const Footer = memo(function Footer({ variant = "default" }: FooterProps) {

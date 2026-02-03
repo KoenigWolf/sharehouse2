@@ -82,6 +82,28 @@ export const CacheStrategy = {
   },
 
   /**
+   * 掲示板更新後のキャッシュ再検証
+   */
+  afterBulletinUpdate: () => {
+    revalidatePath("/");
+  },
+
+  /**
+   * おすそわけ更新後のキャッシュ再検証
+   */
+  afterShareUpdate: () => {
+    revalidatePath("/share");
+  },
+
+  /**
+   * イベント更新後のキャッシュ再検証
+   */
+  afterEventUpdate: () => {
+    revalidatePath("/events");
+    revalidatePath("/");
+  },
+
+  /**
    * 全体キャッシュクリア（管理用・緊急時）
    */
   clearAll: () => {

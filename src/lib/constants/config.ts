@@ -83,6 +83,22 @@ export const GARBAGE = {
   reminderHoursBefore: 12,
 } as const;
 
+export const BULLETIN = {
+  maxMessageLength: 200,
+  maxDisplayOnHome: 5,
+} as const;
+
+export const SHARE_ITEMS = {
+  maxTitleLength: 100,
+  maxDescriptionLength: 300,
+  expirationDays: 3,
+} as const;
+
+export const EVENTS = {
+  maxTitleLength: 100,
+  maxDescriptionLength: 500,
+} as const;
+
 export type FileUploadConfig = typeof FILE_UPLOAD;
 export type TeaTimeConfig = typeof TEA_TIME;
 export type ProfileConfig = typeof PROFILE;

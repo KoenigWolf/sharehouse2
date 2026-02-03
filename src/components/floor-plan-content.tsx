@@ -249,7 +249,6 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
                   {selectedProfile ? (
                     <RoomDetailOccupied
                       profile={selectedProfile}
-                      colors={colors}
                       isCurrentUser={selectedProfile.id === currentUserId}
                     />
                   ) : (
@@ -267,11 +266,9 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
 
 function RoomDetailOccupied({
   profile,
-  colors,
   isCurrentUser,
 }: {
   profile: Profile;
-  colors: { bg: string; text: string; border: string; accent: string };
   isCurrentUser: boolean;
 }) {
   const t = useI18n();
@@ -334,7 +331,7 @@ function RoomDetailOccupied({
 
       {profile.bio && (
         <p className="text-sm text-slate-500 leading-relaxed mb-6 line-clamp-3 font-medium italic italic">
-          "{profile.bio}"
+          &ldquo;{profile.bio}&rdquo;
         </p>
       )}
 
