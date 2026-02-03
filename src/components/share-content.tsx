@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { m, AnimatePresence } from "framer-motion";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { useI18n } from "@/hooks/use-i18n";
@@ -33,6 +34,7 @@ function formatTimeRemaining(expiresAt: string): string {
 
 export function ShareContent({ items, currentUserId }: ShareContentProps) {
   const t = useI18n();
+  const router = useRouter();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -54,7 +56,8 @@ export function ShareContent({ items, currentUserId }: ShareContentProps) {
     setIsFormOpen(false);
     setTitle("");
     setDescription("");
-  }, [title, description, isSubmitting]);
+    router.refresh();
+  }, [title, description, isSubmitting, router]);
 
   const handleClaim = useCallback(async (itemId: string) => {
     setIsSubmitting(true);
@@ -62,8 +65,10 @@ export function ShareContent({ items, currentUserId }: ShareContentProps) {
     setIsSubmitting(false);
     if ("error" in result) {
       setFeedback({ type: "error", message: result.error });
+    } else {
+      router.refresh();
     }
-  }, []);
+  }, [router]);
 
   const handleDelete = useCallback(async (itemId: string) => {
     if (!confirm(t("share.deleteConfirm"))) return;
@@ -72,8 +77,10 @@ export function ShareContent({ items, currentUserId }: ShareContentProps) {
     setIsSubmitting(false);
     if ("error" in result) {
       setFeedback({ type: "error", message: result.error });
+    } else {
+      router.refresh();
     }
-  }, [t]);
+  }, [t, router]);
 
   return (
     <div>

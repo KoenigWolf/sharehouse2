@@ -92,14 +92,13 @@ export const CacheStrategy = {
    * おすそわけ更新後のキャッシュ再検証
    */
   afterShareUpdate: () => {
-    revalidatePath("/share");
+    revalidatePath("/");
   },
 
   /**
    * イベント更新後のキャッシュ再検証
    */
   afterEventUpdate: () => {
-    revalidatePath("/events");
     revalidatePath("/");
   },
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { m, AnimatePresence } from "framer-motion";
 import { MapPin, Clock } from "lucide-react";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
@@ -42,6 +43,7 @@ function groupEventsByDate(events: EventWithDetails[]): Map<string, EventWithDet
 
 export function EventsContent({ events, currentUserId }: EventsContentProps) {
   const t = useI18n();
+  const router = useRouter();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [eventDate, setEventDate] = useState("");
@@ -78,22 +80,27 @@ export function EventsContent({ events, currentUserId }: EventsContentProps) {
     setEventTime("");
     setLocation("");
     setDescription("");
-  }, [title, eventDate, eventTime, location, description, isSubmitting]);
+    router.refresh();
+  }, [title, eventDate, eventTime, location, description, isSubmitting, router]);
 
   const handleToggleAttendance = useCallback(async (eventId: string) => {
     const result = await toggleAttendance(eventId);
     if ("error" in result) {
       setFeedback({ type: "error", message: result.error });
+    } else {
+      router.refresh();
     }
-  }, []);
+  }, [router]);
 
   const handleDelete = useCallback(async (eventId: string) => {
     if (!confirm(t("events.deleteConfirm"))) return;
     const result = await deleteEvent(eventId);
     if ("error" in result) {
       setFeedback({ type: "error", message: result.error });
+    } else {
+      router.refresh();
     }
-  }, [t]);
+  }, [t, router]);
 
   return (
     <div>

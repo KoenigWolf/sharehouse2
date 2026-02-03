@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { m, AnimatePresence } from "framer-motion";
-import Link from "next/link";
-import { Gift, Calendar } from "lucide-react";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { useI18n } from "@/hooks/use-i18n";
 import { upsertBulletin, deleteBulletin } from "@/lib/bulletin/actions";
@@ -32,6 +31,7 @@ function formatTimeAgo(dateString: string): string {
 
 export function BulletinBoard({ bulletins, currentUserId }: BulletinBoardProps) {
   const t = useI18n();
+  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,7 +53,8 @@ export function BulletinBoard({ bulletins, currentUserId }: BulletinBoardProps) 
     }
     setIsEditing(false);
     setMessage("");
-  }, [message, isSubmitting]);
+    router.refresh();
+  }, [message, isSubmitting, router]);
 
   const handleDelete = useCallback(async () => {
     if (!confirm(t("bulletin.deleteConfirm"))) return;
@@ -64,8 +65,10 @@ export function BulletinBoard({ bulletins, currentUserId }: BulletinBoardProps) 
 
     if ("error" in result) {
       setFeedback({ type: "error", message: result.error });
+    } else {
+      router.refresh();
     }
-  }, [t]);
+  }, [t, router]);
 
   const handleStartEdit = useCallback(() => {
     setMessage(myBulletin?.message || "");
@@ -216,22 +219,6 @@ export function BulletinBoard({ bulletins, currentUserId }: BulletinBoardProps) 
         </div>
       )}
 
-      <div className="flex gap-3 mt-4 pt-4 border-t border-zinc-100">
-        <Link
-          href="/share"
-          className="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-600 transition-colors"
-        >
-          <Gift size={14} />
-          {t("nav.share")}
-        </Link>
-        <Link
-          href="/events"
-          className="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-600 transition-colors"
-        >
-          <Calendar size={14} />
-          {t("nav.events")}
-        </Link>
-      </div>
     </div>
   );
 }
