@@ -24,7 +24,7 @@ export function TeaTimeNotification({ match }: TeaTimeNotificationProps) {
     >
       <Link href="/tea-time" className="block group">
         <div className="premium-surface p-4 sm:p-6 rounded-2xl relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-          <div className="absolute inset-0 bg-linear-to-br from-indigo-500/5 to-violet-500/5" />
+          <div className="absolute inset-0 bg-linear-to-br from-lime-500/5 to-emerald-500/5" />
 
           <div className="relative flex items-center gap-6">
             <Avatar className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl border border-white shadow-sm shrink-0">
@@ -38,7 +38,7 @@ export function TeaTimeNotification({ match }: TeaTimeNotificationProps) {
             </Avatar>
 
             <div className="flex-1 min-w-0">
-              <span className="text-[10px] text-indigo-600 font-bold uppercase tracking-wider bg-indigo-50 px-2 py-0.5 rounded-full">
+              <span className="text-[10px] text-lime-600 font-bold uppercase tracking-wider bg-lime-50 px-2 py-0.5 rounded-full">
                 {t("teaTime.matchNotificationTitle")}
               </span>
               <p className="text-lg sm:text-xl text-slate-900 mt-1 truncate font-semibold tracking-tight">
@@ -50,7 +50,7 @@ export function TeaTimeNotification({ match }: TeaTimeNotificationProps) {
               </p>
             </div>
 
-            <div className="w-10 h-10 rounded-full flex items-center justify-center text-slate-300 group-hover:text-indigo-600 group-hover:bg-indigo-50 transition-all shrink-0">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center text-slate-300 group-hover:text-emerald-600 group-hover:bg-emerald-50 transition-all shrink-0">
               <svg
                 className="w-5 h-5"
                 fill="none"

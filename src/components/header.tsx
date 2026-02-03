@@ -44,13 +44,13 @@ const NavLink = memo(function NavLink({ item, isActive }: NavLinkProps) {
     <Link
       href={item.href}
       aria-current={isActive ? "page" : undefined}
-      className="relative px-4 sm:px-6 py-2 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 group"
+      className="relative px-4 sm:px-6 py-2 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-lime-500 focus-visible:ring-offset-2 group"
     >
       <span
         className={
           isActive
-            ? "text-indigo-600"
-            : "text-slate-500 group-hover:text-indigo-600 transition-colors"
+            ? "text-lime-600"
+            : "text-slate-500 group-hover:text-lime-600 transition-colors"
         }
       >
         {t(item.labelKey)}
@@ -58,7 +58,7 @@ const NavLink = memo(function NavLink({ item, isActive }: NavLinkProps) {
       {isActive && (
         <m.span
           layoutId="nav-underline"
-          className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500"
+          className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-500"
           transition={{ type: "spring", stiffness: 380, damping: 30 }}
         />
       )}
@@ -92,12 +92,12 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
         <button
           type="button"
           aria-label={t("nav.myPage")}
-          className="relative shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[#8b5cf6] focus-visible:ring-offset-2 rounded-full cursor-pointer group"
+          className="relative shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 rounded-full cursor-pointer group"
         >
           <div
             className={`w-9 h-9 rounded-full overflow-hidden transition-all border border-slate-200 ${isActive
-                ? "border-indigo-500 ring-2 ring-indigo-500 ring-offset-2 shadow-lg"
-                : "group-hover:border-indigo-400 group-hover:shadow-md"
+              ? "border-emerald-500 ring-2 ring-emerald-500 ring-offset-2 shadow-lg"
+              : "group-hover:border-emerald-400 group-hover:shadow-md"
               }`}
           >
             {optimizedSrc ? (
@@ -153,11 +153,11 @@ export const Header = memo(function Header() {
         <div className="flex items-center gap-6 sm:gap-12">
           <Link
             href="/"
-            className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 hover:opacity-80 transition-opacity"
+            className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 outline-none focus-visible:ring-2 focus-visible:ring-lime-500 focus-visible:ring-offset-2 hover:opacity-80 transition-opacity"
             aria-label={t("a11y.goHome")}
           >
             <span>Share</span>
-            <span className="text-indigo-600">House</span>
+            <span className="text-lime-600">House</span>
           </Link>
 
           <nav

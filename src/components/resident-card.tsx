@@ -296,7 +296,7 @@ export const ResidentCard = memo(function ResidentCard({
     <Link
       href={`/profile/${profile.id}`}
       aria-label={t("a11y.viewProfile", { name: profile.name })}
-      className="block group select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+      className="block group select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
       prefetch={false}
     >
       <article
@@ -326,7 +326,7 @@ export const ResidentCard = memo(function ResidentCard({
 
           <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5">
             {isCurrentUser && (
-              <Badge variant="dark" className="bg-indigo-600 text-white border-none text-[10px] font-bold tracking-wider uppercase">YOU</Badge>
+              <Badge variant="dark" className="bg-emerald-600 text-white border-none text-[10px] font-bold tracking-wider uppercase">YOU</Badge>
             )}
             {showTeaTime && teaTimeEnabled && !isMock && (
               <span className="bg-amber-100/90 backdrop-blur-sm text-amber-700 border-none text-[10px] px-2 py-1 font-bold rounded-lg flex items-center gap-1 shadow-sm">
@@ -361,7 +361,7 @@ export const ResidentCard = memo(function ResidentCard({
                 variants={ANIMATION_VARIANTS}
                 initial="hidden"
                 whileHover="visible"
-                className="absolute inset-0 bg-indigo-900/40 backdrop-blur-[2px] hidden sm:flex flex-col justify-center items-center p-6 opacity-0 hover:opacity-100 transition-opacity duration-300"
+                className="absolute inset-0 bg-emerald-900/40 backdrop-blur-[2px] hidden sm:flex flex-col justify-center items-center p-6 opacity-0 hover:opacity-100 transition-opacity duration-300"
               >
                 <div className="space-y-4 w-full">
                   {residenceDuration && (

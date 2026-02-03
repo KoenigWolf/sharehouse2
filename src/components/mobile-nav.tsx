@@ -61,13 +61,13 @@ export const MobileNav = memo(function MobileNav() {
                 <Icon
                   size={24}
                   strokeWidth={active ? 2.5 : 2}
-                  className={`transition-colors duration-300 ${active ? "text-indigo-600" : "text-slate-400 group-hover:text-slate-600"
+                  className={`transition-colors duration-300 ${active ? "text-emerald-600" : "text-slate-400 group-hover:text-slate-600"
                     }`}
                 />
                 {active && (
                   <motion.span
                     layoutId="mobile-nav-indicator"
-                    className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-indigo-500 shadow-lg shadow-indigo-200"
+                    className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-500 shadow-lg shadow-emerald-200"
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}
