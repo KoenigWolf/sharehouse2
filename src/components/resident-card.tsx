@@ -296,58 +296,57 @@ export const ResidentCard = memo(function ResidentCard({
     <Link
       href={`/profile/${profile.id}`}
       aria-label={t("a11y.viewProfile", { name: profile.name })}
-      className="block group select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#18181b] focus-visible:ring-offset-2"
+      className="block group select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
       prefetch={false}
     >
       <article
-        className={`bg-white border rounded-lg transition-all duration-200 active:scale-[0.98] active:opacity-95 relative overflow-hidden ${borderClass}`}
-        style={floorAccentStyle}
+        className="premium-surface rounded-xl transition-all duration-300 relative overflow-hidden group-hover:-translate-y-1 hover:shadow-xl"
       >
-        <div className="aspect-square bg-[#f4f4f5] relative overflow-hidden">
+        <div className="aspect-square bg-slate-50 relative overflow-hidden">
           <Avatar className="w-full h-full rounded-none">
             <OptimizedAvatarImage
               src={profile.avatar_url}
               alt={t("a11y.profilePhotoAlt", { name: profile.name })}
               context="card"
-              className="w-full h-full group-hover:scale-[1.02] transition-transform duration-300"
+              className="w-full h-full group-hover:scale-110 transition-transform duration-700 ease-out"
               fallback={getInitials(profile.name)}
-              fallbackClassName="bg-[#f4f4f5] text-[#a1a1aa] text-3xl sm:text-4xl rounded-none w-full h-full flex items-center justify-center"
+              fallbackClassName="bg-slate-50 text-slate-300 text-3xl sm:text-4xl font-semibold rounded-none w-full h-full flex items-center justify-center"
               fallbackAriaLabel={t("a11y.profileInitials", { name: profile.name })}
             />
           </Avatar>
 
-          <div className="absolute top-2 left-2 flex flex-col gap-1">
+          <div className="absolute top-3 left-3 flex flex-col gap-1.5">
             {isMock && !isCurrentUser && (
-              <Badge variant="default">{t("common.unregistered")}</Badge>
+              <Badge variant="muted" className="bg-white/80 backdrop-blur-sm border-none text-[10px] font-medium uppercase tracking-wider">{t("common.unregistered")}</Badge>
             )}
             {isNewResident && !isMock && (
-              <Badge variant="success">NEW</Badge>
+              <Badge variant="success" className="bg-emerald-500 text-white border-none text-[10px] font-bold tracking-wider">NEW</Badge>
             )}
           </div>
 
-          <div className="absolute top-2 right-2 flex flex-col items-end gap-1">
+          <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5">
             {isCurrentUser && (
-              <Badge variant="dark">{t("common.you")}</Badge>
+              <Badge variant="dark" className="bg-indigo-600 text-white border-none text-[10px] font-bold tracking-wider uppercase">YOU</Badge>
             )}
             {showTeaTime && teaTimeEnabled && !isMock && (
-              <span className="bg-[#3d6b4a] text-white text-[10px] px-1.5 py-0.5 rounded flex items-center gap-1">
+              <span className="bg-amber-100/90 backdrop-blur-sm text-amber-700 border-none text-[10px] px-2 py-1 font-bold rounded-lg flex items-center gap-1 shadow-sm">
                 <OverlayIcons.TeaCup />
               </span>
             )}
           </div>
 
           {profile.mbti && !isMock && (
-            <div className="absolute bottom-2 right-2">
-              <Badge variant="muted">{profile.mbti}</Badge>
+            <div className="absolute bottom-3 right-3">
+              <Badge variant="muted" className="glass border-white/40 text-slate-700 text-[10px] font-semibold">{profile.mbti}</Badge>
             </div>
           )}
 
           {hasSns && !isMock && (
-            <div className="absolute bottom-2 left-2 flex items-center gap-1">
+            <div className="absolute bottom-3 left-3 flex items-center gap-1.5">
               {snsLinks.slice(0, 3).map((link) => (
                 <span
                   key={link.platform}
-                  className="w-5 h-5 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-[#71717a]"
+                  className="w-7 h-7 glass border-white/40 rounded-lg flex items-center justify-center text-slate-600 shadow-sm"
                   aria-label={link.platform}
                 >
                   <SnsIcon platform={link.platform} />
@@ -362,27 +361,22 @@ export const ResidentCard = memo(function ResidentCard({
                 variants={ANIMATION_VARIANTS}
                 initial="hidden"
                 whileHover="visible"
-                className="absolute inset-0 bg-linear-to-t from-[#18181b]/80 via-[#18181b]/40 to-transparent hidden sm:flex flex-col justify-end p-3 opacity-0 hover:opacity-100 transition-opacity duration-150"
+                className="absolute inset-0 bg-indigo-900/40 backdrop-blur-[2px] hidden sm:flex flex-col justify-center items-center p-6 opacity-0 hover:opacity-100 transition-opacity duration-300"
               >
-                <div className="space-y-1.5">
+                <div className="space-y-4 w-full">
                   {residenceDuration && (
                     <OverlayInfoRow icon={OverlayIcons.Calendar}>
-                      {formatResidenceDuration(residenceDuration, t)}
+                      <span className="font-medium text-white text-sm">{formatResidenceDuration(residenceDuration, t)}</span>
                     </OverlayInfoRow>
                   )}
                   {profile.work_style && (
                     <OverlayInfoRow icon={OverlayIcons.Briefcase}>
-                      {t(`profileOptions.workStyle.${profile.work_style}` as Parameters<typeof t>[0])}
+                      <span className="font-medium text-white text-sm">{t(`profileOptions.workStyle.${profile.work_style}` as Parameters<typeof t>[0])}</span>
                     </OverlayInfoRow>
                   )}
                   {profile.daily_rhythm && (
                     <OverlayInfoRow icon={OverlayIcons.Clock}>
-                      {t(`profileOptions.dailyRhythm.${profile.daily_rhythm}` as Parameters<typeof t>[0])}
-                    </OverlayInfoRow>
-                  )}
-                  {profile.social_stance && (
-                    <OverlayInfoRow icon={OverlayIcons.Users}>
-                      {t(`profileOptions.socialStance.${profile.social_stance}` as Parameters<typeof t>[0])}
+                      <span className="font-medium text-white text-sm">{t(`profileOptions.dailyRhythm.${profile.daily_rhythm}` as Parameters<typeof t>[0])}</span>
                     </OverlayInfoRow>
                   )}
                 </div>
@@ -391,20 +385,20 @@ export const ResidentCard = memo(function ResidentCard({
           </AnimatePresence>
         </div>
 
-        <div className={`p-3 sm:p-4 ${CARD_HEIGHTS.mobile} ${CARD_HEIGHTS.desktop} flex flex-col overflow-hidden`}>
-          <div className="flex items-baseline justify-between gap-2 shrink-0">
-            <h3 className="text-sm sm:text-base text-[#18181b] tracking-wide truncate font-normal">
+        <div className={`p-4 sm:p-5 ${CARD_HEIGHTS.mobile} ${CARD_HEIGHTS.desktop} flex flex-col overflow-hidden bg-white`}>
+          <div className="flex items-center justify-between gap-2 shrink-0">
+            <h3 className="text-base sm:text-lg text-slate-900 tracking-tight truncate font-semibold">
               {displayName}
             </h3>
             {profile.room_number && (
-              <span className="text-[10px] sm:text-[11px] text-[#a1a1aa] shrink-0">
+              <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium bg-slate-100 px-2 py-0.5 rounded-full">
                 {profile.room_number}
               </span>
             )}
           </div>
 
           {occupationLabel && !isMock && (
-            <p className="text-[10px] sm:text-[11px] text-[#71717a] mt-1 truncate shrink-0">
+            <p className="text-xs text-slate-400 mt-1 truncate shrink-0">
               {occupationLabel}
             </p>
           )}

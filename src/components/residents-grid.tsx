@@ -37,11 +37,11 @@ function isNewResident(moveInDate: string | null): boolean {
 }
 
 const floorColors: Record<string, { bg: string; border: string; text: string; accent: string; fill: string }> = {
-  "2F": { bg: "bg-[#f0fdf4]", border: "border-[#86efac]", text: "text-[#166534]", accent: "#86efac", fill: "#86efac" },
-  "3F": { bg: "bg-[#eff6ff]", border: "border-[#93c5fd]", text: "text-[#1e40af]", accent: "#93c5fd", fill: "#93c5fd" },
-  "4F": { bg: "bg-[#faf5ff]", border: "border-[#c4b5fd]", text: "text-[#6b21a8]", accent: "#c4b5fd", fill: "#c4b5fd" },
-  "5F": { bg: "bg-[#fffbeb]", border: "border-[#fcd34d]", text: "text-[#92400e]", accent: "#fcd34d", fill: "#fcd34d" },
-  "?": { bg: "bg-[#f4f4f5]", border: "border-[#d4d4d8]", text: "text-[#a1a1aa]", accent: "#d4d4d8", fill: "#d4d4d8" },
+  "5F": { bg: "bg-indigo-50", border: "border-indigo-100", text: "text-indigo-900", accent: "#6366f1", fill: "#6366f1" },
+  "4F": { bg: "bg-slate-50", border: "border-slate-100", text: "text-slate-900", accent: "#475569", fill: "#475569" },
+  "3F": { bg: "bg-violet-50", border: "border-violet-100", text: "text-violet-900", accent: "#8b5cf6", fill: "#8b5cf6" },
+  "2F": { bg: "bg-emerald-50", border: "border-emerald-100", text: "text-emerald-900", accent: "#10b981", fill: "#10b981" },
+  "?": { bg: "bg-slate-50", border: "border-slate-100", text: "text-slate-400", accent: "#94a3b8", fill: "#94a3b8" },
 };
 
 /**
@@ -191,19 +191,19 @@ export function ResidentsGrid({
   }
 
   return (
-    <div className="space-y-5 sm:space-y-6">
-      <div className="bg-white border border-[#e4e4e7] rounded-lg mb-4">
+    <div className="space-y-8 sm:space-y-12">
+      <div className="premium-surface rounded-2xl mb-6 overflow-hidden">
         <Button
           type="button"
           variant="ghost"
           onClick={() => setShowStats((prev) => !prev)}
-          className="w-full h-auto flex items-center justify-between px-4 sm:px-5 py-3 hover:bg-[#f4f4f5]"
+          className="w-full h-auto flex items-center justify-between px-6 py-5 hover:bg-slate-50 transition-colors"
         >
-          <h3 className="text-sm text-[#18181b] tracking-wide">{t("residents.statsTitle")}</h3>
+          <h3 className="text-sm text-slate-900 font-semibold uppercase tracking-wider">{t("residents.statsTitle")}</h3>
           <motion.span
             animate={{ rotate: showStats ? 180 : 0 }}
-            transition={{ duration: 0.2 }}
-            className="text-[#a1a1aa]"
+            transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+            className="text-slate-400"
           >
             <ChevronIcon />
           </motion.span>
@@ -294,7 +294,7 @@ export function ResidentsGrid({
             </p>
           </div>
 
-          <div className="flex gap-1 bg-[#f4f4f5] p-1 rounded-md">
+          <div className="flex gap-1 bg-slate-100 p-1 rounded-xl">
             {viewModeOptions.map((option) => {
               const isActive = viewMode === option.value;
               const Icon = option.icon;
@@ -305,11 +305,10 @@ export function ResidentsGrid({
                   variant="ghost"
                   size="icon-sm"
                   onClick={() => setViewMode(option.value)}
-                  className={`${
-                    isActive
-                      ? "bg-white text-[#18181b] hover:bg-white"
-                      : "text-[#a1a1aa] hover:text-[#71717a]"
-                  }`}
+                  className={`${isActive
+                    ? "bg-white text-indigo-600 shadow-sm"
+                    : "text-slate-500 hover:text-slate-900"
+                    } rounded-lg transition-all`}
                   title={option.label}
                   aria-label={option.label}
                   aria-pressed={isActive}
@@ -321,7 +320,7 @@ export function ResidentsGrid({
           </div>
         </div>
 
-        <div className="flex gap-2 sm:gap-3 overflow-x-auto scrollbar-hide -mx-1 px-1 pb-1">
+        <div className="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide -mx-1 px-1 pb-2">
           {floors.map((floor) => {
             const isAll = floor === "all";
             const isActive = floorFilter === floor;
@@ -332,21 +331,20 @@ export function ResidentsGrid({
               <Button
                 key={floor}
                 type="button"
-                variant={isActive && isAll ? "default" : "outline"}
+                variant="outline"
                 onClick={() => setFloorFilter(floor)}
-                className={`shrink-0 h-auto px-3 sm:px-4 py-2 sm:py-2.5 ${
-                  isActive && !isAll
-                    ? `${colors?.bg} ${colors?.border} ${colors?.text} hover:${colors?.bg}`
-                    : !isActive
-                      ? "bg-white border-[#e4e4e7] text-[#71717a] hover:border-[#a1a1aa]"
-                      : ""
-                }`}
+                className={`shrink-0 h-auto px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl transition-all ${isActive
+                  ? isAll
+                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200 border-indigo-600"
+                    : `${colors?.bg} ${colors?.text} border-transparent shadow-sm`
+                  : "bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300"
+                  }`}
               >
-                <span className="text-xs sm:text-sm tracking-wide">
+                <span className="text-sm font-semibold tracking-tight">
                   {isAll ? t("residents.filterAll") : floor}
                 </span>
                 {floorStat && (
-                  <span className={`ml-1.5 text-[10px] sm:text-xs ${isActive ? "" : "text-[#a1a1aa]"}`}>
+                  <span className={`ml-2 text-xs font-medium ${isActive ? "opacity-70" : "text-slate-400"}`}>
                     {floorStat.registered}/{floorStat.total}
                   </span>
                 )}
@@ -356,14 +354,14 @@ export function ResidentsGrid({
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-4 border-b border-[#e4e4e7]">
-          <div className="relative">
-            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-[#a1a1aa]" />
+          <div className="relative group">
+            <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10" />
             <input
               type="search"
               placeholder={t("residents.searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full sm:w-64 h-11 sm:h-10 pl-10 pr-4 bg-white border border-[#e4e4e7] rounded-md text-base sm:text-sm text-[#18181b] placeholder:text-[#d4d4d8] focus:outline-none focus:border-[#18181b] transition-colors"
+              className="w-full sm:w-80 h-12 pl-11 pr-4 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
             />
             {searchQuery && (
               <Button
@@ -371,7 +369,7 @@ export function ResidentsGrid({
                 variant="ghost"
                 size="icon-xs"
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2"
+                className="absolute right-3 top-1/2 -translate-y-1/2 hover:bg-transparent"
               >
                 <CloseIcon />
               </Button>
@@ -391,11 +389,10 @@ export function ResidentsGrid({
                     className="relative h-auto px-4 sm:px-4 py-2.5 sm:py-2 tracking-wide group whitespace-nowrap active:opacity-70 snap-center sm:snap-align-none shrink-0 hover:bg-transparent"
                   >
                     <span
-                      className={`text-sm ${
-                        isActive
-                          ? "text-[#18181b] font-medium"
-                          : "text-[#a1a1aa] group-hover:text-[#71717a]"
-                      }`}
+                      className={`text-sm ${isActive
+                        ? "text-[#18181b] font-medium"
+                        : "text-[#a1a1aa] group-hover:text-[#71717a]"
+                        }`}
                     >
                       {option.label}
                     </span>
@@ -483,11 +480,11 @@ function StatCard({
   color: string;
 }) {
   return (
-    <div className="text-center">
-      <p className="text-[10px] text-[#a1a1aa] mb-1 tracking-wide">{label}</p>
-      <p className="text-2xl sm:text-3xl font-light" style={{ color }}>
+    <div className="text-center p-4 glass rounded-xl shadow-sm border border-slate-200/20">
+      <p className="text-[10px] text-slate-400 mb-1 tracking-widest font-semibold uppercase">{label}</p>
+      <p className="text-2xl sm:text-3xl font-bold tracking-tight" style={{ color }}>
         {value}
-        <span className="text-sm text-[#a1a1aa] ml-1">{subValue}</span>
+        <span className="text-sm text-slate-400 ml-1 font-normal">{subValue}</span>
       </p>
     </div>
   );
@@ -504,17 +501,21 @@ function GridView({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 sm:gap-8"
     >
       {profiles.map((profile, index) => (
         <motion.div
           key={profile.id}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2, delay: Math.min(index * 0.02, 0.3) }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{
+            duration: 0.4,
+            delay: Math.min(index * 0.04, 0.4),
+            ease: [0.23, 1, 0.32, 1]
+          }}
         >
           <ResidentCard
             profile={profile}
@@ -548,7 +549,7 @@ function FloorView({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="space-y-8"
+      className="space-y-16 sm:space-y-20"
     >
       {floorsOrder.map((floor, floorIndex) => {
         const profiles = groupedByFloor[floor] || [];
@@ -560,44 +561,43 @@ function FloorView({
         return (
           <motion.section
             key={floor}
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: floorIndex * 0.1 }}
+            transition={{ duration: 0.5, delay: floorIndex * 0.1, ease: "easeOut" }}
           >
-            <div className={`flex items-center gap-3 mb-4 pb-3 border-b-2 ${colors.border}`}>
+            <div className={`flex items-center gap-6 mb-8 pb-6 border-b border-slate-100`}>
               <div
-                className={`w-12 h-12 flex items-center justify-center rounded-md ${colors.bg} border ${colors.border}`}
+                className={`w-14 h-14 flex items-center justify-center rounded-2xl shadow-sm border ${colors.border} ${colors.bg}`}
               >
-                <span className={`text-base font-medium ${colors.text}`}>{floor}</span>
+                <span className={`text-xl font-bold tracking-tight ${colors.text}`}>{floor}</span>
               </div>
               <div className="flex-1">
-                <h3 className={`text-base ${colors.text} tracking-wide`}>
+                <h3 className={`text-lg font-semibold tracking-tight text-slate-900`}>
                   {t("residents.floorLabel", { floor: floor.replace("F", "") })}
                 </h3>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-[10px] text-[#a1a1aa]">
+                <div className="flex items-center gap-6 mt-2">
+                  <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">
                     {floorStat.registered}/{floorStat.total} {t("residents.registeredShort")}
                   </span>
-                  <div className="flex-1 max-w-20 h-1 bg-[#f4f4f5] rounded-full">
-                    <div
-                      className="h-full rounded-full transition-all duration-500"
-                      style={{
-                        width: `${(floorStat.registered / floorStat.total) * 100}%`,
-                        backgroundColor: colors.fill,
-                      }}
+                  <div className="flex-1 max-w-48 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${(floorStat.registered / floorStat.total) * 100}%` }}
+                      transition={{ duration: 1, ease: [0.23, 1, 0.32, 1], delay: floorIndex * 0.1 + 0.3 }}
+                      className={`h-full rounded-full ${colors.accent.replace("text-", "bg-")}`}
                     />
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 sm:gap-8">
               {profiles.map((profile, index) => (
                 <motion.div
                   key={profile.id}
-                  initial={{ opacity: 0, y: 8 }}
+                  initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2, delay: index * 0.03 }}
+                  transition={{ duration: 0.4, delay: index * 0.04, ease: "easeOut" }}
                 >
                   <ResidentCard
                     profile={profile}
@@ -676,75 +676,65 @@ function ResidentListItem({
       aria-label={t("a11y.viewProfile", { name: profile.name })}
     >
       <article
-        className={`flex items-center gap-4 p-3 sm:p-4 bg-white border rounded-lg transition-all duration-200 active:scale-[0.995] ${
-          isCurrentUser
-            ? "border-[#18181b]"
-            : isMockProfile
-            ? "border-dashed border-[#d4d4d8] hover:border-[#a1a1aa]"
-            : "border-[#e4e4e7] hover:border-[#18181b]"
-        }`}
+        className={`flex items-center gap-5 p-4 sm:p-5 bg-white rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 border border-slate-100 ${isCurrentUser ? "ring-2 ring-indigo-500/20 border-indigo-500" : ""
+          }`}
       >
         <div className="relative shrink-0">
-          <Avatar className="w-12 h-12 sm:w-14 sm:h-14 rounded-full">
+          <Avatar className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl border border-slate-100 shadow-sm">
             <OptimizedAvatarImage
               src={profile.avatar_url}
               alt={profile.name}
               context="card"
               className="w-full h-full"
               fallback={getInitials(profile.name)}
-              fallbackClassName="bg-[#f4f4f5] text-[#a1a1aa] text-lg rounded-full w-full h-full flex items-center justify-center"
+              fallbackClassName="bg-slate-50 text-slate-300 text-lg font-semibold rounded-xl w-full h-full flex items-center justify-center"
             />
           </Avatar>
           {isCurrentUser && (
-            <span className="absolute -top-1 -right-1 bg-[#18181b] text-white text-[8px] px-1.5 py-0.5 rounded">
+            <span className="absolute -top-1.5 -right-1.5 bg-indigo-600 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase shadow-sm">
               {t("common.you")}
             </span>
           )}
         </div>
 
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="text-sm sm:text-base text-[#18181b] truncate">
+          <div className="flex items-center gap-3 flex-wrap">
+            <h3 className="text-base sm:text-lg text-slate-900 font-semibold tracking-tight truncate">
               {profile.nickname || profile.name}
             </h3>
             {profile.room_number && (
               <span
-                className={`text-[10px] sm:text-xs px-1.5 py-0.5 rounded ${colors.bg} ${colors.text}`}
+                className={`text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-medium ${colors.bg} ${colors.text}`}
               >
                 {profile.room_number}
               </span>
             )}
             {isNew && !isMockProfile && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#f0fdf4] text-[#3d6b4a] border border-[#93c5a0]">
+              <span className="text-[10px] px-2 py-0.5 bg-emerald-500 text-white rounded-full font-bold tracking-wider">
                 NEW
               </span>
             )}
             {isTeaTimeParticipant && !isMockProfile && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#3d6b4a] text-white flex items-center gap-0.5">
+              <span className="text-[10px] px-2 py-0.5 bg-amber-100 text-amber-700 rounded-lg font-bold flex items-center gap-1 shadow-sm border border-amber-200/50">
                 <TeaCupIcon />
               </span>
             )}
             {isMockProfile && (
-              <span className="text-[10px] text-[#a1a1aa]">
+              <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wide truncate">
                 {t("common.unregistered")}
               </span>
             )}
           </div>
 
-          <div className="flex items-center gap-3 mt-1 text-[11px] sm:text-xs text-[#71717a]">
+          <div className="flex items-center gap-3 mt-1.5 text-xs text-slate-500">
             {profile.occupation && (
-              <span>{t(`profileOptions.occupation.${profile.occupation}` as Parameters<typeof t>[0])}</span>
+              <span className="bg-slate-50 px-2 py-0.5 rounded-md">{t(`profileOptions.occupation.${profile.occupation}` as Parameters<typeof t>[0])}</span>
             )}
-            {profile.mbti && <span className="text-[#a1a1aa]">{profile.mbti}</span>}
-            {profile.interests && profile.interests.length > 0 && (
-              <span className="truncate text-[#a1a1aa]">
-                {profile.interests.slice(0, 3).join(", ")}
-              </span>
-            )}
+            {profile.mbti && <span className="text-indigo-600 font-semibold">{profile.mbti}</span>}
           </div>
         </div>
 
-        <div className="text-[#d4d4d8] group-hover:text-[#a1a1aa] transition-colors shrink-0">
+        <div className="text-slate-300 group-hover:text-indigo-500 transition-colors shrink-0">
           <ChevronRightIcon />
         </div>
       </article>
