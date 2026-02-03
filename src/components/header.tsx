@@ -29,6 +29,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/room-photos", labelKey: "nav.gallery" },
   { href: "/info", labelKey: "nav.info" },
   { href: "/tea-time", labelKey: "nav.teaTime" },
+  { href: "/floor-plan", labelKey: "nav.floorPlan" },
 ];
 
 interface NavLinkProps {
@@ -43,13 +44,13 @@ const NavLink = memo(function NavLink({ item, isActive }: NavLinkProps) {
     <Link
       href={item.href}
       aria-current={isActive ? "page" : undefined}
-      className="relative px-2 sm:px-4 py-2 text-xs sm:text-sm tracking-wide transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#18181b] focus-visible:ring-offset-2 group"
+      className="relative px-4 sm:px-6 py-2 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 group"
     >
       <span
         className={
           isActive
-            ? "text-[#18181b]"
-            : "text-[#a1a1aa] group-hover:text-[#71717a] transition-colors"
+            ? "text-indigo-600"
+            : "text-slate-500 group-hover:text-indigo-600 transition-colors"
         }
       >
         {t(item.labelKey)}
@@ -57,8 +58,8 @@ const NavLink = memo(function NavLink({ item, isActive }: NavLinkProps) {
       {isActive && (
         <m.span
           layoutId="nav-underline"
-          className="absolute bottom-0 left-2 right-2 sm:left-4 sm:right-4 h-px bg-[#18181b]"
-          transition={{ duration: 0.25, ease: "easeOut" }}
+          className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500"
+          transition={{ type: "spring", stiffness: 380, damping: 30 }}
         />
       )}
     </Link>
@@ -91,26 +92,25 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
         <button
           type="button"
           aria-label={t("nav.myPage")}
-          className="relative shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[#18181b] focus-visible:ring-offset-2 rounded-full cursor-pointer"
+          className="relative shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[#8b5cf6] focus-visible:ring-offset-2 rounded-full cursor-pointer group"
         >
           <div
-            className={`w-8 h-8 rounded-full overflow-hidden transition-all ${
-              isActive
-                ? "ring-2 ring-[#18181b] ring-offset-1"
-                : "ring-1 ring-[#e4e4e7] hover:ring-[#a1a1aa]"
-            }`}
+            className={`w-9 h-9 rounded-full overflow-hidden transition-all border border-slate-200 ${isActive
+                ? "border-indigo-500 ring-2 ring-indigo-500 ring-offset-2 shadow-lg"
+                : "group-hover:border-indigo-400 group-hover:shadow-md"
+              }`}
           >
             {optimizedSrc ? (
               <Image
                 src={optimizedSrc}
                 alt={t("nav.myPage")}
-                width={32}
-                height={32}
+                width={40}
+                height={40}
                 className="object-cover w-full h-full"
               />
             ) : (
               <div className="w-full h-full bg-[#f4f4f5] flex items-center justify-center">
-                <User size={16} className="text-[#a1a1aa]" strokeWidth={1.5} />
+                <User size={20} className="text-[#a1a1aa]" strokeWidth={2} />
               </div>
             )}
           </div>
@@ -146,21 +146,18 @@ export const Header = memo(function Header() {
 
   return (
     <header
-      className="sticky top-0 z-40 border-b border-[#e4e4e7] bg-white/95 backdrop-blur-sm"
+      className="sticky top-0 z-40 glass border-b border-slate-200/50"
       role="banner"
     >
-      <div className="container mx-auto px-4 sm:px-6 py-3 flex items-center justify-between max-w-5xl">
-        <div className="flex items-center gap-4 sm:gap-8">
+      <div className="container mx-auto px-4 sm:px-6 py-4 flex items-center justify-between max-w-5xl">
+        <div className="flex items-center gap-6 sm:gap-12">
           <Link
             href="/"
-            className="text-[13px] leading-none sm:text-base tracking-[0.15em] sm:tracking-wider text-[#18181b] font-light outline-none focus-visible:ring-2 focus-visible:ring-[#18181b] focus-visible:ring-offset-2"
+            className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 hover:opacity-80 transition-opacity"
             aria-label={t("a11y.goHome")}
           >
-            <span className="sm:hidden flex flex-col leading-none gap-0.5">
-              <span>SHARE</span>
-              <span>HOUSE</span>
-            </span>
-            <span className="hidden sm:inline">SHARE HOUSE</span>
+            <span>Share</span>
+            <span className="text-indigo-600">House</span>
           </Link>
 
           <nav

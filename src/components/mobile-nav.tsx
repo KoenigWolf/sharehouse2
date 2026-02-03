@@ -4,7 +4,7 @@ import { memo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { Users, Coffee, User, Image, Info } from "lucide-react";
+import { Users, Coffee, User, Image, Info, LayoutGrid } from "lucide-react";
 import { useI18n } from "@/hooks/use-i18n";
 import type { TranslationKey } from "@/lib/i18n";
 
@@ -14,17 +14,18 @@ const NAV_ITEMS: {
   icon: typeof Users;
   matchPaths?: string[];
 }[] = [
-  { href: "/", labelKey: "nav.residents", icon: Users },
-  { href: "/room-photos", labelKey: "nav.gallery", icon: Image },
-  { href: "/info", labelKey: "nav.info", icon: Info },
-  { href: "/tea-time", labelKey: "nav.teaTime", icon: Coffee },
-  {
-    href: "/settings",
-    labelKey: "nav.myPage",
-    icon: User,
-    matchPaths: ["/settings", "/profile/"],
-  },
-];
+    { href: "/", labelKey: "nav.residents", icon: Users },
+    { href: "/room-photos", labelKey: "nav.gallery", icon: Image },
+    { href: "/info", labelKey: "nav.info", icon: Info },
+    { href: "/tea-time", labelKey: "nav.teaTime", icon: Coffee },
+    { href: "/floor-plan", labelKey: "nav.floorPlan", icon: LayoutGrid },
+    {
+      href: "/settings",
+      labelKey: "nav.myPage",
+      icon: User,
+      matchPaths: ["/settings", "/profile/"],
+    },
+  ];
 
 export const MobileNav = memo(function MobileNav() {
   const pathname = usePathname();
@@ -41,10 +42,10 @@ export const MobileNav = memo(function MobileNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 sm:hidden bg-white border-t border-[#e4e4e7] pb-safe"
+      className="fixed bottom-0 left-0 right-0 z-50 sm:hidden glass border-t border-slate-200/50 pb-safe shadow-2xl shadow-slate-900/10"
       aria-label={t("a11y.mainNavigation")}
     >
-      <div className="flex items-center justify-around h-16">
+      <div className="flex items-center justify-around h-16 sm:h-20">
         {NAV_ITEMS.map((item) => {
           const active = isActive(item);
           const Icon = item.icon;
@@ -54,21 +55,20 @@ export const MobileNav = memo(function MobileNav() {
               key={item.href}
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className="relative flex flex-col items-center justify-center flex-1 h-full px-1 py-3 transition-colors active:bg-[#f4f4f5]"
+              className="relative flex flex-col items-center justify-center flex-1 h-full px-1 py-1 transition-all active:scale-95 group"
             >
               <div className="relative">
                 <Icon
                   size={24}
-                  strokeWidth={active ? 2 : 1.5}
-                  className={`transition-colors ${
-                    active ? "text-[#18181b]" : "text-[#a1a1aa]"
-                  }`}
+                  strokeWidth={active ? 2.5 : 2}
+                  className={`transition-colors duration-300 ${active ? "text-indigo-600" : "text-slate-400 group-hover:text-slate-600"
+                    }`}
                 />
                 {active && (
                   <motion.span
                     layoutId="mobile-nav-indicator"
-                    className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#18181b]"
-                    transition={{ duration: 0.2 }}
+                    className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-indigo-500 shadow-lg shadow-indigo-200"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}
               </div>
