@@ -18,37 +18,39 @@ export function TeaTimeNotification({ match }: TeaTimeNotificationProps) {
 
   return (
     <m.div
-      initial={{ opacity: 0, y: -8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
     >
       <Link href="/tea-time" className="block group">
-        <div className="bg-white border border-[#e4e4e7] rounded-lg p-4 sm:p-5 hover:border-[#18181b] transition-colors">
-          <div className="flex items-center gap-4">
-            <Avatar className="w-12 h-12 sm:w-14 sm:h-14 rounded-full shrink-0">
+        <div className="premium-surface p-4 sm:p-6 rounded-2xl relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+          <div className="absolute inset-0 bg-linear-to-br from-indigo-500/5 to-violet-500/5" />
+
+          <div className="relative flex items-center gap-6">
+            <Avatar className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl border border-white shadow-sm shrink-0">
               <OptimizedAvatarImage
                 src={match.partner.avatar_url}
                 context="card"
                 alt={t("a11y.profilePhotoAlt", { name: match.partner.name })}
                 fallback={getInitials(match.partner.name)}
-                fallbackClassName="text-sm bg-[#f4f4f5] rounded-full"
+                fallbackClassName="text-lg bg-slate-50 text-slate-300 rounded-2xl font-semibold"
               />
             </Avatar>
 
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-[#a1a1aa] tracking-wide">
+              <span className="text-[10px] text-indigo-600 font-bold uppercase tracking-wider bg-indigo-50 px-2 py-0.5 rounded-full">
                 {t("teaTime.matchNotificationTitle")}
-              </p>
-              <p className="text-sm sm:text-base text-[#18181b] mt-1 truncate">
+              </span>
+              <p className="text-lg sm:text-xl text-slate-900 mt-1 truncate font-semibold tracking-tight">
                 {match.partner.name}
-                <span className="text-[#71717a]">{t("teaTime.nameSuffix")}</span>
+                <span className="text-slate-400 ml-1 font-normal">{t("teaTime.nameSuffix")}</span>
               </p>
-              <p className="text-xs text-[#a1a1aa] mt-1">
+              <p className="text-xs text-slate-500 mt-1">
                 {t("teaTime.matchPrompt")}
               </p>
             </div>
 
-            <div className="text-[#d4d4d8] group-hover:text-[#a1a1aa] transition-colors shrink-0">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center text-slate-300 group-hover:text-indigo-600 group-hover:bg-indigo-50 transition-all shrink-0">
               <svg
                 className="w-5 h-5"
                 fill="none"
@@ -58,7 +60,7 @@ export function TeaTimeNotification({ match }: TeaTimeNotificationProps) {
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={1.5}
+                  strokeWidth={2}
                   d="M9 5l7 7-7 7"
                 />
               </svg>
