@@ -6,6 +6,8 @@ import { MobileNav } from "@/components/mobile-nav";
 import { ResidentsGrid } from "@/components/residents-grid";
 import { TeaTimeNotification } from "@/components/tea-time-notification";
 import { getLatestScheduledMatch } from "@/lib/tea-time/actions";
+import { getBulletins } from "@/lib/bulletin/actions";
+import { BulletinBoard } from "@/components/bulletin-board";
 import { Profile } from "@/domain/profile";
 import { mockProfiles } from "@/lib/mock-data";
 import { getServerTranslator } from "@/lib/i18n/server";
@@ -21,12 +23,13 @@ export default async function Home() {
     redirect("/login");
   }
 
-  const [profilesResult, latestMatch] = await Promise.all([
+  const [profilesResult, latestMatch, bulletins] = await Promise.all([
     supabase
       .from("profiles")
       .select("id, name, nickname, room_number, avatar_url, move_in_date, mbti, interests, occupation, industry, work_style, daily_rhythm, social_stance, sns_x, sns_instagram, sns_github, is_admin")
       .order("name"),
     getLatestScheduledMatch(),
+    getBulletins(),
   ]);
 
   const dbProfiles = (profilesResult.data as Profile[]) || [];
@@ -53,6 +56,8 @@ export default async function Home() {
               <TeaTimeNotification match={latestMatch} />
             </div>
           )}
+
+          <BulletinBoard bulletins={bulletins} currentUserId={user.id} />
 
           {mockCount > 0 && (
             <p className="text-xs text-[#a1a1aa] mb-5 sm:mb-6">
