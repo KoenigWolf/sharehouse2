@@ -40,6 +40,7 @@ export const ja = {
     share: "おすそわけ",
     events: "イベント",
     admin: "管理",
+    stats: "統計",
   },
 
   auth: {

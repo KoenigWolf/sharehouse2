@@ -38,6 +38,7 @@ export const en: Translations = {
     share: "Share",
     events: "Events",
     admin: "Admin",
+    stats: "Statistics",
   },
 
   auth: {
