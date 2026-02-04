@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { m } from "framer-motion";
-import { User, LogOut } from "lucide-react";
+import { User, LogOut, Shield } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -72,9 +72,9 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
   const pathname = usePathname();
   const router = useRouter();
   const t = useI18n();
-  const { userId, avatarUrl } = useUser();
+  const { userId, avatarUrl, isAdmin } = useUser();
 
-  const isActive = pathname.startsWith("/profile/");
+  const isActive = pathname.startsWith("/profile/") || pathname.startsWith("/admin");
 
   const handleLogout = useCallback(async () => {
     const supabase = createClient();
@@ -123,6 +123,14 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
             {t("nav.myPage")}
           </Link>
         </DropdownMenuItem>
+        {isAdmin && (
+          <DropdownMenuItem asChild>
+            <Link href="/admin" className="cursor-pointer">
+              <Shield size={14} strokeWidth={1.5} />
+              {t("nav.admin")}
+            </Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-[#a1a1aa]">
           <LogOut size={14} strokeWidth={1.5} />
