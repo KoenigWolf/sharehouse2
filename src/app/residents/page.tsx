@@ -54,7 +54,7 @@ export default async function ResidentsPage() {
     );
   }
 
-  // 未認証: チラ見せ表示
+  // 登録を促すためマスク済みプロフィールだけを見せる
   const { profiles } = await getPublicProfilesWithMock(supabase);
 
   return (
