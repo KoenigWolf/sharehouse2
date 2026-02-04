@@ -26,7 +26,7 @@ export default async function ResidentsPage() {
     const mockCount = profiles.length - dbProfiles.length;
 
     return (
-      <div className="min-h-screen bg-white flex flex-col">
+      <div className="min-h-screen bg-slate-50 flex flex-col">
         <Header />
 
         <main className="flex-1 pb-20 sm:pb-0">
@@ -54,13 +54,11 @@ export default async function ResidentsPage() {
     );
   }
 
-  // 未認証でも「住民がいる」ことを伝えて登録を促すため、
-  // residents_public_teaser ビュー経由で名前先頭1文字・年代・業種のみ返す。
-  // avatar_url や nickname 全文はビューに含めておらず DevTools でも取得不可。
+  // 登録を促すため、未認証ユーザーにも residents_public_teaser 経由で最小限の住民情報を見せる
   const { profiles } = await getPublicProfilesWithMock(supabase);
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
       <Header />
 
       <main className="flex-1 pb-20 sm:pb-0">
