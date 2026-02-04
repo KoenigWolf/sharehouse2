@@ -36,6 +36,7 @@ export default async function RootLayout({
 
   let userId: string | null = null;
   let avatarUrl: string | null = null;
+  let isAdmin = false;
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -43,10 +44,11 @@ export default async function RootLayout({
       userId = user.id;
       const { data } = await supabase
         .from("profiles")
-        .select("avatar_url")
+        .select("avatar_url, is_admin")
         .eq("id", user.id)
         .single();
       avatarUrl = data?.avatar_url ?? null;
+      isAdmin = data?.is_admin === true;
     }
   } catch {
     // 未認証ページ（/login 等）ではスキップ
@@ -58,7 +60,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         nonce={nonce}
       >
-        <UserProvider userId={userId} avatarUrl={avatarUrl}>
+        <UserProvider userId={userId} avatarUrl={avatarUrl} isAdmin={isAdmin}>
           <MotionProvider>{children}</MotionProvider>
         </UserProvider>
         <WebVitalsReporter />
