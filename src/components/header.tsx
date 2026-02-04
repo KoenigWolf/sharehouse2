@@ -44,13 +44,13 @@ const NavLink = memo(function NavLink({ item, isActive }: NavLinkProps) {
     <Link
       href={item.href}
       aria-current={isActive ? "page" : undefined}
-      className="relative px-4 sm:px-6 py-2 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-lime-500 focus-visible:ring-offset-2 group"
+      className="relative px-4 sm:px-6 py-2 text-sm font-medium transition-colors outline-none focus-visible:ring-emerald-500 focus-visible:ring-offset-2 group"
     >
       <span
         className={
           isActive
-            ? "text-lime-600"
-            : "text-slate-500 group-hover:text-lime-600 transition-colors"
+            ? "text-emerald-600"
+            : "text-slate-500 group-hover:text-emerald-600 transition-colors"
         }
       >
         {t(item.labelKey)}
@@ -58,7 +58,7 @@ const NavLink = memo(function NavLink({ item, isActive }: NavLinkProps) {
       {isActive && (
         <m.span
           layoutId="nav-underline"
-          className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-500"
+          className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-500"
           transition={{ type: "spring", stiffness: 380, damping: 30 }}
         />
       )}
@@ -153,11 +153,11 @@ export const Header = memo(function Header() {
         <div className="flex items-center gap-6 sm:gap-12">
           <Link
             href="/"
-            className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 outline-none focus-visible:ring-2 focus-visible:ring-lime-500 focus-visible:ring-offset-2 hover:opacity-80 transition-opacity"
+            className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 hover:opacity-80 transition-opacity"
             aria-label={t("a11y.goHome")}
           >
             <span>Share</span>
-            <span className="text-lime-600">House</span>
+            <span className="text-emerald-600">House</span>
           </Link>
 
           <nav

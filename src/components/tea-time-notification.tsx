@@ -24,7 +24,7 @@ export function TeaTimeNotification({ match }: TeaTimeNotificationProps) {
     >
       <Link href="/tea-time" className="block group">
         <div className="premium-surface p-4 sm:p-6 rounded-2xl relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-          <div className="absolute inset-0 bg-linear-to-br from-lime-500/5 to-emerald-500/5" />
+          <div className="absolute inset-0 bg-linear-to-br from-emerald-500/5 to-emerald-500/5" />
 
           <div className="relative flex items-center gap-6">
             <Avatar className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl border border-white shadow-sm shrink-0">

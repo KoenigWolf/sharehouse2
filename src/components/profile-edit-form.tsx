@@ -32,7 +32,7 @@ function SectionLabel({ label, icon }: { label: string; icon?: React.ReactNode }
   return (
     <div className="flex items-center gap-4 pt-12 pb-6">
       <div className="flex items-center gap-2">
-        {icon && <span className="text-lime-500">{icon}</span>}
+        {icon && <span className="text-emerald-500">{icon}</span>}
         <h3 className="text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase whitespace-nowrap">
           {label}
         </h3>
@@ -74,7 +74,7 @@ function InputField({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         required={required}
-        className="w-full h-12 px-5 bg-white border border-slate-200 rounded-2xl text-slate-700 text-[15px] font-medium placeholder:text-slate-300 focus:outline-none focus:ring-4 focus:ring-lime-500/5 focus:border-lime-500/50 transition-all duration-300"
+        className="w-full h-12 px-5 bg-white border border-slate-200 rounded-2xl text-slate-700 text-[15px] font-medium placeholder:text-slate-300 focus:outline-none focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500/50 transition-all duration-300"
       />
       {hint && <p className="text-[10px] text-slate-400 font-medium ml-1">{hint}</p>}
     </div>
@@ -106,7 +106,7 @@ function SelectField({
           id={id}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full h-12 pl-5 pr-10 bg-white border border-slate-200 rounded-2xl text-slate-700 text-[15px] font-medium focus:outline-none focus:ring-4 focus:ring-lime-500/5 focus:border-lime-500/50 transition-all duration-300 appearance-none"
+          className="w-full h-12 pl-5 pr-10 bg-white border border-slate-200 rounded-2xl text-slate-700 text-[15px] font-medium focus:outline-none focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500/50 transition-all duration-300 appearance-none"
         >
           {placeholder && <option value="">{placeholder}</option>}
           {options.map((opt) => (
@@ -153,7 +153,7 @@ function TextareaField({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         rows={rows}
-        className="w-full px-5 py-4 bg-white border border-slate-200 rounded-3xl text-slate-700 text-[15px] font-medium placeholder:text-slate-300 focus:outline-none focus:ring-4 focus:ring-lime-500/5 focus:border-lime-500/50 transition-all duration-300 resize-none leading-relaxed"
+        className="w-full px-5 py-4 bg-white border border-slate-200 rounded-3xl text-slate-700 text-[15px] font-medium placeholder:text-slate-300 focus:outline-none focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500/50 transition-all duration-300 resize-none leading-relaxed"
       />
       {hint && <p className="text-[10px] text-slate-400 font-medium ml-1">{hint}</p>}
     </div>
@@ -393,19 +393,19 @@ export function ProfileEditForm({
       <form onSubmit={handleSubmit} className="space-y-12">
         {/* Hero: Avatar + Core Identity */}
         <div className="premium-surface rounded-[2.5rem] p-8 sm:p-10 shadow-sm border border-slate-50 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-lime-50/30 rounded-full blur-3xl -mr-32 -mt-32" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-50/30 rounded-full blur-3xl -mr-32 -mt-32" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-slate-50/50 rounded-full blur-3xl -ml-24 -mb-24" />
 
           <div className="relative flex flex-col sm:flex-row gap-8 sm:gap-12 items-center sm:items-start">
             <div className="shrink-0 group">
               <div className="relative w-40 h-40 sm:w-48 sm:h-48">
-                <div className="absolute inset-0 rounded-full bg-lime-100/50 animate-pulse group-hover:animate-none group-hover:scale-105 transition-transform duration-500" />
+                <div className="absolute inset-0 rounded-full bg-emerald-100/50 animate-pulse group-hover:animate-none group-hover:scale-105 transition-transform duration-500" />
                 <Button
                   type="button"
                   variant="ghost"
                   onClick={handleAvatarClick}
                   disabled={isUploading}
-                  className="relative w-full h-full p-1 bg-white border-2 border-slate-50 rounded-full overflow-hidden shadow-md group-hover:shadow-xl group-hover:border-lime-100 transition-all duration-500"
+                  className="relative w-full h-full p-1 bg-white border-2 border-slate-50 rounded-full overflow-hidden shadow-md group-hover:shadow-xl group-hover:border-emerald-100 transition-all duration-500"
                 >
                   <Avatar className="size-full rounded-full">
                     <OptimizedAvatarImage
@@ -417,7 +417,7 @@ export function ProfileEditForm({
                     />
                   </Avatar>
 
-                  <div className="absolute inset-0 bg-lime-900/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col items-center justify-center gap-2">
+                  <div className="absolute inset-0 bg-emerald-900/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col items-center justify-center gap-2">
                     <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 011.664.89l.812 1.22A2 2 0 0010.07 10H19a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -506,7 +506,7 @@ export function ProfileEditForm({
             {interestsArray.length > 0 && (
               <div className="flex flex-wrap gap-2 px-1">
                 {interestsArray.map((interest, i) => (
-                  <span key={i} className="text-[10px] font-bold tracking-wider px-3 py-1 bg-lime-50 text-lime-600 rounded-full border border-lime-100/50 uppercase">
+                  <span key={i} className="text-[10px] font-bold tracking-wider px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full border border-emerald-100/50 uppercase">
                     {interest}
                   </span>
                 ))}
@@ -946,7 +946,7 @@ export function ProfileEditForm({
               size="xl"
               disabled={isLoading || isUploading}
               aria-busy={isLoading}
-              className="w-full sm:w-auto h-14 sm:h-12 px-10 rounded-full bg-lime-600 hover:bg-lime-700 text-white shadow-lg shadow-lime-200 hover:shadow-lime-300 transition-all duration-300 font-bold tracking-wider uppercase text-[12px]"
+              className="w-full sm:w-auto h-14 sm:h-12 px-10 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-200 hover:shadow-emerald-300 transition-all duration-300 font-bold tracking-wider uppercase text-[12px]"
             >
               {isLoading ? (
                 <Spinner variant="light" size="sm" />
