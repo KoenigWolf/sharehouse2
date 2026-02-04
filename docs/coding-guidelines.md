@@ -2,7 +2,7 @@
 
 Share House Portal - Coding Guidelines
 
-関連: [README.md](./README.md) / [DESIGN_GUIDELINES.md](./DESIGN_GUIDELINES.md) / [IMPROVEMENTS.md](./IMPROVEMENTS.md)
+関連: [README.md](../README.md) / [DESIGN_GUIDELINES.md](./design-guidelines.md) / [IMPROVEMENTS.md](./improvements.md)
 
 ---
 

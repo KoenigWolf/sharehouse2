@@ -2,7 +2,7 @@
 
 Share House Portal - Product Concept
 
-関連: [CLAUDE.md](./CLAUDE.md) / [DESIGN_GUIDELINES.md](./DESIGN_GUIDELINES.md) / [CODING_GUIDELINES.md](./CODING_GUIDELINES.md)
+関連: [CLAUDE.md](../CLAUDE.md) / [DESIGN_GUIDELINES.md](./design-guidelines.md) / [CODING_GUIDELINES.md](./coding-guidelines.md)
 
 ---
 

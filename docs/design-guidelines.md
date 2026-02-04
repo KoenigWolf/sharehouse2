@@ -2,7 +2,7 @@
 
 Share House Portal - Premium Design System
 
-関連: [README.md](./README.md) / [CODING_GUIDELINES.md](./CODING_GUIDELINES.md) / [IMPROVEMENTS.md](./IMPROVEMENTS.md)
+関連: [README.md](../README.md) / [CODING_GUIDELINES.md](./coding-guidelines.md) / [IMPROVEMENTS.md](./improvements.md)
 
 ---
 

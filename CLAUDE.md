@@ -1,6 +1,6 @@
 # Share House Portal
 
-20人規模のシェアハウス住民専用ポータル。無印良品的な静かなUI。
+20人規模のシェアハウス住民専用ポータル。洗練されたプレミアム・モダン・ミニマリズム。
 
 ## コマンド
 
@@ -19,15 +19,13 @@ Next.js 16 (App Router) / TypeScript / Tailwind CSS 4 / shadcn/ui / Supabase / F
 - `any` 禁止。Boolean は `is/has/can`、関数は動詞で始める
 - 1関数50行以内。早期リターン（ガード節）を使う
 - エラーは `logError` ユーティリティを使う（`console.error` 禁止）
-- 詳細: @CODING_GUIDELINES.md
+- 詳細: @docs/coding-guidelines.md
 
-## デザイン指針
-
-- 背景 `#ffffff` / テキスト `#18181b` / ボーダー `#e4e4e7`
-- 角丸は控えめに（アバター: `rounded-full` / ボタン・入力: `rounded-md` / カード: `rounded-lg`）。影は極力使わない。装飾禁止
-- アニメーションは 0.2〜0.3秒、静かに
-- フィードバックは左ボーダーのみ（エラー `#e5a0a0` / 成功 `#93c5a0`）
-- 詳細: @DESIGN_GUIDELINES.md
+- 背景 `slate-50` / 見出し `slate-900` / ブランド `brand-500` (Emerald)
+- 大きな角丸（`2xl`/`3xl`）と繊細な影（`premium-shadow`）を使用。装飾は意味のあるものに限定
+- アニメーションは 0.4秒 (ease-out)、スタッガー効果を伴うフェードイン
+- フィードバックは左ボーダー（エラー `bg-error-bg/50` / 成功 `bg-success-bg/50`）
+- 詳細: @docs/design-guidelines.md
 
 ## プロジェクト構成
 

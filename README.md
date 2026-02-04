@@ -32,9 +32,10 @@
 | ドキュメント | 目的 | 参照タイミング |
 |------------|------|--------------|
 | [README.md](./README.md) | プロジェクト概要・セットアップ | 最初に必読 |
-| [CODING_GUIDELINES.md](./CODING_GUIDELINES.md) | コーディング規約 | コード作成時 |
-| [DESIGN_GUIDELINES.md](./DESIGN_GUIDELINES.md) | デザイン指針・カラーパレット | UI実装時 |
-| [IMPROVEMENTS.md](./IMPROVEMENTS.md) | 改善履歴・新機能アイデア | 必要時のみ |
+| [CODING_GUIDELINES.md](./docs/coding-guidelines.md) | コーディング規約 | コード作成時 |
+| [DESIGN_GUIDELINES.md](./docs/design-guidelines.md) | デザイン指針・カラーパレット | UI実装時 |
+| [CONCEPT.md](./docs/concept.md) | コンセプト・原則 | プロジェクト理解 |
+| [IMPROVEMENTS.md](./docs/improvements.md) | 改善履歴・新機能アイデア | 必要時のみ |
 
 Claude Code への注意:
 - `CLAUDE.md` が自動読み込みされます。基本ルールはそこに集約済み
@@ -326,7 +327,7 @@ npm run check-all
 
 このセクションは、AIが効率よく全体のルールを把握するための要約です。
 
-### コーディング規約（詳細: [CODING_GUIDELINES.md](./CODING_GUIDELINES.md)）
+### コーディング規約（詳細: [CODING_GUIDELINES.md](./docs/coding-guidelines.md)）
 
 - コメントは「WHY」のみ。「WHAT」は書かない（コード自体で説明）
 - Boolean値は `is/has/can` で始める。配列は複数形。関数名は動詞で始める
@@ -334,18 +335,18 @@ npm run check-all
 - `any`禁止。Optional chaining（`?.`）とnullish合体演算子（`??`）を活用
 - エラーメッセージは具体的に（ユーザーID・理由を含める）
 
-### デザイン指針（詳細: [DESIGN_GUIDELINES.md](./DESIGN_GUIDELINES.md)）
+### デザイン指針（詳細: [DESIGN_GUIDELINES.md](./docs/design-guidelines.md)）
 
-- 無印良品思想: デザインは主張しない。理由のない装飾は禁止
-- カラー: 背景 `#fafafa` / テキスト `#18181b` / ボーダー `#e4e4e7` / 低彩度のみ
-- 角丸なし（`rounded-none`）。影は極力使わない。余白は情報整理のために使う
-- アニメーションは0.2〜0.3秒、静かに。バウンド・派手な演出は禁止
-- フォント1種。太字多用禁止。強調はサイズ・余白・配置で行う
+- **Premium Modern Minimalism**: 清潔感、奥行き、質感を重視したデザイン
+- **カラー**: 背景 `slate-50` / 見出し `slate-900` / ブランド `brand-500` (Emerald)
+- **角丸・影**: 大きな角丸（`2xl`/`3xl`）と繊細な影（`premium-shadow`）で上質さを演出
+- **アニメーション**: 0.4秒 (ease-out)、スタッガー効果を伴う滑らかなフェードイン
+- **タイポグラフィ**: `tracking-tight` なボールド見出し。ラベルは `uppercase` で洗練さを表現
 
 ### 実装時の注意
 
-- 新規ページ/機能追加時: 必ず [DESIGN_GUIDELINES.md](./DESIGN_GUIDELINES.md) の実装パターンを確認
-- リファクタリング時: [IMPROVEMENTS.md](./IMPROVEMENTS.md) で既知の技術的負債を確認
+- 新規ページ/機能追加時: 必ず [DESIGN_GUIDELINES.md](./docs/design-guidelines.md) の実装パターンを確認
+- リファクタリング時: [IMPROVEMENTS.md](./docs/improvements.md) で既知の技術的負債を確認
 - コミット前: `npm run check-all` でLint・型チェック・テスト・ビルドを実行
 
 ## ライセンス
