@@ -61,10 +61,10 @@ const PhotoCard = memo(function PhotoCard({ photo, index, onClick, isTeaser = fa
       transition={{ duration: 0.2, delay: index * 0.03 }}
     >
       <div
-        role="button"
-        tabIndex={0}
-        onClick={() => !isTeaser && onClick()}
-        onKeyDown={(e) => { if (!isTeaser && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); onClick(); } }}
+        role={isTeaser ? undefined : "button"}
+        tabIndex={isTeaser ? undefined : 0}
+        onClick={isTeaser ? undefined : () => onClick()}
+        onKeyDown={isTeaser ? undefined : (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } }}
         className={`group w-full bg-white border border-[#e4e4e7] rounded-lg overflow-hidden transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#18181b] focus-visible:ring-offset-2 ${isTeaser ? "cursor-default" : "hover:border-[#18181b] cursor-pointer"}`}
       >
         <div className="relative w-full overflow-hidden" style={{ paddingBottom: "100%" }}>

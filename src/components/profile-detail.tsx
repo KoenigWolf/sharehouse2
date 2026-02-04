@@ -650,9 +650,9 @@ export function ProfileDetail({
       )}
 
       {isTeaser && (
-        <div className="fixed bottom-0 left-0 right-0 z-[60] p-6 sm:p-12 pb-[calc(24px+env(safe-area-inset-bottom))] flex justify-center pointer-events-none">
+        <div className="fixed bottom-0 left-0 right-0 z-40 p-6 sm:p-12 pb-[calc(24px+env(safe-area-inset-bottom))] flex justify-center pointer-events-none">
           <div className="pointer-events-auto w-full max-w-xl">
-            <TeaserOverlay totalCount={1} />
+            <TeaserOverlay />
           </div>
         </div>
       )}
