@@ -81,8 +81,8 @@ export default function ResetPasswordPage() {
               animate={{ opacity: 1, y: 0 }}
               className="text-center space-y-4"
             >
-              <div className="py-3 px-4 bg-[#f0fdf4] border-l-2 border-[#93c5a0]">
-                <p className="text-sm text-[#3d6b4a]">
+              <div className="py-3 px-4 bg-success-bg border-l-2 border-success-border">
+                <p className="text-sm text-success">
                   {t("auth.passwordResetSuccess")}
                 </p>
               </div>
@@ -143,9 +143,9 @@ export default function ResetPasswordPage() {
                     initial={{ opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
-                    className="py-3 px-4 bg-[#fef2f2] border-l-2 border-[#e5a0a0]"
+                    className="py-3 px-4 bg-error-bg border-l-2 border-error-border"
                   >
-                    <p className="text-sm text-[#8b4040]">{error}</p>
+                    <p className="text-sm text-error">{error}</p>
                   </m.div>
                 )}
               </AnimatePresence>
@@ -197,7 +197,7 @@ function PasswordStrengthMeter({ password }: { password: string }) {
     t("auth.passwordStrength.fair"),
     t("auth.passwordStrength.strong"),
   ];
-  const colors = ["#e5a0a0", "#e5a0a0", "#d4d4d8", "#93c5a0"];
+  const colors = ["var(--error-border)", "var(--error-border)", "#d4d4d8", "var(--success-border)"];
 
   return (
     <div className="space-y-1">
