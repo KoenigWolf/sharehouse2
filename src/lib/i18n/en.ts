@@ -687,6 +687,8 @@ export const en: Translations = {
     editingAs: "Editing {{name}}'s profile (admin)",
     adminBadge: "Admin",
     noUsers: "No users found",
+    confirmDeleteTitle: "Confirm Account Deletion",
+    deleting: "Deleting...",
     deleteSuccess: "Account deleted",
     toggleSuccess: "Admin privileges updated",
     editProfile: "Edit profile",

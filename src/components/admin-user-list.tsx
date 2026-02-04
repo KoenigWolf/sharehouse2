@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { m, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { useI18n } from "@/hooks/use-i18n";
 import { getInitials } from "@/lib/utils";
@@ -21,18 +22,22 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
+  const [deleteTarget, setDeleteTarget] = useState<Profile | null>(null);
+  const [deleteError, setDeleteError] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
   const filtered = useMemo(() => {
-    if (!search.trim()) return profiles;
-    const q = search.toLowerCase();
+    const q = search.trim().toLowerCase();
     return profiles.filter(
       (p) =>
-        p.name.toLowerCase().includes(q) ||
-        (p.room_number && p.room_number.includes(q))
+        !deletedIds.has(p.id) &&
+        (!q ||
+          p.name.toLowerCase().includes(q) ||
+          (p.room_number && p.room_number.includes(q)))
     );
-  }, [profiles, search]);
+  }, [profiles, search, deletedIds]);
 
   const handleToggleAdmin = useCallback(
     async (profile: Profile) => {
@@ -59,30 +64,39 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
     [t, router]
   );
 
-  const handleDelete = useCallback(
-    async (profile: Profile) => {
-      const confirmed = window.confirm(
-        t("admin.confirmDelete", { name: profile.name })
-      );
-      if (!confirmed) return;
+  const openDeleteDialog = useCallback((profile: Profile) => {
+    setDeleteError("");
+    setDeleteTarget(profile);
+  }, []);
 
-      setLoadingId(profile.id);
-      setError("");
-      setSuccess("");
+  const cancelDelete = useCallback(() => {
+    setDeleteTarget(null);
+    setDeleteError("");
+  }, []);
 
-      const result = await adminDeleteAccount(profile.id);
+  const confirmDelete = useCallback(async () => {
+    if (!deleteTarget) return;
 
-      if ("error" in result) {
-        setError(result.error);
-      } else {
-        setSuccess(t("admin.deleteSuccess"));
-        router.refresh();
-      }
+    setLoadingId(deleteTarget.id);
+    setDeleteError("");
+    setError("");
+    setSuccess("");
 
-      setLoadingId(null);
-    },
-    [t, router]
-  );
+    const result = await adminDeleteAccount(deleteTarget.id);
+
+    setLoadingId(null);
+
+    if ("error" in result) {
+      setDeleteError(result.error);
+      return;
+    }
+
+    setDeleteTarget(null);
+    setDeleteError("");
+    setDeletedIds((prev) => new Set(prev).add(deleteTarget.id));
+    setSuccess(t("admin.deleteSuccess"));
+    router.refresh();
+  }, [deleteTarget, t, router]);
 
   return (
     <div className="space-y-4">
@@ -126,16 +140,19 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
       )}
 
       <div className="space-y-2">
-        {filtered.map((profile, index) => {
+        <AnimatePresence>
+        {filtered.map((profile) => {
           const isSelf = profile.id === currentUserId;
           const isLoading = loadingId === profile.id;
 
           return (
             <m.div
               key={profile.id}
+              layout
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.15, delay: index * 0.02 }}
+              exit={{ opacity: 0, height: 0, marginBottom: 0, overflow: "hidden" }}
+              transition={{ duration: 0.25 }}
               className="flex items-center gap-3 px-4 py-3 bg-white border border-[#e4e4e7] rounded-lg"
             >
               <Avatar className="h-8 w-8 shrink-0">
@@ -195,7 +212,7 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
                       type="button"
                       variant="destructive"
                       size="xs"
-                      onClick={() => handleDelete(profile)}
+                      onClick={() => openDeleteDialog(profile)}
                       disabled={isLoading}
                     >
                       {t("admin.deleteAccount")}
@@ -206,7 +223,46 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
             </m.div>
           );
         })}
+        </AnimatePresence>
       </div>
+
+      <ConfirmDialog
+        isOpen={deleteTarget !== null}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+        title={t("admin.confirmDeleteTitle")}
+        description={t("admin.confirmDelete", { name: deleteTarget?.name ?? "" })}
+        confirmLabel={t("admin.deleteAccount")}
+        cancelLabel={t("common.cancel")}
+        loadingLabel={t("admin.deleting")}
+        isLoading={loadingId === deleteTarget?.id}
+        error={deleteError}
+        variant="destructive"
+      >
+        {deleteTarget && (
+          <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+            <Avatar className="h-10 w-10 shrink-0">
+              <OptimizedAvatarImage
+                src={deleteTarget.avatar_url}
+                alt={deleteTarget.name}
+              />
+              <span className="flex h-full w-full items-center justify-center bg-[#f4f4f5] text-xs text-[#a1a1aa]">
+                {getInitials(deleteTarget.name)}
+              </span>
+            </Avatar>
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-slate-900 truncate">
+                {deleteTarget.name}
+              </p>
+              {deleteTarget.room_number && (
+                <p className="text-xs text-slate-400">
+                  {deleteTarget.room_number}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+      </ConfirmDialog>
     </div>
   );
 }

@@ -686,6 +686,8 @@ export const ja = {
     editingAs: "{{name}}さんのプロフィールを編集中（管理者）",
     adminBadge: "管理者",
     noUsers: "ユーザーが見つかりません",
+    confirmDeleteTitle: "アカウント削除の確認",
+    deleting: "削除中...",
     deleteSuccess: "アカウントを削除しました",
     toggleSuccess: "管理者権限を変更しました",
     editProfile: "プロフィール編集",
