@@ -39,6 +39,7 @@ export const ja = {
     floorPlan: "フロアマップ",
     share: "おすそわけ",
     events: "イベント",
+    admin: "管理",
   },
 
   auth: {
@@ -658,6 +659,23 @@ export const ja = {
     occupancy: "入居 {{count}}/5",
     closeDetail: "閉じる",
     occupation: "職業",
+  },
+
+  admin: {
+    title: "管理者パネル",
+    userList: "ユーザー一覧",
+    search: "名前・部屋番号で検索",
+    toggleAdmin: "管理者権限",
+    confirmToggleAdmin: "{{name}}さんの管理者権限を変更しますか？",
+    deleteAccount: "アカウント削除",
+    confirmDelete: "{{name}}さんのアカウントを本当に削除しますか？この操作は取り消せません。",
+    editingAs: "{{name}}さんのプロフィールを編集中（管理者）",
+    adminBadge: "管理者",
+    noUsers: "ユーザーが見つかりません",
+    deleteSuccess: "アカウントを削除しました",
+    toggleSuccess: "管理者権限を変更しました",
+    editProfile: "プロフィール編集",
+    userCount: "{{count}}人",
   },
 
   a11y: {

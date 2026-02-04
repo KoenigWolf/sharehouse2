@@ -37,6 +37,7 @@ export const en: Translations = {
     floorPlan: "Floor Map",
     share: "Share",
     events: "Events",
+    admin: "Admin",
   },
 
   auth: {
@@ -659,6 +660,23 @@ export const en: Translations = {
     occupancy: "{{count}}/5 occupied",
     closeDetail: "Close",
     occupation: "Occupation",
+  },
+
+  admin: {
+    title: "Admin Panel",
+    userList: "Users",
+    search: "Search by name or room",
+    toggleAdmin: "Admin privileges",
+    confirmToggleAdmin: "Change admin privileges for {{name}}?",
+    deleteAccount: "Delete account",
+    confirmDelete: "Are you sure you want to delete {{name}}'s account? This cannot be undone.",
+    editingAs: "Editing {{name}}'s profile (admin)",
+    adminBadge: "Admin",
+    noUsers: "No users found",
+    deleteSuccess: "Account deleted",
+    toggleSuccess: "Admin privileges updated",
+    editProfile: "Edit profile",
+    userCount: "{{count}} users",
   },
 
   a11y: {
