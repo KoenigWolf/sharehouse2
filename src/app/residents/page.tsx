@@ -7,8 +7,7 @@ import { ResidentsGrid } from "@/components/residents-grid";
 import { TeaTimeNotification } from "@/components/tea-time-notification";
 import { getLatestScheduledMatch } from "@/lib/tea-time/actions";
 import { getServerTranslator } from "@/lib/i18n/server";
-import { mockProfiles } from "@/lib/mock-data";
-import type { Profile } from "@/domain/profile";
+import { getProfilesWithMock } from "@/lib/residents/queries";
 
 export default async function ResidentsPage() {
   const t = await getServerTranslator();
@@ -22,26 +21,12 @@ export default async function ResidentsPage() {
     redirect("/login");
   }
 
-  const [profilesResult, latestMatch] = await Promise.all([
-    supabase
-      .from("profiles")
-      .select("id, name, nickname, room_number, avatar_url, move_in_date, mbti, interests, occupation, industry, work_style, daily_rhythm, social_stance, sns_x, sns_instagram, sns_github, is_admin")
-      .order("name"),
+  const [{ profiles, dbProfiles }, latestMatch] = await Promise.all([
+    getProfilesWithMock(supabase),
     getLatestScheduledMatch(),
   ]);
 
-  const dbProfiles = (profilesResult.data as Profile[]) || [];
-
-  const registeredRoomNumbers = new Set(
-    dbProfiles.filter((p) => p.room_number).map((p) => p.room_number)
-  );
-
-  const remainingMockProfiles = mockProfiles.filter(
-    (mock) => !registeredRoomNumbers.has(mock.room_number)
-  );
-
-  const profiles = [...dbProfiles, ...remainingMockProfiles];
-  const mockCount = remainingMockProfiles.length;
+  const mockCount = profiles.length - dbProfiles.length;
 
   return (
     <div className="min-h-screen bg-white flex flex-col">

@@ -11,6 +11,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 import Link from "next/link";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
+import { getFloorFromRoom, isNewResident, FLOOR_COLORS, type FloorId } from "@/lib/utils/residents";
 
 interface ResidentsGridProps {
   profiles: Profile[];
@@ -21,28 +22,6 @@ interface ResidentsGridProps {
 type SortOption = "name" | "room_number" | "move_in_date";
 type ViewMode = "grid" | "floor" | "list";
 type FloorFilter = "all" | "2F" | "3F" | "4F" | "5F";
-
-function getFloorFromRoom(roomNumber: string | null): string {
-  if (!roomNumber) return "?";
-  const firstDigit = roomNumber[0];
-  return `${firstDigit}F`;
-}
-
-function isNewResident(moveInDate: string | null): boolean {
-  if (!moveInDate) return false;
-  const moveIn = new Date(moveInDate);
-  const threeMonthsAgo = new Date();
-  threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-  return moveIn > threeMonthsAgo;
-}
-
-const floorColors: Record<string, { bg: string; border: string; text: string; accent: string; fill: string }> = {
-  "5F": { bg: "bg-brand-50", border: "border-brand-100", text: "text-brand-900", accent: "var(--brand-500)", fill: "var(--brand-500)" },
-  "4F": { bg: "bg-slate-50", border: "border-slate-100", text: "text-slate-900", accent: "#475569", fill: "#475569" },
-  "3F": { bg: "bg-violet-50", border: "border-violet-100", text: "text-violet-900", accent: "#8b5cf6", fill: "#8b5cf6" },
-  "2F": { bg: "bg-brand-50", border: "border-brand-100", text: "text-brand-900", accent: "var(--brand-500)", fill: "var(--brand-500)" },
-  "?": { bg: "bg-slate-50", border: "border-slate-100", text: "text-slate-400", accent: "#94a3b8", fill: "#94a3b8" },
-};
 
 /**
  * 住人一覧グリッドコンポーネント
@@ -58,7 +37,6 @@ export function ResidentsGrid({
   const [sortBy, setSortBy] = useState<SortOption>("room_number");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [floorFilter, setFloorFilter] = useState<FloorFilter>("all");
-  const [showStats, setShowStats] = useState(false);
   const t = useI18n();
   const locale = useLocale();
 
@@ -82,34 +60,22 @@ export function ResidentsGrid({
 
   const floors: FloorFilter[] = ["all", "2F", "3F", "4F", "5F"];
 
-  const stats = useMemo(() => {
+  const floorStats = useMemo(() => {
     const registered = profiles.filter((p) => !p.id.startsWith("mock-"));
-    const newResidents = registered.filter((p) => isNewResident(p.move_in_date));
-    const teaTimeCount = registered.filter((p) => teaTimeParticipants.includes(p.id)).length;
-
-    const floorStats: Record<string, { total: number; registered: number }> = {
+    const result: Record<string, { total: number; registered: number }> = {
       "2F": { total: 5, registered: 0 },
       "3F": { total: 5, registered: 0 },
       "4F": { total: 5, registered: 0 },
       "5F": { total: 5, registered: 0 },
     };
-
     registered.forEach((p) => {
       const floor = getFloorFromRoom(p.room_number);
-      if (floorStats[floor]) {
-        floorStats[floor].registered++;
+      if (result[floor]) {
+        result[floor].registered++;
       }
     });
-
-    return {
-      total: 20,
-      registered: registered.length,
-      unregistered: 20 - registered.length,
-      newResidents: newResidents.length,
-      teaTimeCount,
-      floorStats,
-    };
-  }, [profiles, teaTimeParticipants]);
+    return result;
+  }, [profiles]);
 
   const handleSortChange = useCallback((sort: SortOption) => {
     setSortBy(sort);
@@ -192,95 +158,6 @@ export function ResidentsGrid({
 
   return (
     <div className="space-y-8 sm:space-y-12">
-      <div className="premium-surface rounded-2xl mb-6 overflow-hidden">
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={() => setShowStats((prev) => !prev)}
-          className="w-full h-auto flex items-center justify-between px-6 py-5 hover:bg-slate-50 transition-colors"
-        >
-          <h3 className="text-sm text-slate-900 font-semibold uppercase tracking-wider">{t("residents.statsTitle")}</h3>
-          <motion.span
-            animate={{ rotate: showStats ? 180 : 0 }}
-            transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
-            className="text-slate-400"
-          >
-            <ChevronIcon />
-          </motion.span>
-        </Button>
-
-        <AnimatePresence initial={false}>
-          {showStats && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="overflow-hidden"
-            >
-              <div className="px-4 sm:px-5 pb-4 sm:pb-5 space-y-4">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-                  <StatCard
-                    label={t("residents.statsRegistered")}
-                    value={stats.registered}
-                    subValue={`/ ${stats.total}`}
-                    color="#18181b"
-                  />
-                  <StatCard
-                    label={t("residents.statsNew")}
-                    value={stats.newResidents}
-                    subValue={t("residents.statsNewSub")}
-                    color="var(--success)"
-                  />
-                  <StatCard
-                    label={t("residents.statsTeaTime")}
-                    value={stats.teaTimeCount}
-                    subValue={t("residents.statsParticipants")}
-                    color="var(--success)"
-                  />
-                  <StatCard
-                    label={t("residents.statsUnregistered")}
-                    value={stats.unregistered}
-                    subValue={t("residents.statsRooms")}
-                    color="#a1a1aa"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <p className="text-[10px] text-[#a1a1aa] tracking-wide">{t("residents.floorOccupancy")}</p>
-                  <div className="flex gap-2">
-                    {(["5F", "4F", "3F", "2F"] as const).map((floor) => {
-                      const floorStat = stats.floorStats[floor];
-                      const percentage = (floorStat.registered / floorStat.total) * 100;
-                      const colors = floorColors[floor];
-                      return (
-                        <div key={floor} className="flex-1">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className={`text-[10px] ${colors.text}`}>{floor}</span>
-                            <span className="text-[10px] text-[#a1a1aa]">
-                              {floorStat.registered}/{floorStat.total}
-                            </span>
-                          </div>
-                          <div className="h-1.5 bg-[#f4f4f5] rounded-full overflow-hidden">
-                            <motion.div
-                              initial={{ width: 0 }}
-                              animate={{ width: `${percentage}%` }}
-                              transition={{ duration: 0.5, delay: 0.1 }}
-                              style={{ backgroundColor: colors.fill }}
-                              className="h-full"
-                            />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
       <div className="flex flex-col gap-4">
         <div className="flex items-end justify-between">
           <div>
@@ -324,8 +201,8 @@ export function ResidentsGrid({
           {floors.map((floor) => {
             const isAll = floor === "all";
             const isActive = floorFilter === floor;
-            const floorStat = isAll ? null : stats.floorStats[floor];
-            const colors = isAll ? null : floorColors[floor];
+            const floorStat = isAll ? null : floorStats[floor];
+            const colors = isAll ? null : FLOOR_COLORS[floor as keyof typeof FLOOR_COLORS];
 
             return (
               <Button
@@ -443,7 +320,7 @@ export function ResidentsGrid({
             key="floor-view"
             groupedByFloor={groupedByFloor}
             currentUserId={currentUserId}
-            floorStats={stats.floorStats}
+            floorStats={floorStats}
             teaTimeSet={teaTimeSet}
             t={t}
           />
@@ -464,28 +341,6 @@ export function ResidentsGrid({
           />
         )}
       </AnimatePresence>
-    </div>
-  );
-}
-
-function StatCard({
-  label,
-  value,
-  subValue,
-  color,
-}: {
-  label: string;
-  value: number;
-  subValue: string;
-  color: string;
-}) {
-  return (
-    <div className="text-center p-4 glass rounded-xl shadow-sm border border-slate-200/20">
-      <p className="text-[10px] text-slate-400 mb-1 tracking-widest font-semibold uppercase">{label}</p>
-      <p className="text-2xl sm:text-3xl font-bold tracking-tight" style={{ color }}>
-        {value}
-        <span className="text-sm text-slate-400 ml-1 font-normal">{subValue}</span>
-      </p>
     </div>
   );
 }
@@ -542,7 +397,7 @@ function FloorView({
   teaTimeSet: Set<string>;
   t: Translator;
 }) {
-  const floorsOrder = ["5F", "4F", "3F", "2F"];
+  const floorsOrder: FloorId[] = ["5F", "4F", "3F", "2F"];
 
   return (
     <motion.div
@@ -553,7 +408,7 @@ function FloorView({
     >
       {floorsOrder.map((floor, floorIndex) => {
         const profiles = groupedByFloor[floor] || [];
-        const colors = floorColors[floor];
+        const colors = FLOOR_COLORS[floor];
         const floorStat = floorStats[floor];
 
         if (profiles.length === 0) return null;
@@ -666,7 +521,7 @@ function ResidentListItem({
 }) {
   const isMockProfile = profile.id.startsWith("mock-");
   const floor = getFloorFromRoom(profile.room_number);
-  const colors = floorColors[floor] || floorColors["?"];
+  const colors = FLOOR_COLORS[(floor as FloorId)] || FLOOR_COLORS["?"];
   const isNew = isNewResident(profile.move_in_date);
 
   return (
@@ -795,14 +650,6 @@ function CloseIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
       <path d="M3 3L11 11M11 3L3 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function ChevronIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-      <path d="M3 5L7 9L11 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

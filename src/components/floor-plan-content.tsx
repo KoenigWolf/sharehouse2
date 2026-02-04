@@ -8,28 +8,16 @@ import { Profile, ROOM_NUMBERS } from "@/domain/profile";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { useI18n } from "@/hooks/use-i18n";
 import { getInitials, formatDate, calculateResidenceDuration } from "@/lib/utils";
+import { getFloorFromRoom, FLOOR_COLORS, type FloorId } from "@/lib/utils/residents";
 
 interface FloorPlanContentProps {
   profiles: Profile[];
   currentUserId: string;
 }
 
-type Floor = "2F" | "3F" | "4F" | "5F";
+const FLOORS: FloorId[] = ["2F", "3F", "4F", "5F"];
 
-const FLOORS: Floor[] = ["2F", "3F", "4F", "5F"];
-
-const FLOOR_COLORS: Record<Floor, { bg: string; text: string; border: string; accent: string }> = {
-  "2F": { bg: "bg-brand-50", text: "text-brand-900", border: "border-brand-100", accent: "bg-brand-500" },
-  "3F": { bg: "bg-violet-50", text: "text-violet-900", border: "border-violet-100", accent: "bg-violet-500" },
-  "4F": { bg: "bg-slate-50", text: "text-slate-900", border: "border-slate-100", accent: "bg-slate-600" },
-  "5F": { bg: "bg-brand-50", text: "text-brand-900", border: "border-brand-100", accent: "bg-brand-500" },
-};
-
-function getFloorFromRoom(roomNumber: string): Floor {
-  return `${roomNumber[0]}F` as Floor;
-}
-
-function getRoomsForFloor(floor: Floor): string[] {
+function getRoomsForFloor(floor: FloorId): string[] {
   const floorDigit = floor[0];
   return ROOM_NUMBERS.filter((r) => r[0] === floorDigit);
 }
@@ -39,7 +27,7 @@ function isMockProfile(profile: Profile): boolean {
 }
 
 export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentProps) {
-  const [activeFloor, setActiveFloor] = useState<Floor>("5F");
+  const [activeFloor, setActiveFloor] = useState<FloorId>("5F");
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
   const t = useI18n();
 
@@ -54,10 +42,10 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
   }, [profiles]);
 
   const occupancyByFloor = useMemo(() => {
-    const counts: Record<Floor, number> = { "2F": 0, "3F": 0, "4F": 0, "5F": 0 };
+    const counts: Record<FloorId, number> = { "2F": 0, "3F": 0, "4F": 0, "5F": 0 };
     for (const profile of profiles) {
       if (profile.room_number && !isMockProfile(profile)) {
-        const floor = getFloorFromRoom(profile.room_number);
+        const floor = getFloorFromRoom(profile.room_number) as FloorId;
         counts[floor]++;
       }
     }
