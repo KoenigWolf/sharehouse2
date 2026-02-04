@@ -13,6 +13,7 @@ import { getNotificationSettings } from "@/lib/notifications/actions";
 import { getRoomPhotos } from "@/lib/room-photos/actions";
 import { validateId } from "@/lib/security/validation";
 import { getServerTranslator } from "@/lib/i18n/server";
+import { isCurrentUserAdmin } from "@/lib/admin/check";
 
 interface ProfileEditPageProps {
   params: Promise<{ id: string }>;
@@ -41,8 +42,10 @@ export default async function ProfileEditPage({ params }: ProfileEditPageProps) 
     redirect(`/profile/${validatedId}`);
   }
 
-  // 自分のプロフィール以外は編集不可
-  if (user.id !== validatedId) {
+  // 自分以外のプロフィールは管理者のみ編集可能
+  const isOwnProfile = user.id === validatedId;
+  const isAdmin = !isOwnProfile ? await isCurrentUserAdmin() : false;
+  if (!isOwnProfile && !isAdmin) {
     redirect(`/profile/${validatedId}`);
   }
 
@@ -70,8 +73,13 @@ export default async function ProfileEditPage({ params }: ProfileEditPageProps) 
             href={`/profile/${validatedId}`}
             className="text-[11px] tracking-wide text-[#a1a1aa] hover:text-[#71717a] transition-colors"
           >
-            {t("myPage.backToMyPage")}
+            {isOwnProfile ? t("myPage.backToMyPage") : t("common.back")}
           </Link>
+          {!isOwnProfile && (
+            <div className="py-2 px-3 border-l-2 border-[#e4e4e7] bg-[#f4f4f5] text-xs text-[#71717a]">
+              {t("admin.editingAs", { name: profile.name })}
+            </div>
+          )}
           <h1 className="text-lg text-[#18181b] tracking-wide font-light">
             {t("profile.editTitle")}
           </h1>
@@ -79,12 +87,15 @@ export default async function ProfileEditPage({ params }: ProfileEditPageProps) 
             profile={profile as Profile}
             initialTeaTimeEnabled={teaTimeSetting?.is_enabled ?? false}
             initialNotificationSettings={notificationSettings}
+            targetUserId={isOwnProfile ? undefined : validatedId}
           />
           <RoomPhotoManager photos={roomPhotos} />
-          <AccountSettings
-            userEmail={user.email}
-            hasPassword={user.app_metadata?.providers?.includes("email") ?? false}
-          />
+          {isOwnProfile && (
+            <AccountSettings
+              userEmail={user.email}
+              hasPassword={user.app_metadata?.providers?.includes("email") ?? false}
+            />
+          )}
         </div>
       </main>
 

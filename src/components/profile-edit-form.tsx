@@ -26,6 +26,7 @@ interface ProfileEditFormProps {
   profile: Profile;
   initialTeaTimeEnabled?: boolean;
   initialNotificationSettings?: NotificationSettingsData;
+  targetUserId?: string;
 }
 
 function SectionLabel({ label, icon }: { label: string; icon?: React.ReactNode }) {
@@ -164,6 +165,7 @@ export function ProfileEditForm({
   profile,
   initialTeaTimeEnabled = false,
   initialNotificationSettings,
+  targetUserId,
 }: ProfileEditFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const t = useI18n();
@@ -246,6 +248,9 @@ export function ProfileEditForm({
       const prepared = await prepareImageForUpload(file);
       const formDataUpload = new FormData();
       formDataUpload.append("avatar", prepared.file);
+      if (targetUserId) {
+        formDataUpload.append("targetUserId", targetUserId);
+      }
 
       const result = await uploadAvatar(formDataUpload);
 
@@ -313,7 +318,7 @@ export function ProfileEditForm({
       sns_linkedin: formData.sns_linkedin.trim() || null,
       sns_github: formData.sns_github.trim() || null,
       sns_line: formData.sns_line.trim() || null,
-    });
+    }, targetUserId);
 
     setIsLoading(false);
 
@@ -323,7 +328,7 @@ export function ProfileEditForm({
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     }
-  }, [formData, interestsArray, t]);
+  }, [formData, interestsArray, t, targetUserId]);
 
   const handleTeaTimeToggle = async (checked: boolean) => {
     setIsTeaTimeLoading(true);
