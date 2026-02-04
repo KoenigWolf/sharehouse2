@@ -8,6 +8,12 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-success-border: var(--success-border);
+  --color-error: var(--error);
+  --color-error-bg: var(--error-bg);
+  --color-error-border: var(--error-border);
   --color-brand-50: var(--brand-50);
   --color-brand-100: var(--brand-100);
   --color-brand-200: var(--brand-200);
@@ -91,6 +97,12 @@
   --brand-700: #047857;
   --brand-800: #065f46;
   --brand-900: #064e3b;
+  --success: #3d6b4a;
+  --success-bg: #f0fdf4;
+  --success-border: #93c5a0;
+  --error: #8b4040;
+  --error-bg: #fef2f2;
+  --error-border: #e5a0a0;
   --background: #f8fafc;
   /* Slate 50 */
   --foreground: #0f172a;
