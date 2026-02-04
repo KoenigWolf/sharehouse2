@@ -1,15 +1,23 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { m, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { Spinner } from "@/components/ui/spinner";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { useI18n } from "@/hooks/use-i18n";
 import { getInitials } from "@/lib/utils";
-import { toggleAdminStatus, adminDeleteAccount } from "@/lib/admin/actions";
+import {
+  toggleAdminStatus,
+  adminDeleteAccount,
+  adminGetUserEmail,
+  adminUpdateUserEmail,
+  adminUpdateUserPassword,
+} from "@/lib/admin/actions";
 import type { Profile } from "@/domain/profile";
 
 const EASE = [0.23, 1, 0.32, 1] as const;
@@ -28,6 +36,9 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
   const [deleteTarget, setDeleteTarget] = useState<Profile | null>(null);
   const [deleteError, setDeleteError] = useState("");
   const [adminToggleTarget, setAdminToggleTarget] = useState<Profile | null>(
+    null,
+  );
+  const [credentialsTarget, setCredentialsTarget] = useState<Profile | null>(
     null,
   );
   const [error, setError] = useState("");
@@ -222,14 +233,23 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5 shrink-0">
+                <div className="flex shrink-0 flex-col sm:flex-row items-end sm:items-center gap-1.5">
                   <Link href={`/profile/${profile.id}/edit`}>
                     <Button type="button" variant="outline" size="xs">
                       {t("common.edit")}
                     </Button>
                   </Link>
                   {!isSelf && (
-                    <>
+                    <div className="flex items-center gap-1.5">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="xs"
+                        onClick={() => setCredentialsTarget(profile)}
+                        disabled={isLoading}
+                      >
+                        {t("admin.credentials")}
+                      </Button>
                       <Button
                         type="button"
                         variant="outline"
@@ -250,7 +270,7 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
                       >
                         {t("admin.deleteAccount")}
                       </Button>
-                    </>
+                    </div>
                   )}
                 </div>
               </m.div>
@@ -258,6 +278,12 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
           })}
         </AnimatePresence>
       </div>
+
+      <AdminCredentialsDialog
+        key={credentialsTarget?.id ?? "closed"}
+        target={credentialsTarget}
+        onClose={() => setCredentialsTarget(null)}
+      />
 
       <ConfirmDialog
         isOpen={adminToggleTarget !== null}
@@ -346,6 +372,329 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
   );
 }
 
+interface AdminCredentialsDialogProps {
+  target: Profile | null;
+  onClose: () => void;
+}
+
+function AdminCredentialsDialog({
+  target,
+  onClose,
+}: AdminCredentialsDialogProps) {
+  const t = useI18n();
+  const isOpen = target !== null;
+
+  const [currentEmail, setCurrentEmail] = useState("");
+  const [isLoadingEmail, setIsLoadingEmail] = useState(target !== null);
+
+  const [newEmail, setNewEmail] = useState("");
+  const [isSubmittingEmail, setIsSubmittingEmail] = useState(false);
+  const [emailFeedback, setEmailFeedback] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
+
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isSubmittingPassword, setIsSubmittingPassword] = useState(false);
+  const [passwordFeedback, setPasswordFeedback] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!target) return;
+
+    let cancelled = false;
+
+    adminGetUserEmail(target.id).then((result) => {
+      if (cancelled) return;
+      setIsLoadingEmail(false);
+      if ("error" in result) {
+        setEmailFeedback({ type: "error", message: result.error });
+      } else {
+        setCurrentEmail(result.email);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [target]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [isOpen, onClose]);
+
+  const handleEmailSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!target || !newEmail) return;
+
+      setEmailFeedback(null);
+      setIsSubmittingEmail(true);
+
+      const result = await adminUpdateUserEmail(target.id, newEmail);
+
+      setIsSubmittingEmail(false);
+
+      if ("error" in result) {
+        setEmailFeedback({ type: "error", message: result.error });
+      } else {
+        setEmailFeedback({
+          type: "success",
+          message: t("admin.emailUpdateSuccess"),
+        });
+        setCurrentEmail(newEmail.toLowerCase().trim());
+        setNewEmail("");
+      }
+    },
+    [target, newEmail, t],
+  );
+
+  const handlePasswordSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!target || !newPassword) return;
+
+      if (newPassword !== confirmPassword) {
+        setPasswordFeedback({
+          type: "error",
+          message: t("admin.passwordMismatch"),
+        });
+        return;
+      }
+
+      setPasswordFeedback(null);
+      setIsSubmittingPassword(true);
+
+      const result = await adminUpdateUserPassword(target.id, newPassword);
+
+      setIsSubmittingPassword(false);
+
+      if ("error" in result) {
+        setPasswordFeedback({ type: "error", message: result.error });
+      } else {
+        setPasswordFeedback({
+          type: "success",
+          message: t("admin.passwordUpdateSuccess"),
+        });
+        setNewPassword("");
+        setConfirmPassword("");
+      }
+    },
+    [target, newPassword, confirmPassword, t],
+  );
+
+  const isSubmitting = isSubmittingEmail || isSubmittingPassword;
+
+  return (
+    <AnimatePresence>
+      {isOpen && target && (
+        <m.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+          onClick={isSubmitting ? undefined : onClose}
+        >
+          <m.div
+            initial={{ opacity: 0, scale: 0.95, y: 8 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 8 }}
+            transition={{ duration: 0.3, ease: EASE }}
+            className="w-full max-w-md bg-white rounded-2xl premium-surface p-6 space-y-5 max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="space-y-1.5">
+              <h2 className="text-sm font-bold tracking-tight text-slate-900">
+                {t("admin.credentialsTitle")}
+              </h2>
+              <p className="text-xs leading-relaxed text-slate-500">
+                {t("admin.credentialsDescription", { name: target.name })}
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+              <Avatar className="h-10 w-10 shrink-0">
+                <OptimizedAvatarImage
+                  src={target.avatar_url}
+                  alt={target.name}
+                />
+                <span className="flex h-full w-full items-center justify-center bg-slate-100 text-xs text-slate-400">
+                  {getInitials(target.name)}
+                </span>
+              </Avatar>
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-slate-900 truncate">
+                  {target.name}
+                </p>
+                {target.room_number && (
+                  <p className="text-xs text-slate-400">
+                    {target.room_number}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <form onSubmit={handleEmailSubmit} className="space-y-3">
+              <div className="flex items-center gap-2">
+                <MailIcon className="w-3.5 h-3.5 text-brand-500" />
+                <h3 className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
+                  {t("admin.newEmail")}
+                </h3>
+              </div>
+
+              {isLoadingEmail ? (
+                <div className="flex items-center gap-2 px-5 py-3 bg-slate-50/50 rounded-2xl border border-slate-100">
+                  <Spinner size="xs" />
+                  <span className="text-xs text-slate-400">
+                    {t("admin.loadingEmail")}
+                  </span>
+                </div>
+              ) : (
+                currentEmail && (
+                  <div className="px-5 py-3 bg-slate-50/50 rounded-2xl border border-slate-100">
+                    <p className="text-[10px] font-bold text-slate-400 tracking-wider uppercase mb-1">
+                      {t("admin.currentEmailLabel")}
+                    </p>
+                    <p className="text-sm font-medium text-slate-600 break-all">
+                      {currentEmail}
+                    </p>
+                  </div>
+                )
+              )}
+
+              <div className="space-y-1.5">
+                <Input
+                  type="email"
+                  value={newEmail}
+                  onChange={(e) => setNewEmail(e.target.value)}
+                  placeholder={t("admin.newEmail")}
+                  disabled={isSubmittingEmail}
+                  autoComplete="off"
+                  className="h-12 rounded-2xl border-slate-200 focus:ring-brand-500/5 focus:border-brand-500/50"
+                />
+              </div>
+
+              <FeedbackInline feedback={emailFeedback} />
+
+              <Button
+                type="submit"
+                size="sm"
+                disabled={isSubmittingEmail || !newEmail}
+                className="w-full sm:w-auto"
+              >
+                {isSubmittingEmail
+                  ? t("admin.updatingEmail")
+                  : t("admin.updateEmail")}
+              </Button>
+            </form>
+
+            <div className="border-t border-slate-100" />
+
+            <form onSubmit={handlePasswordSubmit} className="space-y-3">
+              <div className="flex items-center gap-2">
+                <LockIcon className="w-3.5 h-3.5 text-brand-500" />
+                <h3 className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
+                  {t("admin.newPassword")}
+                </h3>
+              </div>
+
+              <div className="space-y-2">
+                <Input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder={t("admin.newPassword")}
+                  disabled={isSubmittingPassword}
+                  autoComplete="new-password"
+                  className="h-12 rounded-2xl border-slate-200 focus:ring-brand-500/5 focus:border-brand-500/50"
+                />
+                <Input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder={t("admin.confirmNewPassword")}
+                  disabled={isSubmittingPassword}
+                  autoComplete="new-password"
+                  className="h-12 rounded-2xl border-slate-200 focus:ring-brand-500/5 focus:border-brand-500/50"
+                />
+                <p className="text-[10px] text-slate-400 ml-1">
+                  {t("admin.passwordHint")}
+                </p>
+              </div>
+
+              <FeedbackInline feedback={passwordFeedback} />
+
+              <Button
+                type="submit"
+                size="sm"
+                disabled={
+                  isSubmittingPassword || !newPassword || !confirmPassword
+                }
+                className="w-full sm:w-auto"
+              >
+                {isSubmittingPassword
+                  ? t("admin.updatingPassword")
+                  : t("admin.updatePassword")}
+              </Button>
+            </form>
+
+            <div className="border-t border-slate-100 pt-1">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={onClose}
+                disabled={isSubmitting}
+                className="w-full"
+              >
+                {t("admin.close")}
+              </Button>
+            </div>
+          </m.div>
+        </m.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+function FeedbackInline({
+  feedback,
+}: {
+  feedback: { type: "success" | "error"; message: string } | null;
+}) {
+  return (
+    <AnimatePresence>
+      {feedback && (
+        <m.div
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.2 }}
+          className={`text-xs font-medium px-4 py-2.5 rounded-xl border-l-4 ${feedback.type === "success"
+              ? "bg-success-bg/50 border-success-border text-success"
+              : "bg-error-bg/50 border-error-border text-error"
+            }`}
+        >
+          {feedback.message}
+        </m.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 function SearchIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -361,6 +710,42 @@ function SearchIcon({ className }: { className?: string }) {
         stroke="currentColor"
         strokeWidth="1.5"
         strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function MailIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+      />
+    </svg>
+  );
+}
+
+function LockIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
       />
     </svg>
   );

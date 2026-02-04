@@ -704,6 +704,25 @@ export const en: Translations = {
     toggleSuccess: "Admin privileges updated",
     editProfile: "Edit profile",
     userCount: "{{count}} users",
+    credentials: "Credentials",
+    credentialsTitle: "Change Credentials",
+    credentialsDescription:
+      "Change email address or password for {{name}}",
+    currentEmailLabel: "Current email",
+    newEmail: "New email address",
+    newPassword: "New password",
+    confirmNewPassword: "Confirm new password",
+    passwordHint:
+      "At least 10 characters, with uppercase, lowercase, and a number",
+    updateEmail: "Update email",
+    updatingEmail: "Updating...",
+    updatePassword: "Update password",
+    updatingPassword: "Updating...",
+    emailUpdateSuccess: "Email address updated",
+    passwordUpdateSuccess: "Password updated",
+    passwordMismatch: "Passwords do not match",
+    loadingEmail: "Loading...",
+    close: "Close",
   },
 
   a11y: {

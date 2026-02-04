@@ -6,12 +6,14 @@ import { revalidatePath } from "next/cache";
 import { CacheStrategy } from "@/lib/utils/cache";
 import { logError } from "@/lib/errors";
 import { getServerTranslator } from "@/lib/i18n/server";
-import { isValidUUID } from "@/lib/security";
+import { isValidUUID, AuditEventType, auditLog } from "@/lib/security";
 import { enforceAllowedOrigin } from "@/lib/security/request";
 import { requireAdmin } from "@/lib/admin/check";
+import { emailSchema, passwordSchema } from "@/domain/validation/auth";
 import type { Profile } from "@/domain/profile";
 
 type UpdateResponse = { success: true } | { error: string };
+type EmailResponse = { success: true; email: string } | { error: string };
 
 /**
  * 全ユーザーのプロフィール一覧を取得する（管理者専用）
@@ -230,6 +232,209 @@ export async function adminDeleteAccount(targetUserId: string): Promise<UpdateRe
     return { success: true };
   } catch (error) {
     logError(error, { action: "adminDeleteAccount" });
+    return { error: t("errors.serverError") };
+  }
+}
+
+/**
+ * ユーザーのメールアドレスを Auth から取得する（管理者専用）
+ *
+ * @param targetUserId - 対象ユーザーのID
+ */
+export async function adminGetUserEmail(
+  targetUserId: string,
+): Promise<EmailResponse> {
+  const t = await getServerTranslator();
+
+  const adminError = await requireAdmin(t);
+  if (adminError) return { error: adminError };
+
+  if (!isValidUUID(targetUserId)) {
+    return { error: t("errors.invalidInput") };
+  }
+
+  try {
+    let adminClient;
+    try {
+      adminClient = createAdminClient();
+    } catch {
+      return { error: "SUPABASE_SERVICE_ROLE_KEY is not configured" };
+    }
+
+    const { data, error } =
+      await adminClient.auth.admin.getUserById(targetUserId);
+
+    if (error || !data.user) {
+      return { error: t("errors.notFound") };
+    }
+
+    return { success: true, email: data.user.email ?? "" };
+  } catch (error) {
+    logError(error, { action: "adminGetUserEmail" });
+    return { error: t("errors.serverError") };
+  }
+}
+
+/**
+ * ユーザーのメールアドレスを変更する（管理者専用）
+ *
+ * Admin API を使用するため、対象ユーザーの現パスワード不要。
+ *
+ * @param targetUserId - 対象ユーザーのID
+ * @param newEmail - 新しいメールアドレス
+ */
+export async function adminUpdateUserEmail(
+  targetUserId: string,
+  newEmail: string,
+): Promise<UpdateResponse> {
+  const t = await getServerTranslator();
+
+  const originError = await enforceAllowedOrigin(t, "adminUpdateUserEmail");
+  if (originError) return { error: originError };
+
+  const adminError = await requireAdmin(t);
+  if (adminError) return { error: adminError };
+
+  if (!isValidUUID(targetUserId)) {
+    return { error: t("errors.invalidInput") };
+  }
+
+  const parsed = emailSchema.safeParse(newEmail);
+  if (!parsed.success) {
+    const msg = parsed.error.issues[0]?.message;
+    return {
+      error: msg?.includes(".")
+        ? t(msg as Parameters<typeof t>[0])
+        : t("errors.invalidInput"),
+    };
+  }
+
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return { error: t("errors.unauthorized") };
+
+    if (user.id === targetUserId) {
+      return { error: t("errors.forbidden") };
+    }
+
+    let adminClient;
+    try {
+      adminClient = createAdminClient();
+    } catch {
+      return { error: "SUPABASE_SERVICE_ROLE_KEY is not configured" };
+    }
+
+    const { error: updateError } =
+      await adminClient.auth.admin.updateUserById(targetUserId, {
+        email: parsed.data,
+        email_confirm: true,
+      });
+
+    if (updateError) {
+      logError(updateError, {
+        action: "adminUpdateUserEmail",
+        userId: targetUserId,
+      });
+      return { error: updateError.message };
+    }
+
+    auditLog({
+      timestamp: new Date().toISOString(),
+      eventType: AuditEventType.AUTH_EMAIL_CHANGE,
+      userId: user.id,
+      action: `Admin changed email for user ${targetUserId}`,
+      outcome: "success",
+    });
+
+    revalidatePath("/admin");
+    return { success: true };
+  } catch (error) {
+    logError(error, { action: "adminUpdateUserEmail" });
+    return { error: t("errors.serverError") };
+  }
+}
+
+/**
+ * ユーザーのパスワードを変更する（管理者専用）
+ *
+ * Admin API を使用するため、対象ユーザーの現パスワード不要。
+ *
+ * @param targetUserId - 対象ユーザーのID
+ * @param newPassword - 新しいパスワード
+ */
+export async function adminUpdateUserPassword(
+  targetUserId: string,
+  newPassword: string,
+): Promise<UpdateResponse> {
+  const t = await getServerTranslator();
+
+  const originError = await enforceAllowedOrigin(t, "adminUpdateUserPassword");
+  if (originError) return { error: originError };
+
+  const adminError = await requireAdmin(t);
+  if (adminError) return { error: adminError };
+
+  if (!isValidUUID(targetUserId)) {
+    return { error: t("errors.invalidInput") };
+  }
+
+  const parsed = passwordSchema.safeParse(newPassword);
+  if (!parsed.success) {
+    const msg = parsed.error.issues[0]?.message;
+    return {
+      error: msg?.includes(".")
+        ? t(msg as Parameters<typeof t>[0])
+        : t("errors.invalidInput"),
+    };
+  }
+
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return { error: t("errors.unauthorized") };
+
+    if (user.id === targetUserId) {
+      return { error: t("errors.forbidden") };
+    }
+
+    let adminClient;
+    try {
+      adminClient = createAdminClient();
+    } catch {
+      return { error: "SUPABASE_SERVICE_ROLE_KEY is not configured" };
+    }
+
+    const { error: updateError } =
+      await adminClient.auth.admin.updateUserById(targetUserId, {
+        password: parsed.data,
+      });
+
+    if (updateError) {
+      logError(updateError, {
+        action: "adminUpdateUserPassword",
+        userId: targetUserId,
+      });
+      return { error: updateError.message };
+    }
+
+    auditLog({
+      timestamp: new Date().toISOString(),
+      eventType: AuditEventType.AUTH_PASSWORD_CHANGE,
+      userId: user.id,
+      action: `Admin changed password for user ${targetUserId}`,
+      outcome: "success",
+    });
+
+    return { success: true };
+  } catch (error) {
+    logError(error, { action: "adminUpdateUserPassword" });
     return { error: t("errors.serverError") };
   }
 }
