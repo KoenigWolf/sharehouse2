@@ -678,8 +678,11 @@ export const en: Translations = {
 
   admin: {
     title: "Admin Panel",
+    subtitle: "User and role management",
     userList: "Users",
     search: "Search by name or room",
+    totalUsers: "Total Users",
+    adminUsers: "Admins",
     toggleAdmin: "Admin privileges",
     confirmToggleAdmin: "Change admin privileges for {{name}}?",
     deleteAccount: "Delete account",
@@ -687,6 +690,7 @@ export const en: Translations = {
     editingAs: "Editing {{name}}'s profile (admin)",
     adminBadge: "Admin",
     noUsers: "No users found",
+    noUsersDescription: "Try changing your search criteria",
     confirmDeleteTitle: "Confirm Account Deletion",
     deleting: "Deleting...",
     deleteSuccess: "Account deleted",

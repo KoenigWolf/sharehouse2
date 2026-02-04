@@ -677,8 +677,11 @@ export const ja = {
 
   admin: {
     title: "管理者パネル",
+    subtitle: "ユーザーとロール管理",
     userList: "ユーザー一覧",
     search: "名前・部屋番号で検索",
+    totalUsers: "登録ユーザー",
+    adminUsers: "管理者",
     toggleAdmin: "管理者権限",
     confirmToggleAdmin: "{{name}}さんの管理者権限を変更しますか？",
     deleteAccount: "アカウント削除",
@@ -686,6 +689,7 @@ export const ja = {
     editingAs: "{{name}}さんのプロフィールを編集中（管理者）",
     adminBadge: "管理者",
     noUsers: "ユーザーが見つかりません",
+    noUsersDescription: "検索条件を変更してください",
     confirmDeleteTitle: "アカウント削除の確認",
     deleting: "削除中...",
     deleteSuccess: "アカウントを削除しました",
