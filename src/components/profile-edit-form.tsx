@@ -220,7 +220,6 @@ export function ProfileEditForm({
     sns_facebook: profile.sns_facebook || "",
     sns_linkedin: profile.sns_linkedin || "",
     sns_github: profile.sns_github || "",
-    sns_line: profile.sns_line || "",
   });
 
   const interestsArray = useMemo(
@@ -317,7 +316,6 @@ export function ProfileEditForm({
       sns_facebook: formData.sns_facebook.trim() || null,
       sns_linkedin: formData.sns_linkedin.trim() || null,
       sns_github: formData.sns_github.trim() || null,
-      sns_line: formData.sns_line.trim() || null,
     }, targetUserId);
 
     setIsLoading(false);
@@ -872,13 +870,6 @@ export function ProfileEditForm({
                 value={formData.sns_github}
                 onChange={(v) => updateField("sns_github", v)}
                 placeholder={t("profile.snsGithubPlaceholder")}
-              />
-              <InputField
-                id="sns_line"
-                label={t("profile.snsLine")}
-                value={formData.sns_line}
-                onChange={(v) => updateField("sns_line", v)}
-                placeholder={t("profile.snsLinePlaceholder")}
               />
             </div>
           </div>
