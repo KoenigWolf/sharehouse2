@@ -77,14 +77,14 @@ export function BulletinBoard({ bulletins, currentUserId }: BulletinBoardProps) 
   }, [myBulletin]);
 
   return (
-    <div className="mb-6 sm:mb-8">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm font-medium text-zinc-900">{t("bulletin.title")}</h2>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold tracking-tight text-slate-900">{t("bulletin.title")}</h2>
         {!isEditing && (
           <button
             type="button"
             onClick={handleStartEdit}
-            className="text-xs text-zinc-500 hover:text-zinc-900 transition-colors"
+            className="h-9 px-5 rounded-full bg-brand-600 hover:bg-brand-700 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
           >
             {myBulletin ? t("bulletin.update") : t("bulletin.post")}
           </button>
@@ -98,11 +98,10 @@ export function BulletinBoard({ bulletins, currentUserId }: BulletinBoardProps) 
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.2 }}
-            className={`text-xs px-3 py-2 mb-3 border-l-2 ${
-              feedback.type === "success"
-                ? "bg-success-bg border-success-border text-success"
-                : "bg-error-bg border-error-border text-error"
-            }`}
+            className={`text-xs font-medium px-4 py-3 rounded-xl border-l-4 shadow-sm ${feedback.type === "success"
+              ? "bg-success-bg/50 border-success-border text-success"
+              : "bg-error-bg/50 border-error-border text-error"
+              }`}
           >
             {feedback.message}
           </m.div>
@@ -115,27 +114,27 @@ export function BulletinBoard({ bulletins, currentUserId }: BulletinBoardProps) 
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden mb-4"
+            transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+            className="overflow-hidden"
           >
-            <div className="border border-zinc-200 rounded-lg p-3">
+            <div className="premium-surface rounded-3xl p-6 sm:p-8 space-y-4">
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder={t("bulletin.placeholder")}
                 maxLength={BULLETIN.maxMessageLength}
-                rows={2}
-                className="w-full text-sm text-zinc-900 placeholder:text-zinc-300 bg-transparent resize-none outline-none"
+                rows={3}
+                className="w-full text-[15px] font-medium text-slate-700 placeholder:text-slate-300 bg-transparent resize-none focus:outline-none"
               />
-              <div className="flex items-center justify-between mt-2">
-                <span className="text-[10px] text-zinc-400">
+              <div className="flex items-center justify-between pt-2 border-t border-slate-50">
+                <span className="text-[10px] font-bold text-slate-300 tracking-widest">
                   {message.length}/{BULLETIN.maxMessageLength}
                 </span>
-                <div className="flex gap-2">
+                <div className="flex gap-3">
                   <button
                     type="button"
                     onClick={() => { setIsEditing(false); setMessage(""); }}
-                    className="text-xs text-zinc-400 hover:text-zinc-600 px-3 py-1.5 transition-colors"
+                    className="h-9 px-5 rounded-full text-[11px] font-bold text-slate-400 hover:text-slate-600 tracking-wider uppercase transition-all duration-300"
                   >
                     {t("common.cancel")}
                   </button>
@@ -143,7 +142,7 @@ export function BulletinBoard({ bulletins, currentUserId }: BulletinBoardProps) 
                     type="button"
                     onClick={handlePost}
                     disabled={!message.trim() || isSubmitting}
-                    className="text-xs text-white bg-zinc-900 hover:bg-zinc-700 disabled:bg-zinc-300 px-3 py-1.5 rounded-md transition-colors"
+                    className="h-9 px-7 rounded-full bg-brand-600 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
                   >
                     {isSubmitting ? t("common.processing") : t("bulletin.post")}
                   </button>
@@ -155,50 +154,52 @@ export function BulletinBoard({ bulletins, currentUserId }: BulletinBoardProps) 
       </AnimatePresence>
 
       {bulletins.length === 0 ? (
-        <p className="text-xs text-zinc-400 py-4">{t("bulletin.empty")}</p>
+        <div className="py-12 text-center">
+          <p className="text-sm text-slate-400 font-medium">{t("bulletin.empty")}</p>
+        </div>
       ) : (
-        <div className="space-y-3">
-          {bulletins.map((bulletin) => {
+        <div className="grid grid-cols-1 gap-4">
+          {bulletins.map((bulletin, index) => {
             const displayName = bulletin.profiles?.nickname || bulletin.profiles?.name || "";
             const isMine = bulletin.user_id === currentUserId;
 
             return (
               <m.div
                 key={bulletin.id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.2 }}
-                className="flex gap-3 group"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+                className="premium-surface rounded-2xl p-5 sm:p-6 flex gap-4 group relative"
               >
-                <Avatar className="w-8 h-8 rounded-full shrink-0">
+                <Avatar className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl border border-slate-100 shadow-sm shrink-0">
                   <OptimizedAvatarImage
                     src={bulletin.profiles?.avatar_url}
                     alt={displayName}
                     context="card"
                     fallback={
-                      <span className="text-[10px] text-zinc-400">
+                      <span className="text-[11px] font-bold text-slate-400">
                         {getInitials(displayName)}
                       </span>
                     }
-                    fallbackClassName="bg-zinc-50"
+                    fallbackClassName="bg-slate-50"
                   />
                 </Avatar>
 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium text-zinc-900 truncate">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-sm font-bold text-slate-900 truncate tracking-tight">
                       {displayName}
                     </span>
                     {bulletin.profiles?.room_number && (
-                      <span className="text-[10px] text-zinc-400">
-                        {bulletin.profiles.room_number}
+                      <span className="text-[10px] font-bold text-slate-400 tracking-wider">
+                        #{bulletin.profiles.room_number}
                       </span>
                     )}
-                    <span className="text-[10px] text-zinc-300">
+                    <span className="text-[10px] font-bold text-slate-300 tracking-tight ml-auto">
                       {formatTimeAgo(bulletin.updated_at)}
                     </span>
                   </div>
-                  <p className="text-sm text-zinc-600 mt-0.5 leading-relaxed">
+                  <p className="text-[15px] font-medium text-slate-600 leading-relaxed">
                     {bulletin.message}
                   </p>
                 </div>
@@ -208,7 +209,7 @@ export function BulletinBoard({ bulletins, currentUserId }: BulletinBoardProps) 
                     type="button"
                     onClick={handleDelete}
                     disabled={isSubmitting}
-                    className="text-[10px] text-zinc-300 hover:text-zinc-500 opacity-0 group-hover:opacity-100 transition-all self-start pt-0.5"
+                    className="absolute top-4 right-4 text-[10px] font-bold text-slate-200 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all uppercase tracking-widest p-2"
                   >
                     {t("common.delete")}
                   </button>
@@ -218,7 +219,6 @@ export function BulletinBoard({ bulletins, currentUserId }: BulletinBoardProps) 
           })}
         </div>
       )}
-
     </div>
   );
 }

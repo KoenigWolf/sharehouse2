@@ -1,5 +1,7 @@
 # Share House Portal - 改善計画書
 
+関連: [README.md](../README.md) / [DESIGN_GUIDELINES.md](./design-guidelines.md) / [CODING_GUIDELINES.md](./coding-guidelines.md)
+
 ## 進捗サマリー
 
 全フェーズ完了。

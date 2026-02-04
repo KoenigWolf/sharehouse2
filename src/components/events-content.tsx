@@ -103,14 +103,16 @@ export function EventsContent({ events, currentUserId }: EventsContentProps) {
   }, [t, router]);
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <div />
+    <div className="space-y-8">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold tracking-tight text-slate-900">
+          {t("events.title")}
+        </h2>
         {!isFormOpen && (
           <button
             type="button"
             onClick={() => { setIsFormOpen(true); setFeedback(null); }}
-            className="text-xs text-white bg-zinc-900 hover:bg-zinc-700 px-3 py-1.5 rounded-md transition-colors"
+            className="h-9 px-5 rounded-full bg-brand-600 hover:bg-brand-700 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
           >
             {t("events.create")}
           </button>
@@ -124,11 +126,10 @@ export function EventsContent({ events, currentUserId }: EventsContentProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.2 }}
-            className={`text-xs px-3 py-2 mb-4 border-l-2 ${
-              feedback.type === "success"
-                ? "bg-success-bg border-success-border text-success"
-                : "bg-error-bg border-error-border text-error"
-            }`}
+            className={`text-xs font-medium px-4 py-3 rounded-xl border-l-4 shadow-sm ${feedback.type === "success"
+                ? "bg-success-bg/50 border-success-border text-success"
+                : "bg-error-bg/50 border-error-border text-error"
+              }`}
           >
             {feedback.message}
           </m.div>
@@ -141,12 +142,12 @@ export function EventsContent({ events, currentUserId }: EventsContentProps) {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden mb-6"
+            transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+            className="overflow-hidden"
           >
-            <div className="border border-zinc-200 rounded-lg p-4 space-y-3">
-              <div>
-                <label className="block text-xs text-zinc-500 mb-1">
+            <div className="premium-surface rounded-3xl p-6 sm:p-8 space-y-5">
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 tracking-wider uppercase ml-1">
                   {t("events.titleLabel")}
                 </label>
                 <input
@@ -155,13 +156,13 @@ export function EventsContent({ events, currentUserId }: EventsContentProps) {
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder={t("events.titlePlaceholder")}
                   maxLength={EVENTS.maxTitleLength}
-                  className="w-full h-10 px-3 text-sm text-zinc-900 placeholder:text-zinc-300 border border-zinc-200 rounded-md focus:border-zinc-900 focus:outline-none transition-colors"
+                  className="w-full h-11 px-4 bg-white border border-slate-200 rounded-2xl text-slate-700 text-sm font-medium placeholder:text-slate-300 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs text-zinc-500 mb-1">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="block text-[10px] font-bold text-slate-400 tracking-wider uppercase ml-1">
                     {t("events.dateLabel")}
                   </label>
                   <input
@@ -169,11 +170,11 @@ export function EventsContent({ events, currentUserId }: EventsContentProps) {
                     value={eventDate}
                     onChange={(e) => setEventDate(e.target.value)}
                     min={new Date().toISOString().split("T")[0]}
-                    className="w-full h-10 px-3 text-sm text-zinc-900 border border-zinc-200 rounded-md focus:border-zinc-900 focus:outline-none transition-colors"
+                    className="w-full h-11 px-4 bg-white border border-slate-200 rounded-2xl text-slate-700 text-sm font-medium focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
                   />
                 </div>
-                <div>
-                  <label className="block text-xs text-zinc-500 mb-1">
+                <div className="space-y-2">
+                  <label className="block text-[10px] font-bold text-slate-400 tracking-wider uppercase ml-1">
                     {t("events.timeLabel")}
                   </label>
                   <input
@@ -181,13 +182,13 @@ export function EventsContent({ events, currentUserId }: EventsContentProps) {
                     value={eventTime}
                     onChange={(e) => setEventTime(e.target.value)}
                     placeholder={t("events.timePlaceholder")}
-                    className="w-full h-10 px-3 text-sm text-zinc-900 placeholder:text-zinc-300 border border-zinc-200 rounded-md focus:border-zinc-900 focus:outline-none transition-colors"
+                    className="w-full h-11 px-4 bg-white border border-slate-200 rounded-2xl text-slate-700 text-sm font-medium placeholder:text-slate-300 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs text-zinc-500 mb-1">
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 tracking-wider uppercase ml-1">
                   {t("events.locationLabel")}
                 </label>
                 <input
@@ -195,12 +196,12 @@ export function EventsContent({ events, currentUserId }: EventsContentProps) {
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder={t("events.locationPlaceholder")}
-                  className="w-full h-10 px-3 text-sm text-zinc-900 placeholder:text-zinc-300 border border-zinc-200 rounded-md focus:border-zinc-900 focus:outline-none transition-colors"
+                  className="w-full h-11 px-4 bg-white border border-slate-200 rounded-2xl text-slate-700 text-sm font-medium placeholder:text-slate-300 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
                 />
               </div>
 
-              <div>
-                <label className="block text-xs text-zinc-500 mb-1">
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 tracking-wider uppercase ml-1">
                   {t("events.descriptionLabel")}
                 </label>
                 <textarea
@@ -209,11 +210,11 @@ export function EventsContent({ events, currentUserId }: EventsContentProps) {
                   placeholder={t("events.descriptionPlaceholder")}
                   maxLength={EVENTS.maxDescriptionLength}
                   rows={2}
-                  className="w-full px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-300 border border-zinc-200 rounded-md focus:border-zinc-900 focus:outline-none resize-none transition-colors"
+                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-700 text-sm font-medium placeholder:text-slate-300 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300 resize-none"
                 />
               </div>
 
-              <div className="flex justify-end gap-2">
+              <div className="flex justify-end gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => {
@@ -221,7 +222,7 @@ export function EventsContent({ events, currentUserId }: EventsContentProps) {
                     setTitle(""); setEventDate(""); setEventTime("");
                     setLocation(""); setDescription("");
                   }}
-                  className="text-xs text-zinc-400 hover:text-zinc-600 px-3 py-1.5 transition-colors"
+                  className="h-10 px-6 rounded-full text-[11px] font-bold text-slate-400 hover:text-slate-600 tracking-wider uppercase transition-all duration-300"
                 >
                   {t("common.cancel")}
                 </button>
@@ -229,7 +230,7 @@ export function EventsContent({ events, currentUserId }: EventsContentProps) {
                   type="button"
                   onClick={handleCreate}
                   disabled={!title.trim() || !eventDate || isSubmitting}
-                  className="text-xs text-white bg-zinc-900 hover:bg-zinc-700 disabled:bg-zinc-300 px-3 py-1.5 rounded-md transition-colors"
+                  className="h-10 px-8 rounded-full bg-brand-600 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
                 >
                   {isSubmitting ? t("events.creating") : t("events.create")}
                 </button>
@@ -240,16 +241,21 @@ export function EventsContent({ events, currentUserId }: EventsContentProps) {
       </AnimatePresence>
 
       {events.length === 0 ? (
-        <p className="text-xs text-zinc-400 py-8 text-center">{t("events.empty")}</p>
+        <div className="py-20 text-center">
+          <p className="text-sm text-slate-400 font-medium">{t("events.empty")}</p>
+        </div>
       ) : (
-        <div className="space-y-6">
-          {Array.from(grouped.entries()).map(([date, dateEvents]) => (
-            <div key={date}>
-              <h3 className="text-xs font-medium text-zinc-400 mb-3">
-                {formatEventDate(date, t)}
-              </h3>
-              <div className="space-y-3">
-                {dateEvents.map((event) => {
+        <div className="space-y-10">
+          {Array.from(grouped.entries()).map(([date, dateEvents], groupIndex) => (
+            <div key={date} className="space-y-5">
+              <div className="flex items-center gap-4">
+                <h3 className="text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase whitespace-nowrap">
+                  {formatEventDate(date, t)}
+                </h3>
+                <div className="flex-1 h-px bg-slate-100" />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {dateEvents.map((event, eventIndex) => {
                   const creatorName = event.profiles?.nickname || event.profiles?.name || "";
                   const isMine = event.user_id === currentUserId;
                   const isAttending = event.event_attendees.some(
@@ -260,83 +266,84 @@ export function EventsContent({ events, currentUserId }: EventsContentProps) {
                   return (
                     <m.div
                       key={event.id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.2 }}
-                      className="border border-zinc-200 rounded-lg p-4"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4, delay: (groupIndex * 0.1) + (eventIndex * 0.05) }}
+                      className="premium-surface rounded-3xl p-6 relative group"
                     >
-                      <div className="flex items-start justify-between mb-2">
-                        <h4 className="text-sm font-medium text-zinc-900">
+                      <div className="flex items-start justify-between mb-3">
+                        <h4 className="text-base font-bold text-slate-900 tracking-tight">
                           {event.title}
                         </h4>
                         {isMine && (
                           <button
                             type="button"
                             onClick={() => handleDelete(event.id)}
-                            className="text-[10px] text-zinc-300 hover:text-zinc-500 transition-colors shrink-0 ml-2"
+                            className="text-[10px] font-bold text-slate-300 hover:text-rose-500 tracking-widest uppercase transition-all"
                           >
                             {t("common.delete")}
                           </button>
                         )}
                       </div>
 
-                      <div className="flex flex-wrap gap-3 text-xs text-zinc-500 mb-3">
+                      <div className="flex flex-wrap gap-4 text-[11px] font-semibold text-slate-500 mb-4">
                         {event.event_time && (
-                          <span className="flex items-center gap-1">
-                            <Clock size={12} />
+                          <span className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg">
+                            <Clock size={12} className="text-brand-500" />
                             {event.event_time}
                           </span>
                         )}
                         {event.location && (
-                          <span className="flex items-center gap-1">
-                            <MapPin size={12} />
+                          <span className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg">
+                            <MapPin size={12} className="text-brand-500" />
                             {event.location}
                           </span>
                         )}
                       </div>
 
                       {event.description && (
-                        <p className="text-xs text-zinc-500 mb-3 leading-relaxed">
+                        <p className="text-sm text-slate-600 mb-5 leading-relaxed font-medium">
                           {event.description}
                         </p>
                       )}
 
-                      <div className="flex items-center gap-3 text-xs">
-                        <Avatar className="w-5 h-5 rounded-full">
-                          <OptimizedAvatarImage
-                            src={event.profiles?.avatar_url}
-                            alt={creatorName}
-                            context="card"
-                            fallback={
-                              <span className="text-[8px] text-zinc-400">
-                                {getInitials(creatorName)}
-                              </span>
-                            }
-                            fallbackClassName="bg-zinc-50"
-                          />
-                        </Avatar>
-                        <span className="text-zinc-400">
-                          {t("events.createdBy", { name: creatorName })}
-                        </span>
-                      </div>
+                      <div className="flex items-center justify-between mt-auto">
+                        <div className="flex items-center gap-2.5">
+                          <Avatar className="w-6 h-6 rounded-lg border border-slate-100 shadow-sm">
+                            <OptimizedAvatarImage
+                              src={event.profiles?.avatar_url}
+                              alt={creatorName}
+                              context="card"
+                              fallback={
+                                <span className="text-[9px] font-bold text-slate-400">
+                                  {getInitials(creatorName)}
+                                </span>
+                              }
+                              fallbackClassName="bg-slate-50"
+                            />
+                          </Avatar>
+                          <span className="text-[11px] font-bold text-slate-400 tracking-wide">
+                            {creatorName}
+                          </span>
+                        </div>
 
-                      <div className="flex items-center justify-between mt-3 pt-3 border-t border-zinc-100">
-                        <span className="text-xs text-zinc-400">
-                          {attendeeCount > 0
-                            ? t("events.attendees", { count: attendeeCount })
-                            : t("events.noAttendees")}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => handleToggleAttendance(event.id)}
-                          className={`text-xs px-3 py-1 rounded-md transition-colors ${
-                            isAttending
-                              ? "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
-                              : "bg-zinc-900 text-white hover:bg-zinc-700"
-                          }`}
-                        >
-                          {isAttending ? t("events.attending") : t("events.attend")}
-                        </button>
+                        <div className="flex items-center gap-4">
+                          <span className="text-[10px] font-bold text-slate-400 tracking-wider">
+                            {attendeeCount > 0
+                              ? t("events.attendees", { count: attendeeCount })
+                              : t("events.noAttendees")}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleToggleAttendance(event.id)}
+                            className={`h-8 px-4 rounded-full text-[10px] font-bold tracking-wider uppercase transition-all duration-300 ${isAttending
+                                ? "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                                : "bg-brand-600 text-white hover:bg-brand-700 shadow-sm shadow-brand-100"
+                              }`}
+                          >
+                            {isAttending ? t("events.attending") : t("events.attend")}
+                          </button>
+                        </div>
                       </div>
                     </m.div>
                   );
