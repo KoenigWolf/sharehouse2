@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import type { Provider } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { m, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -408,16 +409,15 @@ export default function LoginPage() {
                       : t("auth.loginWithLine")}
                 </Button>
                 <div className="mt-8 pt-6 border-t border-[#e4e4e7] text-center">
-                  <button
-                    type="button"
-                    onClick={() => router.push("/residents")}
-                    className="text-sm font-medium text-brand-600 hover:text-brand-700 transition-colors flex items-center justify-center gap-2 mx-auto"
+                  <Link
+                    href="/residents"
+                    className="text-sm font-medium text-brand-600 hover:text-brand-700 transition-colors flex items-center justify-center gap-2 mx-auto inline-flex"
                   >
                     {t("auth.browseAsGuest")}
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="mt-0.5">
                       <path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
-                  </button>
+                  </Link>
                 </div>
               </div>
             )}
