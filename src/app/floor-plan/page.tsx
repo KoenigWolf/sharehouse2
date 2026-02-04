@@ -5,8 +5,7 @@ import { Footer } from "@/components/footer";
 import { MobileNav } from "@/components/mobile-nav";
 import { FloorPlanContent } from "@/components/floor-plan-content";
 import { getServerTranslator } from "@/lib/i18n/server";
-import { Profile } from "@/domain/profile";
-import { mockProfiles } from "@/lib/mock-data";
+import { getProfilesWithMock } from "@/lib/residents/queries";
 
 export default async function FloorPlanPage() {
   const t = await getServerTranslator();
@@ -20,22 +19,7 @@ export default async function FloorPlanPage() {
     redirect("/login");
   }
 
-  const { data } = await supabase
-    .from("profiles")
-    .select("id, name, nickname, room_number, avatar_url, move_in_date, occupation")
-    .order("room_number");
-
-  const dbProfiles = (data as Profile[]) || [];
-
-  const registeredRoomNumbers = new Set(
-    dbProfiles.filter((p) => p.room_number).map((p) => p.room_number)
-  );
-
-  const remainingMockProfiles = mockProfiles.filter(
-    (mock) => !registeredRoomNumbers.has(mock.room_number)
-  );
-
-  const profiles = [...dbProfiles, ...remainingMockProfiles];
+  const { profiles } = await getProfilesWithMock(supabase, "room_number");
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
