@@ -684,8 +684,16 @@ export const ja = {
     adminUsers: "管理者",
     toggleAdmin: "管理者権限",
     confirmToggleAdmin: "{{name}}さんの管理者権限を変更しますか？",
+    confirmToggleAdminTitle: "管理者権限の変更",
+    confirmToggleAdminDescription:
+      "{{name}}さんの管理者権限を{{action}}しますか？",
+    grantAdmin: "付与",
+    revokeAdmin: "解除",
+    toggleAdminGrant: "権限を付与",
+    toggleAdminRevoke: "権限を解除",
     deleteAccount: "アカウント削除",
-    confirmDelete: "{{name}}さんのアカウントを本当に削除しますか？この操作は取り消せません。",
+    confirmDelete:
+      "{{name}}さんのアカウントを本当に削除しますか？この操作は取り消せません。",
     editingAs: "{{name}}さんのプロフィールを編集中（管理者）",
     adminBadge: "管理者",
     noUsers: "ユーザーが見つかりません",

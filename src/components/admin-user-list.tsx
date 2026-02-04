@@ -27,6 +27,9 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
   const [deleteTarget, setDeleteTarget] = useState<Profile | null>(null);
   const [deleteError, setDeleteError] = useState("");
+  const [adminToggleTarget, setAdminToggleTarget] = useState<Profile | null>(
+    null,
+  );
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -41,30 +44,33 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
     );
   }, [profiles, search, deletedIds]);
 
-  const handleToggleAdmin = useCallback(
-    async (profile: Profile) => {
-      const confirmed = window.confirm(
-        t("admin.confirmToggleAdmin", { name: profile.name }),
-      );
-      if (!confirmed) return;
+  const openAdminToggleDialog = useCallback((profile: Profile) => {
+    setAdminToggleTarget(profile);
+  }, []);
 
-      setLoadingId(profile.id);
-      setError("");
-      setSuccess("");
+  const cancelAdminToggle = useCallback(() => {
+    setAdminToggleTarget(null);
+  }, []);
 
-      const result = await toggleAdminStatus(profile.id);
+  const confirmAdminToggle = useCallback(async () => {
+    if (!adminToggleTarget) return;
 
-      if ("error" in result) {
-        setError(result.error);
-      } else {
-        setSuccess(t("admin.toggleSuccess"));
-        router.refresh();
-      }
+    setLoadingId(adminToggleTarget.id);
+    setError("");
+    setSuccess("");
 
-      setLoadingId(null);
-    },
-    [t, router],
-  );
+    const result = await toggleAdminStatus(adminToggleTarget.id);
+
+    if ("error" in result) {
+      setError(result.error);
+    } else {
+      setSuccess(t("admin.toggleSuccess"));
+      router.refresh();
+    }
+
+    setLoadingId(null);
+    setAdminToggleTarget(null);
+  }, [adminToggleTarget, t, router]);
 
   const openDeleteDialog = useCallback((profile: Profile) => {
     setDeleteError("");
@@ -228,10 +234,12 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
                         type="button"
                         variant="outline"
                         size="xs"
-                        onClick={() => handleToggleAdmin(profile)}
+                        onClick={() => openAdminToggleDialog(profile)}
                         disabled={isLoading}
                       >
-                        {t("admin.toggleAdmin")}
+                        {profile.is_admin
+                          ? t("admin.toggleAdminRevoke")
+                          : t("admin.toggleAdminGrant")}
                       </Button>
                       <Button
                         type="button"
@@ -250,6 +258,50 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
           })}
         </AnimatePresence>
       </div>
+
+      <ConfirmDialog
+        isOpen={adminToggleTarget !== null}
+        onConfirm={confirmAdminToggle}
+        onCancel={cancelAdminToggle}
+        title={t("admin.confirmToggleAdminTitle")}
+        description={t("admin.confirmToggleAdminDescription", {
+          name: adminToggleTarget?.name ?? "",
+          action: adminToggleTarget?.is_admin
+            ? t("admin.revokeAdmin")
+            : t("admin.grantAdmin"),
+        })}
+        confirmLabel={
+          adminToggleTarget?.is_admin
+            ? t("admin.toggleAdminRevoke")
+            : t("admin.toggleAdminGrant")
+        }
+        cancelLabel={t("common.cancel")}
+        isLoading={loadingId === adminToggleTarget?.id}
+      >
+        {adminToggleTarget && (
+          <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+            <Avatar className="h-10 w-10 shrink-0">
+              <OptimizedAvatarImage
+                src={adminToggleTarget.avatar_url}
+                alt={adminToggleTarget.name}
+              />
+              <span className="flex h-full w-full items-center justify-center bg-slate-100 text-xs text-slate-400">
+                {getInitials(adminToggleTarget.name)}
+              </span>
+            </Avatar>
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-slate-900 truncate">
+                {adminToggleTarget.name}
+              </p>
+              {adminToggleTarget.room_number && (
+                <p className="text-xs text-slate-400">
+                  {adminToggleTarget.room_number}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+      </ConfirmDialog>
 
       <ConfirmDialog
         isOpen={deleteTarget !== null}
