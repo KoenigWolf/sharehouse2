@@ -4,8 +4,9 @@ import { memo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { Users, MessageCircle, User, Image, Calendar } from "lucide-react";
+import { Users, MessageCircle, User, Image, Calendar, LogIn } from "lucide-react";
 import { useI18n } from "@/hooks/use-i18n";
+import { useUser } from "@/hooks/use-user";
 import type { TranslationKey } from "@/lib/i18n";
 
 const NAV_ITEMS: {
@@ -39,13 +40,33 @@ export const MobileNav = memo(function MobileNav() {
     return pathname === item.href;
   };
 
+  const { userId } = useUser();
+
+  const filteredItems = NAV_ITEMS.filter(item => {
+    if (!userId) {
+      // 未ログイン時は「住民」と「マイページ(ログインへの導線)」のみ表示
+      return item.href === "/residents" || item.href === "/settings";
+    }
+    return true;
+  }).map(item => {
+    if (!userId && item.href === "/settings") {
+      return {
+        ...item,
+        href: "/login",
+        labelKey: "auth.login" as TranslationKey,
+        icon: LogIn
+      };
+    }
+    return item;
+  });
+
   return (
     <nav
       className="fixed bottom-0 left-0 right-0 z-50 sm:hidden glass border-t border-slate-200/50 pb-safe shadow-2xl shadow-slate-900/10"
       aria-label={t("a11y.mainNavigation")}
     >
       <div className="flex items-center justify-around h-16 sm:h-20">
-        {NAV_ITEMS.map((item) => {
+        {filteredItems.map((item) => {
           const active = isActive(item);
           const Icon = item.icon;
 

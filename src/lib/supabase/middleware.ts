@@ -38,10 +38,17 @@ export async function updateSession(request: NextRequest) {
   const isResidentsPage = pathname.startsWith("/residents");
   const isLoginPage = pathname.startsWith("/login");
 
-  // 未認証ユーザーはログインページへリダイレクト（ログイン/コールバック/住民一覧は除外）
+  // 未認証ユーザーの挙動
   if (!user && !isLoginPage && !isAuthCallback && !isResidentsPage) {
     const url = request.nextUrl.clone();
-    url.pathname = "/login";
+
+    // ルートパスへのアクセスの場合は /residents (チラ見せ) へ
+    if (pathname === "/") {
+      url.pathname = "/residents";
+    } else {
+      url.pathname = "/login";
+    }
+
     return NextResponse.redirect(url);
   }
 
