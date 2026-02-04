@@ -4,7 +4,16 @@ import { memo } from "react";
 import { BlurredImage } from "./blurred-image";
 import { MaskedText } from "./masked-text";
 import { useI18n } from "@/hooks/use-i18n";
+import type { TranslationKey } from "@/lib/i18n";
 import type { PublicProfileTeaser } from "@/lib/residents/queries";
+
+/** 動的な profileOptions キーを TranslationKey に変換する */
+function profileOptionKey(
+  category: "ageRange" | "industry",
+  value: string,
+): TranslationKey {
+  return `profileOptions.${category}.${value}` as TranslationKey;
+}
 
 interface ResidentTeaserCardProps {
   profile: PublicProfileTeaser;
@@ -27,7 +36,7 @@ export const ResidentTeaserCard = memo(function ResidentTeaserCard({
           <div className="absolute top-4 left-4">
             {profile.age_range && (
               <span className="glass px-3 py-1 rounded-full text-[10px] font-bold text-slate-700 tracking-wider">
-                {t(`profileOptions.ageRange.${profile.age_range}` as Parameters<typeof t>[0])}
+                {t(profileOptionKey("ageRange", profile.age_range))}
               </span>
             )}
           </div>
@@ -43,7 +52,7 @@ export const ResidentTeaserCard = memo(function ResidentTeaserCard({
 
           {profile.industry && (
             <p className="text-xs font-medium text-slate-400 mb-4">
-              {t(`profileOptions.industry.${profile.industry}` as Parameters<typeof t>[0])}
+              {t(profileOptionKey("industry", profile.industry))}
             </p>
           )}
 

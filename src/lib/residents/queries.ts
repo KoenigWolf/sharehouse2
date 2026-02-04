@@ -68,7 +68,7 @@ export async function getPublicProfilesWithMock(
 
   // モックデータもマスクして追加（一貫性のため）
   const remainingMockTeasers: PublicProfileTeaser[] = mockProfiles
-    .filter((mock) => !dbTeasers.some((db) => db.masked_name === ((mock.name?.[0] || "") + "***")))
+    .filter((mock) => !dbTeasers.some((db) => db.id === mock.id))
     .map((mock) => ({
       id: mock.id,
       masked_name: (mock.name?.[0] || "") + "***",
