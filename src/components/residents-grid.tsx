@@ -155,7 +155,10 @@ export function ResidentsGrid({
 
   const teaTimeSet = useMemo(() => new Set(teaTimeParticipants), [teaTimeParticipants]);
 
-  if (profiles.length === 0) {
+  const totalCount = isPublicTeaser ? publicProfiles.length : profiles.length;
+  const displayCount = isPublicTeaser ? publicProfiles.length : filteredAndSortedProfiles.length;
+
+  if (totalCount === 0) {
     return (
       <div className="flex-1 flex items-center justify-center">
         <p className="text-[#71717a] text-sm">{t("residents.noResidents")}</p>
@@ -172,9 +175,9 @@ export function ResidentsGrid({
               {t("residents.title")}
             </h2>
             <p className="text-[11px] sm:text-xs text-[#a1a1aa] mt-1">
-              {t("residents.countLabel", { count: filteredAndSortedProfiles.length })}
-              {(searchQuery || floorFilter !== "all") &&
-                ` ${t("residents.countOf", { total: profiles.length })}`}
+              {t("residents.countLabel", { count: displayCount })}
+              {(searchQuery || floorFilter !== "all") && !isPublicTeaser &&
+                ` ${t("residents.countOf", { total: totalCount })}`}
             </p>
           </div>
 
