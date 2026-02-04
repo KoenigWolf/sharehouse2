@@ -111,4 +111,8 @@ export interface Profile {
   sns_linkedin?: string | null;
   sns_github?: string | null;
   cover_photo_url?: string | null;
+  vibe?: {
+    message: string;
+    updated_at: string;
+  } | null;
 }

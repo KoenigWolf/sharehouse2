@@ -22,13 +22,13 @@ export default async function BulletinPage() {
   const bulletins = await getBulletins();
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
       <Header />
 
       <main className="flex-1 pb-20 sm:pb-0">
         <div className="container mx-auto px-4 sm:px-6 py-5 sm:py-8 max-w-4xl">
           <div className="mb-6 sm:mb-8">
-            <h1 className="text-xl text-[#18181b] tracking-wide font-light">
+            <h1 className="text-xl text-slate-900 tracking-tight font-bold">
               {t("bulletin.title")}
             </h1>
           </div>

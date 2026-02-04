@@ -45,29 +45,39 @@ export function BulletinBoard({ bulletins, currentUserId, isTeaser = false }: Bu
     setIsSubmitting(true);
     setFeedback(null);
 
-    const result = await upsertBulletin(message);
-    setIsSubmitting(false);
+    try {
+      const result = await upsertBulletin(message);
 
-    if ("error" in result) {
-      setFeedback({ type: "error", message: result.error });
-      return;
+      if ("error" in result) {
+        setFeedback({ type: "error", message: result.error });
+        return;
+      }
+      setIsEditing(false);
+      setMessage("");
+      router.refresh();
+    } catch {
+      setFeedback({ type: "error", message: t("errors.serverError") });
+    } finally {
+      setIsSubmitting(false);
     }
-    setIsEditing(false);
-    setMessage("");
-    router.refresh();
-  }, [message, isSubmitting, router]);
+  }, [message, isSubmitting, router, t]);
 
   const handleDelete = useCallback(async () => {
     if (!confirm(t("bulletin.deleteConfirm"))) return;
     setIsSubmitting(true);
 
-    const result = await deleteBulletin();
-    setIsSubmitting(false);
+    try {
+      const result = await deleteBulletin();
 
-    if ("error" in result) {
-      setFeedback({ type: "error", message: result.error });
-    } else {
-      router.refresh();
+      if ("error" in result) {
+        setFeedback({ type: "error", message: result.error });
+      } else {
+        router.refresh();
+      }
+    } catch {
+      setFeedback({ type: "error", message: t("errors.serverError") });
+    } finally {
+      setIsSubmitting(false);
     }
   }, [t, router]);
 
@@ -127,7 +137,7 @@ export function BulletinBoard({ bulletins, currentUserId, isTeaser = false }: Bu
                 rows={3}
                 className="w-full text-[15px] font-medium text-slate-700 placeholder:text-slate-300 bg-transparent resize-none focus:outline-none"
               />
-              <div className="flex items-center justify-between pt-2 border-t border-slate-50">
+              <div className="flex items-center justify-between pt-2 border-t border-slate-100">
                 <span className="text-[10px] font-bold text-slate-300 tracking-widest">
                   {message.length}/{BULLETIN.maxMessageLength}
                 </span>
@@ -169,7 +179,7 @@ export function BulletinBoard({ bulletins, currentUserId, isTeaser = false }: Bu
                 key={bulletin.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.05 }}
+                transition={{ duration: 0.4, delay: index * 0.05, ease: [0.23, 1, 0.32, 1] }}
                 className="premium-surface rounded-2xl p-5 sm:p-6 flex gap-4 group relative"
               >
                 <Avatar className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl border border-slate-100 shadow-sm shrink-0 overflow-hidden">
@@ -211,7 +221,7 @@ export function BulletinBoard({ bulletins, currentUserId, isTeaser = false }: Bu
                     type="button"
                     onClick={handleDelete}
                     disabled={isSubmitting}
-                    className="absolute top-4 right-4 text-[10px] font-bold text-slate-200 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all uppercase tracking-widest p-2"
+                    className="absolute top-4 right-4 text-[10px] font-bold text-slate-200 hover:text-error opacity-0 group-hover:opacity-100 transition-all uppercase tracking-widest p-2"
                   >
                     {t("common.delete")}
                   </button>

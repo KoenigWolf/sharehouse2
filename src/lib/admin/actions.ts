@@ -246,6 +246,9 @@ export async function adminGetUserEmail(
 ): Promise<EmailResponse> {
   const t = await getServerTranslator();
 
+  const originError = await enforceAllowedOrigin(t, "adminGetUserEmail");
+  if (originError) return { error: originError };
+
   const adminError = await requireAdmin(t);
   if (adminError) return { error: adminError };
 

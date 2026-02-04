@@ -38,8 +38,8 @@ const ANIMATION_VARIANTS: Variants = {
 } as const;
 
 const CARD_HEIGHTS = {
-  mobile: "h-[88px]",
-  desktop: "sm:h-[100px]",
+  mobile: "min-h-[88px]",
+  desktop: "sm:min-h-[100px]",
 } as const;
 
 const NEW_RESIDENT_THRESHOLD_MONTHS = 3;
@@ -315,12 +315,15 @@ export const ResidentCard = memo(function ResidentCard({
             />
           </Avatar>
 
-          <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+          <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
             {isMock && !isCurrentUser && (
               <Badge variant="muted" className="bg-white/80 backdrop-blur-sm border-none text-[10px] font-medium uppercase tracking-wider">{t("common.unregistered")}</Badge>
             )}
             {isNewResident && !isMock && (
               <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-brand-600 text-white text-[10px] font-bold tracking-wider">{t("residents.badgeNew")}</span>
+            )}
+            {profile.mbti && !isMock && (
+              <Badge variant="muted" className="glass border-white/40 text-slate-700 text-[10px] font-semibold">{profile.mbti}</Badge>
             )}
           </div>
 
@@ -335,23 +338,21 @@ export const ResidentCard = memo(function ResidentCard({
             )}
           </div>
 
-          {profile.mbti && !isMock && (
-            <div className="absolute bottom-3 right-3">
-              <Badge variant="muted" className="glass border-white/40 text-slate-700 text-[10px] font-semibold">{profile.mbti}</Badge>
-            </div>
-          )}
 
-          {hasSns && !isMock && (
-            <div className="absolute bottom-3 left-3 flex items-center gap-1.5">
-              {snsLinks.slice(0, 3).map((link) => (
-                <span
-                  key={link.platform}
-                  className="w-7 h-7 glass border-white/40 rounded-lg flex items-center justify-center text-slate-600 shadow-sm"
-                  aria-label={link.platform}
-                >
-                  <SnsIcon platform={link.platform} />
-                </span>
-              ))}
+          {profile.vibe?.message && !isMock && (
+            <div className="absolute inset-x-3 bottom-3 z-10">
+              <m.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white/90 backdrop-blur-md rounded-xl p-2.5 shadow-sm border border-white/50"
+              >
+                <div className="relative">
+                  <div className="absolute -top-4 left-2 w-0 h-0 border-8 border-transparent border-b-white/90" />
+                  <p className="text-[10px] sm:text-[11px] font-medium text-slate-800 line-clamp-2 leading-snug">
+                    {profile.vibe.message}
+                  </p>
+                </div>
+              </m.div>
             </div>
           )}
 
@@ -361,7 +362,7 @@ export const ResidentCard = memo(function ResidentCard({
                 variants={ANIMATION_VARIANTS}
                 initial="hidden"
                 whileHover="visible"
-                className="absolute inset-0 bg-brand-900/40 backdrop-blur-[2px] hidden sm:flex flex-col justify-center items-center p-6 opacity-0 hover:opacity-100 transition-opacity duration-300"
+                className="absolute inset-0 bg-brand-900/60 backdrop-blur-[3px] hidden sm:flex flex-col justify-center items-center p-6 opacity-0 hover:opacity-100 transition-opacity duration-300 z-20"
               >
                 <div className="space-y-4 w-full">
                   {residenceDuration && (
@@ -378,6 +379,18 @@ export const ResidentCard = memo(function ResidentCard({
                     <OverlayInfoRow icon={OverlayIcons.Clock}>
                       <span className="font-medium text-white text-sm">{t(`profileOptions.dailyRhythm.${profile.daily_rhythm}` as Parameters<typeof t>[0])}</span>
                     </OverlayInfoRow>
+                  )}
+                  {hasSns && (
+                    <div className="flex items-center gap-2 pt-2 border-t border-white/20 mt-2">
+                      {snsLinks.map((link) => (
+                        <span
+                          key={link.platform}
+                          className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center text-white"
+                        >
+                          <SnsIcon platform={link.platform} />
+                        </span>
+                      ))}
+                    </div>
                   )}
                 </div>
               </m.div>
