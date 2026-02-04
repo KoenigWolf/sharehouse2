@@ -78,7 +78,7 @@ export function WifiInfoForm({ initialData, onSave, onCancel }: WifiInfoFormProp
       className="space-y-4"
     >
       {error && (
-        <div className="py-2 px-3 border border-red-200 bg-red-50 text-xs text-red-600">
+        <div className="py-2 px-3 border border-error-border bg-error-bg text-xs text-error">
           {error}
         </div>
       )}

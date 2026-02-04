@@ -308,11 +308,11 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.2 }}
               className={`mb-4 py-3 px-4 ${feedback.type === "error"
-                ? "bg-[#fef2f2] border-l-2 border-[#e5a0a0]"
-                : "bg-[#f0fdf4] border-l-2 border-[#93c5a0]"
+                ? "bg-error-bg border-l-2 border-error-border"
+                : "bg-success-bg border-l-2 border-success-border"
                 }`}
             >
-              <p className={`text-sm ${feedback.type === "error" ? "text-[#8b4040]" : "text-[#3d6b4a]"
+              <p className={`text-sm ${feedback.type === "error" ? "text-error" : "text-success"
                 }`}>
                 {feedback.message}
               </p>

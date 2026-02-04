@@ -62,7 +62,7 @@ export function GarbageScheduleView({
   return (
     <div className="space-y-6">
       {error && (
-        <div className="py-3 px-4 border-l-2 border-[#e5a0a0] bg-[#fef2f2] text-sm text-[#8b4040]">
+        <div className="py-3 px-4 border-l-2 border-error-border bg-error-bg text-sm text-error">
           {error}
         </div>
       )}

@@ -15,8 +15,8 @@ const statusColorMap: Record<UploadItemStatus, string> = {
   pending: "text-[#a1a1aa]",
   compressing: "text-[#71717a]",
   uploading: "text-[#71717a]",
-  done: "text-[#3d6b4a]",
-  error: "text-[#8b4040]",
+  done: "text-success",
+  error: "text-error",
 };
 
 function getStatusText(status: UploadItemStatus, t: ReturnType<typeof useI18n>): string {

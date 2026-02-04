@@ -357,8 +357,8 @@ export function ProfileDetail({
           {isOwnProfile && feedback && (
             <div
               className={`absolute top-3 left-3 right-3 sm:left-auto sm:right-3 sm:max-w-xs px-3 py-2 text-xs border-l-2 ${feedback.type === "success"
-                ? "bg-[#f0fdf4]/95 border-[#93c5a0] text-[#3d6b4a]"
-                : "bg-[#fef2f2]/95 border-[#e5a0a0] text-[#8b4040]"
+                ? "bg-success-bg/95 border-success-border text-success"
+                : "bg-error-bg/95 border-error-border text-error"
                 } backdrop-blur-sm`}
             >
               {feedback.message}

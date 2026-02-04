@@ -141,8 +141,8 @@ export function RoomPhotoManager({
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.2 }}
               className={`py-3 px-4 rounded-2xl border-l-4 ${activeFeedback.type === "error"
-                ? "bg-red-50/50 border-red-200 text-red-600"
-                : "bg-green-50/50 border-green-200 text-green-600"
+                ? "bg-error-bg/50 border-error-border text-error"
+                : "bg-success-bg/50 border-success-border text-success"
                 }`}
             >
               <p className="text-xs font-medium">{activeFeedback.message}</p>
@@ -175,7 +175,7 @@ export function RoomPhotoManager({
                 onClick={() => handleDelete(photo.id)}
                 disabled={deletingId === photo.id}
                 aria-label={t("roomPhotos.delete")}
-                className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-slate-500 opacity-0 group-hover:opacity-100 focus:opacity-100 hover:bg-red-50 hover:text-red-500 shadow-sm transition-all duration-300 rounded-lg scale-90 group-hover:scale-100"
+                className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-slate-500 opacity-0 group-hover:opacity-100 focus:opacity-100 hover:bg-error-bg hover:text-error shadow-sm transition-all duration-300 rounded-lg scale-90 group-hover:scale-100"
               >
                 {deletingId === photo.id ? (
                   <Spinner size="xs" variant="dark" />

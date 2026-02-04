@@ -112,7 +112,7 @@ function Badge({
   const variantStyles: Record<BadgeVariant, string> = {
     default: "bg-[#f4f4f5] text-[#a1a1aa]",
     dark: "bg-[#18181b] text-white",
-    success: "bg-[#f0fdf4] text-[#3d6b4a] border border-[#93c5a0]",
+    success: "bg-success-bg text-success border border-success-border",
     muted: "bg-white/90 backdrop-blur-sm text-[#71717a]",
   };
 

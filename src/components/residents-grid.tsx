@@ -230,13 +230,13 @@ export function ResidentsGrid({
                     label={t("residents.statsNew")}
                     value={stats.newResidents}
                     subValue={t("residents.statsNewSub")}
-                    color="#3d6b4a"
+                    color="var(--success)"
                   />
                   <StatCard
                     label={t("residents.statsTeaTime")}
                     value={stats.teaTimeCount}
                     subValue={t("residents.statsParticipants")}
-                    color="#3d6b4a"
+                    color="var(--success)"
                   />
                   <StatCard
                     label={t("residents.statsUnregistered")}

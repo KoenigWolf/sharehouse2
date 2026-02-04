@@ -92,12 +92,12 @@ export function GarbageAdminPanel({ schedule }: GarbageAdminPanelProps) {
         </h2>
 
         {error && (
-          <div className="mb-4 py-2 px-3 border border-red-200 bg-red-50 text-xs text-red-600">
+          <div className="mb-4 py-2 px-3 border border-error-border bg-error-bg text-xs text-error">
             {error}
           </div>
         )}
         {success && (
-          <div className="mb-4 py-2 px-3 border border-green-200 bg-green-50 text-xs text-green-600">
+          <div className="mb-4 py-2 px-3 border border-success-border bg-success-bg text-xs text-success">
             {success}
           </div>
         )}
@@ -310,7 +310,7 @@ function ScheduleEntryForm({
   return (
     <form onSubmit={handleSubmit} className="w-full space-y-3">
       {formError && (
-        <div className="py-1.5 px-2 border border-red-200 bg-red-50 text-[11px] text-red-600">
+        <div className="py-1.5 px-2 border border-error-border bg-error-bg text-[11px] text-error">
           {formError}
         </div>
       )}

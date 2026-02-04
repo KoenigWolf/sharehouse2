@@ -28,8 +28,8 @@ function FeedbackMessage({ feedback }: { feedback: Feedback | null }) {
           exit={{ opacity: 0, y: -4 }}
           transition={{ duration: 0.2 }}
           className={`text-xs font-medium px-4 py-3 rounded-xl border-l-4 ${feedback.type === "success"
-              ? "bg-green-50/50 border-green-200 text-green-600"
-              : "bg-red-50/50 border-red-200 text-red-600"
+              ? "bg-success-bg/50 border-success-border text-success"
+              : "bg-error-bg/50 border-error-border text-error"
             }`}
         >
           {feedback.message}

@@ -109,9 +109,9 @@ export function GalleryUploadSection() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="py-3 px-4 bg-[#fef2f2] border-l-2 border-[#e5a0a0]"
+            className="py-3 px-4 bg-error-bg border-l-2 border-error-border"
           >
-            <p className="text-sm text-[#8b4040]">{error}</p>
+            <p className="text-sm text-error">{error}</p>
           </m.div>
         )}
         {success && (
@@ -121,9 +121,9 @@ export function GalleryUploadSection() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="py-3 px-4 bg-[#f0fdf4] border-l-2 border-[#93c5a0]"
+            className="py-3 px-4 bg-success-bg border-l-2 border-success-border"
           >
-            <p className="text-sm text-[#3d6b4a]">{success}</p>
+            <p className="text-sm text-success">{success}</p>
           </m.div>
         )}
       </AnimatePresence>
