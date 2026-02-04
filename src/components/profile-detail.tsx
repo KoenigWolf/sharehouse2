@@ -376,10 +376,10 @@ export function ProfileDetail({
                 <Avatar className="size-full rounded-full">
                   <OptimizedAvatarImage
                     src={profile.avatar_url}
-                    alt={t("a11y.profilePhotoAlt", { name: profile.name })}
+                    alt={t("a11y.profilePhotoAlt", { name: isTeaser ? "●" : profile.name })}
                     context="detail"
                     priority
-                    fallback={getInitials(profile.name)}
+                    fallback={isTeaser ? "●" : getInitials(profile.name)}
                     fallbackClassName="bg-[#f4f4f5] text-[#a1a1aa] text-4xl sm:text-5xl rounded-full w-full h-full"
                   />
                 </Avatar>
