@@ -41,7 +41,7 @@ Next.js 16 (App Router) / TypeScript / Tailwind CSS 4 / shadcn/ui / Supabase / F
 ## 重要な規約
 
 - サーバーアクションの戻り値は `{ success: true }` | `{ error: string }` のユニオン型
-- i18n は `useI18n` フック / `t()` 関数を使う（日本語・英語対応）
+- ユーザーに表示される文字列は全て i18n 経由にする（ハードコード禁止）。クライアント: `useI18n` フック、サーバー: `getServerTranslator()`。キーは `src/lib/i18n/ja.ts` と `en.ts` の両方に追加する
 - アバター画像は `OptimizedAvatarImage` コンポーネントを使う（Next.js Image ベース）
 - framer-motion は `m` コンポーネントを優先（`motion` は layoutId 使用時のみ）
 - レート制限は `checkRateLimit` / `checkRateLimitAsync`（Redis 対応）
