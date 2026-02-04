@@ -12,9 +12,9 @@ import type { GarbageSchedule, GarbageDutyWithProfile } from "@/domain/garbage";
 const GARBAGE_TYPE_STYLES: Record<string, { bg: string; text: string; border: string }> = {
   可燃ごみ: { bg: "bg-orange-50", text: "text-orange-700", border: "border-orange-200" },
   不燃ごみ: { bg: "bg-slate-50", text: "text-slate-600", border: "border-slate-200" },
-  資源: { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200" },
+  資源: { bg: "bg-brand-50", text: "text-brand-700", border: "border-brand-200" },
   資源プラスチック: { bg: "bg-blue-50", text: "text-blue-700", border: "border-blue-200" },
-  資源ごみ: { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200" },
+  資源ごみ: { bg: "bg-brand-50", text: "text-brand-700", border: "border-brand-200" },
 };
 
 const DEFAULT_STYLE = { bg: "bg-[#f4f4f5]", text: "text-[#71717a]", border: "border-[#e4e4e7]" };

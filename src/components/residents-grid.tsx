@@ -37,10 +37,10 @@ function isNewResident(moveInDate: string | null): boolean {
 }
 
 const floorColors: Record<string, { bg: string; border: string; text: string; accent: string; fill: string }> = {
-  "5F": { bg: "bg-emerald-50", border: "border-emerald-100", text: "text-emerald-900", accent: "#10b981", fill: "#10b981" },
+  "5F": { bg: "bg-brand-50", border: "border-brand-100", text: "text-brand-900", accent: "var(--brand-500)", fill: "var(--brand-500)" },
   "4F": { bg: "bg-slate-50", border: "border-slate-100", text: "text-slate-900", accent: "#475569", fill: "#475569" },
   "3F": { bg: "bg-violet-50", border: "border-violet-100", text: "text-violet-900", accent: "#8b5cf6", fill: "#8b5cf6" },
-  "2F": { bg: "bg-emerald-50", border: "border-emerald-100", text: "text-emerald-900", accent: "#10b981", fill: "#10b981" },
+  "2F": { bg: "bg-brand-50", border: "border-brand-100", text: "text-brand-900", accent: "var(--brand-500)", fill: "var(--brand-500)" },
   "?": { bg: "bg-slate-50", border: "border-slate-100", text: "text-slate-400", accent: "#94a3b8", fill: "#94a3b8" },
 };
 
@@ -306,7 +306,7 @@ export function ResidentsGrid({
                   size="icon-sm"
                   onClick={() => setViewMode(option.value)}
                   className={`${isActive
-                    ? "bg-white text-emerald-600 shadow-sm"
+                    ? "bg-white text-brand-600 shadow-sm"
                     : "text-slate-500 hover:text-slate-900"
                     } rounded-lg transition-all`}
                   title={option.label}
@@ -335,7 +335,7 @@ export function ResidentsGrid({
                 onClick={() => setFloorFilter(floor)}
                 className={`shrink-0 h-auto px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl transition-all ${isActive
                   ? isAll
-                    ? "bg-emerald-600 text-white shadow-lg shadow-emerald-200 border-emerald-600"
+                    ? "bg-brand-600 text-white shadow-lg shadow-brand-200 border-brand-600"
                     : `${colors?.bg} ${colors?.text} border-transparent shadow-sm`
                   : "bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300"
                   }`}
@@ -361,7 +361,7 @@ export function ResidentsGrid({
               placeholder={t("residents.searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full sm:w-80 h-12 pl-11 pr-4 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm"
+              className="w-full sm:w-80 h-12 pl-11 pr-4 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all shadow-sm"
             />
             {searchQuery && (
               <Button
@@ -676,7 +676,7 @@ function ResidentListItem({
       aria-label={t("a11y.viewProfile", { name: profile.name })}
     >
       <article
-        className={`flex items-center gap-5 p-4 sm:p-5 bg-white rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 border border-slate-100 ${isCurrentUser ? "ring-2 ring-emerald-500/20 border-emerald-500" : ""
+        className={`flex items-center gap-5 p-4 sm:p-5 bg-white rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 border border-slate-100 ${isCurrentUser ? "ring-2 ring-brand-500/20 border-brand-500" : ""
           }`}
       >
         <div className="relative shrink-0">
@@ -691,7 +691,7 @@ function ResidentListItem({
             />
           </Avatar>
           {isCurrentUser && (
-            <span className="absolute -top-1.5 -right-1.5 bg-emerald-600 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase shadow-sm">
+            <span className="absolute -top-1.5 -right-1.5 bg-brand-600 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase shadow-sm">
               {t("common.you")}
             </span>
           )}
@@ -710,7 +710,7 @@ function ResidentListItem({
               </span>
             )}
             {isNew && !isMockProfile && (
-              <span className="text-[10px] px-2 py-0.5 bg-emerald-500 text-white rounded-full font-bold tracking-wider">
+              <span className="text-[10px] px-2 py-0.5 bg-brand-500 text-white rounded-full font-bold tracking-wider">
                 NEW
               </span>
             )}
@@ -730,11 +730,11 @@ function ResidentListItem({
             {profile.occupation && (
               <span className="bg-slate-50 px-2 py-0.5 rounded-md">{t(`profileOptions.occupation.${profile.occupation}` as Parameters<typeof t>[0])}</span>
             )}
-            {profile.mbti && <span className="text-emerald-600 font-semibold">{profile.mbti}</span>}
+            {profile.mbti && <span className="text-brand-600 font-semibold">{profile.mbti}</span>}
           </div>
         </div>
 
-        <div className="text-slate-300 group-hover:text-emerald-500 transition-colors shrink-0">
+        <div className="text-slate-300 group-hover:text-brand-500 transition-colors shrink-0">
           <ChevronRightIcon />
         </div>
       </article>

@@ -345,7 +345,7 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
 
         <div className="mt-8 pt-6 border-t border-slate-50">
           <p className="text-[10px] text-slate-400 leading-relaxed font-medium">
-            <span className="text-emerald-500 font-bold mr-1">INFO:</span>
+            <span className="text-brand-500 font-bold mr-1">INFO:</span>
             {t("roomPhotos.uploadLimit", { max: ROOM_PHOTOS.maxPhotosPerUser, bulk: effectiveBulkLimit })}
             <br />
             {t("roomPhotos.supportedFormats")} — {t("roomPhotos.uploadInstructions")}

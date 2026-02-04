@@ -37,7 +37,7 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
         <div className="flex flex-col sm:flex-row items-start justify-between gap-12 sm:gap-6">
           <div className="max-w-xs">
             <h2 className="text-xl font-bold tracking-tight text-slate-900">
-              Share<span className="text-emerald-600">House</span>
+              Share<span className="text-brand-600">House</span>
             </h2>
             <p className="text-sm text-slate-500 mt-3 leading-relaxed">
               {t("footer.tagline")}
@@ -54,7 +54,7 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
                   <li key={href}>
                     <Link
                       href={href}
-                      className="text-sm text-slate-600 hover:text-emerald-600 transition-colors font-medium"
+                      className="text-sm text-slate-600 hover:text-brand-600 transition-colors font-medium"
                     >
                       {t(labelKey)}
                     </Link>
@@ -72,7 +72,7 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
                   <Link
                     key={sns}
                     href="#"
-                    className="text-sm text-slate-600 hover:text-emerald-600 transition-colors font-medium"
+                    className="text-sm text-slate-600 hover:text-brand-600 transition-colors font-medium"
                   >
                     {sns}
                   </Link>

@@ -19,10 +19,10 @@ type Floor = "2F" | "3F" | "4F" | "5F";
 const FLOORS: Floor[] = ["2F", "3F", "4F", "5F"];
 
 const FLOOR_COLORS: Record<Floor, { bg: string; text: string; border: string; accent: string }> = {
-  "2F": { bg: "bg-emerald-50", text: "text-emerald-900", border: "border-emerald-100", accent: "bg-emerald-500" },
+  "2F": { bg: "bg-brand-50", text: "text-brand-900", border: "border-brand-100", accent: "bg-brand-500" },
   "3F": { bg: "bg-violet-50", text: "text-violet-900", border: "border-violet-100", accent: "bg-violet-500" },
   "4F": { bg: "bg-slate-50", text: "text-slate-900", border: "border-slate-100", accent: "bg-slate-600" },
-  "5F": { bg: "bg-emerald-50", text: "text-emerald-900", border: "border-emerald-100", accent: "bg-emerald-500" },
+  "5F": { bg: "bg-brand-50", text: "text-brand-900", border: "border-brand-100", accent: "bg-brand-500" },
 };
 
 function getFloorFromRoom(roomNumber: string): Floor {
@@ -96,7 +96,7 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
                 relative flex-1 py-4 text-sm font-semibold tracking-tight
                 transition-all duration-300 rounded-xl overflow-hidden
                 ${isActive
-                  ? `${floorColors.bg} ${floorColors.text} shadow-lg shadow-emerald-100 ring-2 ring-emerald-500/20`
+                  ? `${floorColors.bg} ${floorColors.text} shadow-lg shadow-brand-100 ring-2 ring-brand-500/20`
                   : "bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-900 border border-slate-100"
                 }
                 active:scale-[0.98]
@@ -155,7 +155,7 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
                   `}
                 >
                   {isCurrentUser && (
-                    <span className="absolute -top-2 -right-2 bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full z-10 shadow-sm">
+                    <span className="absolute -top-2 -right-2 bg-brand-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full z-10 shadow-sm">
                       {t("common.you")}
                     </span>
                   )}
@@ -299,7 +299,7 @@ function RoomDetailOccupied({
               {displayName}
             </p>
             {isCurrentUser && (
-              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-600 text-white shadow-sm shrink-0`}>
+              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-brand-600 text-white shadow-sm shrink-0`}>
                 {t("common.you")}
               </span>
             )}
@@ -338,7 +338,7 @@ function RoomDetailOccupied({
       {!isMock && (
         <Link
           href={`/profile/${profile.id}`}
-          className="block w-full text-center text-sm font-bold py-3.5 bg-emerald-600 text-white rounded-xl shadow-lg shadow-emerald-100 hover:bg-emerald-700 hover:shadow-emerald-200 transition-all active:scale-[0.98]"
+          className="block w-full text-center text-sm font-bold py-3.5 bg-brand-600 text-white rounded-xl shadow-lg shadow-brand-100 hover:bg-brand-700 hover:shadow-brand-200 transition-all active:scale-[0.98]"
         >
           {t("floorPlan.viewProfile")}
         </Link>
