@@ -889,7 +889,7 @@ export function ProfileEditForm({
             <div className="flex items-center justify-between py-5 group first:pt-0">
               <div className="space-y-1">
                 <p className="text-[13px] font-bold text-slate-600 tracking-wide">{t("teaTime.title")}</p>
-                <p className={`text-[11px] font-medium ${teaTimeEnabled ? "text-lime-600" : "text-slate-400"}`}>
+                <p className={`text-[11px] font-medium ${teaTimeEnabled ? "text-emerald-600" : "text-slate-400"}`}>
                   {teaTimeEnabled ? t("teaTime.participating") : t("teaTime.notParticipating")}
                 </p>
               </div>
@@ -900,7 +900,7 @@ export function ProfileEditForm({
                   checked={teaTimeEnabled}
                   onCheckedChange={handleTeaTimeToggle}
                   disabled={isTeaTimeLoading}
-                  className="scale-110 data-[state=checked]:bg-lime-500"
+                  className="scale-110 data-[state=checked]:bg-emerald-500"
                 />
               )}
             </div>
@@ -921,7 +921,7 @@ export function ProfileEditForm({
                     checked={notificationSettings[item.key]}
                     onCheckedChange={(checked) => handleNotificationToggle(item.key, checked)}
                     disabled={notificationLoading === item.key}
-                    className="scale-110 data-[state=checked]:bg-lime-500"
+                    className="scale-110 data-[state=checked]:bg-emerald-500"
                   />
                 )}
               </div>

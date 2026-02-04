@@ -84,7 +84,7 @@ function PasswordSection() {
       className="premium-surface rounded-[2rem] p-8 border border-slate-50 space-y-6 shadow-sm"
     >
       <div className="flex items-center gap-2 mb-2">
-        <svg className="w-4 h-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 00-2 2zm10-10V7a4 4 0 00-8 0v4h8z" />
         </svg>
         <h3 className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
@@ -104,7 +104,7 @@ function PasswordSection() {
             onChange={(e) => setCurrentPassword(e.target.value)}
             disabled={isSubmitting}
             autoComplete="current-password"
-            className="h-12 rounded-2xl border-slate-200 focus:ring-indigo-500/5 focus:border-indigo-500/50"
+            className="h-12 rounded-2xl border-slate-200 focus:ring-emerald-500/5 focus:border-emerald-500/50"
           />
         </div>
 
@@ -119,7 +119,7 @@ function PasswordSection() {
             onChange={(e) => setNewPassword(e.target.value)}
             disabled={isSubmitting}
             autoComplete="new-password"
-            className="h-12 rounded-2xl border-slate-200 focus:ring-indigo-500/5 focus:border-indigo-500/50"
+            className="h-12 rounded-2xl border-slate-200 focus:ring-emerald-500/5 focus:border-emerald-500/50"
           />
         </div>
 
@@ -134,7 +134,7 @@ function PasswordSection() {
             onChange={(e) => setConfirmPassword(e.target.value)}
             disabled={isSubmitting}
             autoComplete="new-password"
-            className="h-12 rounded-2xl border-slate-200 focus:ring-indigo-500/5 focus:border-indigo-500/50"
+            className="h-12 rounded-2xl border-slate-200 focus:ring-emerald-500/5 focus:border-emerald-500/50"
           />
         </div>
       </div>
@@ -145,7 +145,7 @@ function PasswordSection() {
         type="submit"
         disabled={isSubmitting || !isValid}
         size="lg"
-        className="w-full sm:w-auto h-11 px-8 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold tracking-wider uppercase text-[11px] transition-all duration-300"
+        className="w-full sm:w-auto h-11 px-8 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold tracking-wider uppercase text-[11px] transition-all duration-300"
       >
         {isSubmitting ? t("account.changingPassword") : t("account.changePassword")}
       </Button>
@@ -183,7 +183,7 @@ function EmailSection({ userEmail }: { userEmail: string | undefined }) {
       className="premium-surface rounded-[2rem] p-8 border border-slate-50 space-y-6 shadow-sm"
     >
       <div className="flex items-center gap-2 mb-2">
-        <svg className="w-4 h-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
         </svg>
         <h3 className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
@@ -214,7 +214,7 @@ function EmailSection({ userEmail }: { userEmail: string | undefined }) {
             onChange={(e) => setNewEmail(e.target.value)}
             disabled={isSubmitting}
             autoComplete="email"
-            className="h-12 rounded-2xl border-slate-200 focus:ring-indigo-500/5 focus:border-indigo-500/50"
+            className="h-12 rounded-2xl border-slate-200 focus:ring-emerald-500/5 focus:border-emerald-500/50"
           />
         </div>
       </div>
@@ -225,7 +225,7 @@ function EmailSection({ userEmail }: { userEmail: string | undefined }) {
         type="submit"
         disabled={isSubmitting || newEmail.length === 0}
         size="lg"
-        className="w-full sm:w-auto h-11 px-8 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold tracking-wider uppercase text-[11px] transition-all duration-300"
+        className="w-full sm:w-auto h-11 px-8 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold tracking-wider uppercase text-[11px] transition-all duration-300"
       >
         {isSubmitting ? t("account.changingEmail") : t("account.changeEmail")}
       </Button>
