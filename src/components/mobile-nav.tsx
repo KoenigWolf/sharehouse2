@@ -4,21 +4,20 @@ import { memo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { Home, Coffee, User, Image, Info, LayoutGrid } from "lucide-react";
+import { Users, MessageCircle, User, Image, Calendar } from "lucide-react";
 import { useI18n } from "@/hooks/use-i18n";
 import type { TranslationKey } from "@/lib/i18n";
 
 const NAV_ITEMS: {
   href: string;
   labelKey: TranslationKey;
-  icon: typeof Home;
+  icon: typeof Users;
   matchPaths?: string[];
 }[] = [
-    { href: "/", labelKey: "nav.home", icon: Home },
+    { href: "/residents", labelKey: "nav.residents", icon: Users },
+    { href: "/bulletin", labelKey: "bulletin.title", icon: MessageCircle },
     { href: "/room-photos", labelKey: "nav.gallery", icon: Image },
-    { href: "/info", labelKey: "nav.info", icon: Info },
-    { href: "/tea-time", labelKey: "nav.teaTime", icon: Coffee },
-    { href: "/floor-plan", labelKey: "nav.floorPlan", icon: LayoutGrid },
+    { href: "/events", labelKey: "nav.events", icon: Calendar },
     {
       href: "/settings",
       labelKey: "nav.myPage",

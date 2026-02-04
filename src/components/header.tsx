@@ -5,7 +5,19 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { m } from "framer-motion";
-import { User, LogOut, Shield } from "lucide-react";
+import {
+  Users,
+  MessageCircle,
+  Gift,
+  Calendar,
+  Image as ImageIcon,
+  Info,
+  Coffee,
+  LayoutGrid,
+  User,
+  LogOut,
+  Shield,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,14 +34,18 @@ import type { TranslationKey } from "@/lib/i18n";
 interface NavItem {
   href: string;
   labelKey: TranslationKey;
+  icon: typeof Users;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { href: "/", labelKey: "nav.home" },
-  { href: "/room-photos", labelKey: "nav.gallery" },
-  { href: "/info", labelKey: "nav.info" },
-  { href: "/tea-time", labelKey: "nav.teaTime" },
-  { href: "/floor-plan", labelKey: "nav.floorPlan" },
+  { href: "/residents", labelKey: "nav.residents", icon: Users },
+  { href: "/bulletin", labelKey: "bulletin.title", icon: MessageCircle },
+  { href: "/share", labelKey: "nav.share", icon: Gift },
+  { href: "/events", labelKey: "nav.events", icon: Calendar },
+  { href: "/room-photos", labelKey: "nav.gallery", icon: ImageIcon },
+  { href: "/info", labelKey: "nav.info", icon: Info },
+  { href: "/tea-time", labelKey: "nav.teaTime", icon: Coffee },
+  { href: "/floor-plan", labelKey: "nav.floorPlan", icon: LayoutGrid },
 ];
 
 interface NavLinkProps {
@@ -39,22 +55,25 @@ interface NavLinkProps {
 
 const NavLink = memo(function NavLink({ item, isActive }: NavLinkProps) {
   const t = useI18n();
+  const Icon = item.icon;
 
   return (
     <Link
       href={item.href}
       aria-current={isActive ? "page" : undefined}
-      className="relative px-4 sm:px-6 py-2 text-sm font-medium transition-colors outline-none focus-visible:ring-brand-500 focus-visible:ring-offset-2 group"
+      aria-label={t(item.labelKey)}
+      title={t(item.labelKey)}
+      className="relative px-3 py-2 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 group"
     >
-      <span
+      <Icon
+        size={20}
+        strokeWidth={isActive ? 2 : 1.5}
         className={
           isActive
             ? "text-brand-600"
-            : "text-slate-500 group-hover:text-brand-600 transition-colors"
+            : "text-slate-400 group-hover:text-brand-600 transition-colors"
         }
-      >
-        {t(item.labelKey)}
-      </span>
+      />
       {isActive && (
         <m.span
           layoutId="nav-underline"
@@ -160,7 +179,7 @@ export const Header = memo(function Header() {
       <div className="container mx-auto px-4 sm:px-6 py-4 flex items-center justify-between max-w-5xl">
         <div className="flex items-center gap-6 sm:gap-12">
           <Link
-            href="/"
+            href="/residents"
             className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 hover:opacity-80 transition-opacity"
             aria-label={t("a11y.goHome")}
           >
