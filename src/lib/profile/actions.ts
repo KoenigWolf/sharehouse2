@@ -108,7 +108,6 @@ export async function updateProfile(
         sns_facebook: validatedData.sns_facebook,
         sns_linkedin: validatedData.sns_linkedin,
         sns_github: validatedData.sns_github,
-        sns_line: validatedData.sns_line,
         updated_at: new Date().toISOString(),
       })
       .eq("id", effectiveId);

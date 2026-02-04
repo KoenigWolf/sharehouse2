@@ -78,10 +78,6 @@ export const en: Translations = {
       "After registration, you can edit details on your profile page.",
     browseAsGuest: "Browse as guest",
     defaultName: "User",
-    orContinueWith: "or",
-    loginWithLine: "Continue with LINE",
-    signupWithLine: "Sign up with LINE",
-    lineLoginFailed: "LINE login failed",
     forgotPassword: "Forgot password?",
     sendResetLink: "Send reset link",
     sendingResetLink: "Sending...",
@@ -191,8 +187,6 @@ export const en: Translations = {
     snsLinkedinPlaceholder: "Username or URL",
     snsGithub: "GitHub",
     snsGithubPlaceholder: "Username or URL",
-    snsLine: "LINE",
-    snsLinePlaceholder: "LINE ID",
     snsHint: "Enter username or URL",
     allergies: "Allergies & Dietary Restrictions",
     allergiesPlaceholder: "e.g., Egg allergy, vegetarian",
@@ -594,7 +588,7 @@ export const en: Translations = {
     deleteConfirmPlaceholder: "削除",
     deleteButton: "Delete account",
     deleting: "Deleting...",
-    noPasswordProvider: "Password change is not available for LINE login users",
+    noPasswordProvider: "No password is set for this account",
   },
 
   footer: {

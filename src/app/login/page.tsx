@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import type { Provider } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { m, AnimatePresence } from "framer-motion";
@@ -10,7 +9,6 @@ import { Spinner } from "@/components/ui/spinner";
 import { signIn, signUp, requestPasswordReset } from "@/lib/auth/actions";
 import { AUTH } from "@/lib/constants/config";
 import { useI18n } from "@/hooks/use-i18n";
-import { createClient } from "@/lib/supabase/client";
 
 function getPasswordStrength(password: string): number {
   if (!password) return 0;
@@ -32,7 +30,6 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isLineLoading, setIsLineLoading] = useState(false);
   const router = useRouter();
   const t = useI18n();
   const [isForgotMode, setIsForgotMode] = useState(false);
@@ -119,24 +116,6 @@ export default function LoginPage() {
     setIsForgotMode(false);
     setError(null);
     setSuccess(null);
-  };
-
-  const handleLineLogin = async () => {
-    setError(null);
-    setIsLineLoading(true);
-
-    const supabase = createClient();
-    const { error: oauthError } = await supabase.auth.signInWithOAuth({
-      provider: "line" as Provider,
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
-
-    if (oauthError) {
-      setError(t("auth.lineLoginFailed"));
-      setIsLineLoading(false);
-    }
   };
 
   return (
@@ -388,37 +367,16 @@ export default function LoginPage() {
             </form>
 
             {!isForgotMode && (
-              <div className="mt-6">
-                <div className="flex items-center gap-3 text-[#a1a1aa] text-xs">
-                  <span className="flex-1 h-px bg-[#e4e4e7]" />
-                  <span>{t("auth.orContinueWith")}</span>
-                  <span className="flex-1 h-px bg-[#e4e4e7]" />
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="xl"
-                  onClick={handleLineLogin}
-                  disabled={isLineLoading}
-                  className="mt-4 w-full"
+              <div className="mt-8 pt-6 border-t border-[#e4e4e7] text-center">
+                <Link
+                  href="/residents"
+                  className="text-sm font-medium text-brand-600 hover:text-brand-700 transition-colors flex items-center justify-center gap-2 mx-auto inline-flex"
                 >
-                  {isLineLoading
-                    ? t("common.processing")
-                    : mode === "signup"
-                      ? t("auth.signupWithLine")
-                      : t("auth.loginWithLine")}
-                </Button>
-                <div className="mt-8 pt-6 border-t border-[#e4e4e7] text-center">
-                  <Link
-                    href="/residents"
-                    className="text-sm font-medium text-brand-600 hover:text-brand-700 transition-colors flex items-center justify-center gap-2 mx-auto inline-flex"
-                  >
-                    {t("auth.browseAsGuest")}
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="mt-0.5">
-                      <path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </Link>
-                </div>
+                  {t("auth.browseAsGuest")}
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="mt-0.5">
+                    <path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </Link>
               </div>
             )}
 

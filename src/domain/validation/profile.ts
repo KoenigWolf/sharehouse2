@@ -152,7 +152,6 @@ export const profileUpdateSchema = z.object({
   sns_facebook: snsUsernameSchema.optional(),
   sns_linkedin: snsUsernameSchema.optional(),
   sns_github: snsUsernameSchema.optional(),
-  sns_line: snsUsernameSchema.optional(),
 });
 
 export const fileUploadSchema = z.object({
