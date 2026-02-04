@@ -12,6 +12,7 @@ import Link from "next/link";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
 import { getFloorFromRoom, isNewResident, FLOOR_COLORS, type FloorId } from "@/lib/utils/residents";
+import { VibeInput } from "@/components/vibe-input";
 interface ResidentsGridProps {
   profiles: Profile[];
   currentUserId: string;
@@ -150,6 +151,11 @@ export function ResidentsGrid({
   const totalCount = profiles.length;
   const displayCount = filteredAndSortedProfiles.length;
 
+  const currentUserProfile = useMemo(
+    () => profiles.find((p) => p.id === currentUserId),
+    [profiles, currentUserId],
+  );
+
   if (totalCount === 0) {
     return (
       <div className="flex-1 flex items-center justify-center">
@@ -160,6 +166,15 @@ export function ResidentsGrid({
 
   return (
     <div className="space-y-8 sm:space-y-12">
+      {currentUserId && (
+        <div className="max-w-2xl mx-auto w-full">
+          <VibeInput
+            currentVibe={currentUserProfile?.vibe?.message}
+            isLoggedIn={!!currentUserId}
+          />
+        </div>
+      )}
+
       <div className="flex flex-col gap-4">
         <div className="flex items-end justify-between">
           <div>
@@ -174,121 +189,121 @@ export function ResidentsGrid({
           </div>
 
           <div className="flex gap-1 bg-slate-100 p-1 rounded-xl">
-              {viewModeOptions.map((option) => {
-                const isActive = viewMode === option.value;
-                const Icon = option.icon;
+            {viewModeOptions.map((option) => {
+              const isActive = viewMode === option.value;
+              const Icon = option.icon;
+              return (
+                <Button
+                  key={option.value}
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => setViewMode(option.value)}
+                  className={`${isActive
+                    ? "bg-white text-brand-600 shadow-sm"
+                    : "text-slate-500 hover:text-slate-900"
+                    } rounded-lg transition-all`}
+                  title={option.label}
+                  aria-label={option.label}
+                  aria-pressed={isActive}
+                >
+                  <Icon />
+                </Button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide -mx-1 px-1 pb-2">
+          {floors.map((floor) => {
+            const isAll = floor === "all";
+            const isActive = floorFilter === floor;
+            const floorStat = isAll ? null : floorStats[floor];
+            const colors = isAll ? null : FLOOR_COLORS[floor as keyof typeof FLOOR_COLORS];
+
+            return (
+              <Button
+                key={floor}
+                type="button"
+                variant="outline"
+                onClick={() => setFloorFilter(floor)}
+                className={`shrink-0 h-auto px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl transition-all ${isActive
+                  ? isAll
+                    ? "bg-brand-600 text-white shadow-lg shadow-brand-200 border-brand-600"
+                    : `${colors?.bg} ${colors?.text} border-transparent shadow-sm`
+                  : "bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300"
+                  }`}
+              >
+                <span className="text-sm font-semibold tracking-tight">
+                  {isAll ? t("residents.filterAll") : floor}
+                </span>
+                {floorStat && (
+                  <span className={`ml-2 text-xs font-medium ${isActive ? "opacity-70" : "text-slate-400"}`}>
+                    {floorStat.registered}/{floorStat.total}
+                  </span>
+                )}
+              </Button>
+            );
+          })}
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-4 border-b border-[#e4e4e7]">
+          <div className="relative group">
+            <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10" />
+            <input
+              type="search"
+              placeholder={t("residents.searchPlaceholder")}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full sm:w-80 h-12 pl-11 pr-4 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all shadow-sm"
+            />
+            {searchQuery && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-xs"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 hover:bg-transparent"
+              >
+                <CloseIcon />
+              </Button>
+            )}
+          </div>
+
+          <div className="relative sm:flex sm:gap-0">
+            <div className="flex overflow-x-auto scrollbar-hide sm:overflow-visible -mx-1 px-1 sm:mx-0 sm:px-0 snap-x snap-mandatory sm:snap-none">
+              {sortOptions.map((option) => {
+                const isActive = sortBy === option.value;
                 return (
                   <Button
                     key={option.value}
                     type="button"
                     variant="ghost"
-                    size="icon-sm"
-                    onClick={() => setViewMode(option.value)}
-                    className={`${isActive
-                      ? "bg-white text-brand-600 shadow-sm"
-                      : "text-slate-500 hover:text-slate-900"
-                      } rounded-lg transition-all`}
-                    title={option.label}
-                    aria-label={option.label}
-                    aria-pressed={isActive}
+                    onClick={() => handleSortChange(option.value)}
+                    className="relative h-auto px-4 sm:px-4 py-2.5 sm:py-2 tracking-wide group whitespace-nowrap active:opacity-70 snap-center sm:snap-align-none shrink-0 hover:bg-transparent"
                   >
-                    <Icon />
+                    <span
+                      className={`text-sm ${isActive
+                        ? "text-[#18181b] font-medium"
+                        : "text-[#a1a1aa] group-hover:text-[#71717a]"
+                        }`}
+                    >
+                      {option.label}
+                    </span>
+                    {isActive && (
+                      <motion.span
+                        layoutId="sort-underline"
+                        className="absolute bottom-0 left-3 right-3 sm:left-4 sm:right-4 h-px bg-[#18181b]"
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                      />
+                    )}
                   </Button>
                 );
               })}
             </div>
+            <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-white to-transparent pointer-events-none" />
+          </div>
         </div>
-
-        <div className="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide -mx-1 px-1 pb-2">
-            {floors.map((floor) => {
-              const isAll = floor === "all";
-              const isActive = floorFilter === floor;
-              const floorStat = isAll ? null : floorStats[floor];
-              const colors = isAll ? null : FLOOR_COLORS[floor as keyof typeof FLOOR_COLORS];
-
-              return (
-                <Button
-                  key={floor}
-                  type="button"
-                  variant="outline"
-                  onClick={() => setFloorFilter(floor)}
-                  className={`shrink-0 h-auto px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl transition-all ${isActive
-                    ? isAll
-                      ? "bg-brand-600 text-white shadow-lg shadow-brand-200 border-brand-600"
-                      : `${colors?.bg} ${colors?.text} border-transparent shadow-sm`
-                    : "bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300"
-                    }`}
-                >
-                  <span className="text-sm font-semibold tracking-tight">
-                    {isAll ? t("residents.filterAll") : floor}
-                  </span>
-                  {floorStat && (
-                    <span className={`ml-2 text-xs font-medium ${isActive ? "opacity-70" : "text-slate-400"}`}>
-                      {floorStat.registered}/{floorStat.total}
-                    </span>
-                  )}
-                </Button>
-              );
-            })}
-          </div>
-
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-4 border-b border-[#e4e4e7]">
-            <div className="relative group">
-              <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10" />
-              <input
-                type="search"
-                placeholder={t("residents.searchPlaceholder")}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full sm:w-80 h-12 pl-11 pr-4 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all shadow-sm"
-              />
-              {searchQuery && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-xs"
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 hover:bg-transparent"
-                >
-                  <CloseIcon />
-                </Button>
-              )}
-            </div>
-
-            <div className="relative sm:flex sm:gap-0">
-              <div className="flex overflow-x-auto scrollbar-hide sm:overflow-visible -mx-1 px-1 sm:mx-0 sm:px-0 snap-x snap-mandatory sm:snap-none">
-                {sortOptions.map((option) => {
-                  const isActive = sortBy === option.value;
-                  return (
-                    <Button
-                      key={option.value}
-                      type="button"
-                      variant="ghost"
-                      onClick={() => handleSortChange(option.value)}
-                      className="relative h-auto px-4 sm:px-4 py-2.5 sm:py-2 tracking-wide group whitespace-nowrap active:opacity-70 snap-center sm:snap-align-none shrink-0 hover:bg-transparent"
-                    >
-                      <span
-                        className={`text-sm ${isActive
-                          ? "text-[#18181b] font-medium"
-                          : "text-[#a1a1aa] group-hover:text-[#71717a]"
-                          }`}
-                      >
-                        {option.label}
-                      </span>
-                      {isActive && (
-                        <motion.span
-                          layoutId="sort-underline"
-                          className="absolute bottom-0 left-3 right-3 sm:left-4 sm:right-4 h-px bg-[#18181b]"
-                          transition={{ duration: 0.3, ease: "easeInOut" }}
-                        />
-                      )}
-                    </Button>
-                  );
-                })}
-              </div>
-              <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-white to-transparent pointer-events-none" />
-            </div>
-          </div>
       </div>
 
       <AnimatePresence mode="wait">
