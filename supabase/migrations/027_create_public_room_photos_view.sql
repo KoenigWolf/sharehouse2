@@ -3,13 +3,14 @@
 -- ============================================
 
 drop view if exists public.room_photos_public_teaser cascade;
-create or replace view public.room_photos_public_teaser as
+-- photo_url は公開しない（CSS blur では DevTools で閲覧可能なため）
+create or replace view public.room_photos_public_teaser
+  with (security_invoker = true) as
 select
   rp.id,
   rp.user_id,
-  rp.photo_url,
-  -- キャプションの一部のみ表示（NULL 安全）
-  case when rp.caption is not null then left(rp.caption, 5) || '...' else null end as masked_caption,
+  -- NULL でも '...' を返し、フロントで一貫した表示にする
+  coalesce(left(rp.caption, 5), '') || '...' as masked_caption,
   rp.taken_at,
   rp.created_at,
   -- 投稿者の公開プロフィール情報

@@ -3,13 +3,14 @@
 -- ============================================
 
 drop view if exists public.events_public_teaser cascade;
-create or replace view public.events_public_teaser as
+create or replace view public.events_public_teaser
+  with (security_invoker = true) as
 select
   e.id,
   e.user_id,
-  -- タイトルの一部と説明をマスク（NULL 安全）
-  case when e.title is not null then left(e.title, 5) || '...' else null end as masked_title,
-  case when e.description is not null then left(e.description, 10) || '...' else null end as masked_description,
+  -- NULL でも '...' を返し、フロントで一貫した表示にする
+  coalesce(left(e.title, 5), '') || '...' as masked_title,
+  coalesce(left(e.description, 10), '') || '...' as masked_description,
   e.event_date,
   e.event_time,
   e.location,

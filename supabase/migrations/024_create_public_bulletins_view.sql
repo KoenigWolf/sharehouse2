@@ -3,7 +3,8 @@
 -- ============================================
 
 drop view if exists public.bulletins_public_teaser cascade;
-create or replace view public.bulletins_public_teaser as
+create or replace view public.bulletins_public_teaser
+  with (security_invoker = true) as
 select
   b.id,
   b.user_id,

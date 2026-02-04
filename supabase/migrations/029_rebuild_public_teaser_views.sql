@@ -14,7 +14,8 @@ drop view if exists public.residents_public_teaser cascade;
 -- ============================================
 -- 1. residents_public_teaser（ベースビュー）
 -- ============================================
-create or replace view public.residents_public_teaser as
+create or replace view public.residents_public_teaser
+  with (security_invoker = true) as
 select
   id,
   case when coalesce(nullif(name, ''), null) is not null
@@ -35,7 +36,8 @@ grant select on public.residents_public_teaser to authenticated;
 -- ============================================
 -- 2. bulletins_public_teaser
 -- ============================================
-create or replace view public.bulletins_public_teaser as
+create or replace view public.bulletins_public_teaser
+  with (security_invoker = true) as
 select
   b.id,
   b.user_id,
@@ -53,12 +55,13 @@ grant select on public.bulletins_public_teaser to authenticated;
 -- ============================================
 -- 3. share_items_public_teaser
 -- ============================================
-create or replace view public.share_items_public_teaser as
+create or replace view public.share_items_public_teaser
+  with (security_invoker = true) as
 select
   s.id,
   s.user_id,
-  case when s.title is not null then left(s.title, 5) || '...' else null end as masked_title,
-  case when s.description is not null then left(s.description, 10) || '...' else null end as masked_description,
+  coalesce(left(s.title, 5), '') || '...' as masked_title,
+  coalesce(left(s.description, 10), '') || '...' as masked_description,
   s.status,
   s.expires_at,
   s.created_at,
@@ -73,12 +76,13 @@ grant select on public.share_items_public_teaser to authenticated;
 -- ============================================
 -- 4. events_public_teaser
 -- ============================================
-create or replace view public.events_public_teaser as
+create or replace view public.events_public_teaser
+  with (security_invoker = true) as
 select
   e.id,
   e.user_id,
-  case when e.title is not null then left(e.title, 5) || '...' else null end as masked_title,
-  case when e.description is not null then left(e.description, 10) || '...' else null end as masked_description,
+  coalesce(left(e.title, 5), '') || '...' as masked_title,
+  coalesce(left(e.description, 10), '') || '...' as masked_description,
   e.event_date,
   e.event_time,
   e.location,
@@ -94,12 +98,13 @@ grant select on public.events_public_teaser to authenticated;
 -- ============================================
 -- 5. room_photos_public_teaser
 -- ============================================
-create or replace view public.room_photos_public_teaser as
+-- photo_url は公開しない（CSS blur では DevTools で閲覧可能なため）
+create or replace view public.room_photos_public_teaser
+  with (security_invoker = true) as
 select
   rp.id,
   rp.user_id,
-  rp.photo_url,
-  case when rp.caption is not null then left(rp.caption, 5) || '...' else null end as masked_caption,
+  coalesce(left(rp.caption, 5), '') || '...' as masked_caption,
   rp.taken_at,
   rp.created_at,
   p.masked_name,
