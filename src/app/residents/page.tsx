@@ -7,7 +7,7 @@ import { ResidentsGrid } from "@/components/residents-grid";
 import { TeaTimeNotification } from "@/components/tea-time-notification";
 import { getLatestScheduledMatch } from "@/lib/tea-time/actions";
 import { getServerTranslator } from "@/lib/i18n/server";
-import { getProfilesWithMock } from "@/lib/residents/queries";
+import { getProfilesWithMock, getPublicProfilesWithMock } from "@/lib/residents/queries";
 
 export default async function ResidentsPage() {
   const t = await getServerTranslator();
@@ -17,16 +17,22 @@ export default async function ResidentsPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect("/login");
+  let profilesData;
+  let latestMatch = null;
+
+  if (user) {
+    [profilesData, latestMatch] = await Promise.all([
+      getProfilesWithMock(supabase),
+      getLatestScheduledMatch(),
+    ]);
+  } else {
+    // 未認証ユーザー向けチラ見せデータ
+    const { profiles } = await getPublicProfilesWithMock(supabase);
+    profilesData = { profiles, dbProfiles: [] };
   }
 
-  const [{ profiles, dbProfiles }, latestMatch] = await Promise.all([
-    getProfilesWithMock(supabase),
-    getLatestScheduledMatch(),
-  ]);
-
-  const mockCount = profiles.length - dbProfiles.length;
+  const { profiles, dbProfiles } = profilesData;
+  const mockCount = dbProfiles.length > 0 ? profiles.length - dbProfiles.length : 0;
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -47,7 +53,12 @@ export default async function ResidentsPage() {
             </p>
           )}
 
-          <ResidentsGrid profiles={profiles} currentUserId={user.id} />
+          <ResidentsGrid
+            profiles={user ? profiles as any : []}
+            currentUserId={user?.id || ""}
+            isPublicTeaser={!user}
+            publicProfiles={!user ? profiles as any : []}
+          />
         </div>
       </main>
 

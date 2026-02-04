@@ -328,6 +328,14 @@ export const en: Translations = {
     badgeNew: "NEW",
     badgeYou: "YOU",
   },
+  teaser: {
+    heading: "Check out resident profiles",
+    headingWithCount: "There are {count} more residents waiting",
+    description: "To see detailed profiles, daily vibes, and event information of your share house mates, you need to register for the resident portal.",
+    ctaJoin: "Sign up to see more",
+    ctaLogin: "Log in",
+    footer: "Secure closed community",
+  },
 
   teaTime: {
     title: "Tea Time",

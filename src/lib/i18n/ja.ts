@@ -328,6 +328,14 @@ export const ja = {
     badgeNew: "NEW",
     badgeYou: "YOU",
   },
+  teaser: {
+    heading: "住民のプロフィールをチェックしよう",
+    headingWithCount: "他に {count} 人の住民が待っています",
+    description: "シェアハウスの仲間たちのより詳細なプロフィールや、日々の投稿、イベント情報をチェックするには、住民専用ポータルへの登録が必要です。",
+    ctaJoin: "住民登録して続きを見る",
+    ctaLogin: "ログイン",
+    footer: "安心のクローズド・コミュニティ",
+  },
 
   teaTime: {
     title: "ティータイム",
