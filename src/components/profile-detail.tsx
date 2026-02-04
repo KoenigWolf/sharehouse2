@@ -504,14 +504,9 @@ export function ProfileDetail({
               </div>
 
               {profile.bio && (
-                <div className="relative">
-                  <p className={`text-sm text-[#18181b] leading-relaxed ${isTeaser ? "blur-[3px] select-none" : ""}`}>
-                    {profile.bio}
-                  </p>
-                  {isTeaser && (
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white/10 pointer-events-none" />
-                  )}
-                </div>
+                <p className="text-sm text-[#18181b] leading-relaxed">
+                  {isTeaser ? "●".repeat(Math.min(profile.bio.length, 20)) : profile.bio}
+                </p>
               )}
             </div>
           </div>
@@ -584,8 +579,8 @@ export function ProfileDetail({
         </div>
       </m.div>
 
-      {hasExtendedInfo && (
-        <div className={`mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 relative ${isTeaser ? "blur-[6px] select-none pointer-events-none" : ""}`}>
+      {hasExtendedInfo && !isTeaser && (
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 relative">
           {basicInfo.length > 0 && (
             <ProfileSection title={t("profile.sectionBasicInfo")} category="basic">
               <dl className="grid grid-cols-2 gap-y-6 gap-x-4">
