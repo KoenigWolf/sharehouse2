@@ -73,7 +73,7 @@ npm run dev
 
 ## プロジェクト構成
 
-```
+```text
 src/
 ├── app/            # ページルーティング（Next.js App Router）
 ├── components/     # 再利用可能なUIコンポーネント
