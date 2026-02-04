@@ -320,13 +320,13 @@ export const ResidentCard = memo(function ResidentCard({
               <Badge variant="muted" className="bg-white/80 backdrop-blur-sm border-none text-[10px] font-medium uppercase tracking-wider">{t("common.unregistered")}</Badge>
             )}
             {isNewResident && !isMock && (
-              <Badge variant="success" className="bg-brand-500 text-white border-none text-[10px] font-bold tracking-wider">NEW</Badge>
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-brand-600 text-white text-[10px] font-bold tracking-wider">{t("residents.badgeNew")}</span>
             )}
           </div>
 
           <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5">
             {isCurrentUser && (
-              <Badge variant="dark" className="bg-brand-600 text-white border-none text-[10px] font-bold tracking-wider uppercase">YOU</Badge>
+              <Badge variant="dark" className="bg-brand-600 text-white border-none text-[10px] font-bold tracking-wider uppercase">{t("residents.badgeYou")}</Badge>
             )}
             {showTeaTime && teaTimeEnabled && !isMock && (
               <span className="bg-amber-100/90 backdrop-blur-sm text-amber-700 border-none text-[10px] px-2 py-1 font-bold rounded-lg flex items-center gap-1 shadow-sm">

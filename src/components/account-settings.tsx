@@ -256,7 +256,7 @@ function DeleteSection() {
     [confirmText]
   );
 
-  const isConfirmed = confirmText === "削除";
+  const isConfirmed = confirmText === t("account.deleteConfirmPlaceholder");
 
   return (
     <form

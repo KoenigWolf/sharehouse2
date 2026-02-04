@@ -25,7 +25,7 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
     return (
       <footer className="hidden sm:block py-10 mt-auto border-t border-slate-100">
         <p className="text-sm text-slate-400 text-center tracking-tight">
-          &copy; {new Date().getFullYear()} ShareHouse. All rights reserved.
+          {t("footer.copyright", { year: new Date().getFullYear() })}
         </p>
       </footer>
     );
@@ -47,7 +47,7 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
           <div className="flex flex-col sm:flex-row gap-12 sm:gap-16">
             <nav aria-label={t("footer.navigation")}>
               <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">
-                Directory
+                {t("footer.directory")}
               </h3>
               <ul className="flex flex-col gap-3">
                 {NAV_LINKS.map(({ href, labelKey }) => (
@@ -65,7 +65,7 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
 
             <div>
               <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">
-                Follow Us
+                {t("footer.followUs")}
               </h3>
               <div className="flex gap-4">
                 {["Twitter", "Instagram"].map((sns) => (
@@ -84,7 +84,7 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
 
         <div className="mt-12 pt-8 border-t border-slate-200">
           <p className="text-xs text-slate-400">
-            &copy; {new Date().getFullYear()} ShareHouse. Built for modern communities.
+            {t("footer.copyrightFull", { year: new Date().getFullYear() })}
           </p>
         </div>
       </div>
