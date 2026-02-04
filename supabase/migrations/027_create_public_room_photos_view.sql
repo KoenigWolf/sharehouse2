@@ -2,6 +2,7 @@
 -- 部屋の写真（Room Photos）公開チラ見せ用ビューの作成
 -- ============================================
 
+drop view if exists public.room_photos_public_teaser cascade;
 create or replace view public.room_photos_public_teaser as
 select
   rp.id,
@@ -13,8 +14,7 @@ select
   rp.created_at,
   -- 投稿者の公開プロフィール情報
   p.masked_name,
-  p.nickname,
-  p.avatar_url
+  p.masked_nickname
 from public.room_photos rp
 join public.residents_public_teaser p on rp.user_id = p.id;
 

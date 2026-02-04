@@ -4,6 +4,7 @@
 
 -- public.profiles から一部の情報をマスクして返すビュー
 -- セキュリティ: avatar_url は返さない（CSS blur は DevTools で解除可能なため）
+drop view if exists public.residents_public_teaser cascade;
 create or replace view public.residents_public_teaser as
 select
   id,
