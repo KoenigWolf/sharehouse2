@@ -10,8 +10,9 @@ import {
 } from "@/domain/validation/profile";
 import { logError } from "@/lib/errors";
 import { getServerTranslator } from "@/lib/i18n/server";
-import { RateLimiters, formatRateLimitError } from "@/lib/security";
+import { RateLimiters, formatRateLimitError, isValidUUID } from "@/lib/security";
 import { enforceAllowedOrigin } from "@/lib/security/request";
+import { requireAdmin } from "@/lib/admin/check";
 
 /**
  * Response types
@@ -27,12 +28,19 @@ type UploadResponse = { success: true; url: string } | { error: string };
  * @param data - 更新するプロフィールデータ（名前・部屋番号・自己紹介・趣味・MBTI・入居日）
  * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
  */
-export async function updateProfile(data: ProfileUpdateInput): Promise<UpdateResponse> {
+export async function updateProfile(
+  data: ProfileUpdateInput,
+  targetUserId?: string
+): Promise<UpdateResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "updateProfile");
   if (originError) {
     return { error: originError };
+  }
+
+  if (targetUserId && !isValidUUID(targetUserId)) {
+    return { error: t("errors.invalidInput") };
   }
 
   const validation = validateProfileUpdate(data, t);
@@ -50,6 +58,16 @@ export async function updateProfile(data: ProfileUpdateInput): Promise<UpdateRes
 
     if (!user) {
       return { error: t("errors.unauthorized") };
+    }
+
+    // 他人のプロフィール更新は管理者のみ
+    const effectiveId = targetUserId && targetUserId !== user.id
+      ? targetUserId
+      : user.id;
+
+    if (effectiveId !== user.id) {
+      const adminError = await requireAdmin(t);
+      if (adminError) return { error: adminError };
     }
 
     const { error } = await supabase
@@ -93,10 +111,10 @@ export async function updateProfile(data: ProfileUpdateInput): Promise<UpdateRes
         sns_line: validatedData.sns_line,
         updated_at: new Date().toISOString(),
       })
-      .eq("id", user.id);
+      .eq("id", effectiveId);
 
     if (error) {
-      logError(error, { action: "updateProfile", userId: user.id });
+      logError(error, { action: "updateProfile", userId: effectiveId });
       return { error: t("errors.saveFailed") };
     }
 
@@ -141,6 +159,21 @@ export async function uploadAvatar(formData: FormData): Promise<UploadResponse> 
       return { error: t("errors.fileRequired") };
     }
 
+    // 管理者が他人のアバターを更新する場合
+    const targetUserId = formData.get("targetUserId") as string | null;
+    if (targetUserId && !isValidUUID(targetUserId)) {
+      return { error: t("errors.invalidInput") };
+    }
+
+    const effectiveId = targetUserId && targetUserId !== user.id
+      ? targetUserId
+      : user.id;
+
+    if (effectiveId !== user.id) {
+      const adminError = await requireAdmin(t);
+      if (adminError) return { error: adminError };
+    }
+
     const uploadRateLimit = RateLimiters.upload(user.id);
     if (!uploadRateLimit.success) {
       return { error: formatRateLimitError(uploadRateLimit.retryAfter, t) };
@@ -159,12 +192,12 @@ export async function uploadAvatar(formData: FormData): Promise<UploadResponse> 
 
     const fileExt = file.name.split(".").pop()?.toLowerCase() || "jpg";
     const sanitizedExt = sanitizeFileName(fileExt).slice(0, 10);
-    const fileName = `${user.id}-${Date.now()}.${sanitizedExt}`;
+    const fileName = `${effectiveId}-${Date.now()}.${sanitizedExt}`;
 
     const { data: profile } = await supabase
       .from("profiles")
       .select("avatar_url")
-      .eq("id", user.id)
+      .eq("id", effectiveId)
       .single();
 
     if (profile?.avatar_url && profile.avatar_url.includes("/avatars/")) {
@@ -186,7 +219,7 @@ export async function uploadAvatar(formData: FormData): Promise<UploadResponse> 
       });
 
     if (uploadError) {
-      logError(uploadError, { action: "uploadAvatar", userId: user.id });
+      logError(uploadError, { action: "uploadAvatar", userId: effectiveId });
       return { error: `${t("errors.uploadFailed")}: ${uploadError.message}` };
     }
 
@@ -200,10 +233,10 @@ export async function uploadAvatar(formData: FormData): Promise<UploadResponse> 
         avatar_url: urlData.publicUrl,
         updated_at: new Date().toISOString(),
       })
-      .eq("id", user.id);
+      .eq("id", effectiveId);
 
     if (updateError) {
-      logError(updateError, { action: "uploadAvatar.updateProfile", userId: user.id });
+      logError(updateError, { action: "uploadAvatar.updateProfile", userId: effectiveId });
       return { error: t("errors.saveFailed") };
     }
 

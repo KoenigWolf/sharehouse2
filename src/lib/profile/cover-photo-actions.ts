@@ -5,8 +5,9 @@ import { CacheStrategy } from "@/lib/utils/cache";
 import { validateFileUpload, sanitizeFileName } from "@/domain/validation/profile";
 import { logError } from "@/lib/errors";
 import { getServerTranslator } from "@/lib/i18n/server";
-import { RateLimiters, formatRateLimitError } from "@/lib/security";
+import { RateLimiters, formatRateLimitError, isValidUUID } from "@/lib/security";
 import { enforceAllowedOrigin } from "@/lib/security/request";
+import { requireAdmin } from "@/lib/admin/check";
 
 type UploadResponse = { success: true; url: string } | { error: string };
 
@@ -42,6 +43,21 @@ export async function uploadCoverPhoto(formData: FormData): Promise<UploadRespon
       return { error: t("errors.fileRequired") };
     }
 
+    // 管理者が他人のカバー写真を更新する場合
+    const targetUserId = formData.get("targetUserId") as string | null;
+    if (targetUserId && !isValidUUID(targetUserId)) {
+      return { error: t("errors.invalidInput") };
+    }
+
+    const effectiveId = targetUserId && targetUserId !== user.id
+      ? targetUserId
+      : user.id;
+
+    if (effectiveId !== user.id) {
+      const adminError = await requireAdmin(t);
+      if (adminError) return { error: adminError };
+    }
+
     const uploadRateLimit = RateLimiters.upload(user.id);
     if (!uploadRateLimit.success) {
       return { error: formatRateLimitError(uploadRateLimit.retryAfter, t) };
@@ -60,12 +76,12 @@ export async function uploadCoverPhoto(formData: FormData): Promise<UploadRespon
 
     const fileExt = file.name.split(".").pop()?.toLowerCase() || "jpg";
     const sanitizedExt = sanitizeFileName(fileExt).slice(0, 10);
-    const fileName = `${user.id}/${Date.now()}.${sanitizedExt}`;
+    const fileName = `${effectiveId}/${Date.now()}.${sanitizedExt}`;
 
     const { data: profile } = await supabase
       .from("profiles")
       .select("cover_photo_url")
-      .eq("id", user.id)
+      .eq("id", effectiveId)
       .single();
 
     if (profile?.cover_photo_url && profile.cover_photo_url.includes("/cover-photos/")) {
@@ -87,7 +103,7 @@ export async function uploadCoverPhoto(formData: FormData): Promise<UploadRespon
       });
 
     if (uploadError) {
-      logError(uploadError, { action: "uploadCoverPhoto", userId: user.id });
+      logError(uploadError, { action: "uploadCoverPhoto", userId: effectiveId });
       return { error: `${t("errors.uploadFailed")}: ${uploadError.message}` };
     }
 
@@ -101,10 +117,10 @@ export async function uploadCoverPhoto(formData: FormData): Promise<UploadRespon
         cover_photo_url: urlData.publicUrl,
         updated_at: new Date().toISOString(),
       })
-      .eq("id", user.id);
+      .eq("id", effectiveId);
 
     if (updateError) {
-      logError(updateError, { action: "uploadCoverPhoto.updateProfile", userId: user.id });
+      logError(updateError, { action: "uploadCoverPhoto.updateProfile", userId: effectiveId });
       return { error: t("errors.saveFailed") };
     }
 
