@@ -2,6 +2,9 @@
   "name": "sharehouse2-temp",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.9.0"
+  },
   "browserslist": [
     ">0.3%",
     "last 2 versions",
