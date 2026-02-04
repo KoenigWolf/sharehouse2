@@ -7,9 +7,9 @@ create or replace view public.share_items_public_teaser as
 select
   s.id,
   s.user_id,
-  -- タイトルの一部と説明をマスク
-  left(s.title, 5) || '...' as masked_title,
-  left(s.description, 10) || '...' as masked_description,
+  -- タイトルの一部と説明をマスク（NULL 安全）
+  case when s.title is not null then left(s.title, 5) || '...' else null end as masked_title,
+  case when s.description is not null then left(s.description, 10) || '...' else null end as masked_description,
   s.status,
   s.expires_at,
   s.created_at,

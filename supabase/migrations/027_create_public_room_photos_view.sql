@@ -8,8 +8,8 @@ select
   rp.id,
   rp.user_id,
   rp.photo_url,
-  -- キャプションの一部のみ表示
-  left(rp.caption, 5) || '...' as masked_caption,
+  -- キャプションの一部のみ表示（NULL 安全）
+  case when rp.caption is not null then left(rp.caption, 5) || '...' else null end as masked_caption,
   rp.taken_at,
   rp.created_at,
   -- 投稿者の公開プロフィール情報
