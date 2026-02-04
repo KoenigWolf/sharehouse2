@@ -54,7 +54,9 @@ export default async function ResidentsPage() {
     );
   }
 
-  // 登録を促すためマスク済みプロフィールだけを見せる
+  // 未認証でも「住民がいる」ことを伝えて登録を促すため、
+  // residents_public_teaser ビュー経由で名前先頭1文字・年代・業種のみ返す。
+  // avatar_url や nickname 全文はビューに含めておらず DevTools でも取得不可。
   const { profiles } = await getPublicProfilesWithMock(supabase);
 
   return (
