@@ -324,6 +324,8 @@ export const ja = {
     statsRooms: "部屋",
     floorOccupancy: "階層別入居率",
     showStats: "統計を表示",
+    badgeNew: "NEW",
+    badgeYou: "YOU",
   },
 
   teaTime: {
@@ -396,6 +398,8 @@ export const ja = {
   },
 
   pages: {
+    brandName: "SHARE HOUSE",
+    portalName: "Share House Portal",
     notFound: {
       title: "ページが見つかりません",
       description: "お探しのページは移動または削除された可能性があります",
@@ -404,6 +408,7 @@ export const ja = {
     error: {
       title: "問題が発生しました",
       description: "一時的なエラーが発生しました。しばらくしてから再度お試しください。",
+      label: "Error",
       retry: "再試行する",
       backHome: "ホームに戻る",
     },
@@ -514,6 +519,7 @@ export const ja = {
     confirmDelete: "このスケジュールを削除しますか？",
     deleteSuccess: "削除しました",
     saveSuccess: "保存しました",
+    collectionNote: "※ 必ず収集日の朝8時までに集積所にお出しください",
   },
 
   info: {
@@ -581,9 +587,12 @@ export const ja = {
   },
 
   footer: {
-    copyright: "© {{year}} All rights reserved",
+    copyright: "© {{year}} ShareHouse. All rights reserved.",
+    copyrightFull: "© {{year}} ShareHouse. Built for modern communities.",
     navigation: "フッターナビゲーション",
     tagline: "住民同士のつながりを大切にするシェアハウスポータル",
+    directory: "ディレクトリ",
+    followUs: "フォロー",
   },
 
   bulletin: {
@@ -659,6 +668,7 @@ export const ja = {
     occupancy: "入居 {{count}}/5",
     closeDetail: "閉じる",
     occupation: "職業",
+    residentLayout: "住民配置",
   },
 
   admin: {

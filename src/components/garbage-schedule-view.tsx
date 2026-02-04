@@ -125,7 +125,7 @@ export function GarbageScheduleView({
         )}
 
         <p className="text-[10px] text-[#a1a1aa] mt-3 tracking-wide">
-          ※ 必ず収集日の朝8時までに集積所にお出しください
+          {t("garbage.collectionNote")}
         </p>
       </section>
 

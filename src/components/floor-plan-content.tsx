@@ -122,7 +122,7 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
             <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider">
               {t("floorPlan.floor", { floor: activeFloor[0] })}
             </h3>
-            <p className="text-xs text-slate-500">Resident Layout</p>
+            <p className="text-xs text-slate-500">{t("floorPlan.residentLayout")}</p>
           </div>
         </div>
 

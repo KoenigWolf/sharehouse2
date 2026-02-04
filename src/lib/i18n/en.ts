@@ -324,6 +324,8 @@ export const en: Translations = {
     statsRooms: "rooms",
     floorOccupancy: "Floor Occupancy",
     showStats: "Show statistics",
+    badgeNew: "NEW",
+    badgeYou: "YOU",
   },
 
   teaTime: {
@@ -397,6 +399,8 @@ export const en: Translations = {
   },
 
   pages: {
+    brandName: "SHARE HOUSE",
+    portalName: "Share House Portal",
     notFound: {
       title: "Page not found",
       description: "The page may have moved or been removed.",
@@ -405,6 +409,7 @@ export const en: Translations = {
     error: {
       title: "Something went wrong",
       description: "Please try again later.",
+      label: "Error",
       retry: "Try again",
       backHome: "Back to home",
     },
@@ -515,6 +520,7 @@ export const en: Translations = {
     confirmDelete: "Delete this schedule?",
     deleteSuccess: "Deleted",
     saveSuccess: "Saved",
+    collectionNote: "* Please put out garbage by 8 AM on collection day",
   },
 
   info: {
@@ -582,9 +588,12 @@ export const en: Translations = {
   },
 
   footer: {
-    copyright: "© {{year}} All rights reserved",
+    copyright: "© {{year}} ShareHouse. All rights reserved.",
+    copyrightFull: "© {{year}} ShareHouse. Built for modern communities.",
     navigation: "Footer navigation",
     tagline: "A portal that values resident connections",
+    directory: "Directory",
+    followUs: "Follow Us",
   },
 
   bulletin: {
@@ -660,6 +669,7 @@ export const en: Translations = {
     occupancy: "{{count}}/5 occupied",
     closeDetail: "Close",
     occupation: "Occupation",
+    residentLayout: "Resident Layout",
   },
 
   admin: {

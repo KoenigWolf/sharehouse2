@@ -27,14 +27,14 @@ export default function Error({
       <header className="border-b border-[#e4e4e7] bg-white">
         <div className="container mx-auto px-6 h-16 flex items-center">
           <Link href="/" className="text-lg tracking-wider text-[#18181b]">
-            SHARE HOUSE
+            {t("pages.brandName")}
           </Link>
         </div>
       </header>
 
       <main className="flex-1 flex items-center justify-center p-6">
         <div className="text-center max-w-md">
-          <p className="text-6xl text-[#d4d4d8] mb-6 font-light">Error</p>
+          <p className="text-6xl text-[#d4d4d8] mb-6 font-light">{t("pages.error.label")}</p>
           <h1 className="text-xl text-[#18181b] mb-3 tracking-wide">
             {t("pages.error.title")}
           </h1>
@@ -57,7 +57,7 @@ export default function Error({
       <footer className="border-t border-[#e4e4e7] bg-white">
         <div className="container mx-auto px-6 py-4">
           <p className="text-xs text-[#a1a1aa] text-center">
-            Share House Portal
+            {t("pages.portalName")}
           </p>
         </div>
       </footer>

@@ -9,7 +9,7 @@ export default async function NotFound() {
       <header className="border-b border-[#e4e4e7] bg-white">
         <div className="container mx-auto px-6 h-16 flex items-center">
           <Link href="/" className="text-lg tracking-wider text-[#18181b]">
-            SHARE HOUSE
+            {t("pages.brandName")}
           </Link>
         </div>
       </header>
@@ -35,7 +35,7 @@ export default async function NotFound() {
       <footer className="border-t border-[#e4e4e7] bg-white">
         <div className="container mx-auto px-6 py-4">
           <p className="text-xs text-[#a1a1aa] text-center">
-            Share House Portal
+            {t("pages.portalName")}
           </p>
         </div>
       </footer>
