@@ -61,9 +61,9 @@ const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardPr
       <div
         role="button"
         tabIndex={0}
-        onClick={onClick}
+        onClick={() => onClick()}
         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } }}
-        className="group w-full bg-white border border-[#e4e4e7] rounded-lg overflow-hidden hover:border-[#18181b] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#18181b] focus-visible:ring-offset-2 cursor-pointer"
+        className="group w-full bg-white border border-[#e4e4e7] rounded-lg overflow-hidden transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#18181b] focus-visible:ring-offset-2 hover:border-[#18181b] cursor-pointer"
       >
         <div className="relative w-full overflow-hidden" style={{ paddingBottom: "100%" }}>
           <Image
@@ -71,7 +71,7 @@ const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardPr
             alt={t("roomPhotos.photoAlt")}
             fill
             sizes="(max-width: 640px) 50vw, 33vw"
-            className="object-cover group-hover:scale-[1.02] transition-transform duration-300"
+            className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
           />
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
             <span className="opacity-0 group-hover:opacity-100 transition-opacity p-2 bg-white/90 text-[#18181b]">

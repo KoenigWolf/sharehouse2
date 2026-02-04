@@ -76,11 +76,8 @@ export const ja = {
       strong: "強い",
     },
     signupHint: "登録後、プロフィールページで詳細情報を編集できます",
+    browseAsGuest: "ゲストとして閲覧する",
     defaultName: "ユーザー",
-    orContinueWith: "または",
-    loginWithLine: "LINEでログイン",
-    signupWithLine: "LINEで新規登録",
-    lineLoginFailed: "LINEログインに失敗しました",
     forgotPassword: "パスワードを忘れた方",
     sendResetLink: "リセットメールを送信",
     sendingResetLink: "送信中...",
@@ -190,8 +187,6 @@ export const ja = {
     snsLinkedinPlaceholder: "ユーザー名 または URL",
     snsGithub: "GitHub",
     snsGithubPlaceholder: "ユーザー名 または URL",
-    snsLine: "LINE",
-    snsLinePlaceholder: "LINE ID",
     snsHint: "ユーザー名または URLを入力",
     allergies: "アレルギー・食事制限",
     allergiesPlaceholder: "卵アレルギー、ベジタリアン など",
@@ -327,6 +322,14 @@ export const ja = {
     showStats: "統計を表示",
     badgeNew: "NEW",
     badgeYou: "YOU",
+  },
+  teaser: {
+    heading: "住民のプロフィールをチェックしよう",
+    headingWithCount: "他に {{count}} 人の住民が待っています",
+    description: "シェアハウスの仲間たちのより詳細なプロフィールや、日々の投稿、イベント情報をチェックするには、住民専用ポータルへの登録が必要です。",
+    ctaJoin: "住民登録して続きを見る",
+    ctaLogin: "ログイン",
+    footer: "安心のクローズド・コミュニティ",
   },
 
   teaTime: {
@@ -584,7 +587,7 @@ export const ja = {
     deleteConfirmPlaceholder: "削除",
     deleteButton: "アカウントを削除する",
     deleting: "削除中...",
-    noPasswordProvider: "LINE でログインしているため、パスワードの変更はできません",
+    noPasswordProvider: "パスワードが設定されていないため、変更できません",
   },
 
   footer: {

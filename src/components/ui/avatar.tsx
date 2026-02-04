@@ -110,6 +110,7 @@ interface OptimizedAvatarImageProps {
   fallback?: React.ReactNode;
   fallbackClassName?: string;
   fallbackAriaLabel?: string;
+  isBlurred?: boolean;
 }
 
 /**
@@ -126,6 +127,7 @@ function OptimizedAvatarImage({
   fallback,
   fallbackClassName,
   fallbackAriaLabel,
+  isBlurred = false,
 }: OptimizedAvatarImageProps) {
   const optimizedSrc = getOptimizedImageUrl(src);
 
@@ -145,7 +147,7 @@ function OptimizedAvatarImage({
       src={optimizedSrc}
       alt={alt}
       fill
-      className={cn("object-cover", className)}
+      className={cn("object-cover", isBlurred && "blur-md", className)}
       priority={priority}
       sizes={getResponsiveImageSizes(context)}
     />

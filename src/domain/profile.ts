@@ -110,6 +110,5 @@ export interface Profile {
   sns_facebook?: string | null;
   sns_linkedin?: string | null;
   sns_github?: string | null;
-  sns_line?: string | null;
   cover_photo_url?: string | null;
 }

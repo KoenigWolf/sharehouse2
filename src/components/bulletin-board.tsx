@@ -13,6 +13,7 @@ import type { BulletinWithProfile } from "@/domain/bulletin";
 interface BulletinBoardProps {
   bulletins: BulletinWithProfile[];
   currentUserId: string;
+  isTeaser?: boolean;
 }
 
 function formatTimeAgo(dateString: string): string {
@@ -29,7 +30,7 @@ function formatTimeAgo(dateString: string): string {
   return `${diffDays}d`;
 }
 
-export function BulletinBoard({ bulletins, currentUserId }: BulletinBoardProps) {
+export function BulletinBoard({ bulletins, currentUserId, isTeaser = false }: BulletinBoardProps) {
   const t = useI18n();
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
@@ -80,7 +81,7 @@ export function BulletinBoard({ bulletins, currentUserId }: BulletinBoardProps) 
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold tracking-tight text-slate-900">{t("bulletin.title")}</h2>
-        {!isEditing && (
+        {!isEditing && !isTeaser && (
           <button
             type="button"
             onClick={handleStartEdit}
@@ -171,11 +172,12 @@ export function BulletinBoard({ bulletins, currentUserId }: BulletinBoardProps) 
                 transition={{ duration: 0.4, delay: index * 0.05 }}
                 className="premium-surface rounded-2xl p-5 sm:p-6 flex gap-4 group relative"
               >
-                <Avatar className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl border border-slate-100 shadow-sm shrink-0">
+                <Avatar className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl border border-slate-100 shadow-sm shrink-0 overflow-hidden">
                   <OptimizedAvatarImage
                     src={bulletin.profiles?.avatar_url}
                     alt={displayName}
                     context="card"
+                    isBlurred={isTeaser}
                     fallback={
                       <span className="text-[11px] font-bold text-slate-400">
                         {getInitials(displayName)}
@@ -199,7 +201,7 @@ export function BulletinBoard({ bulletins, currentUserId }: BulletinBoardProps) 
                       {formatTimeAgo(bulletin.updated_at)}
                     </span>
                   </div>
-                  <p className="text-[15px] font-medium text-slate-600 leading-relaxed">
+                  <p className={`text-[15px] font-medium text-slate-600 leading-relaxed ${isTeaser ? "blur-[2.5px] select-none" : ""}`}>
                     {bulletin.message}
                   </p>
                 </div>

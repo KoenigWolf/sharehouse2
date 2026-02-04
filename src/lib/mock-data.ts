@@ -2,7 +2,7 @@ import { Profile } from "@/domain/profile";
 
 /**
  * DESIGN_GUIDELINES.md準拠のミニマルなアバター生成
- * - 背景: slate スケールの落ち着いた色
+ * - 背景: zinc スケールの落ち着いた色
  * - 人物: シンプルな線画風
  * - 色: 低彩度、ニュートラルトーン
  */

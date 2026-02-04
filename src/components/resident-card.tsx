@@ -300,7 +300,7 @@ export const ResidentCard = memo(function ResidentCard({
       prefetch={false}
     >
       <article
-        className="premium-surface rounded-xl transition-all duration-300 relative overflow-hidden group-hover:-translate-y-1 hover:shadow-xl"
+        className="h-full premium-surface rounded-xl transition-all duration-300 relative overflow-hidden group-hover:-translate-y-1 hover:shadow-xl flex flex-col"
       >
         <div className="aspect-square bg-slate-50 relative overflow-hidden">
           <Avatar className="w-full h-full rounded-none">

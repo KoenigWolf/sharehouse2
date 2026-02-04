@@ -30,6 +30,8 @@ import {
 } from "@/domain/profile";
 import type { RoomPhoto } from "@/domain/room-photo";
 import { getInitials, calculateResidenceDuration } from "@/lib/utils";
+import { TeaserOverlay } from "./public-teaser/teaser-overlay";
+import { MaskedText } from "./public-teaser/masked-text";
 import { uploadCoverPhoto } from "@/lib/profile/cover-photo-actions";
 import { prepareImageForUpload } from "@/lib/utils/image-compression";
 import { FILE_UPLOAD } from "@/lib/constants/config";
@@ -40,6 +42,7 @@ import { logError } from "@/lib/errors";
 interface ProfileDetailProps {
   profile: Profile;
   isOwnProfile: boolean;
+  isTeaser?: boolean;
   teaTimeEnabled?: boolean;
   roomPhotos?: RoomPhoto[];
 }
@@ -196,6 +199,7 @@ function CompactField({ label, value }: { label: string; value: string | null | 
 export function ProfileDetail({
   profile,
   isOwnProfile,
+  isTeaser = false,
   teaTimeEnabled,
   roomPhotos = [],
 }: ProfileDetailProps) {
@@ -288,7 +292,6 @@ export function ProfileDetail({
     { platform: "facebook", username: profile.sns_facebook, url: `https://facebook.com/${profile.sns_facebook}`, label: t("profile.snsFacebook") },
     { platform: "linkedin", username: profile.sns_linkedin, url: `https://linkedin.com/in/${profile.sns_linkedin}`, label: t("profile.snsLinkedin") },
     { platform: "github", username: profile.sns_github, url: `https://github.com/${profile.sns_github}`, label: t("profile.snsGithub") },
-    { platform: "line", username: profile.sns_line, url: null, label: t("profile.snsLine") },
   ].filter((link) => link.username);
 
   const hasExtendedInfo = basicInfo.length > 0 || workInfo.length > 0 || lifestyleInfo.length > 0 || communalInfo.length > 0 || personalityInfo.length > 0 || !!sharedSpaceUsage;
@@ -369,14 +372,14 @@ export function ProfileDetail({
         <div className="px-6 sm:px-10 pb-8">
           <div className="flex flex-col sm:flex-row gap-5 sm:gap-8">
             <div className="shrink-0 -mt-14 sm:-mt-[84px] mx-auto sm:mx-0">
-              <div className="w-28 h-28 sm:w-[168px] sm:h-[168px] rounded-full border-4 border-white bg-[#f4f4f5] overflow-hidden">
+              <div className="w-28 h-28 sm:w-[168px] sm:h-[168px] rounded-full border-4 border-white bg-[#f4f4f5] overflow-hidden relative">
                 <Avatar className="size-full rounded-full">
                   <OptimizedAvatarImage
                     src={profile.avatar_url}
-                    alt={t("a11y.profilePhotoAlt", { name: profile.name })}
+                    alt={t("a11y.profilePhotoAlt", { name: isTeaser ? "●" : profile.name })}
                     context="detail"
                     priority
-                    fallback={getInitials(profile.name)}
+                    fallback={isTeaser ? "●" : getInitials(profile.name)}
                     fallbackClassName="bg-[#f4f4f5] text-[#a1a1aa] text-4xl sm:text-5xl rounded-full w-full h-full"
                   />
                 </Avatar>
@@ -387,7 +390,11 @@ export function ProfileDetail({
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
                 <div>
                   <h1 className="text-[28px] text-[#18181b] tracking-wide font-light leading-tight">
-                    {profile.name}
+                    {isTeaser ? (
+                      <MaskedText text={profile.name} className="text-[28px]" />
+                    ) : (
+                      profile.name
+                    )}
                   </h1>
                   {(profile.room_number || snsLinks.length > 0) && (
                     <div className="flex items-center justify-center sm:justify-start gap-2 mt-1.5 text-sm text-[#71717a]">
@@ -423,11 +430,6 @@ export function ProfileDetail({
                             {link.platform === "github" && (
                               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-                              </svg>
-                            )}
-                            {link.platform === "line" && (
-                              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314" />
                               </svg>
                             )}
                           </>
@@ -503,7 +505,7 @@ export function ProfileDetail({
 
               {profile.bio && (
                 <p className="text-sm text-[#18181b] leading-relaxed">
-                  {profile.bio}
+                  {isTeaser ? "●".repeat(Math.min(profile.bio.length, 20)) : profile.bio}
                 </p>
               )}
             </div>
@@ -577,8 +579,8 @@ export function ProfileDetail({
         </div>
       </m.div>
 
-      {hasExtendedInfo && (
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {hasExtendedInfo && !isTeaser && (
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 relative">
           {basicInfo.length > 0 && (
             <ProfileSection title={t("profile.sectionBasicInfo")} category="basic">
               <dl className="grid grid-cols-2 gap-y-6 gap-x-4">
@@ -639,6 +641,14 @@ export function ProfileDetail({
               </dl>
             </ProfileSection>
           )}
+        </div>
+      )}
+
+      {isTeaser && (
+        <div className="fixed bottom-0 left-0 right-0 z-40 p-6 sm:p-12 pb-[calc(24px+env(safe-area-inset-bottom))] flex justify-center pointer-events-none">
+          <div className="pointer-events-auto w-full max-w-xl">
+            <TeaserOverlay />
+          </div>
         </div>
       )}
     </m.article>

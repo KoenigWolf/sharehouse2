@@ -36,12 +36,14 @@ export default async function SharePage() {
             </p>
           </div>
 
-          <ShareContent items={shareItems} currentUserId={user.id} />
+          <ShareContent
+            items={shareItems}
+            currentUserId={user.id}
+          />
         </div>
       </main>
 
       <Footer />
-
       <MobileNav />
     </div>
   );

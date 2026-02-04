@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ResidentCard } from "@/components/resident-card";
 import { Profile } from "@/domain/profile";
@@ -12,7 +12,6 @@ import Link from "next/link";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
 import { getFloorFromRoom, isNewResident, FLOOR_COLORS, type FloorId } from "@/lib/utils/residents";
-
 interface ResidentsGridProps {
   profiles: Profile[];
   currentUserId: string;
@@ -148,7 +147,10 @@ export function ResidentsGrid({
 
   const teaTimeSet = useMemo(() => new Set(teaTimeParticipants), [teaTimeParticipants]);
 
-  if (profiles.length === 0) {
+  const totalCount = profiles.length;
+  const displayCount = filteredAndSortedProfiles.length;
+
+  if (totalCount === 0) {
     return (
       <div className="flex-1 flex items-center justify-center">
         <p className="text-[#71717a] text-sm">{t("residents.noResidents")}</p>
@@ -165,133 +167,133 @@ export function ResidentsGrid({
               {t("residents.title")}
             </h2>
             <p className="text-[11px] sm:text-xs text-[#a1a1aa] mt-1">
-              {t("residents.countLabel", { count: filteredAndSortedProfiles.length })}
+              {t("residents.countLabel", { count: displayCount })}
               {(searchQuery || floorFilter !== "all") &&
-                ` ${t("residents.countOf", { total: profiles.length })}`}
+                ` ${t("residents.countOf", { total: totalCount })}`}
             </p>
           </div>
 
           <div className="flex gap-1 bg-slate-100 p-1 rounded-xl">
-            {viewModeOptions.map((option) => {
-              const isActive = viewMode === option.value;
-              const Icon = option.icon;
-              return (
-                <Button
-                  key={option.value}
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  onClick={() => setViewMode(option.value)}
-                  className={`${isActive
-                    ? "bg-white text-brand-600 shadow-sm"
-                    : "text-slate-500 hover:text-slate-900"
-                    } rounded-lg transition-all`}
-                  title={option.label}
-                  aria-label={option.label}
-                  aria-pressed={isActive}
-                >
-                  <Icon />
-                </Button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide -mx-1 px-1 pb-2">
-          {floors.map((floor) => {
-            const isAll = floor === "all";
-            const isActive = floorFilter === floor;
-            const floorStat = isAll ? null : floorStats[floor];
-            const colors = isAll ? null : FLOOR_COLORS[floor as keyof typeof FLOOR_COLORS];
-
-            return (
-              <Button
-                key={floor}
-                type="button"
-                variant="outline"
-                onClick={() => setFloorFilter(floor)}
-                className={`shrink-0 h-auto px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl transition-all ${isActive
-                  ? isAll
-                    ? "bg-brand-600 text-white shadow-lg shadow-brand-200 border-brand-600"
-                    : `${colors?.bg} ${colors?.text} border-transparent shadow-sm`
-                  : "bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300"
-                  }`}
-              >
-                <span className="text-sm font-semibold tracking-tight">
-                  {isAll ? t("residents.filterAll") : floor}
-                </span>
-                {floorStat && (
-                  <span className={`ml-2 text-xs font-medium ${isActive ? "opacity-70" : "text-slate-400"}`}>
-                    {floorStat.registered}/{floorStat.total}
-                  </span>
-                )}
-              </Button>
-            );
-          })}
-        </div>
-
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-4 border-b border-[#e4e4e7]">
-          <div className="relative group">
-            <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10" />
-            <input
-              type="search"
-              placeholder={t("residents.searchPlaceholder")}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full sm:w-80 h-12 pl-11 pr-4 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all shadow-sm"
-            />
-            {searchQuery && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-xs"
-                onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 hover:bg-transparent"
-              >
-                <CloseIcon />
-              </Button>
-            )}
-          </div>
-
-          <div className="relative sm:flex sm:gap-0">
-            <div className="flex overflow-x-auto scrollbar-hide sm:overflow-visible -mx-1 px-1 sm:mx-0 sm:px-0 snap-x snap-mandatory sm:snap-none">
-              {sortOptions.map((option) => {
-                const isActive = sortBy === option.value;
+              {viewModeOptions.map((option) => {
+                const isActive = viewMode === option.value;
+                const Icon = option.icon;
                 return (
                   <Button
                     key={option.value}
                     type="button"
                     variant="ghost"
-                    onClick={() => handleSortChange(option.value)}
-                    className="relative h-auto px-4 sm:px-4 py-2.5 sm:py-2 tracking-wide group whitespace-nowrap active:opacity-70 snap-center sm:snap-align-none shrink-0 hover:bg-transparent"
+                    size="icon-sm"
+                    onClick={() => setViewMode(option.value)}
+                    className={`${isActive
+                      ? "bg-white text-brand-600 shadow-sm"
+                      : "text-slate-500 hover:text-slate-900"
+                      } rounded-lg transition-all`}
+                    title={option.label}
+                    aria-label={option.label}
+                    aria-pressed={isActive}
                   >
-                    <span
-                      className={`text-sm ${isActive
-                        ? "text-[#18181b] font-medium"
-                        : "text-[#a1a1aa] group-hover:text-[#71717a]"
-                        }`}
-                    >
-                      {option.label}
-                    </span>
-                    {isActive && (
-                      <motion.span
-                        layoutId="sort-underline"
-                        className="absolute bottom-0 left-3 right-3 sm:left-4 sm:right-4 h-px bg-[#18181b]"
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
-                      />
-                    )}
+                    <Icon />
                   </Button>
                 );
               })}
             </div>
-            <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-white to-transparent pointer-events-none" />
-          </div>
         </div>
+
+        <div className="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide -mx-1 px-1 pb-2">
+            {floors.map((floor) => {
+              const isAll = floor === "all";
+              const isActive = floorFilter === floor;
+              const floorStat = isAll ? null : floorStats[floor];
+              const colors = isAll ? null : FLOOR_COLORS[floor as keyof typeof FLOOR_COLORS];
+
+              return (
+                <Button
+                  key={floor}
+                  type="button"
+                  variant="outline"
+                  onClick={() => setFloorFilter(floor)}
+                  className={`shrink-0 h-auto px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl transition-all ${isActive
+                    ? isAll
+                      ? "bg-brand-600 text-white shadow-lg shadow-brand-200 border-brand-600"
+                      : `${colors?.bg} ${colors?.text} border-transparent shadow-sm`
+                    : "bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300"
+                    }`}
+                >
+                  <span className="text-sm font-semibold tracking-tight">
+                    {isAll ? t("residents.filterAll") : floor}
+                  </span>
+                  {floorStat && (
+                    <span className={`ml-2 text-xs font-medium ${isActive ? "opacity-70" : "text-slate-400"}`}>
+                      {floorStat.registered}/{floorStat.total}
+                    </span>
+                  )}
+                </Button>
+              );
+            })}
+          </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-4 border-b border-[#e4e4e7]">
+            <div className="relative group">
+              <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10" />
+              <input
+                type="search"
+                placeholder={t("residents.searchPlaceholder")}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full sm:w-80 h-12 pl-11 pr-4 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all shadow-sm"
+              />
+              {searchQuery && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-xs"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 hover:bg-transparent"
+                >
+                  <CloseIcon />
+                </Button>
+              )}
+            </div>
+
+            <div className="relative sm:flex sm:gap-0">
+              <div className="flex overflow-x-auto scrollbar-hide sm:overflow-visible -mx-1 px-1 sm:mx-0 sm:px-0 snap-x snap-mandatory sm:snap-none">
+                {sortOptions.map((option) => {
+                  const isActive = sortBy === option.value;
+                  return (
+                    <Button
+                      key={option.value}
+                      type="button"
+                      variant="ghost"
+                      onClick={() => handleSortChange(option.value)}
+                      className="relative h-auto px-4 sm:px-4 py-2.5 sm:py-2 tracking-wide group whitespace-nowrap active:opacity-70 snap-center sm:snap-align-none shrink-0 hover:bg-transparent"
+                    >
+                      <span
+                        className={`text-sm ${isActive
+                          ? "text-[#18181b] font-medium"
+                          : "text-[#a1a1aa] group-hover:text-[#71717a]"
+                          }`}
+                      >
+                        {option.label}
+                      </span>
+                      {isActive && (
+                        <motion.span
+                          layoutId="sort-underline"
+                          className="absolute bottom-0 left-3 right-3 sm:left-4 sm:right-4 h-px bg-[#18181b]"
+                          transition={{ duration: 0.3, ease: "easeInOut" }}
+                        />
+                      )}
+                    </Button>
+                  );
+                })}
+              </div>
+              <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-white to-transparent pointer-events-none" />
+            </div>
+          </div>
       </div>
 
       <AnimatePresence mode="wait">
         {filteredAndSortedProfiles.length === 0 ? (
-          <motion.div
+          <m.div
             key="empty"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -314,7 +316,7 @@ export function ResidentsGrid({
             >
               {t("residents.clearSearch")}
             </Button>
-          </motion.div>
+          </m.div>
         ) : viewMode === "floor" ? (
           <FloorView
             key="floor-view"
@@ -339,9 +341,10 @@ export function ResidentsGrid({
             currentUserId={currentUserId}
             teaTimeSet={teaTimeSet}
           />
-        )}
-      </AnimatePresence>
-    </div>
+        )
+        }
+      </AnimatePresence >
+    </div >
   );
 }
 
@@ -355,14 +358,14 @@ function GridView({
   teaTimeSet: Set<string>;
 }) {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 sm:gap-8"
     >
       {profiles.map((profile, index) => (
-        <motion.div
+        <m.div
           key={profile.id}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -378,9 +381,9 @@ function GridView({
             showTeaTime={true}
             teaTimeEnabled={teaTimeSet.has(profile.id)}
           />
-        </motion.div>
+        </m.div>
       ))}
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -400,7 +403,7 @@ function FloorView({
   const floorsOrder: FloorId[] = ["5F", "4F", "3F", "2F"];
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -414,7 +417,7 @@ function FloorView({
         if (profiles.length === 0) return null;
 
         return (
-          <motion.section
+          <m.section
             key={floor}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -435,7 +438,7 @@ function FloorView({
                     {floorStat.registered}/{floorStat.total} {t("residents.registeredShort")}
                   </span>
                   <div className="flex-1 max-w-48 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                    <motion.div
+                    <m.div
                       initial={{ width: 0 }}
                       animate={{ width: `${(floorStat.registered / floorStat.total) * 100}%` }}
                       transition={{ duration: 1, ease: [0.23, 1, 0.32, 1], delay: floorIndex * 0.1 + 0.3 }}
@@ -448,7 +451,7 @@ function FloorView({
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 sm:gap-8">
               {profiles.map((profile, index) => (
-                <motion.div
+                <m.div
                   key={profile.id}
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -461,13 +464,13 @@ function FloorView({
                     showTeaTime={true}
                     teaTimeEnabled={teaTimeSet.has(profile.id)}
                   />
-                </motion.div>
+                </m.div>
               ))}
             </div>
-          </motion.section>
+          </m.section>
         );
       })}
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -483,14 +486,14 @@ function ListView({
   t: Translator;
 }) {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="space-y-2"
     >
       {profiles.map((profile, index) => (
-        <motion.div
+        <m.div
           key={profile.id}
           initial={{ opacity: 0, x: -8 }}
           animate={{ opacity: 1, x: 0 }}
@@ -502,9 +505,9 @@ function ListView({
             isTeaTimeParticipant={teaTimeSet.has(profile.id)}
             t={t}
           />
-        </motion.div>
+        </m.div>
       ))}
-    </motion.div>
+    </m.div>
   );
 }
 

@@ -33,12 +33,14 @@ export default async function BulletinPage() {
             </h1>
           </div>
 
-          <BulletinBoard bulletins={bulletins} currentUserId={user.id} />
+          <BulletinBoard
+            bulletins={bulletins}
+            currentUserId={user.id}
+          />
         </div>
       </main>
 
       <Footer />
-
       <MobileNav />
     </div>
   );

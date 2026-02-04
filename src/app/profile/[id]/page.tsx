@@ -39,7 +39,6 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
   if (validatedId.startsWith("mock-")) {
     profile = mockProfiles.find((p) => p.id === validatedId) || null;
-    // モックユーザーは部屋番号に基づいて参加状態を決定（奇数部屋が参加）
     const roomNum = parseInt(profile?.room_number || "0", 10);
     teaTimeEnabled = roomNum % 2 === 1;
   } else {
@@ -52,7 +51,6 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     teaTimeEnabled = teaTimeSetting?.is_enabled ?? false;
     roomPhotos = photos;
 
-    // 自分のプロフィールが未作成の場合は自動作成
     if (!profile && user.id === validatedId) {
       const t = await getServerTranslator();
       const userName =
@@ -98,7 +96,6 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
       </main>
 
       <Footer />
-
       <MobileNav />
     </div>
   );

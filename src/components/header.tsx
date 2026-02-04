@@ -19,6 +19,7 @@ import {
   LogOut,
   Shield,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -107,6 +108,14 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
   const optimizedSrc = getOptimizedImageUrl(avatarUrl);
   const profileHref = userId ? `/profile/${userId}` : "/settings";
 
+  if (!userId) {
+    return (
+      <Button asChild variant="ghost" className="text-sm font-medium text-slate-600 hover:text-brand-600">
+        <Link href="/login">{t("auth.login")}</Link>
+      </Button>
+    );
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -167,6 +176,7 @@ UserAvatarMenu.displayName = "UserAvatarMenu";
 export const Header = memo(function Header() {
   const pathname = usePathname();
   const t = useI18n();
+  const { userId } = useUser();
 
   const isPathActive = useCallback(
     (item: NavItem) => pathname === item.href,

@@ -36,11 +36,20 @@ export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const isAuthCallback = pathname.startsWith("/auth/callback");
   const isLoginPage = pathname.startsWith("/login");
+  // /residents のみ未認証チラ見せ対応済み
+  const isPublicTeaserPage = pathname === "/residents";
 
-  // 未認証ユーザーはログインページへリダイレクト（ログイン/コールバックは除外）
-  if (!user && !isLoginPage && !isAuthCallback) {
+  // 未認証ユーザーの挙動
+  if (!user && !isLoginPage && !isAuthCallback && !isPublicTeaserPage) {
     const url = request.nextUrl.clone();
-    url.pathname = "/login";
+
+    // ルートパスへのアクセスの場合は /residents (チラ見せ) へ
+    if (pathname === "/") {
+      url.pathname = "/residents";
+    } else {
+      url.pathname = "/login";
+    }
+
     return NextResponse.redirect(url);
   }
 
