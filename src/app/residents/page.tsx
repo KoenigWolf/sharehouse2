@@ -41,7 +41,7 @@ export default async function ResidentsPage() {
           )}
 
           {mockCount > 0 && (
-            <p className="text-xs text-zinc-400 mb-5 sm:mb-6">
+            <p className="text-xs text-slate-400 mb-5 sm:mb-6">
               {t("residents.registeredLabel", { count: dbProfiles.length })} /{" "}
               {t("residents.unregisteredLabel", { count: mockCount })}
             </p>

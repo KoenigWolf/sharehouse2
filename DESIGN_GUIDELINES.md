@@ -1,6 +1,6 @@
 # デザインガイドライン
 
-Share House Portal - Design Guidelines
+Share House Portal - Premium Design System
 
 関連: [README.md](./README.md) / [CODING_GUIDELINES.md](./CODING_GUIDELINES.md) / [IMPROVEMENTS.md](./IMPROVEMENTS.md)
 
@@ -8,115 +8,104 @@ Share House Portal - Design Guidelines
 
 ## 設計思想
 
-- 目的: 誰がどんな人かが分かり、声をかける心理的ハードルを下げる
-- 規模: 最大20人・クローズド。SaaSではなくデジタル掲示板＋名簿＋ゆるいSNS
-- UX・空気感が最重要。パフォーマンス・スケールは二の次
+- **Purpose**: 住人間の心理的ハードルを下げ、信頼感のあるコミュニティ空間をデジタルの側面から演出する。
+- **Aesthetic**: 「Premium Modern Minimalism」。単なるシンプルさではなく、質感（テクスチャ）、光（ガラス）、奥行き（シャドウ）を感じさせる上質な体験を提供する。
+- **Core Values**: 信頼感、親しみやすさ、洗練。
 
 ---
 
-## 基本思想（無印良品ベース）
+## 基本思想
 
-- デザインは「主役」ではなく「環境」
-- 情報を静かに整理する。理由のない装飾は禁止
-- 足す前に削れないかを必ず検討する
-
-### 禁止事項
-
-SaaS管理画面風UI / グラデーション多用 / 強い影 / 意味のないアイコン・装飾 / 純白・純黒 / バウンド・派手なアニメーション / 命令口調 / 感情を煽る文言
+- **Authenticity over Decoration**: 意味のない装飾は排除しつつも、ユーザーが「大切にされている」と感じる細部の質感を追求する。
+- **Softness & Depth**: 直角を避け、2xl〜3xlの大きな角丸（softness）と、繊細な影（depth）を用いる。
+- **Fluid Motion**: 全てのアクションには、物理演算に基づいたような滑らかなフィードバック（Framer Motion）を伴う。
 
 ---
 
 ## カラーパレット
 
-Tailwind zinc スケールベース。shadcn/ui に準拠したクリーンなニュートラル。
+Tailwind **Slate** スケールをベースに、鮮やかな **Brand (Emerald)** をアクセントとして使用。
 
-| 用途 | 色 | 備考 |
-|------|-----|------|
-| 背景（メイン） | `#ffffff` | white (shadcn/ui default) |
-| 背景（セカンダリ） | `#f4f4f5` | zinc-100 |
-| テキスト（メイン） | `#18181b` | zinc-900 |
-| テキスト（説明） | `#71717a` | zinc-500 |
-| テキスト（補助） | `#a1a1aa` | zinc-400 |
-| プレースホルダー | `#d4d4d8` | zinc-300 |
-| ボーダー | `#e4e4e7` | zinc-200 |
-| エラー | `#fef2f2` / `#e5a0a0` / `#8b4040` | 背景 / ボーダー / テキスト |
-| 成功 | `#f0fdf4` / `#93c5a0` / `#3d6b4a` | 背景 / ボーダー / テキスト |
-| ボタン | `#18181b` → hover: `#27272a` | 無効時: `#a1a1aa` |
+| カテゴリ | 色 / 変数 | 用途 |
+|----------|-----------|------|
+| **Brand (Main)** | `brand-500` / `brand-600` | プライマリボタン、ブランドアイコン、重要なアクセント |
+| **Brand (Deep)** | `brand-700` | テキストグラデーションの終点、ホバー状態 |
+| **Success** | `success` (`#3d6b4a`) | 成功メッセージ、完了、チェック状態 |
+| **Error** | `error` (`#8b4040`) | エラー、削除、警告 |
+| **Background** | `slate-50` (`#f8fafc`) | ページ全体の背景 |
+| **Surface** | `#ffffff` | カード、コンテナ（`premium-surface`） |
+| **Text (Main)** | `slate-900` (`#0f172a`) | 見出し、メインテキスト |
+| **Text (Body)** | `slate-600` | 本文、説明文 |
+| **Text (Muted)** | `slate-400` | ラベル、補助情報、未入力状態 |
+| **Border** | `slate-100` / `slate-200` | 区切り線、入力欄のボーダー |
 
 ---
 
 ## タイポグラフィ
 
-- フォントは1種。太字の多用禁止
-- 強調はサイズ・余白・配置で行う
-- ブランド名: `text-xl` / `tracking-wider`
-- ラベル: `text-xs` / `tracking-wide`
-- 本文: `text-sm` / `leading-relaxed`
+- **Font**: Geist Sans / System UI
+- **Headings**: `tracking-tight` / `font-bold` / `slate-900`
+- **Labels**: `text-[10px]` / `font-bold` / `tracking-wider` / `uppercase` / `slate-400`
+- **Body**: `text-sm` or `text-[15px]` / `leading-relaxed` / `slate-600`
+- **Gradient**: 重要な見出しには `.text-gradient` を適用可能。
 
 ---
 
-## スペーシング
+## コンポーネント・フィジックス
 
-| サイズ | Tailwind | 用途 |
-|--------|----------|------|
-| 4px | `1` | 要素内の微調整 |
-| 8px | `2` | ラベルと入力欄の間 |
-| 16px | `4` | セクション内の要素間 |
-| 24px | `6` | フォーム要素間 |
-| 32px | `8` | セクション間 |
-| 48px | `12` | 大きなブロック間 |
-
----
-
-## コンポーネント
-
-- 影は極力使わない
-- 角丸は控えめに。以下の階層で統一:
-  - アバター: `rounded-full`（円形）
-  - ボタン・入力欄: `rounded-md`（6px）
-  - カード・コンテナ: `rounded-lg`（8px）
-  - バッジ・タグ: `rounded`（4px）
-  - スイッチ・プログレスバー: `rounded-full`
-  - ギャラリー写真: 角丸不要（四角のまま）
-- 枠線は整理目的でのみ使用
-- ボタン: `rounded-md`、プライマリは `#18181b`、セカンダリは枠線のみ
-- 入力欄: `h-12`、`rounded-md`、ボーダー `#e4e4e7`、フォーカス時 `#18181b`
-- フィードバック: 左ボーダーのみ（`border-l-2`）、全面カラー・アイコン・感嘆符は禁止
+- **Corners (Border Radius)**:
+  - Default Container: `rounded-2xl` (1rem)
+  - Profile/Event Cards: `rounded-3xl` (1.5rem)
+  - Buttons / Inputs: `rounded-full` or `rounded-2xl`
+  - Floating Labels: `rounded-xl`
+- **Shadows**:
+  - `premium-surface`: `box-shadow: var(--premium-shadow)` (非常に深く、柔らかい影)
+  - Interactive: Hover時に少し浮き上がる（y-offsetの減少、影の強まり）
+- **Glassmorphism**:
+  - `glass` クラスを使用。`bg-white/70` + `backdrop-blur-md` + `border-white/20`
+  - モーダル、ヘッダー、モバイルナビなどで使用。
 
 ---
 
 ## アニメーション（Framer Motion）
 
-- duration は 0.2〜0.3秒
-- ease は `easeInOut` または `easeOut`
-- 用途は hover / modal / フェードイン程度に限定
-- 目立たせるための動きは禁止
+- **Basic**: `duration: 0.4`, `ease: [0.23, 1, 0.32, 1]` (Quart out)
+- **Entrance**: ページ遷移やリスト表示時は `y: 10` からのフェードインとスタッガー（時間差）を用いる。
+- **Interaction**: ボタンクリック時は `scale(0.98)` 程度のわずかな縮小フィードバックを入れる。
 
 ---
 
-## 文言
+## 文言（Voice & Tone）
 
-- 命令口調禁止
-- 感情を煽らない
-- 成功・失敗ともに淡々と伝える
+- **Professional & Warm**: 丁寧でありながらも、コミュニティの温かさを感じさせる言葉遣い。
+- **Clarity**: ユーザーが何をすべきかを明確に伝える。
+- **Feedback**: 成功したときには、さりげなくポジティブなフィードバックを提供する。
 
 ---
 
-## 新規ページ実装チェック
+## 新規ページ実装チェックリスト
 
-- [ ] カラーパレット内の色のみ使用しているか
-- [ ] 装飾的な要素（アイコン・グラデーション・影）がないか
-- [ ] アニメーションは静かで短いか（0.2〜0.3秒）
-- [ ] 余白は十分にあるか
-- [ ] 文言は淡々としているか
-- [ ] 既存ページと空気感が一致しているか
+- [ ] `slate` 以外のグレースケール（zinc, gray等）を使用していないか
+- [ ] 直角（rounded-none）の要素が含まれていないか
+- [ ] 影は `var(--premium-shadow)` を基準としているか
+- [ ] ブランドカラーは `brand-500` 系に統一されているか
+- [ ] 入力欄やボタンは十分な高さ（H-11/12）と余白を持っているか
+- [ ] モバイルでのタップターゲット（44px以上）が確保されているか
+
+---
+
+## 避けるべき事項
+
+- **Generic Themes**: 既視感のあるSaaS管理画面風のUI
+- **Zinc/Neutral Colors**: 洗練さに欠ける無機質なグレー
+- **Harsh Shadows**: 境界線の分かりすぎる強い影
+- **Complexity**: 情報過多なレイアウト。余白を贅沢に使うこと。
 
 ---
 
 ## 参考リンク
 
-- [Tailwind CSS ドキュメント](https://tailwindcss.com/docs)
-- [Framer Motion ドキュメント](https://motion.dev/docs)
-- [Radix UI ドキュメント](https://www.radix-ui.com/primitives/docs)
-- [WCAG 2.2 クイックリファレンス](https://www.w3.org/WAI/WCAG22/quickref/)
-- [無印良品 公式サイト](https://www.ryohin-keikaku.jp/) - デザインの空気感の参考
+- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+- [Framer Motion Physics](https://motion.dev/docs/physics)
+- [Geist Sans Font](https://vercel.com/font)
+

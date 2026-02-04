@@ -83,14 +83,14 @@ export function ShareContent({ items, currentUserId }: ShareContentProps) {
   }, [t, router]);
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <div />
+    <div className="space-y-8">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold tracking-tight text-slate-900">{t("share.title")}</h2>
         {!isFormOpen && (
           <button
             type="button"
             onClick={() => { setIsFormOpen(true); setFeedback(null); }}
-            className="text-xs text-white bg-zinc-900 hover:bg-zinc-700 px-3 py-1.5 rounded-md transition-colors"
+            className="h-9 px-5 rounded-full bg-brand-600 hover:bg-brand-700 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
           >
             {t("share.post")}
           </button>
@@ -104,11 +104,10 @@ export function ShareContent({ items, currentUserId }: ShareContentProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.2 }}
-            className={`text-xs px-3 py-2 mb-4 border-l-2 ${
-              feedback.type === "success"
-                ? "bg-success-bg border-success-border text-success"
-                : "bg-error-bg border-error-border text-error"
-            }`}
+            className={`text-xs font-medium px-4 py-3 rounded-xl border-l-4 shadow-sm ${feedback.type === "success"
+              ? "bg-success-bg/50 border-success-border text-success"
+              : "bg-error-bg/50 border-error-border text-error"
+              }`}
           >
             {feedback.message}
           </m.div>
@@ -121,12 +120,12 @@ export function ShareContent({ items, currentUserId }: ShareContentProps) {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden mb-6"
+            transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+            className="overflow-hidden"
           >
-            <div className="border border-zinc-200 rounded-lg p-4 space-y-3">
-              <div>
-                <label className="block text-xs text-zinc-500 mb-1">
+            <div className="premium-surface rounded-3xl p-6 sm:p-8 space-y-5">
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 tracking-wider uppercase ml-1">
                   {t("share.titleLabel")}
                 </label>
                 <input
@@ -135,11 +134,11 @@ export function ShareContent({ items, currentUserId }: ShareContentProps) {
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder={t("share.titlePlaceholder")}
                   maxLength={SHARE_ITEMS.maxTitleLength}
-                  className="w-full h-10 px-3 text-sm text-zinc-900 placeholder:text-zinc-300 border border-zinc-200 rounded-md focus:border-zinc-900 focus:outline-none transition-colors"
+                  className="w-full h-11 px-4 bg-white border border-slate-200 rounded-2xl text-slate-700 text-sm font-medium placeholder:text-slate-300 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
                 />
               </div>
-              <div>
-                <label className="block text-xs text-zinc-500 mb-1">
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 tracking-wider uppercase ml-1">
                   {t("share.descriptionLabel")}
                 </label>
                 <textarea
@@ -148,14 +147,14 @@ export function ShareContent({ items, currentUserId }: ShareContentProps) {
                   placeholder={t("share.descriptionPlaceholder")}
                   maxLength={SHARE_ITEMS.maxDescriptionLength}
                   rows={2}
-                  className="w-full px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-300 border border-zinc-200 rounded-md focus:border-zinc-900 focus:outline-none resize-none transition-colors"
+                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-700 text-sm font-medium placeholder:text-slate-300 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300 resize-none"
                 />
               </div>
-              <div className="flex justify-end gap-2">
+              <div className="flex justify-end gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => { setIsFormOpen(false); setTitle(""); setDescription(""); }}
-                  className="text-xs text-zinc-400 hover:text-zinc-600 px-3 py-1.5 transition-colors"
+                  className="h-10 px-6 rounded-full text-[11px] font-bold text-slate-400 hover:text-slate-600 tracking-wider uppercase transition-all duration-300"
                 >
                   {t("common.cancel")}
                 </button>
@@ -163,7 +162,7 @@ export function ShareContent({ items, currentUserId }: ShareContentProps) {
                   type="button"
                   onClick={handlePost}
                   disabled={!title.trim() || isSubmitting}
-                  className="text-xs text-white bg-zinc-900 hover:bg-zinc-700 disabled:bg-zinc-300 px-3 py-1.5 rounded-md transition-colors"
+                  className="h-10 px-8 rounded-full bg-brand-600 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
                 >
                   {isSubmitting ? t("share.posting") : t("share.post")}
                 </button>
@@ -174,10 +173,12 @@ export function ShareContent({ items, currentUserId }: ShareContentProps) {
       </AnimatePresence>
 
       {items.length === 0 ? (
-        <p className="text-xs text-zinc-400 py-8 text-center">{t("share.empty")}</p>
+        <div className="py-20 text-center">
+          <p className="text-sm text-slate-400 font-medium">{t("share.empty")}</p>
+        </div>
       ) : (
-        <div className="space-y-3">
-          {items.map((item) => {
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {items.map((item, index) => {
             const displayName = item.profiles?.nickname || item.profiles?.name || "";
             const isMine = item.user_id === currentUserId;
             const isClaimed = item.status === "claimed";
@@ -186,83 +187,84 @@ export function ShareContent({ items, currentUserId }: ShareContentProps) {
             return (
               <m.div
                 key={item.id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.2 }}
-                className={`border rounded-lg p-4 ${
-                  isClaimed
-                    ? "border-zinc-100 bg-zinc-50"
-                    : "border-zinc-200"
-                }`}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+                className={`premium-surface rounded-3xl p-6 relative group flex flex-col ${isClaimed ? "opacity-60 grayscale-[0.5]" : ""
+                  }`}
               >
-                <div className="flex gap-3">
-                  <Avatar className="w-8 h-8 rounded-full shrink-0">
-                    <OptimizedAvatarImage
-                      src={item.profiles?.avatar_url}
-                      alt={displayName}
-                      context="card"
-                      fallback={
-                        <span className="text-[10px] text-zinc-400">
-                          {getInitials(displayName)}
-                        </span>
-                      }
-                      fallbackClassName="bg-zinc-50"
-                    />
-                  </Avatar>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs text-zinc-500">{displayName}</span>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2.5">
+                    <Avatar className="w-6 h-6 rounded-lg border border-slate-100 shadow-sm">
+                      <OptimizedAvatarImage
+                        src={item.profiles?.avatar_url}
+                        alt={displayName}
+                        context="card"
+                        fallback={
+                          <span className="text-[9px] font-bold text-slate-400">
+                            {getInitials(displayName)}
+                          </span>
+                        }
+                        fallbackClassName="bg-slate-50"
+                      />
+                    </Avatar>
+                    <div className="flex flex-col">
+                      <span className="text-[11px] font-bold text-slate-900 tracking-tight leading-none mb-0.5">
+                        {displayName}
+                      </span>
                       {item.profiles?.room_number && (
-                        <span className="text-[10px] text-zinc-300">
-                          {item.profiles.room_number}
+                        <span className="text-[9px] font-bold text-slate-400 tracking-wider">
+                          #{item.profiles.room_number}
                         </span>
-                      )}
-                      {timeLeft && !isClaimed && (
-                        <span className="text-[10px] text-zinc-400 ml-auto">
-                          {t("share.expiresIn", { time: timeLeft })}
-                        </span>
-                      )}
-                    </div>
-
-                    <p className={`text-sm font-medium ${isClaimed ? "text-zinc-400" : "text-zinc-900"}`}>
-                      {item.title}
-                    </p>
-
-                    {item.description && (
-                      <p className={`text-xs mt-1 ${isClaimed ? "text-zinc-300" : "text-zinc-500"}`}>
-                        {item.description}
-                      </p>
-                    )}
-
-                    <div className="flex items-center gap-2 mt-3">
-                      {isClaimed ? (
-                        <span className="text-[10px] text-zinc-400 bg-zinc-100 px-2 py-0.5 rounded">
-                          {t("share.claimed")}
-                        </span>
-                      ) : !isMine ? (
-                        <button
-                          type="button"
-                          onClick={() => handleClaim(item.id)}
-                          disabled={isSubmitting}
-                          className="text-xs text-white bg-zinc-900 hover:bg-zinc-700 disabled:bg-zinc-300 px-3 py-1 rounded-md transition-colors"
-                        >
-                          {t("share.claim")}
-                        </button>
-                      ) : null}
-
-                      {isMine && !isClaimed && (
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(item.id)}
-                          disabled={isSubmitting}
-                          className="text-[10px] text-zinc-300 hover:text-zinc-500 transition-colors ml-auto"
-                        >
-                          {t("common.delete")}
-                        </button>
                       )}
                     </div>
                   </div>
+                  {timeLeft && !isClaimed && (
+                    <span className="text-[10px] font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-full tracking-wider">
+                      {timeLeft}
+                    </span>
+                  )}
+                </div>
+
+                <div className="space-y-2 mb-6 flex-1">
+                  <h4 className={`text-base font-bold tracking-tight ${isClaimed ? "text-slate-400 line-through" : "text-slate-900"}`}>
+                    {item.title}
+                  </h4>
+                  {item.description && (
+                    <p className={`text-sm font-medium leading-relaxed ${isClaimed ? "text-slate-300" : "text-slate-500"}`}>
+                      {item.description}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between mt-auto">
+                  {isClaimed ? (
+                    <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-full uppercase tracking-widest">
+                      {t("share.claimed")}
+                    </span>
+                  ) : !isMine ? (
+                    <button
+                      type="button"
+                      onClick={() => handleClaim(item.id)}
+                      disabled={isSubmitting}
+                      className="h-8 px-6 rounded-full bg-brand-600 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[10px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
+                    >
+                      {t("share.claim")}
+                    </button>
+                  ) : (
+                    <div />
+                  )}
+
+                  {isMine && !isClaimed && (
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(item.id)}
+                      disabled={isSubmitting}
+                      className="text-[10px] font-bold text-slate-300 hover:text-rose-500 uppercase tracking-widest transition-all p-2"
+                    >
+                      {t("common.delete")}
+                    </button>
+                  )}
                 </div>
               </m.div>
             );

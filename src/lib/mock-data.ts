@@ -2,7 +2,7 @@ import { Profile } from "@/domain/profile";
 
 /**
  * DESIGN_GUIDELINES.md準拠のミニマルなアバター生成
- * - 背景: zinc スケールの落ち着いた色
+ * - 背景: slate スケールの落ち着いた色
  * - 人物: シンプルな線画風
  * - 色: 低彩度、ニュートラルトーン
  */
@@ -35,15 +35,14 @@ const generateMinimalAvatar = (
     <ellipse cx="50" cy="48" rx="20" ry="24" fill="${skinTone}"/>
 
     <!-- 髪（シンプル） -->
-    ${
-      variant === "a" || variant === "c"
-        ? `<ellipse cx="50" cy="30" rx="21" ry="14" fill="${hairColor}"/>
+    ${variant === "a" || variant === "c"
+      ? `<ellipse cx="50" cy="30" rx="21" ry="14" fill="${hairColor}"/>
          <rect x="29" y="28" width="42" height="12" fill="${hairColor}"/>`
-        : variant === "b"
-          ? `<ellipse cx="50" cy="30" rx="22" ry="14" fill="${hairColor}"/>
+      : variant === "b"
+        ? `<ellipse cx="50" cy="30" rx="22" ry="14" fill="${hairColor}"/>
          <path d="M28 32 Q26 50 30 65 L36 62 Q34 48 36 36 Z" fill="${hairColor}"/>
          <path d="M72 32 Q74 50 70 65 L64 62 Q66 48 64 36 Z" fill="${hairColor}"/>`
-          : `<ellipse cx="50" cy="30" rx="22" ry="14" fill="${hairColor}"/>
+        : `<ellipse cx="50" cy="30" rx="22" ry="14" fill="${hairColor}"/>
          <path d="M28 32 Q26 45 32 55 L38 52 Q34 44 36 36 Z" fill="${hairColor}"/>
          <path d="M72 32 Q74 45 68 55 L62 52 Q66 44 64 36 Z" fill="${hairColor}"/>`
     }
@@ -64,27 +63,27 @@ const avatarConfigs: Array<{
   hairColor: string;
   clothesColor: string;
 }> = [
-  { variant: "b", hairColor: "#3f3f46", clothesColor: "#d4d4d8" },
-  { variant: "a", hairColor: "#27272a", clothesColor: "#e4e4e7" },
-  { variant: "d", hairColor: "#52525b", clothesColor: "#d4d4d8" },
-  { variant: "a", hairColor: "#3f3f46", clothesColor: "#e4e4e7" },
-  { variant: "b", hairColor: "#27272a", clothesColor: "#d4d4d8" },
-  { variant: "a", hairColor: "#3f3f46", clothesColor: "#e4e4e7" },
-  { variant: "c", hairColor: "#52525b", clothesColor: "#d4d4d8" },
-  { variant: "a", hairColor: "#27272a", clothesColor: "#e4e4e7" },
-  { variant: "b", hairColor: "#3f3f46", clothesColor: "#d4d4d8" },
-  { variant: "a", hairColor: "#52525b", clothesColor: "#e4e4e7" },
-  { variant: "d", hairColor: "#27272a", clothesColor: "#d4d4d8" },
-  { variant: "a", hairColor: "#3f3f46", clothesColor: "#e4e4e7" },
-  { variant: "c", hairColor: "#52525b", clothesColor: "#d4d4d8" },
-  { variant: "a", hairColor: "#27272a", clothesColor: "#d4d4d8" },
-  { variant: "b", hairColor: "#52525b", clothesColor: "#e4e4e7" },
-  { variant: "a", hairColor: "#3f3f46", clothesColor: "#d4d4d8" },
-  { variant: "d", hairColor: "#27272a", clothesColor: "#e4e4e7" },
-  { variant: "a", hairColor: "#52525b", clothesColor: "#d4d4d8" },
-  { variant: "c", hairColor: "#3f3f46", clothesColor: "#e4e4e7" },
-  { variant: "a", hairColor: "#27272a", clothesColor: "#d4d4d8" },
-];
+    { variant: "b", hairColor: "#3f3f46", clothesColor: "#d4d4d8" },
+    { variant: "a", hairColor: "#27272a", clothesColor: "#e4e4e7" },
+    { variant: "d", hairColor: "#52525b", clothesColor: "#d4d4d8" },
+    { variant: "a", hairColor: "#3f3f46", clothesColor: "#e4e4e7" },
+    { variant: "b", hairColor: "#27272a", clothesColor: "#d4d4d8" },
+    { variant: "a", hairColor: "#3f3f46", clothesColor: "#e4e4e7" },
+    { variant: "c", hairColor: "#52525b", clothesColor: "#d4d4d8" },
+    { variant: "a", hairColor: "#27272a", clothesColor: "#e4e4e7" },
+    { variant: "b", hairColor: "#3f3f46", clothesColor: "#d4d4d8" },
+    { variant: "a", hairColor: "#52525b", clothesColor: "#e4e4e7" },
+    { variant: "d", hairColor: "#27272a", clothesColor: "#d4d4d8" },
+    { variant: "a", hairColor: "#3f3f46", clothesColor: "#e4e4e7" },
+    { variant: "c", hairColor: "#52525b", clothesColor: "#d4d4d8" },
+    { variant: "a", hairColor: "#27272a", clothesColor: "#d4d4d8" },
+    { variant: "b", hairColor: "#52525b", clothesColor: "#e4e4e7" },
+    { variant: "a", hairColor: "#3f3f46", clothesColor: "#d4d4d8" },
+    { variant: "d", hairColor: "#27272a", clothesColor: "#e4e4e7" },
+    { variant: "a", hairColor: "#52525b", clothesColor: "#d4d4d8" },
+    { variant: "c", hairColor: "#3f3f46", clothesColor: "#e4e4e7" },
+    { variant: "a", hairColor: "#27272a", clothesColor: "#d4d4d8" },
+  ];
 
 const avatars = avatarConfigs.map((config) =>
   generateMinimalAvatar(config.variant, config.hairColor, config.clothesColor)
