@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { revalidatePath } from "next/cache";
 import { CacheStrategy } from "@/lib/utils/cache";
 import { logError } from "@/lib/errors";
 import { getServerTranslator } from "@/lib/i18n/server";
@@ -137,18 +138,25 @@ export async function adminDeleteAccount(targetUserId: string): Promise<UpdateRe
       return { error: t("errors.forbidden") };
     }
 
+    let adminClient;
+    try {
+      adminClient = createAdminClient();
+    } catch {
+      return { error: "SUPABASE_SERVICE_ROLE_KEY is not configured" };
+    }
+
     // Storage: room-photos
-    const { data: photoFiles } = await supabase.storage
+    const { data: photoFiles } = await adminClient.storage
       .from("room-photos")
       .list(targetUserId);
 
     if (photoFiles && photoFiles.length > 0) {
       const photoPaths = photoFiles.map((f) => `${targetUserId}/${f.name}`);
-      await supabase.storage.from("room-photos").remove(photoPaths);
+      await adminClient.storage.from("room-photos").remove(photoPaths);
     }
 
-    // Storage: avatars
-    const { data: profile } = await supabase
+    // Storage: avatars / cover-photos
+    const { data: profile } = await adminClient
       .from("profiles")
       .select("avatar_url, cover_photo_url")
       .eq("id", targetUserId)
@@ -157,42 +165,68 @@ export async function adminDeleteAccount(targetUserId: string): Promise<UpdateRe
     if (profile?.avatar_url?.includes("/avatars/")) {
       const avatarPath = profile.avatar_url.split("/avatars/").pop();
       if (avatarPath) {
-        await supabase.storage.from("avatars").remove([avatarPath]);
+        await adminClient.storage.from("avatars").remove([avatarPath]);
       }
     }
 
-    // Storage: cover-photos
     if (profile?.cover_photo_url?.includes("/cover-photos/")) {
       const coverPath = profile.cover_photo_url.split("/cover-photos/").pop();
       if (coverPath) {
-        await supabase.storage.from("cover-photos").remove([coverPath]);
+        await adminClient.storage.from("cover-photos").remove([coverPath]);
       }
     }
 
     // DB: 関連データ削除
-    await Promise.all([
-      supabase.from("room_photos").delete().eq("user_id", targetUserId),
-      supabase.from("notification_settings").delete().eq("user_id", targetUserId),
-      supabase.from("tea_time_settings").delete().eq("user_id", targetUserId),
-      supabase
+    const relatedResults = await Promise.all([
+      adminClient.from("room_photos").delete().eq("user_id", targetUserId),
+      adminClient.from("notification_settings").delete().eq("user_id", targetUserId),
+      adminClient.from("tea_time_settings").delete().eq("user_id", targetUserId),
+      adminClient
         .from("tea_time_matches")
         .delete()
         .or(`user1_id.eq.${targetUserId},user2_id.eq.${targetUserId}`),
     ]);
 
-    // DB: プロフィール削除
-    await supabase.from("profiles").delete().eq("id", targetUserId);
+    const relatedTables = ["room_photos", "notification_settings", "tea_time_settings", "tea_time_matches"];
+    for (let i = 0; i < relatedResults.length; i++) {
+      if (relatedResults[i].error) {
+        logError(relatedResults[i].error, {
+          action: `adminDeleteAccount.delete.${relatedTables[i]}`,
+          userId: targetUserId,
+        });
+      }
+    }
 
-    // Auth: ユーザー削除
-    const adminClient = createAdminClient();
-    const { error: deleteError } = await adminClient.auth.admin.deleteUser(targetUserId);
+    // Auth: ユーザー削除（CASCADE で profiles 含む全関連データが削除される）
+    const { error: authError } = await adminClient.auth.admin.deleteUser(targetUserId);
 
-    if (deleteError) {
-      logError(deleteError, { action: "adminDeleteAccount.authDelete", userId: targetUserId });
-      return { error: t("errors.serverError") };
+    if (authError) {
+      logError(authError, { action: "adminDeleteAccount.authDelete", userId: targetUserId });
+      return { error: `Auth delete failed: ${authError.message}` };
+    }
+
+    // 削除の検証
+    const { data: remaining } = await adminClient
+      .from("profiles")
+      .select("id")
+      .eq("id", targetUserId)
+      .maybeSingle();
+
+    if (remaining) {
+      // CASCADE で消えなかった場合、直接削除
+      const { error: profileError } = await adminClient
+        .from("profiles")
+        .delete()
+        .eq("id", targetUserId);
+
+      if (profileError) {
+        logError(profileError, { action: "adminDeleteAccount.delete.profiles", userId: targetUserId });
+        return { error: `Profile delete failed: ${profileError.message}` };
+      }
     }
 
     CacheStrategy.clearAll();
+    revalidatePath("/admin");
     return { success: true };
   } catch (error) {
     logError(error, { action: "adminDeleteAccount" });
