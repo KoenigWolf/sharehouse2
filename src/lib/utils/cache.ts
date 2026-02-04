@@ -86,6 +86,7 @@ export const CacheStrategy = {
    */
   afterBulletinUpdate: () => {
     revalidatePath("/");
+    revalidatePath("/bulletin");
   },
 
   /**

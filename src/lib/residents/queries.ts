@@ -3,7 +3,7 @@ import { mockProfiles } from "@/lib/mock-data";
 import type { Profile } from "@/domain/profile";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-export const PROFILE_SELECT_COLUMNS =
+export const PROFILE_BASE_COLUMNS =
   "id, name, nickname, room_number, avatar_url, move_in_date, mbti, interests, occupation, industry, work_style, daily_rhythm, social_stance, sns_x, sns_instagram, sns_github, is_admin" as const;
 
 export interface PublicProfileTeaser {
@@ -25,23 +25,44 @@ export async function getProfilesWithMock(
   supabase: SupabaseClient,
   orderBy: string = "name",
 ): Promise<{ profiles: Profile[]; dbProfiles: Profile[] }> {
-  const { data, error } = await supabase
-    .from("profiles")
-    .select(PROFILE_SELECT_COLUMNS)
-    .order(orderBy);
+  // 並列で取得を試みる
+  const [profilesRes, bulletinsRes] = await Promise.all([
+    supabase.from("profiles").select(PROFILE_BASE_COLUMNS).order(orderBy),
+    supabase.from("bulletins").select("user_id, message, updated_at"),
+  ]);
 
-  if (error) {
-    logError(error, { action: "getProfilesWithMock", metadata: { orderBy } });
+  if (profilesRes.error) {
+    logError(profilesRes.error, { action: "getProfilesWithMock:profiles", metadata: { orderBy } });
+  }
+  if (bulletinsRes.error) {
+    logError(bulletinsRes.error, { action: "getProfilesWithMock:bulletins" });
   }
 
-  const dbProfiles = (data as Profile[]) ?? [];
+  // 掲示板データをマッピング
+  const vibeMap = new Map();
+  if (bulletinsRes.data) {
+    bulletinsRes.data.forEach((b) => {
+      vibeMap.set(b.user_id, {
+        message: b.message,
+        updated_at: b.updated_at,
+      });
+    });
+  }
+
+  const dbProfiles = (profilesRes.data ?? []).map((p) => ({
+    ...p,
+    vibe: vibeMap.get(p.id) || null,
+  })) as Profile[];
 
   const registeredRoomNumbers = new Set(
     dbProfiles.filter((p) => p.room_number).map((p) => p.room_number),
   );
   const remainingMockProfiles = mockProfiles.filter(
     (mock) => !registeredRoomNumbers.has(mock.room_number),
-  );
+  ).map(mock => ({
+    ...mock,
+    vibe: null,
+  })) as Profile[];
 
   return {
     profiles: [...dbProfiles, ...remainingMockProfiles],
