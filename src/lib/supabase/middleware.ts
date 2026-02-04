@@ -35,10 +35,11 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
   const isAuthCallback = pathname.startsWith("/auth/callback");
+  const isResidentsPage = pathname.startsWith("/residents");
   const isLoginPage = pathname.startsWith("/login");
 
-  // 未認証ユーザーはログインページへリダイレクト（ログイン/コールバックは除外）
-  if (!user && !isLoginPage && !isAuthCallback) {
+  // 未認証ユーザーはログインページへリダイレクト（ログイン/コールバック/住民一覧は除外）
+  if (!user && !isLoginPage && !isAuthCallback && !isResidentsPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
