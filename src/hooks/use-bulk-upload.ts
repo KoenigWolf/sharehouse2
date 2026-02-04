@@ -95,13 +95,13 @@ export function useBulkUpload() {
         return { storagePath: fileName, takenAt };
       } catch (err) {
         const message =
-          err instanceof Error ? err.message : "Upload failed";
+          err instanceof Error ? err.message : t("errors.uploadFailed");
         updateItem(item.id, { status: "error", error: message });
         setCompletedCount((prev) => prev + 1);
         return null;
       }
     },
-    [updateItem]
+    [updateItem, t]
   );
 
   const startUpload = useCallback(

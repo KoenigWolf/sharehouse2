@@ -173,7 +173,7 @@ export async function deleteAccount(
 
     if (!user) return { error: t("errors.unauthorized") };
 
-    if (confirmText !== "削除") {
+    if (confirmText !== t("account.deleteConfirmPlaceholder")) {
       return { error: t("errors.invalidInput") };
     }
 

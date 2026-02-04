@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useI18n } from "@/hooks/use-i18n";
 
 /**
  * Async operation state
@@ -31,6 +32,7 @@ interface AsyncState<T> {
 export function useAsync<T, Args extends unknown[]>(
   asyncFunction: (...args: Args) => Promise<T>
 ) {
+  const t = useI18n();
   const [state, setState] = useState<AsyncState<T>>({
     data: null,
     error: null,
@@ -47,12 +49,12 @@ export function useAsync<T, Args extends unknown[]>(
         return result;
       } catch (err) {
         const errorMessage =
-          err instanceof Error ? err.message : "エラーが発生しました";
+          err instanceof Error ? err.message : t("errors.unknownError");
         setState({ data: null, error: errorMessage, isLoading: false });
         return null;
       }
     },
-    [asyncFunction]
+    [asyncFunction, t]
   );
 
   const reset = useCallback(() => {
@@ -85,6 +87,7 @@ export function useOptimisticAction<T, R>(
     onError?: (error: string) => void;
   }
 ) {
+  const t = useI18n();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -111,14 +114,14 @@ export function useOptimisticAction<T, R>(
         return true;
       } catch (err) {
         const errorMessage =
-          err instanceof Error ? err.message : "エラーが発生しました";
+          err instanceof Error ? err.message : t("errors.unknownError");
         setError(errorMessage);
         onError?.(errorMessage);
         setIsLoading(false);
         return false;
       }
     },
-    [action, onSuccess, onError]
+    [action, onSuccess, onError, t]
   );
 
   return {
