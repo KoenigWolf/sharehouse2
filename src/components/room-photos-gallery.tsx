@@ -21,6 +21,7 @@ type PhotoWithProfile = RoomPhoto & { profile: Profile | null };
 
 interface RoomPhotosGalleryProps {
   photos: PhotoWithProfile[];
+  isTeaser?: boolean;
 }
 
 function CameraIcon() {
@@ -47,9 +48,10 @@ interface PhotoCardProps {
   photo: PhotoWithProfile;
   index: number;
   onClick: () => void;
+  isTeaser?: boolean;
 }
 
-const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardProps) {
+const PhotoCard = memo(function PhotoCard({ photo, index, onClick, isTeaser = false }: PhotoCardProps) {
   const t = useI18n();
 
   return (
@@ -61,9 +63,9 @@ const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardPr
       <div
         role="button"
         tabIndex={0}
-        onClick={onClick}
-        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } }}
-        className="group w-full bg-white border border-[#e4e4e7] rounded-lg overflow-hidden hover:border-[#18181b] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#18181b] focus-visible:ring-offset-2 cursor-pointer"
+        onClick={() => !isTeaser && onClick()}
+        onKeyDown={(e) => { if (!isTeaser && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); onClick(); } }}
+        className={`group w-full bg-white border border-[#e4e4e7] rounded-lg overflow-hidden transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#18181b] focus-visible:ring-offset-2 ${isTeaser ? "cursor-default" : "hover:border-[#18181b] cursor-pointer"}`}
       >
         <div className="relative w-full overflow-hidden" style={{ paddingBottom: "100%" }}>
           <Image
@@ -71,13 +73,15 @@ const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardPr
             alt={t("roomPhotos.photoAlt")}
             fill
             sizes="(max-width: 640px) 50vw, 33vw"
-            className="object-cover group-hover:scale-[1.02] transition-transform duration-300"
+            className={`object-cover transition-transform duration-300 ${isTeaser ? "blur-xl" : "group-hover:scale-[1.02]"}`}
           />
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-            <span className="opacity-0 group-hover:opacity-100 transition-opacity p-2 bg-white/90 text-[#18181b]">
-              <ExpandIcon />
-            </span>
-          </div>
+          {!isTeaser && (
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+              <span className="opacity-0 group-hover:opacity-100 transition-opacity p-2 bg-white/90 text-[#18181b]">
+                <ExpandIcon />
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-2 p-2.5 border-t border-[#e4e4e7]">
@@ -193,7 +197,7 @@ const SectionHeader = memo(function SectionHeader({ icon, title, count }: Sectio
 
 SectionHeader.displayName = "SectionHeader";
 
-export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
+export function RoomPhotosGallery({ photos, isTeaser = false }: RoomPhotosGalleryProps) {
   const t = useI18n();
   const router = useRouter();
   const { userId } = useUser();
@@ -223,10 +227,10 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
     startUpload,
   } = useBulkUpload();
 
-  const userPhotoCount = userId
+  const userPhotoCount = userId && !isTeaser
     ? localPhotos.filter((p) => p.user_id === userId).length
     : 0;
-  const remainingTotal = Math.max(0, ROOM_PHOTOS.maxPhotosPerUser - userPhotoCount);
+  const remainingTotal = isTeaser ? 0 : Math.max(0, ROOM_PHOTOS.maxPhotosPerUser - userPhotoCount);
   const effectiveBulkLimit = Math.min(ROOM_PHOTOS.maxBulkUpload, remainingTotal);
 
   const handlePhotoClick = useCallback((index: number) => {
@@ -332,6 +336,7 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
               key={photo.id}
               photo={photo}
               index={index}
+              isTeaser={isTeaser}
               onClick={() => handlePhotoClick(index)}
             />
           ))}

@@ -41,7 +41,6 @@ export default async function RoomPhotosPage() {
       </main>
 
       <Footer />
-
       <MobileNav />
     </div>
   );

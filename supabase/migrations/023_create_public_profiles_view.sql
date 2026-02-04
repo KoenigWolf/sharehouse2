@@ -3,15 +3,16 @@
 -- ============================================
 
 -- public.profiles から一部の情報をマスクして返すビュー
+-- セキュリティ: avatar_url は返さない（CSS blur は DevTools で解除可能なため）
 create or replace view public.residents_public_teaser as
 select
   id,
   -- 名前の一文字目以外を伏せ字にする
   left(name, 1) || '***' as masked_name,
-  nickname,
+  -- ニックネームも先頭1文字のみ
+  case when nickname is not null then left(nickname, 1) || '***' else null end as masked_nickname,
   -- 自己紹介の冒頭50文字のみ
   left(bio, 50) as masked_bio,
-  avatar_url,
   age_range,
   occupation,
   industry,
@@ -21,11 +22,3 @@ from public.profiles;
 -- anon ロール（未認証ユーザー）にビューの参照権限を付与
 grant select on public.residents_public_teaser to anon;
 grant select on public.residents_public_teaser to authenticated;
-
--- Storage のアバター画像を未認証ユーザーでも（一応）見れるようにする
--- (UI側でぼかしを入れるが、画像自体が 403 だと何も表示されないため)
-create policy "アバター画像は未認証ユーザーでも閲覧可能"
-  on storage.objects
-  for select
-  to anon
-  using (bucket_id = 'avatars');

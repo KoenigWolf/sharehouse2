@@ -13,6 +13,7 @@ import type { ShareItemWithProfile } from "@/domain/share-item";
 interface ShareContentProps {
   items: ShareItemWithProfile[];
   currentUserId: string;
+  isTeaser?: boolean;
 }
 
 function formatTimeRemaining(expiresAt: string): string {
@@ -32,7 +33,7 @@ function formatTimeRemaining(expiresAt: string): string {
   return `${diffDays}d`;
 }
 
-export function ShareContent({ items, currentUserId }: ShareContentProps) {
+export function ShareContent({ items, currentUserId, isTeaser = false }: ShareContentProps) {
   const t = useI18n();
   const router = useRouter();
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -86,7 +87,7 @@ export function ShareContent({ items, currentUserId }: ShareContentProps) {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold tracking-tight text-slate-900">{t("share.title")}</h2>
-        {!isFormOpen && (
+        {!isFormOpen && !isTeaser && (
           <button
             type="button"
             onClick={() => { setIsFormOpen(true); setFeedback(null); }}
@@ -195,11 +196,12 @@ export function ShareContent({ items, currentUserId }: ShareContentProps) {
               >
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2.5">
-                    <Avatar className="w-6 h-6 rounded-lg border border-slate-100 shadow-sm">
+                    <Avatar className="w-6 h-6 rounded-lg border border-slate-100 shadow-sm overflow-hidden">
                       <OptimizedAvatarImage
                         src={item.profiles?.avatar_url}
                         alt={displayName}
                         context="card"
+                        isBlurred={isTeaser}
                         fallback={
                           <span className="text-[9px] font-bold text-slate-400">
                             {getInitials(displayName)}
@@ -227,11 +229,11 @@ export function ShareContent({ items, currentUserId }: ShareContentProps) {
                 </div>
 
                 <div className="space-y-2 mb-6 flex-1">
-                  <h4 className={`text-base font-bold tracking-tight ${isClaimed ? "text-slate-400 line-through" : "text-slate-900"}`}>
+                  <h4 className={`text-base font-bold tracking-tight ${isTeaser ? "blur-[2.5px] select-none" : isClaimed ? "text-slate-400 line-through" : "text-slate-900"}`}>
                     {item.title}
                   </h4>
                   {item.description && (
-                    <p className={`text-sm font-medium leading-relaxed ${isClaimed ? "text-slate-300" : "text-slate-500"}`}>
+                    <p className={`text-sm font-medium leading-relaxed ${isTeaser ? "blur-[3px] select-none" : isClaimed ? "text-slate-300" : "text-slate-500"}`}>
                       {item.description}
                     </p>
                   )}
@@ -245,9 +247,9 @@ export function ShareContent({ items, currentUserId }: ShareContentProps) {
                   ) : !isMine ? (
                     <button
                       type="button"
-                      onClick={() => handleClaim(item.id)}
-                      disabled={isSubmitting}
-                      className="h-8 px-6 rounded-full bg-brand-600 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[10px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
+                      onClick={() => !isTeaser && handleClaim(item.id)}
+                      disabled={isSubmitting || isTeaser}
+                      className={`h-8 px-6 rounded-full bg-brand-600 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[10px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100 ${isTeaser ? "opacity-50 cursor-not-allowed" : ""}`}
                     >
                       {t("share.claim")}
                     </button>

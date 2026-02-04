@@ -331,7 +331,7 @@ export const en: Translations = {
   },
   teaser: {
     heading: "Check out resident profiles",
-    headingWithCount: "There are {count} more residents waiting",
+    headingWithCount: "There are {{count}} more residents waiting",
     description: "To see detailed profiles, daily vibes, and event information of your share house mates, you need to register for the resident portal.",
     ctaJoin: "Sign up to see more",
     ctaLogin: "Log in",

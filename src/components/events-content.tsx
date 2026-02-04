@@ -14,6 +14,7 @@ import type { EventWithDetails } from "@/domain/event";
 interface EventsContentProps {
   events: EventWithDetails[];
   currentUserId: string;
+  isTeaser?: boolean;
 }
 
 function formatEventDate(dateStr: string, t: ReturnType<typeof useI18n>): string {
@@ -41,7 +42,7 @@ function groupEventsByDate(events: EventWithDetails[]): Map<string, EventWithDet
   return grouped;
 }
 
-export function EventsContent({ events, currentUserId }: EventsContentProps) {
+export function EventsContent({ events, currentUserId, isTeaser = false }: EventsContentProps) {
   const t = useI18n();
   const router = useRouter();
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -108,7 +109,7 @@ export function EventsContent({ events, currentUserId }: EventsContentProps) {
         <h2 className="text-xl font-bold tracking-tight text-slate-900">
           {t("events.title")}
         </h2>
-        {!isFormOpen && (
+        {!isFormOpen && !isTeaser && (
           <button
             type="button"
             onClick={() => { setIsFormOpen(true); setFeedback(null); }}
@@ -127,8 +128,8 @@ export function EventsContent({ events, currentUserId }: EventsContentProps) {
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.2 }}
             className={`text-xs font-medium px-4 py-3 rounded-xl border-l-4 shadow-sm ${feedback.type === "success"
-                ? "bg-success-bg/50 border-success-border text-success"
-                : "bg-error-bg/50 border-error-border text-error"
+              ? "bg-success-bg/50 border-success-border text-success"
+              : "bg-error-bg/50 border-error-border text-error"
               }`}
           >
             {feedback.message}
@@ -272,7 +273,7 @@ export function EventsContent({ events, currentUserId }: EventsContentProps) {
                       className="premium-surface rounded-3xl p-6 relative group"
                     >
                       <div className="flex items-start justify-between mb-3">
-                        <h4 className="text-base font-bold text-slate-900 tracking-tight">
+                        <h4 className={`text-base font-bold text-slate-900 tracking-tight ${isTeaser ? "blur-[2.5px] select-none" : ""}`}>
                           {event.title}
                         </h4>
                         {isMine && (
@@ -288,13 +289,13 @@ export function EventsContent({ events, currentUserId }: EventsContentProps) {
 
                       <div className="flex flex-wrap gap-4 text-[11px] font-semibold text-slate-500 mb-4">
                         {event.event_time && (
-                          <span className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg">
+                          <span className={`flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg ${isTeaser ? "blur-[2px] select-none" : ""}`}>
                             <Clock size={12} className="text-brand-500" />
                             {event.event_time}
                           </span>
                         )}
                         {event.location && (
-                          <span className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg">
+                          <span className={`flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg ${isTeaser ? "blur-[2px] select-none" : ""}`}>
                             <MapPin size={12} className="text-brand-500" />
                             {event.location}
                           </span>
@@ -302,18 +303,19 @@ export function EventsContent({ events, currentUserId }: EventsContentProps) {
                       </div>
 
                       {event.description && (
-                        <p className="text-sm text-slate-600 mb-5 leading-relaxed font-medium">
+                        <p className={`text-sm text-slate-600 mb-5 leading-relaxed font-medium ${isTeaser ? "blur-[3px] select-none" : ""}`}>
                           {event.description}
                         </p>
                       )}
 
                       <div className="flex items-center justify-between mt-auto">
                         <div className="flex items-center gap-2.5">
-                          <Avatar className="w-6 h-6 rounded-lg border border-slate-100 shadow-sm">
+                          <Avatar className="w-6 h-6 rounded-lg border border-slate-100 shadow-sm overflow-hidden">
                             <OptimizedAvatarImage
                               src={event.profiles?.avatar_url}
                               alt={creatorName}
                               context="card"
+                              isBlurred={isTeaser}
                               fallback={
                                 <span className="text-[9px] font-bold text-slate-400">
                                   {getInitials(creatorName)}
@@ -335,11 +337,12 @@ export function EventsContent({ events, currentUserId }: EventsContentProps) {
                           </span>
                           <button
                             type="button"
-                            onClick={() => handleToggleAttendance(event.id)}
+                            onClick={() => !isTeaser && handleToggleAttendance(event.id)}
+                            disabled={isTeaser}
                             className={`h-8 px-4 rounded-full text-[10px] font-bold tracking-wider uppercase transition-all duration-300 ${isAttending
-                                ? "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                                : "bg-brand-600 text-white hover:bg-brand-700 shadow-sm shadow-brand-100"
-                              }`}
+                              ? "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                              : "bg-brand-600 text-white hover:bg-brand-700 shadow-sm shadow-brand-100"
+                              } ${isTeaser ? "opacity-50 cursor-not-allowed" : ""}`}
                           >
                             {isAttending ? t("events.attending") : t("events.attend")}
                           </button>

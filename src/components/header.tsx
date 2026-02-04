@@ -203,7 +203,7 @@ export const Header = memo(function Header() {
             aria-label={t("a11y.mainNavigation")}
             className="hidden sm:flex items-center"
           >
-            {NAV_ITEMS.filter(item => !userId ? item.href === "/residents" : true).map((item) => (
+            {NAV_ITEMS.map((item) => (
               <NavLink
                 key={item.href}
                 item={item}

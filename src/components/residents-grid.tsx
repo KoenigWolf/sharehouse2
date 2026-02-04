@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ResidentCard } from "@/components/resident-card";
 import { Profile } from "@/domain/profile";
@@ -12,16 +12,10 @@ import Link from "next/link";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
 import { getFloorFromRoom, isNewResident, FLOOR_COLORS, type FloorId } from "@/lib/utils/residents";
-import { ResidentTeaserCard } from "./public-teaser/resident-teaser-card";
-import { TeaserOverlay } from "./public-teaser/teaser-overlay";
-import { PublicProfileTeaser } from "@/lib/residents/queries";
-
 interface ResidentsGridProps {
   profiles: Profile[];
   currentUserId: string;
   teaTimeParticipants?: string[];
-  isPublicTeaser?: boolean;
-  publicProfiles?: PublicProfileTeaser[];
 }
 
 type SortOption = "name" | "room_number" | "move_in_date";
@@ -36,8 +30,6 @@ export function ResidentsGrid({
   profiles,
   currentUserId,
   teaTimeParticipants = [],
-  isPublicTeaser = false,
-  publicProfiles = [],
 }: ResidentsGridProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
@@ -155,8 +147,8 @@ export function ResidentsGrid({
 
   const teaTimeSet = useMemo(() => new Set(teaTimeParticipants), [teaTimeParticipants]);
 
-  const totalCount = isPublicTeaser ? publicProfiles.length : profiles.length;
-  const displayCount = isPublicTeaser ? publicProfiles.length : filteredAndSortedProfiles.length;
+  const totalCount = profiles.length;
+  const displayCount = filteredAndSortedProfiles.length;
 
   if (totalCount === 0) {
     return (
@@ -176,13 +168,12 @@ export function ResidentsGrid({
             </h2>
             <p className="text-[11px] sm:text-xs text-[#a1a1aa] mt-1">
               {t("residents.countLabel", { count: displayCount })}
-              {(searchQuery || floorFilter !== "all") && !isPublicTeaser &&
+              {(searchQuery || floorFilter !== "all") &&
                 ` ${t("residents.countOf", { total: totalCount })}`}
             </p>
           </div>
 
-          {!isPublicTeaser && (
-            <div className="flex gap-1 bg-slate-100 p-1 rounded-xl">
+          <div className="flex gap-1 bg-slate-100 p-1 rounded-xl">
               {viewModeOptions.map((option) => {
                 const isActive = viewMode === option.value;
                 const Icon = option.icon;
@@ -206,11 +197,9 @@ export function ResidentsGrid({
                 );
               })}
             </div>
-          )}
         </div>
 
-        {!isPublicTeaser && (
-          <div className="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide -mx-1 px-1 pb-2">
+        <div className="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide -mx-1 px-1 pb-2">
             {floors.map((floor) => {
               const isAll = floor === "all";
               const isActive = floorFilter === floor;
@@ -242,10 +231,8 @@ export function ResidentsGrid({
               );
             })}
           </div>
-        )}
 
-        {!isPublicTeaser && (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-4 border-b border-[#e4e4e7]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-4 border-b border-[#e4e4e7]">
             <div className="relative group">
               <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10" />
               <input
@@ -302,43 +289,11 @@ export function ResidentsGrid({
               <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-white to-transparent pointer-events-none" />
             </div>
           </div>
-        )}
       </div>
 
       <AnimatePresence mode="wait">
-        {isPublicTeaser ? (
-          <div className="space-y-12">
-            <div className="relative max-h-[700px] overflow-hidden">
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 sm:gap-8"
-              >
-                {publicProfiles.map((profile, index) => (
-                  <motion.div
-                    key={profile.id}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{
-                      duration: 0.4,
-                      delay: Math.min(index * 0.04, 0.4),
-                      ease: [0.23, 1, 0.32, 1]
-                    }}
-                  >
-                    <ResidentTeaserCard profile={profile} />
-                  </motion.div>
-                ))}
-              </motion.div>
-
-              <div className="absolute inset-x-0 bottom-0 h-80 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none z-10" />
-            </div>
-
-            <div className="-mt-40 relative z-20">
-              <TeaserOverlay totalCount={isPublicTeaser ? publicProfiles.length : profiles.length} />
-            </div>
-          </div>
-        ) : filteredAndSortedProfiles.length === 0 ? (
-          <motion.div
+        {filteredAndSortedProfiles.length === 0 ? (
+          <m.div
             key="empty"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -361,7 +316,7 @@ export function ResidentsGrid({
             >
               {t("residents.clearSearch")}
             </Button>
-          </motion.div>
+          </m.div>
         ) : viewMode === "floor" ? (
           <FloorView
             key="floor-view"
@@ -403,14 +358,14 @@ function GridView({
   teaTimeSet: Set<string>;
 }) {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 sm:gap-8"
     >
       {profiles.map((profile, index) => (
-        <motion.div
+        <m.div
           key={profile.id}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -426,9 +381,9 @@ function GridView({
             showTeaTime={true}
             teaTimeEnabled={teaTimeSet.has(profile.id)}
           />
-        </motion.div>
+        </m.div>
       ))}
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -448,7 +403,7 @@ function FloorView({
   const floorsOrder: FloorId[] = ["5F", "4F", "3F", "2F"];
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -462,7 +417,7 @@ function FloorView({
         if (profiles.length === 0) return null;
 
         return (
-          <motion.section
+          <m.section
             key={floor}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -483,7 +438,7 @@ function FloorView({
                     {floorStat.registered}/{floorStat.total} {t("residents.registeredShort")}
                   </span>
                   <div className="flex-1 max-w-48 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                    <motion.div
+                    <m.div
                       initial={{ width: 0 }}
                       animate={{ width: `${(floorStat.registered / floorStat.total) * 100}%` }}
                       transition={{ duration: 1, ease: [0.23, 1, 0.32, 1], delay: floorIndex * 0.1 + 0.3 }}
@@ -496,7 +451,7 @@ function FloorView({
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 sm:gap-8">
               {profiles.map((profile, index) => (
-                <motion.div
+                <m.div
                   key={profile.id}
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -509,13 +464,13 @@ function FloorView({
                     showTeaTime={true}
                     teaTimeEnabled={teaTimeSet.has(profile.id)}
                   />
-                </motion.div>
+                </m.div>
               ))}
             </div>
-          </motion.section>
+          </m.section>
         );
       })}
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -531,14 +486,14 @@ function ListView({
   t: Translator;
 }) {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="space-y-2"
     >
       {profiles.map((profile, index) => (
-        <motion.div
+        <m.div
           key={profile.id}
           initial={{ opacity: 0, x: -8 }}
           animate={{ opacity: 1, x: 0 }}
@@ -550,9 +505,9 @@ function ListView({
             isTeaTimeParticipant={teaTimeSet.has(profile.id)}
             t={t}
           />
-        </motion.div>
+        </m.div>
       ))}
-    </motion.div>
+    </m.div>
   );
 }
 

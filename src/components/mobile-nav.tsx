@@ -42,13 +42,7 @@ export const MobileNav = memo(function MobileNav() {
 
   const { userId } = useUser();
 
-  const filteredItems = NAV_ITEMS.filter(item => {
-    if (!userId) {
-      // 未ログイン時は「住民」と「マイページ(ログインへの導線)」のみ表示
-      return item.href === "/residents" || item.href === "/settings";
-    }
-    return true;
-  }).map(item => {
+  const filteredItems = NAV_ITEMS.map(item => {
     if (!userId && item.href === "/settings") {
       return {
         ...item,

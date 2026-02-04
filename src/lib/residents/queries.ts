@@ -9,9 +9,8 @@ export const PROFILE_SELECT_COLUMNS =
 export interface PublicProfileTeaser {
   id: string;
   masked_name: string;
-  nickname: string | null;
+  masked_nickname: string | null;
   masked_bio: string | null;
-  avatar_url: string | null;
   age_range: string | null;
   occupation: string | null;
   industry: string | null;
@@ -69,13 +68,12 @@ export async function getPublicProfilesWithMock(
 
   // モックデータもマスクして追加（一貫性のため）
   const remainingMockTeasers: PublicProfileTeaser[] = mockProfiles
-    .filter((mock) => !dbTeasers.some((db) => db.nickname === mock.nickname)) // 重複簡易チェック
+    .filter((mock) => !dbTeasers.some((db) => db.masked_name === ((mock.name?.[0] || "") + "***")))
     .map((mock) => ({
       id: mock.id,
       masked_name: (mock.name?.[0] || "") + "***",
-      nickname: mock.nickname || null,
+      masked_nickname: mock.nickname ? mock.nickname[0] + "***" : null,
       masked_bio: mock.bio ? mock.bio.substring(0, 50) : null,
-      avatar_url: mock.avatar_url,
       age_range: mock.age_range || "20s",
       occupation: mock.occupation || "other",
       industry: mock.industry || "other",

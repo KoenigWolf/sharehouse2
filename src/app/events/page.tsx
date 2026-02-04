@@ -36,12 +36,14 @@ export default async function EventsPage() {
             </p>
           </div>
 
-          <EventsContent events={events} currentUserId={user.id} />
+          <EventsContent
+            events={events}
+            currentUserId={user.id}
+          />
         </div>
       </main>
 
       <Footer />
-
       <MobileNav />
     </div>
   );

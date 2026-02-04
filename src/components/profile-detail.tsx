@@ -30,6 +30,8 @@ import {
 } from "@/domain/profile";
 import type { RoomPhoto } from "@/domain/room-photo";
 import { getInitials, calculateResidenceDuration } from "@/lib/utils";
+import { TeaserOverlay } from "./public-teaser/teaser-overlay";
+import { MaskedText } from "./public-teaser/masked-text";
 import { uploadCoverPhoto } from "@/lib/profile/cover-photo-actions";
 import { prepareImageForUpload } from "@/lib/utils/image-compression";
 import { FILE_UPLOAD } from "@/lib/constants/config";
@@ -40,6 +42,7 @@ import { logError } from "@/lib/errors";
 interface ProfileDetailProps {
   profile: Profile;
   isOwnProfile: boolean;
+  isTeaser?: boolean;
   teaTimeEnabled?: boolean;
   roomPhotos?: RoomPhoto[];
 }
@@ -196,6 +199,7 @@ function CompactField({ label, value }: { label: string; value: string | null | 
 export function ProfileDetail({
   profile,
   isOwnProfile,
+  isTeaser = false,
   teaTimeEnabled,
   roomPhotos = [],
 }: ProfileDetailProps) {
@@ -369,7 +373,7 @@ export function ProfileDetail({
         <div className="px-6 sm:px-10 pb-8">
           <div className="flex flex-col sm:flex-row gap-5 sm:gap-8">
             <div className="shrink-0 -mt-14 sm:-mt-[84px] mx-auto sm:mx-0">
-              <div className="w-28 h-28 sm:w-[168px] sm:h-[168px] rounded-full border-4 border-white bg-[#f4f4f5] overflow-hidden">
+              <div className="w-28 h-28 sm:w-[168px] sm:h-[168px] rounded-full border-4 border-white bg-[#f4f4f5] overflow-hidden relative">
                 <Avatar className="size-full rounded-full">
                   <OptimizedAvatarImage
                     src={profile.avatar_url}
@@ -387,7 +391,11 @@ export function ProfileDetail({
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
                 <div>
                   <h1 className="text-[28px] text-[#18181b] tracking-wide font-light leading-tight">
-                    {profile.name}
+                    {isTeaser ? (
+                      <MaskedText text={profile.name} className="text-[28px]" />
+                    ) : (
+                      profile.name
+                    )}
                   </h1>
                   {(profile.room_number || snsLinks.length > 0) && (
                     <div className="flex items-center justify-center sm:justify-start gap-2 mt-1.5 text-sm text-[#71717a]">
@@ -502,9 +510,14 @@ export function ProfileDetail({
               </div>
 
               {profile.bio && (
-                <p className="text-sm text-[#18181b] leading-relaxed">
-                  {profile.bio}
-                </p>
+                <div className="relative">
+                  <p className={`text-sm text-[#18181b] leading-relaxed ${isTeaser ? "blur-[3px] select-none" : ""}`}>
+                    {profile.bio}
+                  </p>
+                  {isTeaser && (
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white/10 pointer-events-none" />
+                  )}
+                </div>
               )}
             </div>
           </div>
@@ -578,7 +591,7 @@ export function ProfileDetail({
       </m.div>
 
       {hasExtendedInfo && (
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className={`mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 relative ${isTeaser ? "blur-[6px] select-none pointer-events-none" : ""}`}>
           {basicInfo.length > 0 && (
             <ProfileSection title={t("profile.sectionBasicInfo")} category="basic">
               <dl className="grid grid-cols-2 gap-y-6 gap-x-4">
@@ -639,6 +652,14 @@ export function ProfileDetail({
               </dl>
             </ProfileSection>
           )}
+        </div>
+      )}
+
+      {isTeaser && (
+        <div className="fixed bottom-0 left-0 right-0 z-[60] p-6 sm:p-12 pb-[calc(24px+env(safe-area-inset-bottom))] flex justify-center pointer-events-none">
+          <div className="pointer-events-auto w-full max-w-xl">
+            <TeaserOverlay totalCount={1} />
+          </div>
         </div>
       )}
     </m.article>
