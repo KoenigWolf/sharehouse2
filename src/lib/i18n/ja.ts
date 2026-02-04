@@ -76,6 +76,7 @@ export const ja = {
       strong: "強い",
     },
     signupHint: "登録後、プロフィールページで詳細情報を編集できます",
+    browseAsGuest: "ゲストとして閲覧する",
     defaultName: "ユーザー",
     orContinueWith: "または",
     loginWithLine: "LINEでログイン",

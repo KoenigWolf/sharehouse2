@@ -76,6 +76,7 @@ export const en: Translations = {
     },
     signupHint:
       "After registration, you can edit details on your profile page.",
+    browseAsGuest: "Browse as guest",
     defaultName: "User",
     orContinueWith: "or",
     loginWithLine: "Continue with LINE",

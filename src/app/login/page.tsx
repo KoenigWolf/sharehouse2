@@ -101,7 +101,7 @@ export default function LoginPage() {
     if ("needsEmailConfirmation" in result && result.needsEmailConfirmation) {
       setSuccess(
         result.message ||
-          t("auth.confirmationEmailSent")
+        t("auth.confirmationEmailSent")
       );
       setMode("login");
       setIsLoading(false);
@@ -180,9 +180,8 @@ export default function LoginPage() {
                   type="button"
                   variant="ghost"
                   onClick={() => switchMode("login")}
-                  className={`flex-1 h-auto py-3 relative z-10 hover:bg-transparent ${
-                    mode === "login" ? "text-[#18181b]" : "text-[#a1a1aa]"
-                  }`}
+                  className={`flex-1 h-auto py-3 relative z-10 hover:bg-transparent ${mode === "login" ? "text-[#18181b]" : "text-[#a1a1aa]"
+                    }`}
                 >
                   {t("auth.login")}
                 </Button>
@@ -190,9 +189,8 @@ export default function LoginPage() {
                   type="button"
                   variant="ghost"
                   onClick={() => switchMode("signup")}
-                  className={`flex-1 h-auto py-3 relative z-10 hover:bg-transparent ${
-                    mode === "signup" ? "text-[#18181b]" : "text-[#a1a1aa]"
-                  }`}
+                  className={`flex-1 h-auto py-3 relative z-10 hover:bg-transparent ${mode === "signup" ? "text-[#18181b]" : "text-[#a1a1aa]"
+                    }`}
                 >
                   {t("auth.signup")}
                 </Button>
@@ -214,8 +212,8 @@ export default function LoginPage() {
                 mode === "signup"
                   ? handleSignup
                   : isForgotMode
-                  ? handleResetRequest
-                  : handleLogin
+                    ? handleResetRequest
+                    : handleLogin
               }
               className="space-y-6"
             >
@@ -409,6 +407,18 @@ export default function LoginPage() {
                       ? t("auth.signupWithLine")
                       : t("auth.loginWithLine")}
                 </Button>
+                <div className="mt-8 pt-6 border-t border-[#e4e4e7] text-center">
+                  <button
+                    type="button"
+                    onClick={() => router.push("/residents")}
+                    className="text-sm font-medium text-brand-600 hover:text-brand-700 transition-colors flex items-center justify-center gap-2 mx-auto"
+                  >
+                    {t("auth.browseAsGuest")}
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="mt-0.5">
+                      <path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             )}
 
@@ -418,11 +428,11 @@ export default function LoginPage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                className="text-xs text-[#a1a1aa] text-center mt-8 leading-relaxed"
-              >
+                  className="text-xs text-[#a1a1aa] text-center mt-8 leading-relaxed"
+                >
                   {t("auth.signupHint")}
-              </m.p>
-            )}
+                </m.p>
+              )}
             </AnimatePresence>
           </div>
         </div>
