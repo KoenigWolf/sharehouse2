@@ -257,7 +257,7 @@ export function InfoPageContent({
   return (
     <div className="space-y-8">
       <div className="mb-2">
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+        <h1 className="text-2xl font-light text-slate-900 tracking-wide">
           {t("info.title")}
         </h1>
         <p className="text-sm text-slate-500 mt-1.5 font-medium">
@@ -268,7 +268,7 @@ export function InfoPageContent({
       <m.section
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
       >
         <div className="grid gap-3 sm:grid-cols-2">
           {wifiPassword && (
@@ -293,7 +293,7 @@ export function InfoPageContent({
       <m.section
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.1 }}
+        transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1], delay: 0.1 }}
       >
         <SectionHeader icon={<WifiIcon />} title="Wi-Fi" />
         <WifiCard wifiInfos={wifiInfos} />
@@ -302,7 +302,7 @@ export function InfoPageContent({
       <m.section
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.2 }}
+        transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1], delay: 0.2 }}
       >
         <SectionHeader icon={<TrashIcon />} title={t("info.tabGarbage")} />
         <GarbageScheduleView
@@ -317,7 +317,7 @@ export function InfoPageContent({
         <m.section
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.3 }}
+          transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1], delay: 0.3 }}
         >
           <SectionHeader icon={<BuildingIcon />} title={t("info.tabBuilding")} />
           <div className="space-y-4">

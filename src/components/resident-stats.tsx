@@ -94,7 +94,7 @@ export function ResidentStats({ profiles, teaTimeParticipants }: ResidentStatsPr
                     <m.div
                       initial={{ width: 0 }}
                       animate={{ width: `${percentage}%` }}
-                      transition={{ duration: 0.8, ease: "circOut", delay: 0.2 }}
+                      transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1], delay: 0.2 }}
                       style={{ backgroundColor: colors.fill }}
                       className="h-full rounded-full shadow-sm"
                     />

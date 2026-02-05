@@ -428,7 +428,9 @@ describe("getAllRoomPhotos", () => {
     mockFrom
       .mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
-          order: vi.fn().mockResolvedValue({ data: mockPhotos, error: null }),
+          order: vi.fn().mockReturnValue({
+            limit: vi.fn().mockResolvedValue({ data: mockPhotos, error: null }),
+          }),
         }),
       })
       .mockReturnValueOnce({

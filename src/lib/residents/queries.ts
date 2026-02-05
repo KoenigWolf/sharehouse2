@@ -28,7 +28,7 @@ export async function getProfilesWithMock(
   // 並列で取得を試みる
   const [profilesRes, bulletinsRes] = await Promise.all([
     supabase.from("profiles").select(PROFILE_BASE_COLUMNS).order(orderBy),
-    supabase.from("bulletins").select("user_id, message, updated_at"),
+    supabase.from("bulletins").select("user_id, message, updated_at").limit(100),
   ]);
 
   if (profilesRes.error) {

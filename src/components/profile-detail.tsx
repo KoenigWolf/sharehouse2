@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { m, type Variants } from "framer-motion";
 import { Camera } from "lucide-react";
@@ -238,6 +239,8 @@ export function ProfileDetail({
   const [isUploadingCover, setIsUploadingCover] = useState(false);
   const [coverUrl, setCoverUrl] = useState<string | null>(profile.cover_photo_url ?? null);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [isPhotoExpanded, setIsPhotoExpanded] = useState(false);
+  const PHOTO_PREVIEW_LIMIT = 8;
 
   const handleCoverUploadClick = useCallback(() => {
     coverInputRef.current?.click();
@@ -363,10 +366,13 @@ export function ProfileDetail({
         {/* Cover Photo */}
         <div className="relative aspect-2/1 sm:aspect-21/8 bg-slate-100 overflow-hidden">
           {coverUrl ? (
-            <img
+            <Image
               src={coverUrl}
               alt=""
-              className="absolute inset-0 w-full h-full object-cover"
+              fill
+              sizes="(max-width: 768px) 100vw, 1200px"
+              priority
+              className="object-cover"
             />
           ) : (
             <div className="w-full h-full bg-linear-to-b from-slate-100 to-slate-200" />
@@ -578,24 +584,39 @@ export function ProfileDetail({
               </div>
 
               {isOwnProfile ? (
-                <RoomPhotoManager photos={roomPhotos} compact />
+                <RoomPhotoManager photos={roomPhotos} compact previewLimit={PHOTO_PREVIEW_LIMIT} />
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  {roomPhotos.map((photo) => (
-                    <div key={photo.id} className="aspect-square bg-slate-50 rounded-2xl overflow-hidden ring-1 ring-slate-100 group">
-                      <img
-                        src={photo.photo_url}
-                        alt={photo.caption || t("roomPhotos.roomPhotosSection")}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                    </div>
-                  ))}
-                  {roomPhotos.length === 0 && (
-                    <div className="col-span-full py-12 text-center bg-slate-50/50 rounded-[2rem] border-2 border-dashed border-slate-100">
-                      <p className="text-sm text-slate-400 font-medium">{t("roomPhotos.noPhotos")}</p>
+                <>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    {(isPhotoExpanded ? roomPhotos : roomPhotos.slice(0, PHOTO_PREVIEW_LIMIT)).map((photo) => (
+                      <div key={photo.id} className="relative aspect-square bg-slate-50 rounded-2xl overflow-hidden ring-1 ring-slate-100 group">
+                        <Image
+                          src={photo.photo_url}
+                          alt={photo.caption || t("roomPhotos.roomPhotosSection")}
+                          fill
+                          sizes="(max-width: 640px) 50vw, 25vw"
+                          className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                      </div>
+                    ))}
+                    {roomPhotos.length === 0 && (
+                      <div className="col-span-full py-12 text-center bg-slate-50/50 rounded-[2rem] border-2 border-dashed border-slate-100">
+                        <p className="text-sm text-slate-400 font-medium">{t("roomPhotos.noPhotos")}</p>
+                      </div>
+                    )}
+                  </div>
+                  {!isPhotoExpanded && roomPhotos.length > PHOTO_PREVIEW_LIMIT && (
+                    <div className="flex justify-center mt-5">
+                      <button
+                        type="button"
+                        onClick={() => setIsPhotoExpanded(true)}
+                        className="h-9 px-6 rounded-full border border-slate-200 text-[11px] font-bold text-slate-500 hover:text-slate-700 hover:border-slate-300 tracking-wider uppercase transition-all duration-300"
+                      >
+                        {t("roomPhotos.showMore", { count: roomPhotos.length - PHOTO_PREVIEW_LIMIT })}
+                      </button>
                     </div>
                   )}
-                </div>
+                </>
               )}
             </div>
           )}
