@@ -75,7 +75,7 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
     <m.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: "circOut" }}
+      transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
       className="premium-surface p-6 rounded-3xl border-slate-50 relative overflow-hidden ring-1 ring-slate-100/50"
     >
       <div className="flex items-center gap-5 mb-6">
