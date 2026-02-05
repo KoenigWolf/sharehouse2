@@ -468,6 +468,7 @@ export const en: Translations = {
     uploadLimit: "Up to {{max}} photos total (max {{bulk}} at a time)",
     supportedFormats: "Supported formats: JPEG, PNG, WebP, HEIC",
     uploadInstructions: "Drag & drop or click to select (Multiple selection supported)",
+    showMore: "Show more ({{count}} remaining)",
   },
 
   wifi: {

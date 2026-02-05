@@ -197,8 +197,10 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
   const t = useI18n();
   const router = useRouter();
   const { userId } = useUser();
+  const INITIAL_VISIBLE = 12;
   const [localPhotos, setLocalPhotos] = useState(photos);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
 
   useEffect(() => {
     setLocalPhotos(photos);
@@ -275,6 +277,13 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
   );
 
   const hasPhotos = localPhotos.length > 0;
+  const visiblePhotos = localPhotos.slice(0, visibleCount);
+  const hasMore = localPhotos.length > visibleCount;
+  const remainingPhotos = localPhotos.length - visibleCount;
+
+  const handleShowMore = useCallback(() => {
+    setVisibleCount((prev) => prev + INITIAL_VISIBLE);
+  }, []);
 
   return (
     <>
@@ -327,7 +336,7 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
               isUploading={isUploading}
             />
           )}
-          {localPhotos.map((photo, index) => (
+          {visiblePhotos.map((photo, index) => (
             <PhotoCard
               key={photo.id}
               photo={photo}
@@ -336,6 +345,18 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
             />
           ))}
         </div>
+
+        {hasMore && (
+          <div className="flex justify-center mt-6">
+            <button
+              type="button"
+              onClick={handleShowMore}
+              className="h-10 px-8 rounded-full border border-slate-200 text-sm font-medium text-slate-500 hover:text-slate-700 hover:border-slate-300 transition-all duration-300"
+            >
+              {t("roomPhotos.showMore", { count: remainingPhotos })}
+            </button>
+          </div>
+        )}
 
         {hasPhotos && (
           <p className="text-[10px] text-[#a1a1aa] mt-4 tracking-wide">
