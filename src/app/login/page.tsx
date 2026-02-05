@@ -128,7 +128,7 @@ export default function LoginPage() {
         <m.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
           className="w-full max-w-[440px] space-y-8"
         >
           {/* Header/Logo Section */}
@@ -137,7 +137,7 @@ export default function LoginPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
-              className="text-3xl font-black text-slate-900 tracking-tighter"
+              className="text-3xl font-light text-slate-900 tracking-wide"
             >
               Share<span className="text-brand-500">House</span>
             </m.h1>
