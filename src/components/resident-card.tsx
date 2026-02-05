@@ -97,9 +97,9 @@ function isMockProfile(profileId: string): boolean {
 }
 
 function getCardBorderClass(isCurrentUser: boolean, isMock: boolean): string {
-  if (isCurrentUser) return "border-[#18181b]";
-  if (isMock) return "border-dashed border-[#d4d4d8] hover:border-[#a1a1aa]";
-  return "border-[#e4e4e7] hover:border-[#18181b]";
+  if (isCurrentUser) return "border-slate-900";
+  if (isMock) return "border-dashed border-slate-300 hover:border-slate-400";
+  return "border-slate-200 hover:border-slate-900";
 }
 
 function Badge({
@@ -112,10 +112,10 @@ function Badge({
   className?: string;
 }) {
   const variantStyles: Record<BadgeVariant, string> = {
-    default: "bg-[#f4f4f5] text-[#a1a1aa]",
-    dark: "bg-[#18181b] text-white",
+    default: "bg-slate-100 text-slate-400",
+    dark: "bg-slate-900 text-white",
     success: "bg-success-bg text-success border border-success-border",
-    muted: "bg-white/90 backdrop-blur-sm text-[#71717a]",
+    muted: "bg-white/90 backdrop-blur-sm text-slate-500",
   };
 
   return (
@@ -213,7 +213,7 @@ function InterestTagList({
       {interests.map((interest, index) => (
         <li
           key={`${interest}-${index}`}
-          className="text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded bg-[#f4f4f5] text-[#71717a]"
+          className="text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded bg-slate-100 text-slate-500"
         >
           {interest}
         </li>

@@ -175,7 +175,7 @@ export default function LoginPage() {
                   {t("auth.signup")}
                 </Button>
               </div>
-              <div className="absolute bottom-0 left-0 right-0 h-px bg-[#e4e4e7]" />
+              <div className="absolute bottom-0 left-0 right-0 h-px bg-slate-200" />
               <m.div
                 className="absolute bottom-0 h-px bg-slate-900"
                 initial={false}

@@ -200,7 +200,7 @@ describe("ProfileDetail", () => {
         />
       );
       const statusText = screen.getByText(/不参加/);
-      expect(statusText).toHaveClass("text-[#71717a]");
+      expect(statusText).toHaveClass("text-slate-500");
     });
   });
 
