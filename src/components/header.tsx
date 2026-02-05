@@ -18,6 +18,7 @@ import {
   User,
   LogOut,
   Shield,
+  Home,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -66,22 +67,24 @@ const NavLink = memo(function NavLink({ item, isActive }: NavLinkProps) {
       aria-current={isActive ? "page" : undefined}
       aria-label={t(item.labelKey)}
       title={t(item.labelKey)}
-      className="relative px-3 py-2 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 group"
+      className="relative px-3 py-2 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 group rounded-lg"
     >
-      <Icon
-        size={20}
-        strokeWidth={isActive ? 2 : 1.5}
-        className={
-          isActive
-            ? "text-brand-600"
-            : "text-slate-400 group-hover:text-brand-600 transition-colors"
-        }
-      />
+      <div className="relative z-10 flex items-center justify-center">
+        <Icon
+          size={20}
+          strokeWidth={isActive ? 2.5 : 2}
+          className={
+            isActive
+              ? "text-slate-900"
+              : "text-slate-400 group-hover:text-slate-600 transition-colors"
+          }
+        />
+      </div>
       {isActive && (
         <m.span
-          layoutId="nav-underline"
-          className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-500"
-          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+          layoutId="nav-active-bar"
+          className="absolute bottom-0 left-0 right-0 h-0.5 bg-slate-900 rounded-full"
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
         />
       )}
     </Link>
@@ -125,9 +128,9 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
           className="relative shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 rounded-full cursor-pointer group"
         >
           <div
-            className={`w-9 h-9 rounded-full overflow-hidden transition-all border border-slate-200 ${isActive
-              ? "border-brand-500 ring-2 ring-brand-500 ring-offset-2 shadow-lg"
-              : "group-hover:border-brand-400 group-hover:shadow-md"
+            className={`w-9 h-9 rounded-full overflow-hidden transition-all border ${isActive
+              ? "border-slate-900 shadow-sm"
+              : "border-slate-200 group-hover:border-slate-300"
               }`}
           >
             {optimizedSrc ? (
@@ -139,32 +142,32 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
                 className="object-cover w-full h-full"
               />
             ) : (
-              <div className="w-full h-full bg-slate-100 flex items-center justify-center">
-                <User size={20} className="text-slate-400" strokeWidth={2} />
+              <div className="w-full h-full bg-slate-50 flex items-center justify-center">
+                <User size={18} className="text-slate-400" strokeWidth={2} />
               </div>
             )}
           </div>
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" sideOffset={8} className="w-40">
-        <DropdownMenuItem asChild>
-          <Link href={profileHref} className="cursor-pointer">
-            <User size={14} strokeWidth={1.5} />
-            {t("nav.myPage")}
+      <DropdownMenuContent align="end" sideOffset={10} className="w-48 p-1 rounded-xl shadow-xl border-slate-200">
+        <DropdownMenuItem asChild className="rounded-lg px-3 py-2.5 focus:bg-slate-50 cursor-pointer">
+          <Link href={profileHref} className="flex items-center">
+            <User size={16} strokeWidth={2} className="mr-3 text-slate-400" />
+            <span className="font-semibold text-sm text-slate-600">{t("nav.myPage")}</span>
           </Link>
         </DropdownMenuItem>
         {isAdmin && (
-          <DropdownMenuItem asChild>
-            <Link href="/admin" className="cursor-pointer">
-              <Shield size={14} strokeWidth={1.5} />
-              {t("nav.admin")}
+          <DropdownMenuItem asChild className="rounded-lg px-3 py-2.5 focus:bg-slate-50 cursor-pointer">
+            <Link href="/admin" className="flex items-center">
+              <Shield size={16} strokeWidth={2} className="mr-3 text-slate-400" />
+              <span className="font-semibold text-sm text-slate-600">{t("nav.admin")}</span>
             </Link>
           </DropdownMenuItem>
         )}
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-slate-400">
-          <LogOut size={14} strokeWidth={1.5} />
-          {t("nav.logout")}
+        <DropdownMenuSeparator className="my-1 bg-slate-100" />
+        <DropdownMenuItem onClick={handleLogout} className="rounded-lg px-3 py-2.5 focus:bg-slate-50 cursor-pointer group/logout">
+          <LogOut size={16} strokeWidth={2} className="mr-3 text-slate-400 group-hover/logout:text-slate-600 transition-colors" />
+          <span className="font-semibold text-sm text-slate-500 group-hover/logout:text-slate-600">{t("nav.logout")}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -185,23 +188,27 @@ export const Header = memo(function Header() {
 
   return (
     <header
-      className="sticky top-0 z-40 glass border-b border-slate-200/50"
+      className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-slate-100"
       role="banner"
     >
-      <div className="container mx-auto px-4 sm:px-6 py-4 flex items-center justify-between max-w-5xl">
-        <div className="flex items-center gap-6 sm:gap-12">
+      <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between max-w-5xl">
+        <div className="flex items-center gap-6 sm:gap-10">
           <Link
             href="/residents"
-            className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 hover:opacity-80 transition-opacity"
+            className="flex items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 group"
             aria-label={t("a11y.goHome")}
           >
-            <span>Share</span>
-            <span className="text-brand-600">House</span>
+            <Home size={22} className="text-slate-900" strokeWidth={2.5} />
+            <div className="flex flex-col leading-none">
+              <span className="text-xl font-bold tracking-tight text-slate-900">
+                Share<span className="text-brand-600">House</span>
+              </span>
+            </div>
           </Link>
 
           <nav
             aria-label={t("a11y.mainNavigation")}
-            className="hidden sm:flex items-center"
+            className="hidden sm:flex items-center gap-1"
           >
             {NAV_ITEMS.map((item) => (
               <NavLink
