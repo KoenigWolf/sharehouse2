@@ -40,12 +40,12 @@ export async function getWifiInfo(): Promise<WifiInfo[]> {
       .select("*")
       .order("display_order", { ascending: true });
 
-    if (error) {
-      logError(error, { action: "getWifiInfo", userId: user.id });
+    if (error || !data) {
+      if (error) logError(error, { action: "getWifiInfo", userId: user.id });
       return [];
     }
 
-    return (data as WifiInfo[]) ?? [];
+    return data as WifiInfo[];
   } catch (error) {
     logError(error, { action: "getWifiInfo" });
     return [];

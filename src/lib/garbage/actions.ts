@@ -49,12 +49,12 @@ export async function getGarbageSchedule(): Promise<GarbageSchedule[]> {
       .order("day_of_week", { ascending: true })
       .order("display_order", { ascending: true });
 
-    if (error) {
-      logError(error, { action: "getGarbageSchedule", userId: user.id });
+    if (error || !data) {
+      if (error) logError(error, { action: "getGarbageSchedule", userId: user.id });
       return [];
     }
 
-    return (data as GarbageSchedule[]) ?? [];
+    return data as GarbageSchedule[];
   } catch (error) {
     logError(error, { action: "getGarbageSchedule" });
     return [];
@@ -110,9 +110,11 @@ export async function getUpcomingDuties(days = 7): Promise<GarbageDutyWithProfil
       .in("id", userIds);
 
     const profileMap = new Map<string, Profile>();
-    profiles?.forEach((profile) => {
-      profileMap.set(profile.id, profile as Profile);
-    });
+    if (profiles) {
+      for (const profile of profiles) {
+        profileMap.set(profile.id, profile as Profile);
+      }
+    }
 
     return duties.map((duty) => ({
       ...duty,
@@ -150,12 +152,12 @@ export async function getMyDuties(): Promise<GarbageDuty[]> {
       .gte("duty_date", today)
       .order("duty_date", { ascending: true });
 
-    if (error) {
-      logError(error, { action: "getMyDuties", userId: user.id });
+    if (error || !data) {
+      if (error) logError(error, { action: "getMyDuties", userId: user.id });
       return [];
     }
 
-    return (data as GarbageDuty[]) ?? [];
+    return data as GarbageDuty[];
   } catch (error) {
     logError(error, { action: "getMyDuties" });
     return [];

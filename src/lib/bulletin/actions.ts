@@ -19,11 +19,11 @@ export async function getBulletins(): Promise<BulletinWithProfile[]> {
       .order("updated_at", { ascending: false })
       .limit(BULLETIN.maxDisplayOnHome);
 
-    if (error) {
-      logError(error, { action: "getBulletins" });
+    if (error || !data) {
+      if (error) logError(error, { action: "getBulletins" });
       return [];
     }
-    return (data as BulletinWithProfile[]) || [];
+    return data as BulletinWithProfile[];
   } catch (error) {
     logError(error, { action: "getBulletins" });
     return [];

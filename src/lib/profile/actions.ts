@@ -45,10 +45,10 @@ export async function updateProfile(
 
   const validation = validateProfileUpdate(data, t);
   if (!validation.success) {
-    return { error: validation.error || t("errors.invalidInput") };
+    return { error: validation.error };
   }
 
-  const validatedData = validation.data!;
+  const validatedData = validation.data;
 
   try {
     const supabase = await createClient();

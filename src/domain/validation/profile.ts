@@ -194,11 +194,7 @@ function formatValidationError(
 export function validateProfileUpdate(
   data: unknown,
   t: Translator
-): {
-  success: boolean;
-  data?: ProfileUpdateInput;
-  error?: string;
-} {
+): { success: true; data: ProfileUpdateInput } | { success: false; error: string } {
   const result = profileUpdateSchema.safeParse(data);
   if (result.success) {
     return { success: true, data: result.data };
@@ -216,10 +212,7 @@ export function validateProfileUpdate(
 export function validateFileUpload(
   file: { size: number; type: string },
   t: Translator
-): {
-  success: boolean;
-  error?: string;
-} {
+): { success: true } | { success: false; error: string } {
   const result = fileUploadSchema.safeParse(file);
   if (result.success) {
     return { success: true };

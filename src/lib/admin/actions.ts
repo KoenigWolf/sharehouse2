@@ -34,12 +34,12 @@ export async function getAllProfilesForAdmin(): Promise<Profile[]> {
       .select("*")
       .order("room_number", { ascending: true, nullsFirst: false });
 
-    if (error) {
-      logError(error, { action: "getAllProfilesForAdmin" });
+    if (error || !data) {
+      if (error) logError(error, { action: "getAllProfilesForAdmin" });
       return [];
     }
 
-    return data ?? [];
+    return data;
   } catch (error) {
     logError(error, { action: "getAllProfilesForAdmin" });
     return [];
@@ -164,17 +164,19 @@ export async function adminDeleteAccount(targetUserId: string): Promise<UpdateRe
       .eq("id", targetUserId)
       .single();
 
-    if (profile?.avatar_url?.includes("/avatars/")) {
-      const avatarPath = profile.avatar_url.split("/avatars/").pop();
-      if (avatarPath) {
-        await adminClient.storage.from("avatars").remove([avatarPath]);
+    if (profile) {
+      if (profile.avatar_url?.includes("/avatars/")) {
+        const avatarPath = profile.avatar_url.split("/avatars/").pop();
+        if (avatarPath) {
+          await adminClient.storage.from("avatars").remove([avatarPath]);
+        }
       }
-    }
 
-    if (profile?.cover_photo_url?.includes("/cover-photos/")) {
-      const coverPath = profile.cover_photo_url.split("/cover-photos/").pop();
-      if (coverPath) {
-        await adminClient.storage.from("cover-photos").remove([coverPath]);
+      if (profile.cover_photo_url?.includes("/cover-photos/")) {
+        const coverPath = profile.cover_photo_url.split("/cover-photos/").pop();
+        if (coverPath) {
+          await adminClient.storage.from("cover-photos").remove([coverPath]);
+        }
       }
     }
 

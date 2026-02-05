@@ -228,12 +228,12 @@ export async function getRoomPhotos(userId: string): Promise<RoomPhoto[]> {
       .eq("user_id", userId)
       .order("display_order", { ascending: true });
 
-    if (error) {
-      logError(error, { action: "getRoomPhotos", userId });
+    if (error || !data) {
+      if (error) logError(error, { action: "getRoomPhotos", userId });
       return [];
     }
 
-    return (data as RoomPhoto[]) ?? [];
+    return data as RoomPhoto[];
   } catch (error) {
     logError(error, { action: "getRoomPhotos" });
     return [];

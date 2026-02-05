@@ -160,9 +160,11 @@ export async function getMyMatches(): Promise<(TeaTimeMatch & { partner: Profile
       .in("id", uniquePartnerIds);
 
     const partnerMap = new Map<string, Profile>();
-    partners?.forEach((partner) => {
-      partnerMap.set(partner.id, partner as Profile);
-    });
+    if (partners) {
+      for (const partner of partners) {
+        partnerMap.set(partner.id, partner as Profile);
+      }
+    }
 
     return matches.map((match) => {
       const partnerId = match.user1_id === user.id ? match.user2_id : match.user1_id;
