@@ -123,7 +123,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
             className={`text-xs font-medium px-4 py-3 rounded-xl border-l-4 shadow-sm ${feedback.type === "success"
               ? "bg-success-bg/50 border-success-border text-success"
               : "bg-error-bg/50 border-error-border text-error"
@@ -266,7 +266,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                       key={event.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4, delay: (groupIndex * 0.1) + (eventIndex * 0.05) }}
+                      transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1], delay: (groupIndex * 0.1) + (eventIndex * 0.05) }}
                       className="premium-surface rounded-3xl p-6 relative group"
                     >
                       <div className="flex items-start justify-between mb-3">

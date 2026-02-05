@@ -56,14 +56,14 @@ const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardPr
     <m.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2, delay: index * 0.03 }}
+      transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1], delay: index * 0.03 }}
     >
       <div
         role="button"
         tabIndex={0}
         onClick={() => onClick()}
         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } }}
-        className="group w-full bg-white border border-slate-200 rounded-lg overflow-hidden transition-colors outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2 hover:border-slate-900 cursor-pointer"
+        className="group w-full premium-surface rounded-2xl overflow-hidden transition-all outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2 hover:shadow-xl hover:-translate-y-0.5 cursor-pointer"
       >
         <div className="relative w-full overflow-hidden" style={{ paddingBottom: "100%" }}>
           <Image
@@ -135,7 +135,7 @@ function UploadCard({
     <m.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
+      transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
     >
       <Button
         type="button"
@@ -290,7 +290,7 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
       <m.section
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
       >
         <SectionHeader
           icon={<CameraIcon />}
@@ -315,7 +315,7 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
               className={`mb-4 py-3 px-4 ${feedback.type === "error"
                 ? "bg-error-bg border-l-2 border-error-border"
                 : "bg-success-bg border-l-2 border-success-border"

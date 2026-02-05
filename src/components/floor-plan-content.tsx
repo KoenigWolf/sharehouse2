@@ -137,7 +137,7 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
                   className={`
                     relative flex flex-col items-center p-3 sm:p-5 transition-all duration-500 rounded-2xl
                     ${isOccupied
-                      ? "bg-white border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-1.5 ring-1 ring-slate-100/50"
+                      ? "bg-white border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-0.5 ring-1 ring-slate-100/50"
                       : "bg-slate-50 border border-dashed border-slate-200 hover:border-slate-300 opacity-60 hover:opacity-100"
                     }
                   `}
@@ -195,7 +195,7 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
               className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm"
               onClick={handleClosePopup}
             />

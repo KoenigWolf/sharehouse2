@@ -103,7 +103,7 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
             className={`text-xs font-medium px-4 py-3 rounded-xl border-l-4 shadow-sm ${feedback.type === "success"
               ? "bg-success-bg/50 border-success-border text-success"
               : "bg-error-bg/50 border-error-border text-error"
@@ -189,7 +189,7 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                 key={item.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.05 }}
+                transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1], delay: index * 0.05 }}
                 className={`premium-surface rounded-3xl p-6 relative group flex flex-col ${isClaimed ? "opacity-60 grayscale-[0.5]" : ""
                   }`}
               >
