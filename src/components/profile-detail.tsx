@@ -46,6 +46,8 @@ function MBTIBadge({ mbti, className = "" }: { mbti: string; className?: string 
   const locale = useLocale();
   const group = getMBTIGroup(mbti);
   const colors = MBTI_COLORS[group];
+  const labelEntry = MBTI_LABELS[mbti as keyof typeof MBTI_LABELS];
+  const label = labelEntry ? labelEntry[locale === "ja" ? "ja" : "en"] : mbti;
 
   return (
     <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all hover:shadow-sm ${colors.bg} ${colors.text} ${colors.border} ${className}`}>
@@ -55,7 +57,7 @@ function MBTIBadge({ mbti, className = "" }: { mbti: string; className?: string 
       <div className="flex items-baseline gap-1.5">
         <span className="font-bold tracking-wider text-[13px]">{mbti}</span>
         <span className="text-[10px] opacity-70 font-medium">
-          {MBTI_LABELS[mbti as keyof typeof MBTI_LABELS][locale === "ja" ? "ja" : "en"]}
+          {label}
         </span>
       </div>
     </span>

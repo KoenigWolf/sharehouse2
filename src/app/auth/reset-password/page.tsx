@@ -157,7 +157,7 @@ export default function ResetPasswordPage() {
                       exit={{ opacity: 0, height: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className="py-2.5 px-4 bg-error-bg text-error text-[11px] font-semibold border border-error-border rounded-xl flex items-center gap-2">
+                      <div className="py-2.5 px-4 bg-error-bg/50 text-error text-[11px] font-semibold border-l-4 border-error-border rounded-r-xl flex items-center gap-2">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                           <circle cx="12" cy="12" r="10"></circle>
                           <line x1="12" y1="8" x2="12" y2="12"></line>
