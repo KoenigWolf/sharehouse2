@@ -599,6 +599,11 @@ export const en: Translations = {
     tagline: "A portal that values resident connections",
     directory: "Directory",
     followUs: "Follow Us",
+    community: "Community",
+    legal: "Legal",
+    terms: "Terms of Service",
+    privacy: "Privacy Policy",
+    backToTop: "Back to Top",
   },
 
   bulletin: {

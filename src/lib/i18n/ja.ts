@@ -598,6 +598,11 @@ export const ja = {
     tagline: "住民同士のつながりを大切にするシェアハウスポータル",
     directory: "ディレクトリ",
     followUs: "フォロー",
+    community: "コミュニティ",
+    legal: "法的情報",
+    terms: "利用規約",
+    privacy: "プライバシーポリシー",
+    backToTop: "トップへ戻る",
   },
 
   bulletin: {
