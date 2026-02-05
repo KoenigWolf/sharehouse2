@@ -170,7 +170,7 @@ export function BulletinBoard({ bulletins, currentUserId, isTeaser = false }: Bu
       ) : (
         <div className="grid grid-cols-1 gap-4">
           {bulletins.map((bulletin, index) => {
-            const displayName = bulletin.profiles?.nickname || bulletin.profiles?.name || "";
+            const displayName = bulletin.profiles?.nickname ?? bulletin.profiles?.name ?? "";
             const isMine = bulletin.user_id === currentUserId;
 
             return (

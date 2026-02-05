@@ -368,7 +368,7 @@ export function PhotoLightbox({
                 ) : (
                   <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shrink-0">
                     <span className="text-xs text-white/60">
-                      {photo.profile?.name?.charAt(0) || "?"}
+                      {photo.profile?.name?.[0] ?? "?"}
                     </span>
                   </div>
                 )}

@@ -195,7 +195,7 @@ export function GarbageScheduleView({
                   ) : (
                     <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
                       <span className="text-[9px] text-slate-400">
-                        {duty.profile?.name?.charAt(0) || "?"}
+                        {duty.profile?.name?.[0] ?? "?"}
                       </span>
                     </div>
                   )}

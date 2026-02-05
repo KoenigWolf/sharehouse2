@@ -92,7 +92,7 @@ const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardPr
           ) : (
             <div className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
               <span className="text-[8px] text-slate-400">
-                {photo.profile?.name?.charAt(0) || "?"}
+                {photo.profile?.name?.[0] ?? "?"}
               </span>
             </div>
           )}

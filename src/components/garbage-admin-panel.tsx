@@ -289,8 +289,8 @@ function ScheduleEntryForm({
       setFormError("");
 
       try {
-        const result = isEditing
-          ? await updateGarbageScheduleEntry(initialData!.id, formData)
+        const result = isEditing && initialData
+          ? await updateGarbageScheduleEntry(initialData.id, formData)
           : await createGarbageScheduleEntry(formData);
 
         if ("error" in result) {

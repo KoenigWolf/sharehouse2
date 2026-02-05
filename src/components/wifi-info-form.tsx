@@ -51,8 +51,8 @@ export function WifiInfoForm({ initialData, onSave, onCancel }: WifiInfoFormProp
       setError("");
 
       try {
-        const result = isEditing
-          ? await updateWifiInfo(initialData!.id, formData)
+        const result = isEditing && initialData
+          ? await updateWifiInfo(initialData.id, formData)
           : await createWifiInfo(formData);
 
         if ("error" in result) {

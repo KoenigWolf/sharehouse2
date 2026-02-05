@@ -179,7 +179,7 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {items.map((item, index) => {
-            const displayName = item.profiles?.nickname || item.profiles?.name || "";
+            const displayName = item.profiles?.nickname ?? item.profiles?.name ?? "";
             const isMine = item.user_id === currentUserId;
             const isClaimed = item.status === "claimed";
             const timeLeft = formatTimeRemaining(item.expires_at);

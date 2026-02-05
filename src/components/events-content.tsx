@@ -254,7 +254,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {dateEvents.map((event, eventIndex) => {
-                  const creatorName = event.profiles?.nickname || event.profiles?.name || "";
+                  const creatorName = event.profiles?.nickname ?? event.profiles?.name ?? "";
                   const isMine = event.user_id === currentUserId;
                   const isAttending = event.event_attendees.some(
                     (a) => a.user_id === currentUserId
