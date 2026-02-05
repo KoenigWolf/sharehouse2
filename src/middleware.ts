@@ -1,6 +1,8 @@
 import { type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
+const isDev = process.env.NODE_ENV === "development";
+
 export async function middleware(request: NextRequest) {
   const response = await updateSession(request);
 
@@ -18,10 +20,15 @@ function generateNonce(): string {
 }
 
 function buildCSPHeader(nonce: string): string {
+  // Turbopack の HMR は eval を使うため、開発環境では unsafe-eval が必要
+  const scriptSrc = isDev
+    ? `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval'`
+    : `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`;
+
   return [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`,
-    `style-src 'self' 'nonce-${nonce}'`,
+    scriptSrc,
+    `style-src 'self' 'unsafe-inline' 'nonce-${nonce}'`,
     "img-src 'self' data: https: blob:",
     "font-src 'self' data:",
     "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.push.services.mozilla.com https://fcm.googleapis.com https://*.notify.windows.com",

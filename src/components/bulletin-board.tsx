@@ -89,18 +89,17 @@ export function BulletinBoard({ bulletins, currentUserId, isTeaser = false }: Bu
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold tracking-tight text-slate-900">{t("bulletin.title")}</h2>
-        {!isEditing && !isTeaser && (
+      {!isEditing && !isTeaser && (
+        <div className="flex justify-end">
           <button
             type="button"
             onClick={handleStartEdit}
-            className="h-9 px-5 rounded-full bg-brand-600 hover:bg-brand-700 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
+            className="h-9 px-5 rounded-full bg-brand-500 hover:bg-brand-700 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
           >
             {myBulletin ? t("bulletin.update") : t("bulletin.post")}
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       <AnimatePresence>
         {feedback && (
@@ -153,7 +152,7 @@ export function BulletinBoard({ bulletins, currentUserId, isTeaser = false }: Bu
                     type="button"
                     onClick={handlePost}
                     disabled={!message.trim() || isSubmitting}
-                    className="h-9 px-7 rounded-full bg-brand-600 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
+                    className="h-9 px-7 rounded-full bg-brand-500 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
                   >
                     {isSubmitting ? t("common.processing") : t("bulletin.post")}
                   </button>
@@ -171,7 +170,7 @@ export function BulletinBoard({ bulletins, currentUserId, isTeaser = false }: Bu
       ) : (
         <div className="grid grid-cols-1 gap-4">
           {bulletins.map((bulletin, index) => {
-            const displayName = bulletin.profiles?.nickname || bulletin.profiles?.name || "";
+            const displayName = bulletin.profiles?.nickname ?? bulletin.profiles?.name ?? "";
             const isMine = bulletin.user_id === currentUserId;
 
             return (

@@ -5,23 +5,23 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm tracking-wide transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[#18181b] focus-visible:ring-offset-2",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm tracking-wide transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2",
   {
     variants: {
       variant: {
         default:
-          "bg-[#18181b] text-white hover:bg-[#27272a] disabled:bg-[#a1a1aa] disabled:opacity-100",
+          "bg-slate-900 text-white hover:bg-slate-800 disabled:bg-slate-400 disabled:opacity-100",
         destructive:
           "border border-error-border text-error bg-transparent hover:border-error",
         outline:
-          "border border-[#e4e4e7] text-[#71717a] bg-transparent hover:border-[#18181b] hover:text-[#18181b]",
+          "border border-slate-200 text-slate-500 bg-transparent hover:border-slate-900 hover:text-slate-900",
         secondary:
-          "bg-[#f4f4f5] text-[#18181b] hover:bg-[#e4e4e7]",
+          "bg-slate-100 text-slate-900 hover:bg-slate-200",
         ghost:
-          "text-[#a1a1aa] hover:text-[#71717a]",
-        link: "text-[#18181b] underline-offset-4 hover:underline",
+          "text-slate-400 hover:text-slate-500",
+        link: "text-slate-900 underline-offset-4 hover:underline",
         dashed:
-          "border border-dashed border-[#d4d4d8] text-[#a1a1aa] bg-transparent hover:border-[#a1a1aa] hover:text-[#71717a]",
+          "border border-dashed border-slate-300 text-slate-400 bg-transparent hover:border-slate-400 hover:text-slate-500",
       },
       size: {
         default: "h-9 px-4 py-2 text-xs has-[>svg]:px-3",

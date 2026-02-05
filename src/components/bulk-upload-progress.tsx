@@ -12,9 +12,9 @@ interface BulkUploadProgressProps {
 }
 
 const statusColorMap: Record<UploadItemStatus, string> = {
-  pending: "text-[#a1a1aa]",
-  compressing: "text-[#71717a]",
-  uploading: "text-[#71717a]",
+  pending: "text-slate-400",
+  compressing: "text-slate-500",
+  uploading: "text-slate-500",
   done: "text-success",
   error: "text-error",
 };
@@ -57,20 +57,20 @@ export const BulkUploadProgress = memo(function BulkUploadProgress({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.2 }}
-      className="mb-4 py-3 px-4 bg-white border border-[#e4e4e7] rounded-lg"
+      className="mb-4 py-3 px-4 bg-white border border-slate-200 rounded-lg"
     >
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs text-[#71717a] font-mono">
+        <span className="text-xs text-slate-500 font-mono">
           {completedCount} / {totalCount}
         </span>
-        <span className="text-xs text-[#a1a1aa]">
+        <span className="text-xs text-slate-400">
           {Math.round(progress)}%
         </span>
       </div>
 
-      <div className="w-full h-1 bg-[#e4e4e7] rounded-full overflow-hidden mb-3">
+      <div className="w-full h-1 bg-slate-200 rounded-full overflow-hidden mb-3">
         <m.div
-          className="h-full bg-[#18181b]"
+          className="h-full bg-slate-900"
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.3, ease: "easeOut" }}
@@ -83,7 +83,7 @@ export const BulkUploadProgress = memo(function BulkUploadProgress({
             key={item.id}
             className="flex items-center justify-between gap-2 py-0.5"
           >
-            <span className="text-[11px] text-[#71717a] truncate min-w-0">
+            <span className="text-[11px] text-slate-500 truncate min-w-0">
               {item.fileName}
             </span>
             <StatusLabel status={item.status} />

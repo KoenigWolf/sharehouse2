@@ -186,40 +186,40 @@ export function ProfileEditForm({
   const [avatarUrl, setAvatarUrl] = useState(profile.avatar_url);
   const [formData, setFormData] = useState({
     name: profile.name,
-    room_number: profile.room_number || "",
-    bio: profile.bio || "",
-    interests: profile.interests?.join(", ") || "",
-    mbti: profile.mbti || ("" as MBTIType | ""),
-    move_in_date: profile.move_in_date || "",
-    nickname: profile.nickname || "",
-    age_range: profile.age_range || "",
-    gender: profile.gender || "",
-    nationality: profile.nationality || "",
-    languages: profile.languages || [],
-    hometown: profile.hometown || "",
-    occupation: profile.occupation || "",
-    industry: profile.industry || "",
-    work_location: profile.work_location || "",
-    work_style: profile.work_style || "",
-    daily_rhythm: profile.daily_rhythm || "",
-    home_frequency: profile.home_frequency || "",
-    alcohol: profile.alcohol || "",
-    smoking: profile.smoking || "",
-    pets: profile.pets || "",
-    guest_frequency: profile.guest_frequency || "",
-    social_stance: profile.social_stance || "",
-    shared_space_usage: profile.shared_space_usage || "",
-    cleaning_attitude: profile.cleaning_attitude || "",
-    cooking_frequency: profile.cooking_frequency || "",
-    shared_meals: profile.shared_meals || "",
-    allergies: profile.allergies || "",
-    personality_type: profile.personality_type || "",
-    weekend_activities: profile.weekend_activities || "",
-    sns_x: profile.sns_x || "",
-    sns_instagram: profile.sns_instagram || "",
-    sns_facebook: profile.sns_facebook || "",
-    sns_linkedin: profile.sns_linkedin || "",
-    sns_github: profile.sns_github || "",
+    room_number: profile.room_number ?? "",
+    bio: profile.bio ?? "",
+    interests: profile.interests?.join(", ") ?? "",
+    mbti: profile.mbti ?? ("" as MBTIType | ""),
+    move_in_date: profile.move_in_date ?? "",
+    nickname: profile.nickname ?? "",
+    age_range: profile.age_range ?? "",
+    gender: profile.gender ?? "",
+    nationality: profile.nationality ?? "",
+    languages: profile.languages ?? [],
+    hometown: profile.hometown ?? "",
+    occupation: profile.occupation ?? "",
+    industry: profile.industry ?? "",
+    work_location: profile.work_location ?? "",
+    work_style: profile.work_style ?? "",
+    daily_rhythm: profile.daily_rhythm ?? "",
+    home_frequency: profile.home_frequency ?? "",
+    alcohol: profile.alcohol ?? "",
+    smoking: profile.smoking ?? "",
+    pets: profile.pets ?? "",
+    guest_frequency: profile.guest_frequency ?? "",
+    social_stance: profile.social_stance ?? "",
+    shared_space_usage: profile.shared_space_usage ?? "",
+    cleaning_attitude: profile.cleaning_attitude ?? "",
+    cooking_frequency: profile.cooking_frequency ?? "",
+    shared_meals: profile.shared_meals ?? "",
+    allergies: profile.allergies ?? "",
+    personality_type: profile.personality_type ?? "",
+    weekend_activities: profile.weekend_activities ?? "",
+    sns_x: profile.sns_x ?? "",
+    sns_instagram: profile.sns_instagram ?? "",
+    sns_facebook: profile.sns_facebook ?? "",
+    sns_linkedin: profile.sns_linkedin ?? "",
+    sns_github: profile.sns_github ?? "",
   });
 
   const interestsArray = useMemo(
@@ -509,7 +509,7 @@ export function ProfileEditForm({
             {interestsArray.length > 0 && (
               <div className="flex flex-wrap gap-2 px-1">
                 {interestsArray.map((interest, i) => (
-                  <span key={i} className="text-[10px] font-bold tracking-wider px-3 py-1 bg-brand-50 text-brand-600 rounded-full border border-brand-100/50 uppercase">
+                  <span key={i} className="text-[10px] font-bold tracking-wider px-3 py-1 bg-brand-50 text-brand-500 rounded-full border border-brand-100/50 uppercase">
                     {interest}
                   </span>
                 ))}
@@ -885,7 +885,7 @@ export function ProfileEditForm({
             <div className="flex items-center justify-between py-5 group first:pt-0">
               <div className="space-y-1">
                 <p className="text-[13px] font-bold text-slate-600 tracking-wide">{t("teaTime.title")}</p>
-                <p className={`text-[11px] font-medium ${teaTimeEnabled ? "text-brand-600" : "text-slate-400"}`}>
+                <p className={`text-[11px] font-medium ${teaTimeEnabled ? "text-brand-500" : "text-slate-400"}`}>
                   {teaTimeEnabled ? t("teaTime.participating") : t("teaTime.notParticipating")}
                 </p>
               </div>
@@ -942,7 +942,7 @@ export function ProfileEditForm({
               size="xl"
               disabled={isLoading || isUploading}
               aria-busy={isLoading}
-              className="w-full sm:w-auto h-14 sm:h-12 px-10 rounded-full bg-brand-600 hover:bg-brand-700 text-white shadow-lg shadow-brand-200 hover:shadow-brand-300 transition-all duration-300 font-bold tracking-wider uppercase text-[12px]"
+              className="w-full sm:w-auto h-14 sm:h-12 px-10 rounded-full bg-brand-500 hover:bg-brand-700 text-white shadow-lg shadow-brand-200 hover:shadow-brand-300 transition-all duration-300 font-bold tracking-wider uppercase text-[12px]"
             >
               {isLoading ? (
                 <Spinner variant="light" size="sm" />

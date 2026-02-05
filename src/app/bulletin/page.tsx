@@ -27,10 +27,11 @@ export default async function BulletinPage() {
 
       <main className="flex-1 pb-20 sm:pb-0">
         <div className="container mx-auto px-4 sm:px-6 py-5 sm:py-8 max-w-4xl">
-          <div className="mb-6 sm:mb-8">
-            <h1 className="text-xl text-slate-900 tracking-tight font-bold">
+          <div className="mb-8">
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
               {t("bulletin.title")}
             </h1>
+            <p className="text-sm text-slate-500 mt-1.5 font-medium">{t("bulletin.subtitle")}</p>
           </div>
 
           <BulletinBoard

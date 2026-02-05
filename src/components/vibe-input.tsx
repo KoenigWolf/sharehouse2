@@ -63,7 +63,7 @@ export function VibeInput({ currentVibe = "", isLoggedIn }: VibeInputProps) {
             <div className="p-4 sm:p-5 flex flex-col gap-3">
                <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-brand-50 flex items-center justify-center shrink-0">
-                     <MessageCircle className="w-4 h-4 text-brand-600" />
+                     <MessageCircle className="w-4 h-4 text-brand-500" />
                   </div>
                   <textarea
                      value={message}
@@ -106,7 +106,7 @@ export function VibeInput({ currentVibe = "", isLoggedIn }: VibeInputProps) {
                               type="button"
                               onClick={handlePost}
                               disabled={isSubmitting || (message.trim() === (currentVibe || ""))}
-                              className="h-8 px-5 rounded-full bg-brand-600 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[10px] font-bold uppercase tracking-wider transition-all shadow-sm shadow-brand-100 flex items-center gap-2"
+                              className="h-8 px-5 rounded-full bg-brand-500 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[10px] font-bold uppercase tracking-wider transition-all shadow-sm shadow-brand-100 flex items-center gap-2"
                            >
                               {isSubmitting && <Spinner size="xs" variant="light" />}
                               {t("bulletin.post")}

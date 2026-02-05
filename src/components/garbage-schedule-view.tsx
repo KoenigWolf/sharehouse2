@@ -17,7 +17,7 @@ const GARBAGE_TYPE_STYLES: Record<string, { bg: string; text: string; border: st
   資源ごみ: { bg: "bg-brand-50", text: "text-brand-700", border: "border-brand-200" },
 };
 
-const DEFAULT_STYLE = { bg: "bg-[#f4f4f5]", text: "text-[#71717a]", border: "border-[#e4e4e7]" };
+const DEFAULT_STYLE = { bg: "bg-slate-100", text: "text-slate-500", border: "border-slate-200" };
 
 interface GarbageScheduleViewProps {
   schedule: GarbageSchedule[];
@@ -68,13 +68,13 @@ export function GarbageScheduleView({
       )}
 
       <section>
-        <h2 className="text-xs text-[#a1a1aa] tracking-wide uppercase mb-3">
+        <h2 className="text-xs text-slate-400 tracking-wide uppercase mb-3">
           {t("garbage.weeklySchedule")}
         </h2>
 
         {schedule.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-sm text-[#71717a]">{t("garbage.noSchedule")}</p>
+            <p className="text-sm text-slate-500">{t("garbage.noSchedule")}</p>
           </div>
         ) : (
           <div className="grid gap-2">
@@ -85,7 +85,7 @@ export function GarbageScheduleView({
               return (
                 <div
                   key={dayIndex}
-                  className="bg-white border border-[#e4e4e7] rounded-lg px-4 py-3"
+                  className="bg-white border border-slate-200 rounded-lg px-4 py-3"
                 >
                   <div className="flex items-center gap-4">
                     <div
@@ -94,7 +94,7 @@ export function GarbageScheduleView({
                           ? "bg-red-50 text-red-500"
                           : dayIndex === 6
                             ? "bg-blue-50 text-blue-500"
-                            : "bg-[#f4f4f5] text-[#18181b]"
+                            : "bg-slate-100 text-slate-900"
                       }`}
                     >
                       <span className="text-sm font-medium">{dayNames[dayIndex]}</span>
@@ -113,7 +113,7 @@ export function GarbageScheduleView({
                     })}
 
                     {daySchedule[0]?.notes && (
-                      <span className="text-xs text-[#a1a1aa] ml-auto">
+                      <span className="text-xs text-slate-400 ml-auto">
                         {daySchedule[0].notes}
                       </span>
                     )}
@@ -124,19 +124,19 @@ export function GarbageScheduleView({
           </div>
         )}
 
-        <p className="text-[10px] text-[#a1a1aa] mt-3 tracking-wide">
+        <p className="text-[10px] text-slate-400 mt-3 tracking-wide">
           {t("garbage.collectionNote")}
         </p>
       </section>
 
       <section>
-        <h2 className="text-xs text-[#a1a1aa] tracking-wide uppercase mb-3">
+        <h2 className="text-xs text-slate-400 tracking-wide uppercase mb-3">
           {t("garbage.upcomingDuties")}
         </h2>
 
         {duties.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-sm text-[#71717a]">{t("garbage.noDuties")}</p>
+            <p className="text-sm text-slate-500">{t("garbage.noDuties")}</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -156,7 +156,7 @@ export function GarbageScheduleView({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.15, delay: index * 0.03 }}
                   className={`flex items-center gap-3 px-4 py-3 bg-white border rounded-lg ${
-                    isOwn ? "border-[#18181b]" : "border-[#e4e4e7]"
+                    isOwn ? "border-slate-900" : "border-slate-200"
                   } ${duty.is_completed ? "opacity-50" : ""}`}
                 >
                   {isOwn && !duty.is_completed ? (
@@ -165,21 +165,21 @@ export function GarbageScheduleView({
                       variant="outline"
                       onClick={() => handleComplete(duty.id)}
                       disabled={completingId === duty.id}
-                      className="w-5 h-5 p-0 border-[#e4e4e7] hover:border-[#18181b] flex-shrink-0"
+                      className="w-5 h-5 p-0 border-slate-200 hover:border-slate-900 flex-shrink-0"
                       aria-label={t("garbage.markComplete")}
                     >
                       {completingId === duty.id && (
-                        <span className="w-2 h-2 bg-[#a1a1aa] animate-pulse" />
+                        <span className="w-2 h-2 bg-slate-400 animate-pulse" />
                       )}
                     </Button>
                   ) : (
                     <div
                       className={`w-5 h-5 flex items-center justify-center flex-shrink-0 ${
-                        duty.is_completed ? "bg-[#f4f4f5] border border-[#e4e4e7]" : ""
+                        duty.is_completed ? "bg-slate-100 border border-slate-200" : ""
                       }`}
                     >
                       {duty.is_completed && (
-                        <span className="text-[10px] text-[#a1a1aa]">✓</span>
+                        <span className="text-[10px] text-slate-400">✓</span>
                       )}
                     </div>
                   )}
@@ -193,9 +193,9 @@ export function GarbageScheduleView({
                       className="rounded-full object-cover flex-shrink-0"
                     />
                   ) : (
-                    <div className="w-6 h-6 rounded-full bg-[#f4f4f5] flex items-center justify-center flex-shrink-0">
-                      <span className="text-[9px] text-[#a1a1aa]">
-                        {duty.profile?.name?.charAt(0) || "?"}
+                    <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
+                      <span className="text-[9px] text-slate-400">
+                        {duty.profile?.name?.[0] ?? "?"}
                       </span>
                     </div>
                   )}
@@ -203,13 +203,13 @@ export function GarbageScheduleView({
                   <div className="flex-1 min-w-0">
                     <span
                       className={`text-sm ${
-                        isOwn ? "text-[#18181b] font-medium" : "text-[#71717a]"
+                        isOwn ? "text-slate-900 font-medium" : "text-slate-500"
                       }`}
                     >
                       {duty.profile?.name || t("garbage.unknownUser")}
                     </span>
                     {isOwn && (
-                      <span className="text-[10px] text-[#a1a1aa] ml-1">
+                      <span className="text-[10px] text-slate-400 ml-1">
                         ({t("garbage.you")})
                       </span>
                     )}
@@ -221,7 +221,7 @@ export function GarbageScheduleView({
                     {duty.garbage_type}
                   </span>
 
-                  <span className="text-xs text-[#71717a] flex-shrink-0">{dateStr}</span>
+                  <span className="text-xs text-slate-500 flex-shrink-0">{dateStr}</span>
                 </m.div>
               );
             })}

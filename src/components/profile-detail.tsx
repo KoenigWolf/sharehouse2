@@ -27,7 +27,10 @@ import {
   COOKING_FREQUENCIES,
   SHARED_MEAL_OPTIONS,
   LANGUAGES,
+  MBTI_GROUPS,
+  getMBTIGroup,
 } from "@/domain/profile";
+import { MBTI_COLORS } from "@/lib/constants/mbti";
 import type { RoomPhoto } from "@/domain/room-photo";
 import { getInitials, calculateResidenceDuration } from "@/lib/utils";
 import { TeaserOverlay } from "./public-teaser/teaser-overlay";
@@ -38,6 +41,28 @@ import { FILE_UPLOAD } from "@/lib/constants/config";
 import type { Translator } from "@/lib/i18n";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
 import { logError } from "@/lib/errors";
+
+function MBTIBadge({ mbti, className = "" }: { mbti: string; className?: string }) {
+  const locale = useLocale();
+  const group = getMBTIGroup(mbti);
+  const colors = MBTI_COLORS[group];
+  const labelEntry = MBTI_LABELS[mbti as keyof typeof MBTI_LABELS];
+  const label = labelEntry ? labelEntry[locale === "ja" ? "ja" : "en"] : mbti;
+
+  return (
+    <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all hover:shadow-sm ${colors.bg} ${colors.text} ${colors.border} ${className}`}>
+      <svg className={`w-3.5 h-3.5 ${colors.icon}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
+      </svg>
+      <div className="flex items-baseline gap-1.5">
+        <span className="font-bold tracking-wider text-[13px]">{mbti}</span>
+        <span className="text-[10px] opacity-70 font-medium">
+          {label}
+        </span>
+      </div>
+    </span>
+  );
+}
 
 interface ProfileDetailProps {
   profile: Profile;
@@ -94,8 +119,8 @@ type CategoryType = "basic" | "work" | "lifestyle" | "communal" | "personality" 
 
 const categoryConfig: Record<CategoryType, { color: string; bgColor: string; icon: React.ReactNode }> = {
   basic: {
-    color: "text-[#71717a]",
-    bgColor: "bg-[#f4f4f5]",
+    color: "text-slate-500",
+    bgColor: "bg-slate-100",
     icon: (
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
@@ -103,8 +128,8 @@ const categoryConfig: Record<CategoryType, { color: string; bgColor: string; ico
     ),
   },
   work: {
-    color: "text-[#71717a]",
-    bgColor: "bg-[#f4f4f5]",
+    color: "text-slate-500",
+    bgColor: "bg-slate-100",
     icon: (
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" />
@@ -112,8 +137,8 @@ const categoryConfig: Record<CategoryType, { color: string; bgColor: string; ico
     ),
   },
   lifestyle: {
-    color: "text-[#71717a]",
-    bgColor: "bg-[#f4f4f5]",
+    color: "text-slate-500",
+    bgColor: "bg-slate-100",
     icon: (
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
@@ -121,8 +146,8 @@ const categoryConfig: Record<CategoryType, { color: string; bgColor: string; ico
     ),
   },
   communal: {
-    color: "text-[#71717a]",
-    bgColor: "bg-[#f4f4f5]",
+    color: "text-slate-500",
+    bgColor: "bg-slate-100",
     icon: (
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
@@ -130,8 +155,8 @@ const categoryConfig: Record<CategoryType, { color: string; bgColor: string; ico
     ),
   },
   personality: {
-    color: "text-[#71717a]",
-    bgColor: "bg-[#f4f4f5]",
+    color: "text-slate-500",
+    bgColor: "bg-slate-100",
     icon: (
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
@@ -139,8 +164,8 @@ const categoryConfig: Record<CategoryType, { color: string; bgColor: string; ico
     ),
   },
   photos: {
-    color: "text-[#71717a]",
-    bgColor: "bg-[#f4f4f5]",
+    color: "text-slate-500",
+    bgColor: "bg-slate-100",
     icon: (
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
@@ -162,14 +187,16 @@ function ProfileSection({
 }) {
   const config = categoryConfig[category];
   return (
-    <m.section variants={itemVariants} className={`bg-white border border-[#e4e4e7] rounded-lg overflow-hidden ${className}`}>
-      <div className={`px-5 py-3 border-b border-[#e4e4e7] ${config.bgColor}`}>
-        <h2 className={`flex items-center gap-2 text-[11px] tracking-wider uppercase ${config.color}`}>
-          {config.icon}
+    <m.section variants={itemVariants} className={`premium-surface rounded-2xl overflow-hidden ${className}`}>
+      <div className={`px-5 py-3 border-b border-slate-100 bg-slate-50/50`}>
+        <h2 className={`flex items-center gap-2 text-[10px] sm:text-[11px] font-bold tracking-widest uppercase ${config.color}`}>
+          <span className="p-1 rounded-lg bg-white shadow-sm ring-1 ring-slate-100">
+            {config.icon}
+          </span>
           {title}
         </h2>
       </div>
-      <div className="p-5">
+      <div className="p-5 sm:p-6">
         {children}
       </div>
     </m.section>
@@ -179,9 +206,9 @@ function ProfileSection({
 function FieldRow({ label, value }: { label: string; value: string | null | undefined }) {
   if (!value) return null;
   return (
-    <div className="py-3 border-b border-[#f4f4f5] last:border-0">
-      <dt className="text-[10px] text-[#a1a1aa] tracking-wide mb-1.5">{label}</dt>
-      <dd className="text-sm text-[#18181b] leading-relaxed">{value}</dd>
+    <div className="py-3 border-b border-slate-100 last:border-0">
+      <dt className="text-[10px] text-slate-400 tracking-wide mb-1.5">{label}</dt>
+      <dd className="text-sm text-slate-900 leading-relaxed">{value}</dd>
     </div>
   );
 }
@@ -190,8 +217,8 @@ function CompactField({ label, value }: { label: string; value: string | null | 
   if (!value) return null;
   return (
     <div className="space-y-1.5">
-      <dt className="text-[10px] text-[#a1a1aa] tracking-wide">{label}</dt>
-      <dd className="text-sm text-[#18181b] font-medium">{value}</dd>
+      <dt className="text-[10px] text-slate-400 tracking-wide">{label}</dt>
+      <dd className="text-sm text-slate-900 font-medium">{value}</dd>
     </div>
   );
 }
@@ -282,9 +309,13 @@ export function ProfileDetail({
 
   const sharedSpaceUsage = profile.shared_space_usage;
   const personalityInfo = [
-    { label: t("profile.personalityType"), value: profile.personality_type },
+    {
+      label: t("profile.personalityType"),
+      value: profile.personality_type,
+      node: profile.mbti ? <MBTIBadge mbti={profile.mbti} className="mt-2" /> : null
+    },
     { label: t("profile.weekendActivities"), value: profile.weekend_activities },
-  ].filter((f) => f.value);
+  ].filter((f) => f.value || f.node);
 
   const snsLinks = [
     { platform: "x", username: profile.sns_x, url: `https://x.com/${profile.sns_x}`, label: t("profile.snsX") },
@@ -306,11 +337,11 @@ export function ProfileDetail({
       {isMockProfile && (
         <m.div
           variants={itemVariants}
-          className="mb-6 py-3 px-4 border border-dashed border-[#d4d4d8] bg-[#f4f4f5] rounded-lg"
+          className="mb-6 py-3 px-4 border border-dashed border-slate-300 bg-slate-100 rounded-lg"
           role="alert"
         >
-          <p className="text-sm text-[#71717a]">{t("profile.mockProfileBanner")}</p>
-          <p className="text-xs text-[#a1a1aa] mt-1">{t("profile.mockProfileSubtext")}</p>
+          <p className="text-sm text-slate-500">{t("profile.mockProfileBanner")}</p>
+          <p className="text-xs text-slate-400 mt-1">{t("profile.mockProfileSubtext")}</p>
         </m.div>
       )}
 
@@ -327,10 +358,10 @@ export function ProfileDetail({
 
       <m.div
         variants={itemVariants}
-        className={`bg-white border rounded-lg overflow-hidden ${isMockProfile ? "border-dashed border-[#d4d4d8]" : "border-[#e4e4e7]"}`}
+        className={`premium-surface rounded-[2rem] overflow-hidden ${isMockProfile ? "border-dashed border-slate-300" : ""}`}
       >
         {/* Cover Photo */}
-        <div className="relative aspect-2/1 sm:aspect-21/8 bg-[#f4f4f5] overflow-hidden">
+        <div className="relative aspect-2/1 sm:aspect-21/8 bg-slate-100 overflow-hidden">
           {coverUrl ? (
             <img
               src={coverUrl}
@@ -338,7 +369,7 @@ export function ProfileDetail({
               className="absolute inset-0 w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full bg-linear-to-b from-[#f4f4f5] to-[#e4e4e7]" />
+            <div className="w-full h-full bg-linear-to-b from-slate-100 to-slate-200" />
           )}
           {isOwnProfile && (
             <Button
@@ -347,7 +378,7 @@ export function ProfileDetail({
               size="sm"
               onClick={handleCoverUploadClick}
               disabled={isUploadingCover}
-              className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm border-[#e4e4e7] text-[#71717a] hover:text-[#18181b] hover:border-[#d4d4d8]"
+              className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm border-slate-200 text-slate-500 hover:text-slate-900 hover:border-slate-300"
             >
               <Camera size={14} strokeWidth={1.5} />
               {isUploadingCover
@@ -372,7 +403,7 @@ export function ProfileDetail({
         <div className="px-6 sm:px-10 pb-8">
           <div className="flex flex-col sm:flex-row gap-5 sm:gap-8">
             <div className="shrink-0 -mt-14 sm:-mt-[84px] mx-auto sm:mx-0">
-              <div className="w-28 h-28 sm:w-[168px] sm:h-[168px] rounded-full border-4 border-white bg-[#f4f4f5] overflow-hidden relative">
+              <div className="w-28 h-28 sm:w-[168px] sm:h-[168px] rounded-full border-4 border-white bg-slate-100 overflow-hidden relative">
                 <Avatar className="size-full rounded-full">
                   <OptimizedAvatarImage
                     src={profile.avatar_url}
@@ -380,7 +411,7 @@ export function ProfileDetail({
                     context="detail"
                     priority
                     fallback={isTeaser ? "●" : getInitials(profile.name)}
-                    fallbackClassName="bg-[#f4f4f5] text-[#a1a1aa] text-4xl sm:text-5xl rounded-full w-full h-full"
+                    fallbackClassName="bg-slate-100 text-slate-400 text-4xl sm:text-5xl rounded-full w-full h-full"
                   />
                 </Avatar>
               </div>
@@ -389,7 +420,7 @@ export function ProfileDetail({
             <div className="flex-1 text-center sm:text-left sm:pt-3">
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
                 <div>
-                  <h1 className="text-[28px] text-[#18181b] tracking-wide font-light leading-tight">
+                  <h1 className="text-[28px] text-slate-900 tracking-wide font-light leading-tight">
                     {isTeaser ? (
                       <MaskedText text={profile.name} className="text-[28px]" />
                     ) : (
@@ -397,12 +428,12 @@ export function ProfileDetail({
                     )}
                   </h1>
                   {(profile.room_number || snsLinks.length > 0) && (
-                    <div className="flex items-center justify-center sm:justify-start gap-2 mt-1.5 text-sm text-[#71717a]">
+                    <div className="flex items-center justify-center sm:justify-start gap-2 mt-1.5 text-sm text-slate-500">
                       {profile.room_number && (
                         <span>{profile.room_number}{t("profile.room")}</span>
                       )}
                       {snsLinks.length > 0 && profile.room_number && (
-                        <span className="text-[#d4d4d8]">·</span>
+                        <span className="text-slate-300">·</span>
                       )}
                       {snsLinks.map((link) => {
                         const icon = (
@@ -442,7 +473,7 @@ export function ProfileDetail({
                               href={link.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center text-[#a1a1aa] hover:text-[#18181b] transition-colors"
+                              className="inline-flex items-center text-slate-400 hover:text-slate-900 transition-colors"
                               aria-label={`${link.label}: @${link.username}`}
                             >
                               {icon}
@@ -453,7 +484,7 @@ export function ProfileDetail({
                         return (
                           <span
                             key={link.platform}
-                            className="inline-flex items-center text-[#a1a1aa] cursor-default"
+                            className="inline-flex items-center text-slate-400 cursor-default"
                             title={`${link.label}: ${link.username}`}
                           >
                             {icon}
@@ -474,27 +505,19 @@ export function ProfileDetail({
 
               <div className="flex flex-wrap justify-center sm:justify-start gap-2 mb-4">
                 {profile.move_in_date && (
-                  <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded bg-[#f4f4f5] text-[#71717a]">
-                    <svg className="w-3 h-3 text-[#a1a1aa]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded bg-slate-100 text-slate-500">
+                    <svg className="w-3 h-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
                     </svg>
                     {calculateResidenceDuration(profile.move_in_date, t)}
                   </span>
                 )}
                 {profile.mbti && (
-                  <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded bg-[#f4f4f5] text-[#71717a]">
-                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
-                    </svg>
-                    <span className="font-medium">{profile.mbti}</span>
-                    <span className="text-[#a1a1aa]">
-                      {MBTI_LABELS[profile.mbti][locale === "ja" ? "ja" : "en"]}
-                    </span>
-                  </span>
+                  <MBTIBadge mbti={profile.mbti} />
                 )}
                 <span className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded ${teaTimeEnabled
                   ? "bg-brand-50 text-brand-700"
-                  : "bg-[#f4f4f5] text-[#71717a]"
+                  : "bg-slate-100 text-slate-500"
                   }`}>
                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z" />
@@ -504,7 +527,7 @@ export function ProfileDetail({
               </div>
 
               {profile.bio && (
-                <p className="text-sm text-[#18181b] leading-relaxed">
+                <p className="text-sm text-slate-900 leading-relaxed">
                   {isTeaser ? "●".repeat(Math.min(profile.bio.length, 20)) : profile.bio}
                 </p>
               )}
@@ -548,7 +571,7 @@ export function ProfileDetail({
                 </p>
                 <Link
                   href="/room-photos"
-                  className="text-[10px] text-brand-600 font-bold tracking-wider uppercase hover:text-brand-700 transition-colors bg-brand-50 px-3 py-1.5 rounded-full"
+                  className="text-[10px] text-brand-500 font-bold tracking-wider uppercase hover:text-brand-700 transition-colors bg-brand-50 px-3 py-1.5 rounded-full"
                 >
                   {t("roomPhotos.viewGallery")}
                 </Link>
@@ -636,7 +659,19 @@ export function ProfileDetail({
             >
               <dl className="grid sm:grid-cols-2 gap-x-12">
                 {personalityInfo.map((field, i) => (
-                  <FieldRow key={i} label={field.label} value={field.value} />
+                  <div key={i} className="py-3 border-b border-slate-100 last:border-0">
+                    <dt className="text-[10px] text-slate-400 tracking-wide mb-1.5">{field.label}</dt>
+                    <dd className="text-sm text-slate-900 leading-relaxed">
+                      {("node" in field && field.node) ? (
+                        <div className="flex flex-col gap-2">
+                          {field.value && <span>{field.value}</span>}
+                          {field.node}
+                        </div>
+                      ) : (
+                        field.value
+                      )}
+                    </dd>
+                  </div>
                 ))}
               </dl>
             </ProfileSection>

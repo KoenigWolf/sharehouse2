@@ -116,3 +116,17 @@ export interface Profile {
     updated_at: string;
   } | null;
 }
+
+export const MBTI_GROUPS = {
+  Analysts: ["INTJ", "INTP", "ENTJ", "ENTP"],
+  Diplomats: ["INFJ", "INFP", "ENFJ", "ENFP"],
+  Sentinels: ["ISTJ", "ISFJ", "ESTJ", "ESFJ"],
+  Explorers: ["ISTP", "ISFP", "ESTP", "ESFP"],
+} as const;
+
+export function getMBTIGroup(mbti: string): keyof typeof MBTI_GROUPS {
+  for (const [group, types] of Object.entries(MBTI_GROUPS)) {
+    if ((types as readonly string[]).includes(mbti)) return group as keyof typeof MBTI_GROUPS;
+  }
+  return "Sentinels"; // Fallback
+}

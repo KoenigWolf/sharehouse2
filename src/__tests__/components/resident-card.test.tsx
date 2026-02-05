@@ -66,19 +66,19 @@ describe("ResidentCard", () => {
   });
 
   describe("current user badge", () => {
-    it("shows 'あなた' badge when isCurrentUser is true", () => {
+    it("shows 'YOU' badge when isCurrentUser is true", () => {
       render(<ResidentCard profile={mockProfile} isCurrentUser={true} />);
-      expect(screen.getByText("あなた")).toBeInTheDocument();
+      expect(screen.getByText("YOU")).toBeInTheDocument();
     });
 
     it("does not show badge when isCurrentUser is false", () => {
       render(<ResidentCard profile={mockProfile} isCurrentUser={false} />);
-      expect(screen.queryByText("あなた")).not.toBeInTheDocument();
+      expect(screen.queryByText("YOU")).not.toBeInTheDocument();
     });
 
     it("does not show badge by default", () => {
       render(<ResidentCard profile={mockProfile} />);
-      expect(screen.queryByText("あなた")).not.toBeInTheDocument();
+      expect(screen.queryByText("YOU")).not.toBeInTheDocument();
     });
   });
 
@@ -146,13 +146,13 @@ describe("ResidentCard", () => {
         <ResidentCard profile={mockProfile} isCurrentUser={true} />
       );
       const article = container.querySelector("article");
-      expect(article).toHaveClass("border-[#18181b]");
+      expect(article).toHaveClass("border-slate-900");
     });
 
     it("applies normal border for regular profile", () => {
       const { container } = render(<ResidentCard profile={mockProfile} />);
       const article = container.querySelector("article");
-      expect(article).toHaveClass("border-[#e4e4e7]");
+      expect(article).toHaveClass("border-slate-200");
     });
   });
 });

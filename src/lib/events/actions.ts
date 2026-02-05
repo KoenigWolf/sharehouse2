@@ -22,11 +22,11 @@ export async function getUpcomingEvents(): Promise<EventWithDetails[]> {
       .gte("event_date", today)
       .order("event_date", { ascending: true });
 
-    if (error) {
-      logError(error, { action: "getUpcomingEvents" });
+    if (error || !data) {
+      if (error) logError(error, { action: "getUpcomingEvents" });
       return [];
     }
-    return (data as EventWithDetails[]) || [];
+    return data as EventWithDetails[];
   } catch (error) {
     logError(error, { action: "getUpcomingEvents" });
     return [];

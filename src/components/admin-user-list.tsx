@@ -215,7 +215,7 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
                       {profile.name}
                     </span>
                     {profile.is_admin && (
-                      <span className="text-[9px] font-bold tracking-wider text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded uppercase">
+                      <span className="text-[9px] font-bold tracking-wider text-brand-500 bg-brand-50 px-1.5 py-0.5 rounded uppercase">
                         {t("admin.adminBadge")}
                       </span>
                     )}

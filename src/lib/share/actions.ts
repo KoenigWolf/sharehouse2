@@ -20,11 +20,11 @@ export async function getShareItems(): Promise<ShareItemWithProfile[]> {
       .gte("expires_at", new Date().toISOString())
       .order("created_at", { ascending: false });
 
-    if (error) {
-      logError(error, { action: "getShareItems" });
+    if (error || !data) {
+      if (error) logError(error, { action: "getShareItems" });
       return [];
     }
-    return (data as ShareItemWithProfile[]) || [];
+    return data as ShareItemWithProfile[];
   } catch (error) {
     logError(error, { action: "getShareItems" });
     return [];

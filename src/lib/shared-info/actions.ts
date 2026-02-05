@@ -29,12 +29,12 @@ export async function getSharedInfo(): Promise<SharedInfo[]> {
       .select("*")
       .order("display_order", { ascending: true });
 
-    if (error) {
-      logError(error, { action: "getSharedInfo", userId: user.id });
+    if (error || !data) {
+      if (error) logError(error, { action: "getSharedInfo", userId: user.id });
       return [];
     }
 
-    return (data as SharedInfo[]) ?? [];
+    return data as SharedInfo[];
   } catch (error) {
     logError(error, { action: "getSharedInfo" });
     return [];

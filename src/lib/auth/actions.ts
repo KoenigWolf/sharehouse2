@@ -60,14 +60,14 @@ export async function signUp(
 
   const validation = validateSignUp({ name, email, password }, t);
   if (!validation.success) {
-    return { error: validation.error || t("errors.invalidInput") };
+    return { error: validation.error };
   }
 
   const {
     name: validatedName,
     email: validatedEmail,
     password: validatedPassword,
-  } = validation.data!;
+  } = validation.data;
 
   const ipAddress = await getRequestIp();
   const rateLimitKey = ipAddress
@@ -189,11 +189,11 @@ export async function signIn(
 
   const validation = validateSignIn({ email, password }, t);
   if (!validation.success) {
-    return { error: validation.error || t("errors.invalidInput") };
+    return { error: validation.error };
   }
 
   const { email: validatedEmail, password: validatedPassword } =
-    validation.data!;
+    validation.data;
 
   const ipAddress = await getRequestIp();
   const rateLimitKey = ipAddress
@@ -335,7 +335,7 @@ export async function updatePasswordAfterReset(
 
   const validation = validatePasswordResetInput(newPassword, t);
   if (!validation.success) {
-    return { error: validation.error || t("errors.invalidInput") };
+    return { error: validation.error };
   }
 
   const ipAddress = await getRequestIp();
@@ -351,7 +351,7 @@ export async function updatePasswordAfterReset(
     }
 
     const { error } = await supabase.auth.updateUser({
-      password: validation.data!,
+      password: validation.data,
     });
 
     if (error) {

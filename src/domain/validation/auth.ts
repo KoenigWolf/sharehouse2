@@ -100,11 +100,7 @@ function formatValidationError(
 export function validateSignUp(
   data: unknown,
   t: Translator
-): {
-  success: boolean;
-  data?: SignUpInput;
-  error?: string;
-} {
+): { success: true; data: SignUpInput } | { success: false; error: string } {
   const result = signUpSchema.safeParse(data);
   if (result.success) {
     return { success: true, data: result.data };
@@ -122,11 +118,7 @@ export function validateSignUp(
 export function validatePasswordResetInput(
   password: unknown,
   t: Translator
-): {
-  success: boolean;
-  data?: string;
-  error?: string;
-} {
+): { success: true; data: string } | { success: false; error: string } {
   const result = passwordSchema.safeParse(password);
   if (result.success) {
     return { success: true, data: result.data };
@@ -144,11 +136,7 @@ export function validatePasswordResetInput(
 export function validateSignIn(
   data: unknown,
   t: Translator
-): {
-  success: boolean;
-  data?: SignInInput;
-  error?: string;
-} {
+): { success: true; data: SignInInput } | { success: false; error: string } {
   const result = signInSchema.safeParse(data);
   if (result.success) {
     return { success: true, data: result.data };

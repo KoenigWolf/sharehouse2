@@ -20,7 +20,7 @@
   --color-brand-300: var(--brand-300);
   --color-brand-400: var(--brand-400);
   --color-brand-500: var(--brand-500);
-  --color-brand-600: var(--brand-600);
+  --color-brand-500: var(--brand-500);
   --color-brand-700: var(--brand-700);
   --color-brand-800: var(--brand-800);
   --color-brand-900: var(--brand-900);
@@ -93,7 +93,7 @@
   --brand-300: #6ee7b7;
   --brand-400: #34d399;
   --brand-500: #10b981;
-  --brand-600: #059669;
+  --brand-500: #059669;
   --brand-700: #047857;
   --brand-800: #065f46;
   --brand-900: #064e3b;
@@ -118,7 +118,7 @@
   --secondary-foreground: #18181b;
   --muted: #f4f4f5;
   --muted-foreground: #71717a;
-  --accent: var(--brand-600);
+  --accent: var(--brand-500);
   /* Emerald 600 */
   --accent-foreground: #ffffff;
   --destructive: #ef4444;
@@ -126,7 +126,7 @@
   --input: #e4e4e7;
   --ring: var(--brand-500);
   --chart-1: var(--brand-500);
-  --chart-2: var(--brand-600);
+  --chart-2: var(--brand-500);
   --chart-3: #f59e0b;
   --chart-4: #8b5cf6;
   --chart-5: #ec4899;

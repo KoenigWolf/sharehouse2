@@ -7,6 +7,8 @@ import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import type { Profile } from "@/domain/profile";
 import { getInitials } from "@/lib/utils";
 import { PROFILE } from "@/lib/constants/config";
+import { getMBTIGroup } from "@/domain/profile";
+import { MBTI_COLORS } from "@/lib/constants/mbti";
 import { useI18n } from "@/hooks/use-i18n";
 import type { Translator } from "@/lib/i18n";
 
@@ -95,9 +97,9 @@ function isMockProfile(profileId: string): boolean {
 }
 
 function getCardBorderClass(isCurrentUser: boolean, isMock: boolean): string {
-  if (isCurrentUser) return "border-[#18181b]";
-  if (isMock) return "border-dashed border-[#d4d4d8] hover:border-[#a1a1aa]";
-  return "border-[#e4e4e7] hover:border-[#18181b]";
+  if (isCurrentUser) return "border-slate-900";
+  if (isMock) return "border-dashed border-slate-300 hover:border-slate-400";
+  return "border-slate-200 hover:border-slate-900";
 }
 
 function Badge({
@@ -110,10 +112,10 @@ function Badge({
   className?: string;
 }) {
   const variantStyles: Record<BadgeVariant, string> = {
-    default: "bg-[#f4f4f5] text-[#a1a1aa]",
-    dark: "bg-[#18181b] text-white",
+    default: "bg-slate-100 text-slate-400",
+    dark: "bg-slate-900 text-white",
     success: "bg-success-bg text-success border border-success-border",
-    muted: "bg-white/90 backdrop-blur-sm text-[#71717a]",
+    muted: "bg-white/90 backdrop-blur-sm text-slate-500",
   };
 
   return (
@@ -211,7 +213,7 @@ function InterestTagList({
       {interests.map((interest, index) => (
         <li
           key={`${interest}-${index}`}
-          className="text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded bg-[#f4f4f5] text-[#71717a]"
+          className="text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded bg-slate-100 text-slate-500"
         >
           {interest}
         </li>
@@ -296,11 +298,12 @@ export const ResidentCard = memo(function ResidentCard({
     <Link
       href={`/profile/${profile.id}`}
       aria-label={t("a11y.viewProfile", { name: profile.name })}
-      className="block group select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+      className="block h-full group select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
       prefetch={false}
     >
       <article
-        className="h-full premium-surface rounded-xl transition-all duration-300 relative overflow-hidden group-hover:-translate-y-1 hover:shadow-xl flex flex-col"
+        className={`h-full premium-surface rounded-xl transition-all duration-300 relative overflow-hidden group-hover:-translate-y-1 hover:shadow-xl flex flex-col ${borderClass}`}
+        style={floorAccentStyle}
       >
         <div className="aspect-square bg-slate-50 relative overflow-hidden">
           <Avatar className="w-full h-full rounded-none">
@@ -320,16 +323,22 @@ export const ResidentCard = memo(function ResidentCard({
               <Badge variant="muted" className="bg-white/80 backdrop-blur-sm border-none text-[10px] font-medium uppercase tracking-wider">{t("common.unregistered")}</Badge>
             )}
             {isNewResident && !isMock && (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-brand-600 text-white text-[10px] font-bold tracking-wider">{t("residents.badgeNew")}</span>
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-brand-500 text-white text-[10px] font-bold tracking-wider">{t("residents.badgeNew")}</span>
             )}
-            {profile.mbti && !isMock && (
-              <Badge variant="muted" className="glass border-white/40 text-slate-700 text-[10px] font-semibold">{profile.mbti}</Badge>
-            )}
+            {profile.mbti && !isMock && (() => {
+              const group = getMBTIGroup(profile.mbti);
+              const colors = MBTI_COLORS[group];
+              return (
+                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg border text-[10px] font-bold shadow-sm backdrop-blur-sm ${colors.bg} ${colors.text} ${colors.border}`}>
+                  {profile.mbti}
+                </span>
+              );
+            })()}
           </div>
 
           <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5">
             {isCurrentUser && (
-              <Badge variant="dark" className="bg-brand-600 text-white border-none text-[10px] font-bold tracking-wider uppercase">{t("residents.badgeYou")}</Badge>
+              <Badge variant="dark" className="bg-brand-500 text-white border-none text-[10px] font-bold tracking-wider uppercase">{t("residents.badgeYou")}</Badge>
             )}
             {showTeaTime && teaTimeEnabled && !isMock && (
               <span className="bg-amber-100/90 backdrop-blur-sm text-amber-700 border-none text-[10px] px-2 py-1 font-bold rounded-lg flex items-center gap-1 shadow-sm">
@@ -398,7 +407,7 @@ export const ResidentCard = memo(function ResidentCard({
           </AnimatePresence>
         </div>
 
-        <div className={`p-4 sm:p-5 ${CARD_HEIGHTS.mobile} ${CARD_HEIGHTS.desktop} flex flex-col overflow-hidden bg-white`}>
+        <div className={`p-4 sm:p-5 ${CARD_HEIGHTS.mobile} ${CARD_HEIGHTS.desktop} flex-1 flex flex-col overflow-hidden bg-white`}>
           <div className="flex items-center justify-between gap-2 shrink-0">
             <h3 className="text-base sm:text-lg text-slate-900 tracking-tight truncate font-semibold">
               {displayName}

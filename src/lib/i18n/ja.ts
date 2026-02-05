@@ -43,6 +43,12 @@ export const ja = {
     stats: "統計",
   },
 
+  mobileNav: {
+    more: "その他",
+    menu: "メニュー",
+    brand: "Share House Portal v1.0",
+  },
+
   auth: {
     login: "ログイン",
     signup: "新規登録",
@@ -311,6 +317,7 @@ export const ja = {
     floorLabel: "{{floor}}階",
     registeredShort: "登録",
     statsTitle: "住民統計",
+    statsSubtitle: "住民の参加状況と入居統計",
     statsRegistered: "登録済み",
     statsNew: "新入居者",
     statsNewSub: "（3ヶ月以内）",
@@ -467,6 +474,7 @@ export const ja = {
     uploadLimit: "最大{{max}}枚まで（一度に{{bulk}}枚まで）",
     supportedFormats: "対応形式: JPEG, PNG, WebP, HEIC",
     uploadInstructions: "ドラッグ＆ドロップまたはクリックして選択（複数選択・一括アップロード可）",
+    showMore: "もっと見る（残り{{count}}枚）",
   },
 
   wifi: {
@@ -597,6 +605,11 @@ export const ja = {
     tagline: "住民同士のつながりを大切にするシェアハウスポータル",
     directory: "ディレクトリ",
     followUs: "フォロー",
+    community: "コミュニティ",
+    legal: "法的情報",
+    terms: "利用規約",
+    privacy: "プライバシーポリシー",
+    backToTop: "トップへ戻る",
   },
 
   bulletin: {
@@ -608,6 +621,7 @@ export const ja = {
     deleteConfirm: "この投稿を削除しますか？",
     maxLength: "{{max}}文字以内",
     quickLinks: "みんなの機能",
+    subtitle: "大切なお知らせやハウスメッセージ",
   },
 
   share: {

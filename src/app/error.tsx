@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import { m } from "framer-motion";
+import { AlertCircle, RefreshCcw, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/use-i18n";
 import { logError } from "@/lib/errors";
@@ -23,44 +25,72 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
-      <header className="border-b border-[#e4e4e7] bg-white">
-        <div className="container mx-auto px-6 h-16 flex items-center">
-          <Link href="/" className="text-lg tracking-wider text-[#18181b]">
-            {t("pages.brandName")}
-          </Link>
-        </div>
-      </header>
+    <div className="min-h-[100dvh] bg-slate-50 flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      {/* Decorative Background Elements */}
+      <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-error-bg/30 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-200/20 rounded-full blur-[120px] pointer-events-none" />
 
-      <main className="flex-1 flex items-center justify-center p-6">
-        <div className="text-center max-w-md">
-          <p className="text-6xl text-[#d4d4d8] mb-6 font-light">{t("pages.error.label")}</p>
-          <h1 className="text-xl text-[#18181b] mb-3 tracking-wide">
-            {t("pages.error.title")}
-          </h1>
-          <p className="text-sm text-[#71717a] mb-8 leading-relaxed">
-            {t("pages.error.description")}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button size="xl" onClick={reset}>
-              {t("pages.error.retry")}
-            </Button>
-            <Button variant="outline" size="xl" asChild>
-              <Link href="/">
-                {t("pages.error.backHome")}
-              </Link>
-            </Button>
+      <m.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="w-full max-w-lg text-center relative z-10"
+      >
+        <div className="relative mb-8">
+          <m.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.8, type: "spring" }}
+            className="text-[10rem] sm:text-[14rem] font-bold text-slate-100 select-none leading-none tracking-tighter uppercase"
+          >
+            {t("pages.error.label")}
+          </m.div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <m.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+              className="bg-white/80 backdrop-blur-xl p-8 sm:p-12 rounded-[2.5rem] shadow-2xl border border-white/50 premium-surface"
+            >
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-error-bg text-error mb-6">
+                <AlertCircle size={32} strokeWidth={1.5} />
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4 tracking-tight">
+                {t("pages.error.title")}
+              </h1>
+              <p className="text-slate-500 text-sm sm:text-base leading-relaxed mb-8 max-w-xs mx-auto">
+                {t("pages.error.description")}
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Button size="xl" onClick={reset} className="rounded-2xl shadow-lg shadow-slate-200/50 group bg-slate-900 hover:bg-slate-800">
+                  <RefreshCcw size={18} className="mr-2 group-active:rotate-180 transition-transform duration-500" />
+                  {t("pages.error.retry")}
+                </Button>
+                <Button variant="outline" size="xl" asChild className="rounded-2xl bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-300">
+                  <Link href="/">
+                    <Home size={18} className="mr-2" />
+                    {t("pages.error.backHome")}
+                  </Link>
+                </Button>
+              </div>
+            </m.div>
           </div>
         </div>
-      </main>
 
-      <footer className="border-t border-[#e4e4e7] bg-white">
-        <div className="container mx-auto px-6 py-4">
-          <p className="text-xs text-[#a1a1aa] text-center">
-            {t("pages.portalName")}
-          </p>
-        </div>
-      </footer>
+        <m.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 1 }}
+          className="mt-12"
+        >
+          <div className="flex items-center justify-center gap-2 text-slate-400 text-sm font-medium">
+            <span className="w-8 h-px bg-slate-200" />
+            <span className="tracking-widest uppercase text-[10px]">{t("pages.brandName")}</span>
+            <span className="w-8 h-px bg-slate-200" />
+          </div>
+        </m.div>
+      </m.div>
     </div>
   );
 }

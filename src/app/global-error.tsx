@@ -28,127 +28,155 @@ export default function GlobalError({
 
   return (
     <html lang={locale}>
+      <head>
+        <title>{`${t("pages.error.label")} - ${t("pages.portalName")}`}</title>
+      </head>
       <body>
         <div
           style={{
             minHeight: "100vh",
-            backgroundColor: "#ffffff",
+            backgroundColor: "#f8fafc", // slate-50
             display: "flex",
             flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "24px",
             fontFamily:
-              '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+              '-apple-system, BlinkMacSystemFont, "Geist Sans", "Segoe UI", Roboto, sans-serif',
+            position: "relative",
+            overflow: "hidden",
+            margin: 0,
           }}
         >
-          <header
+          {/* Fallback for background blobs */}
+          <div
             style={{
-              borderBottom: "1px solid #e4e4e7",
-              backgroundColor: "white",
+              position: "absolute",
+              top: "-10%",
+              right: "-10%",
+              width: "40%",
+              height: "40%",
+              backgroundColor: "rgba(254, 242, 242, 0.5)", // error-bg
+              borderRadius: "50%",
+              filter: "blur(120px)",
+              pointerEvents: "none",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              bottom: "-10%",
+              left: "-10%",
+              width: "40%",
+              height: "40%",
+              backgroundColor: "rgba(236, 253, 245, 0.3)", // brand-50
+              borderRadius: "50%",
+              filter: "blur(120px)",
+              pointerEvents: "none",
+            }}
+          />
+
+          <div
+            style={{
+              zIndex: 10,
+              textAlign: "center",
+              maxWidth: "480px",
+              width: "100%"
             }}
           >
             <div
               style={{
-                maxWidth: "1200px",
-                margin: "0 auto",
-                padding: "0 24px",
-                height: "64px",
-                display: "flex",
-                alignItems: "center",
+                fontSize: "min(20vw, 120px)",
+                fontWeight: 800,
+                color: "#f1f5f9", // slate-100
+                marginBottom: "-40px",
+                userSelect: "none",
+                letterSpacing: "-0.05em",
+                textTransform: "uppercase",
               }}
             >
-              <span
-                style={{
-                  fontSize: "18px",
-                  letterSpacing: "0.05em",
-                  color: "#18181b",
-                }}
-              >
-                SHARE HOUSE
-              </span>
+              {t("pages.error.label")}
             </div>
-          </header>
 
-          <main
-            style={{
-              flex: 1,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: "24px",
-            }}
-          >
-            <div style={{ textAlign: "center", maxWidth: "400px" }}>
-              <p
+            <div
+              style={{
+                backgroundColor: "rgba(255, 255, 255, 0.8)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+                padding: "48px",
+                borderRadius: "40px",
+                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.15)",
+                border: "1px solid rgba(255, 255, 255, 0.5)",
+              }}
+            >
+              <div
                 style={{
-                  fontSize: "60px",
-                  color: "#d4d4d8",
-                  marginBottom: "24px",
-                  fontWeight: 300,
+                  width: "64px",
+                  height: "64px",
+                  borderRadius: "16px",
+                  backgroundColor: "#fee2e2", // error-bg
+                  color: "#8b4040", // error
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  margin: "0 auto 24px auto",
                 }}
               >
-                Error
-              </p>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+              </div>
+
               <h1
                 style={{
-                  fontSize: "20px",
-                  color: "#18181b",
-                  marginBottom: "12px",
-                  letterSpacing: "0.05em",
-                  fontWeight: 400,
+                  fontSize: "24px",
+                  fontWeight: 700,
+                  color: "#0f172a", // slate-900
+                  marginBottom: "16px",
+                  letterSpacing: "-0.02em",
                 }}
               >
                 {t("pages.globalError.title")}
               </h1>
+
               <p
                 style={{
-                  fontSize: "14px",
-                  color: "#71717a",
+                  fontSize: "15px",
+                  color: "#64748b", // slate-500
                   marginBottom: "32px",
-                lineHeight: 1.6,
-              }}
-            >
+                  lineHeight: 1.6,
+                }}
+              >
                 {t("pages.globalError.description")}
               </p>
+
               <button
                 onClick={reset}
                 style={{
-                  padding: "12px 32px",
-                  backgroundColor: "#18181b",
+                  width: "100%",
+                  padding: "16px 32px",
+                  backgroundColor: "#0f172a", // slate-900
                   color: "white",
                   fontSize: "14px",
-                  letterSpacing: "0.05em",
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
+                  fontWeight: 600,
+                  borderRadius: "16px",
+                  border: "none",
+                  cursor: "pointer",
+                  boxShadow: "0 10px 15px -3px rgba(15, 23, 42, 0.3)",
+                  transition: "all 0.4s ease-out",
+                  transitionDelay: "100ms",
+                }}
+              >
                 {t("pages.globalError.reload")}
               </button>
             </div>
-          </main>
 
-          <footer
-            style={{
-              borderTop: "1px solid #e4e4e7",
-              backgroundColor: "white",
-            }}
-          >
-            <div
-              style={{
-                maxWidth: "1200px",
-                margin: "0 auto",
-                padding: "16px 24px",
-              }}
-            >
-              <p
-                style={{
-                  fontSize: "12px",
-                  color: "#a1a1aa",
-                  textAlign: "center",
-                }}
-              >
-                Share House Portal
-              </p>
+            <div style={{ marginTop: "40px", color: "#94a3b8", fontSize: "10px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+              {t("pages.portalName")}
             </div>
-          </footer>
+          </div>
         </div>
       </body>
     </html>

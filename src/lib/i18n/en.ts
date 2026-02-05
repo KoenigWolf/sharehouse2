@@ -41,6 +41,12 @@ export const en: Translations = {
     stats: "Statistics",
   },
 
+  mobileNav: {
+    more: "More",
+    menu: "Menu",
+    brand: "Share House Portal v1.0",
+  },
+
   auth: {
     login: "Log in",
     signup: "Sign up",
@@ -311,6 +317,7 @@ export const en: Translations = {
     floorLabel: "Floor {{floor}}",
     registeredShort: "registered",
     statsTitle: "Resident Statistics",
+    statsSubtitle: "Resident participation and occupancy statistics",
     statsRegistered: "Registered",
     statsNew: "New Residents",
     statsNewSub: "(within 3 months)",
@@ -468,6 +475,7 @@ export const en: Translations = {
     uploadLimit: "Up to {{max}} photos total (max {{bulk}} at a time)",
     supportedFormats: "Supported formats: JPEG, PNG, WebP, HEIC",
     uploadInstructions: "Drag & drop or click to select (Multiple selection supported)",
+    showMore: "Show more ({{count}} remaining)",
   },
 
   wifi: {
@@ -598,6 +606,11 @@ export const en: Translations = {
     tagline: "A portal that values resident connections",
     directory: "Directory",
     followUs: "Follow Us",
+    community: "Community",
+    legal: "Legal",
+    terms: "Terms of Service",
+    privacy: "Privacy Policy",
+    backToTop: "Back to Top",
   },
 
   bulletin: {
@@ -609,6 +622,7 @@ export const en: Translations = {
     deleteConfirm: "Delete this post?",
     maxLength: "{{max}} characters max",
     quickLinks: "Features",
+    subtitle: "Important announcements and house messages",
   },
 
   share: {

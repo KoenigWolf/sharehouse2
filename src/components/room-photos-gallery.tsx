@@ -63,7 +63,7 @@ const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardPr
         tabIndex={0}
         onClick={() => onClick()}
         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } }}
-        className="group w-full bg-white border border-[#e4e4e7] rounded-lg overflow-hidden transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#18181b] focus-visible:ring-offset-2 hover:border-[#18181b] cursor-pointer"
+        className="group w-full bg-white border border-slate-200 rounded-lg overflow-hidden transition-colors outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2 hover:border-slate-900 cursor-pointer"
       >
         <div className="relative w-full overflow-hidden" style={{ paddingBottom: "100%" }}>
           <Image
@@ -74,13 +74,13 @@ const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardPr
             className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
           />
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-            <span className="opacity-0 group-hover:opacity-100 transition-opacity p-2 bg-white/90 text-[#18181b]">
+            <span className="opacity-0 group-hover:opacity-100 transition-opacity p-2 bg-white/90 text-slate-900">
               <ExpandIcon />
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 p-2.5 border-t border-[#e4e4e7]">
+        <div className="flex items-center gap-2 p-2.5 border-t border-slate-200">
           {photo.profile?.avatar_url ? (
             <Image
               src={photo.profile.avatar_url}
@@ -90,13 +90,13 @@ const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardPr
               className="rounded-full object-cover shrink-0"
             />
           ) : (
-            <div className="w-5 h-5 rounded-full bg-[#f4f4f5] flex items-center justify-center shrink-0">
-              <span className="text-[8px] text-[#a1a1aa]">
-                {photo.profile?.name?.charAt(0) || "?"}
+            <div className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
+              <span className="text-[8px] text-slate-400">
+                {photo.profile?.name?.[0] ?? "?"}
               </span>
             </div>
           )}
-          <span className="text-[11px] text-[#71717a] truncate">
+          <span className="text-[11px] text-slate-500 truncate">
             {photo.profile?.name || t("roomPhotos.unknownUser")}
           </span>
         </div>
@@ -142,17 +142,17 @@ function UploadCard({
         variant="dashed"
         onClick={handleClick}
         disabled={isUploading}
-        className="w-full h-auto p-0 flex-col aspect-square bg-[#f4f4f5] hover:bg-[#e4e4e7] hover:border-[#a1a1aa]"
+        className="w-full h-auto p-0 flex-col aspect-square bg-slate-100 hover:bg-slate-200 hover:border-slate-400"
       >
         {isUploading ? (
           <Spinner />
         ) : (
           <>
-            <Plus className="w-6 h-6 text-[#a1a1aa]" />
-            <span className="text-[10px] text-[#a1a1aa] mt-1">
+            <Plus className="w-6 h-6 text-slate-400" />
+            <span className="text-[10px] text-slate-400 mt-1">
               {t("roomPhotos.uploadButton")}
             </span>
-            <span className="text-[9px] text-[#d4d4d8] mt-0.5">
+            <span className="text-[9px] text-slate-300 mt-0.5">
               {t("roomPhotos.selectMultiple")}
             </span>
           </>
@@ -180,10 +180,10 @@ interface SectionHeaderProps {
 const SectionHeader = memo(function SectionHeader({ icon, title, count }: SectionHeaderProps) {
   return (
     <div className="flex items-center gap-2 mb-4">
-      <span className="text-[#a1a1aa]">{icon}</span>
-      <h2 className="text-xs text-[#a1a1aa] tracking-wide uppercase">{title}</h2>
+      <span className="text-slate-400">{icon}</span>
+      <h2 className="text-xs text-slate-900 tracking-wide uppercase">{title}</h2>
       {count !== undefined && (
-        <span className="text-[10px] text-[#a1a1aa] font-mono ml-auto">
+        <span className="text-[10px] text-slate-400 font-mono ml-auto">
           {count}
         </span>
       )}
@@ -197,8 +197,10 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
   const t = useI18n();
   const router = useRouter();
   const { userId } = useUser();
+  const INITIAL_VISIBLE = 12;
   const [localPhotos, setLocalPhotos] = useState(photos);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
 
   useEffect(() => {
     setLocalPhotos(photos);
@@ -275,6 +277,13 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
   );
 
   const hasPhotos = localPhotos.length > 0;
+  const visiblePhotos = localPhotos.slice(0, visibleCount);
+  const hasMore = localPhotos.length > visibleCount;
+  const remainingPhotos = localPhotos.length - visibleCount;
+
+  const handleShowMore = useCallback(() => {
+    setVisibleCount((prev) => prev + INITIAL_VISIBLE);
+  }, []);
 
   return (
     <>
@@ -327,7 +336,7 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
               isUploading={isUploading}
             />
           )}
-          {localPhotos.map((photo, index) => (
+          {visiblePhotos.map((photo, index) => (
             <PhotoCard
               key={photo.id}
               photo={photo}
@@ -337,8 +346,20 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
           ))}
         </div>
 
+        {hasMore && (
+          <div className="flex justify-center mt-6">
+            <button
+              type="button"
+              onClick={handleShowMore}
+              className="h-10 px-8 rounded-full border border-slate-200 text-sm font-medium text-slate-500 hover:text-slate-700 hover:border-slate-300 transition-all duration-400 ease-out"
+            >
+              {t("roomPhotos.showMore", { count: remainingPhotos })}
+            </button>
+          </div>
+        )}
+
         {hasPhotos && (
-          <p className="text-[10px] text-[#a1a1aa] mt-4 tracking-wide">
+          <p className="text-[10px] text-slate-400 mt-4 tracking-wide">
             {t("roomPhotos.clickToEnlarge")}
           </p>
         )}

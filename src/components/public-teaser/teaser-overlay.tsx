@@ -24,7 +24,7 @@ export function TeaserOverlay({ totalCount }: TeaserOverlayProps) {
             transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
             className="relative premium-surface rounded-[40px] p-8 sm:p-12 text-center max-w-2xl mx-auto shadow-2xl shadow-brand-500/10"
          >
-            <div className="w-16 h-16 rounded-3xl bg-brand-50 flex items-center justify-center mx-auto mb-6 text-brand-600">
+            <div className="w-16 h-16 rounded-3xl bg-brand-50 flex items-center justify-center mx-auto mb-6 text-brand-500">
                <UserPlus className="w-8 h-8" />
             </div>
 
@@ -39,7 +39,7 @@ export function TeaserOverlay({ totalCount }: TeaserOverlayProps) {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                <Link
                   href="/login"
-                  className="h-12 px-8 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-bold tracking-wider uppercase transition-all duration-300 flex items-center justify-center gap-2 group shadow-lg shadow-brand-200"
+                  className="h-12 px-8 rounded-full bg-brand-500 hover:bg-brand-700 text-white font-bold tracking-wider uppercase transition-all duration-300 flex items-center justify-center gap-2 group shadow-lg shadow-brand-200"
                >
                   {t("teaser.ctaJoin")}
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />

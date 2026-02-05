@@ -41,7 +41,7 @@ export async function runMatching(supabase: SupabaseClient): Promise<number> {
 
   const pairs = createPairs(
     participants as Participant[],
-    (recentMatches as RecentMatch[]) || []
+    (recentMatches ?? []) as RecentMatch[]
   );
 
   if (pairs.length === 0) {

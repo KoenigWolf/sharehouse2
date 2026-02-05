@@ -85,18 +85,17 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold tracking-tight text-slate-900">{t("share.title")}</h2>
-        {!isFormOpen && !isTeaser && (
+      {!isFormOpen && !isTeaser && (
+        <div className="flex justify-end">
           <button
             type="button"
             onClick={() => { setIsFormOpen(true); setFeedback(null); }}
-            className="h-9 px-5 rounded-full bg-brand-600 hover:bg-brand-700 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
+            className="h-9 px-5 rounded-full bg-brand-500 hover:bg-brand-700 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
           >
             {t("share.post")}
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       <AnimatePresence>
         {feedback && (
@@ -163,7 +162,7 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                   type="button"
                   onClick={handlePost}
                   disabled={!title.trim() || isSubmitting}
-                  className="h-10 px-8 rounded-full bg-brand-600 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
+                  className="h-10 px-8 rounded-full bg-brand-500 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
                 >
                   {isSubmitting ? t("share.posting") : t("share.post")}
                 </button>
@@ -180,7 +179,7 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {items.map((item, index) => {
-            const displayName = item.profiles?.nickname || item.profiles?.name || "";
+            const displayName = item.profiles?.nickname ?? item.profiles?.name ?? "";
             const isMine = item.user_id === currentUserId;
             const isClaimed = item.status === "claimed";
             const timeLeft = formatTimeRemaining(item.expires_at);
@@ -222,7 +221,7 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                     </div>
                   </div>
                   {timeLeft && !isClaimed && (
-                    <span className="text-[10px] font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-full tracking-wider">
+                    <span className="text-[10px] font-bold text-brand-500 bg-brand-50 px-2 py-0.5 rounded-full tracking-wider">
                       {timeLeft}
                     </span>
                   )}
@@ -249,7 +248,7 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                       type="button"
                       onClick={() => !isTeaser && handleClaim(item.id)}
                       disabled={isSubmitting || isTeaser}
-                      className={`h-8 px-6 rounded-full bg-brand-600 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[10px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100 ${isTeaser ? "opacity-50 cursor-not-allowed" : ""}`}
+                      className={`h-8 px-6 rounded-full bg-brand-500 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[10px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100 ${isTeaser ? "opacity-50 cursor-not-allowed" : ""}`}
                     >
                       {t("share.claim")}
                     </button>

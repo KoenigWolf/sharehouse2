@@ -13,6 +13,7 @@ import {
   auditLog,
 } from "@/lib/security";
 import { enforceAllowedOrigin } from "@/lib/security/request";
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@/lib/env";
 
 type UpdateResponse = { success: true } | { error: string };
 
@@ -54,15 +55,19 @@ export async function changePassword(
       return { error: msg?.includes(".") ? t(msg as Parameters<typeof t>[0]) : t("errors.invalidInput") };
     }
 
+    if (!user.email) {
+      return { error: t("errors.invalidInput") };
+    }
+
     // Cookie に影響を与えない bare client で現パスワードを検証
     const verifyClient = createBareClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY,
       { auth: { autoRefreshToken: false, persistSession: false } }
     );
 
     const { error: verifyError } = await verifyClient.auth.signInWithPassword({
-      email: user.email!,
+      email: user.email,
       password: currentPassword,
     });
 

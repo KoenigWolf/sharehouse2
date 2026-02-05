@@ -31,7 +31,7 @@ export function BlurredImage({ userId, className }: BlurredImageProps) {
         <m.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="w-8 h-8 rounded-full bg-white/90 shadow-lg flex items-center justify-center text-brand-600"
+          className="w-8 h-8 rounded-full bg-white/90 shadow-lg flex items-center justify-center text-brand-500"
         >
           <Lock className="w-4 h-4" />
         </m.div>

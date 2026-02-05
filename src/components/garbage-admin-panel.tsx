@@ -86,8 +86,8 @@ export function GarbageAdminPanel({ schedule }: GarbageAdminPanelProps) {
       transition={{ duration: 0.3 }}
       className="space-y-5"
     >
-      <div className="border-t border-[#e4e4e7] pt-5">
-        <h2 className="text-sm text-[#18181b] font-medium tracking-wide mb-4">
+      <div className="border-t border-slate-200 pt-5">
+        <h2 className="text-sm text-slate-900 font-medium tracking-wide mb-4">
           {t("garbage.adminPanel")}
         </h2>
 
@@ -103,7 +103,7 @@ export function GarbageAdminPanel({ schedule }: GarbageAdminPanelProps) {
         )}
 
         <section className="mb-6">
-          <h3 className="text-xs text-[#a1a1aa] tracking-wide mb-3">
+          <h3 className="text-xs text-slate-400 tracking-wide mb-3">
             {t("garbage.scheduleManagement")}
           </h3>
 
@@ -115,7 +115,7 @@ export function GarbageAdminPanel({ schedule }: GarbageAdminPanelProps) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15, delay: index * 0.03 }}
-                className="flex items-center justify-between px-4 py-3 bg-white border border-[#e4e4e7] rounded-lg mb-2"
+                className="flex items-center justify-between px-4 py-3 bg-white border border-slate-200 rounded-lg mb-2"
               >
                 {editingId === entry.id ? (
                   <ScheduleEntryForm
@@ -136,16 +136,16 @@ export function GarbageAdminPanel({ schedule }: GarbageAdminPanelProps) {
                             ? "text-red-400"
                             : entry.day_of_week === 6
                               ? "text-blue-400"
-                              : "text-[#18181b]"
+                              : "text-slate-900"
                         }`}
                       >
                         {dayNames[entry.day_of_week]}
                       </span>
-                      <span className="text-sm text-[#71717a]">
+                      <span className="text-sm text-slate-500">
                         {entry.garbage_type}
                       </span>
                       {entry.notes && (
-                        <span className="text-[10px] text-[#a1a1aa]">
+                        <span className="text-[10px] text-slate-400">
                           ({entry.notes})
                         </span>
                       )}
@@ -178,7 +178,7 @@ export function GarbageAdminPanel({ schedule }: GarbageAdminPanelProps) {
             <m.div
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
-              className="px-4 py-3 bg-white border border-[#e4e4e7] rounded-lg"
+              className="px-4 py-3 bg-white border border-slate-200 rounded-lg"
             >
               <ScheduleEntryForm
                 dayNames={dayNames}
@@ -202,17 +202,17 @@ export function GarbageAdminPanel({ schedule }: GarbageAdminPanelProps) {
         </section>
 
         <section>
-          <h3 className="text-xs text-[#a1a1aa] tracking-wide mb-3">
+          <h3 className="text-xs text-slate-400 tracking-wide mb-3">
             {t("garbage.dutyRotation")}
           </h3>
 
           <form
             onSubmit={handleGenerate}
-            className="bg-white border border-[#e4e4e7] rounded-lg p-4 space-y-3"
+            className="bg-white border border-slate-200 rounded-lg p-4 space-y-3"
           >
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="flex-1">
-                <label className="block text-[10px] text-[#a1a1aa] tracking-wide mb-1">
+                <label className="block text-[10px] text-slate-400 tracking-wide mb-1">
                   {t("garbage.startDate")}
                 </label>
                 <input
@@ -220,11 +220,11 @@ export function GarbageAdminPanel({ schedule }: GarbageAdminPanelProps) {
                   value={rotationStartDate}
                   onChange={(e) => setRotationStartDate(e.target.value)}
                   required
-                  className="w-full h-10 px-3 bg-white border border-[#e4e4e7] rounded-md text-sm text-[#18181b] focus:outline-none focus:border-[#18181b] transition-colors"
+                  className="w-full h-10 px-3 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:border-slate-900 transition-colors"
                 />
               </div>
               <div className="w-32">
-                <label className="block text-[10px] text-[#a1a1aa] tracking-wide mb-1">
+                <label className="block text-[10px] text-slate-400 tracking-wide mb-1">
                   {t("garbage.weeks")}
                 </label>
                 <input
@@ -236,7 +236,7 @@ export function GarbageAdminPanel({ schedule }: GarbageAdminPanelProps) {
                   min={1}
                   max={52}
                   required
-                  className="w-full h-10 px-3 bg-white border border-[#e4e4e7] rounded-md text-sm text-[#18181b] focus:outline-none focus:border-[#18181b] transition-colors"
+                  className="w-full h-10 px-3 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:border-slate-900 transition-colors"
                 />
               </div>
             </div>
@@ -289,8 +289,8 @@ function ScheduleEntryForm({
       setFormError("");
 
       try {
-        const result = isEditing
-          ? await updateGarbageScheduleEntry(initialData!.id, formData)
+        const result = isEditing && initialData
+          ? await updateGarbageScheduleEntry(initialData.id, formData)
           : await createGarbageScheduleEntry(formData);
 
         if ("error" in result) {
@@ -317,7 +317,7 @@ function ScheduleEntryForm({
 
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="w-24">
-          <label className="block text-[10px] text-[#a1a1aa] tracking-wide mb-1">
+          <label className="block text-[10px] text-slate-400 tracking-wide mb-1">
             {t("garbage.dayOfWeek")}
           </label>
           <select
@@ -328,7 +328,7 @@ function ScheduleEntryForm({
                 day_of_week: parseInt(e.target.value, 10),
               }))
             }
-            className="w-full h-9 px-2 bg-white border border-[#e4e4e7] rounded-md text-sm text-[#18181b] focus:outline-none focus:border-[#18181b] transition-colors"
+            className="w-full h-9 px-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:border-slate-900 transition-colors"
           >
             {dayNames.map((name, index) => (
               <option key={index} value={index}>
@@ -339,7 +339,7 @@ function ScheduleEntryForm({
         </div>
 
         <div className="flex-1">
-          <label className="block text-[10px] text-[#a1a1aa] tracking-wide mb-1">
+          <label className="block text-[10px] text-slate-400 tracking-wide mb-1">
             {t("garbage.garbageType")}
           </label>
           <input
@@ -352,13 +352,13 @@ function ScheduleEntryForm({
               }))
             }
             required
-            className="w-full h-9 px-2 bg-white border border-[#e4e4e7] rounded-md text-sm text-[#18181b] placeholder:text-[#d4d4d8] focus:outline-none focus:border-[#18181b] transition-colors"
+            className="w-full h-9 px-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-slate-900 transition-colors"
             placeholder={t("garbage.garbageTypePlaceholder")}
           />
         </div>
 
         <div className="flex-1">
-          <label className="block text-[10px] text-[#a1a1aa] tracking-wide mb-1">
+          <label className="block text-[10px] text-slate-400 tracking-wide mb-1">
             {t("garbage.notes")}
           </label>
           <input
@@ -370,7 +370,7 @@ function ScheduleEntryForm({
                 notes: e.target.value || null,
               }))
             }
-            className="w-full h-9 px-2 bg-white border border-[#e4e4e7] rounded-md text-sm text-[#18181b] placeholder:text-[#d4d4d8] focus:outline-none focus:border-[#18181b] transition-colors"
+            className="w-full h-9 px-2 bg-white border border-slate-200 rounded-md text-sm text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-slate-900 transition-colors"
             placeholder={t("garbage.notesPlaceholder")}
           />
         </div>

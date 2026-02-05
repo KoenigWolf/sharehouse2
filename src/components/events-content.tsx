@@ -105,20 +105,17 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold tracking-tight text-slate-900">
-          {t("events.title")}
-        </h2>
-        {!isFormOpen && !isTeaser && (
+      {!isFormOpen && !isTeaser && (
+        <div className="flex justify-end">
           <button
             type="button"
             onClick={() => { setIsFormOpen(true); setFeedback(null); }}
-            className="h-9 px-5 rounded-full bg-brand-600 hover:bg-brand-700 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
+            className="h-9 px-5 rounded-full bg-brand-500 hover:bg-brand-700 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
           >
             {t("events.create")}
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       <AnimatePresence>
         {feedback && (
@@ -231,7 +228,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                   type="button"
                   onClick={handleCreate}
                   disabled={!title.trim() || !eventDate || isSubmitting}
-                  className="h-10 px-8 rounded-full bg-brand-600 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
+                  className="h-10 px-8 rounded-full bg-brand-500 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
                 >
                   {isSubmitting ? t("events.creating") : t("events.create")}
                 </button>
@@ -257,7 +254,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {dateEvents.map((event, eventIndex) => {
-                  const creatorName = event.profiles?.nickname || event.profiles?.name || "";
+                  const creatorName = event.profiles?.nickname ?? event.profiles?.name ?? "";
                   const isMine = event.user_id === currentUserId;
                   const isAttending = event.event_attendees.some(
                     (a) => a.user_id === currentUserId
@@ -341,7 +338,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                             disabled={isTeaser}
                             className={`h-8 px-4 rounded-full text-[10px] font-bold tracking-wider uppercase transition-all duration-300 ${isAttending
                               ? "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                              : "bg-brand-600 text-white hover:bg-brand-700 shadow-sm shadow-brand-100"
+                              : "bg-brand-500 text-white hover:bg-brand-700 shadow-sm shadow-brand-100"
                               } ${isTeaser ? "opacity-50 cursor-not-allowed" : ""}`}
                           >
                             {isAttending ? t("events.attending") : t("events.attend")}

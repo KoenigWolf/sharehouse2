@@ -59,7 +59,7 @@ export default async function AdminPage() {
               <p className="text-[10px] font-bold tracking-wider uppercase text-slate-400">
                 {t("admin.adminUsers")}
               </p>
-              <p className="text-2xl font-bold text-brand-600 tracking-tight mt-1">
+              <p className="text-2xl font-bold text-brand-500 tracking-tight mt-1">
                 {adminCount}
               </p>
             </div>

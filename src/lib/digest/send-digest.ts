@@ -42,13 +42,13 @@ export async function sendMorningDigest() {
       supabase.from("profiles").select("id"),
     ]);
 
-  const garbageTypes = (garbageResult.data || [])
+  const garbageTypes = (garbageResult.data ?? [])
     .map((g) => g.garbage_type)
     .filter(Boolean);
-  const bulletinCount = bulletinResult.data?.length || 0;
-  const eventCount = eventResult.data?.length || 0;
-  const shareCount = shareResult.data?.length || 0;
-  const users = usersResult.data || [];
+  const bulletinCount = bulletinResult.data?.length ?? 0;
+  const eventCount = eventResult.data?.length ?? 0;
+  const shareCount = shareResult.data?.length ?? 0;
+  const users = usersResult.data ?? [];
 
   const bodyParts: string[] = [];
 
