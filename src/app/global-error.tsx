@@ -29,7 +29,7 @@ export default function GlobalError({
   return (
     <html lang={locale}>
       <head>
-        <title>Error - Share House Portal</title>
+        <title>{`${t("pages.error.label")} - ${t("pages.portalName")}`}</title>
       </head>
       <body>
         <div
@@ -95,7 +95,7 @@ export default function GlobalError({
                 textTransform: "uppercase",
               }}
             >
-              Error
+              {t("pages.error.label")}
             </div>
 
             <div
@@ -173,7 +173,7 @@ export default function GlobalError({
             </div>
 
             <div style={{ marginTop: "40px", color: "#94a3b8", fontSize: "10px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>
-              Share House Portal
+              {t("pages.portalName")}
             </div>
           </div>
         </div>

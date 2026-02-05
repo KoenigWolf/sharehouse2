@@ -41,6 +41,12 @@ export const en: Translations = {
     stats: "Statistics",
   },
 
+  mobileNav: {
+    more: "More",
+    menu: "Menu",
+    brand: "Share House Portal v1.0",
+  },
+
   auth: {
     login: "Log in",
     signup: "Sign up",
@@ -311,6 +317,7 @@ export const en: Translations = {
     floorLabel: "Floor {{floor}}",
     registeredShort: "registered",
     statsTitle: "Resident Statistics",
+    statsSubtitle: "Resident participation and occupancy statistics",
     statsRegistered: "Registered",
     statsNew: "New Residents",
     statsNewSub: "(within 3 months)",
@@ -615,6 +622,7 @@ export const en: Translations = {
     deleteConfirm: "Delete this post?",
     maxLength: "{{max}} characters max",
     quickLinks: "Features",
+    subtitle: "Important announcements and house messages",
   },
 
   share: {

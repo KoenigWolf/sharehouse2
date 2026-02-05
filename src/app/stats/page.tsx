@@ -39,7 +39,7 @@ export default async function StatsPage() {
             <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
               {t("residents.statsTitle")}
             </h1>
-            <p className="text-sm text-slate-500 mt-1.5">Resident participation and occupancy statistics.</p>
+            <p className="text-sm text-slate-500 mt-1.5">{t("residents.statsSubtitle")}</p>
           </div>
 
           <ResidentStats

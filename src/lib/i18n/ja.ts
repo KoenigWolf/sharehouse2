@@ -43,6 +43,12 @@ export const ja = {
     stats: "統計",
   },
 
+  mobileNav: {
+    more: "その他",
+    menu: "メニュー",
+    brand: "Share House Portal v1.0",
+  },
+
   auth: {
     login: "ログイン",
     signup: "新規登録",
@@ -311,6 +317,7 @@ export const ja = {
     floorLabel: "{{floor}}階",
     registeredShort: "登録",
     statsTitle: "住民統計",
+    statsSubtitle: "住民の参加状況と入居統計",
     statsRegistered: "登録済み",
     statsNew: "新入居者",
     statsNewSub: "（3ヶ月以内）",
@@ -614,6 +621,7 @@ export const ja = {
     deleteConfirm: "この投稿を削除しますか？",
     maxLength: "{{max}}文字以内",
     quickLinks: "みんなの機能",
+    subtitle: "大切なお知らせやハウスメッセージ",
   },
 
   share: {
