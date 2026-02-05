@@ -222,7 +222,7 @@ function PasswordStrengthMeter({ password }: { password: string }) {
     t("auth.passwordStrength.fair"),
     t("auth.passwordStrength.strong"),
   ];
-  const colors = ["var(--error-border)", "var(--error-border)", "#d4d4d8", "var(--success-border)"];
+  const colors = ["var(--error-border)", "var(--error-border)", "var(--color-slate-300)", "var(--success-border)"];
 
   return (
     <div className="space-y-1">
@@ -232,7 +232,7 @@ function PasswordStrengthMeter({ password }: { password: string }) {
             key={i}
             className="h-0.5 flex-1 rounded-full transition-colors duration-300"
             style={{
-              backgroundColor: i < strength ? colors[strength] : "#e4e4e7",
+              backgroundColor: i < strength ? colors[strength] : "var(--color-slate-200)",
             }}
           />
         ))}

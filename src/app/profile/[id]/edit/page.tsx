@@ -64,23 +64,23 @@ export default async function ProfileEditPage({ params }: ProfileEditPageProps) 
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
       <Header />
 
       <main className="flex-1 pb-20 sm:pb-0">
         <div className="container mx-auto px-4 sm:px-6 py-5 sm:py-8 max-w-2xl space-y-5">
           <Link
             href={`/profile/${validatedId}`}
-            className="text-[11px] tracking-wide text-[#a1a1aa] hover:text-[#71717a] transition-colors"
+            className="text-[11px] tracking-wide text-slate-400 hover:text-slate-500 transition-colors"
           >
             {isOwnProfile ? t("myPage.backToMyPage") : t("common.back")}
           </Link>
           {!isOwnProfile && (
-            <div className="py-2 px-3 border-l-2 border-[#e4e4e7] bg-[#f4f4f5] text-xs text-[#71717a]">
+            <div className="py-2 px-3 border-l-2 border-slate-200 bg-slate-100 text-xs text-slate-500">
               {t("admin.editingAs", { name: profile.name })}
             </div>
           )}
-          <h1 className="text-lg text-[#18181b] tracking-wide font-light">
+          <h1 className="text-lg text-slate-900 tracking-wide font-light">
             {t("profile.editTitle")}
           </h1>
           <ProfileEditForm

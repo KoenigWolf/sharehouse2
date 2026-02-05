@@ -139,8 +139,8 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
                 className="object-cover w-full h-full"
               />
             ) : (
-              <div className="w-full h-full bg-[#f4f4f5] flex items-center justify-center">
-                <User size={20} className="text-[#a1a1aa]" strokeWidth={2} />
+              <div className="w-full h-full bg-slate-100 flex items-center justify-center">
+                <User size={20} className="text-slate-400" strokeWidth={2} />
               </div>
             )}
           </div>
@@ -162,7 +162,7 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-[#a1a1aa]">
+        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-slate-400">
           <LogOut size={14} strokeWidth={1.5} />
           {t("nav.logout")}
         </DropdownMenuItem>

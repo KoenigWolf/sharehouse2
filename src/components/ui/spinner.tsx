@@ -19,7 +19,7 @@ const SIZE_CLASSES: Record<SpinnerSize, string> = {
 };
 
 const VARIANT_CLASSES: Record<SpinnerVariant, string> = {
-  dark: "border border-[#d4d4d8] border-t-[#18181b]",
+  dark: "border border-slate-300 border-t-slate-900",
   light: "border border-white/30 border-t-white",
 };
 
