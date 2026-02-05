@@ -5,9 +5,11 @@ import { m, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
+import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { useI18n } from "@/hooks/use-i18n";
+import { getInitials } from "@/lib/utils";
 import { useUser } from "@/hooks/use-user";
 import { useBulkUpload } from "@/hooks/use-bulk-upload";
 import { BulkUploadProgress } from "@/components/bulk-upload-progress";
@@ -81,21 +83,15 @@ const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardPr
         </div>
 
         <div className="flex items-center gap-2 p-2.5 border-t border-slate-200">
-          {photo.profile?.avatar_url ? (
-            <Image
-              src={photo.profile.avatar_url}
-              alt={photo.profile.name}
-              width={20}
-              height={20}
-              className="rounded-full object-cover shrink-0"
+          <Avatar className="w-5 h-5 rounded-full shrink-0">
+            <OptimizedAvatarImage
+              src={photo.profile?.avatar_url}
+              alt={photo.profile?.name || ""}
+              context="card"
+              fallback={getInitials(photo.profile?.name || "?")}
+              fallbackClassName="bg-slate-100 text-slate-400 text-[8px] font-bold"
             />
-          ) : (
-            <div className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
-              <span className="text-[8px] text-slate-400">
-                {photo.profile?.name?.[0] ?? "?"}
-              </span>
-            </div>
-          )}
+          </Avatar>
           <span className="text-[11px] text-slate-500 truncate">
             {photo.profile?.name || t("roomPhotos.unknownUser")}
           </span>
