@@ -51,11 +51,11 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
 
   if (variant === "minimal") {
     return (
-      <footer className="py-12 mt-auto bg-white/50 backdrop-blur-sm border-t border-slate-100">
+      <footer className="py-12 mt-auto bg-slate-50 backdrop-blur-sm border-t border-slate-100">
         <div className="container mx-auto px-6 max-w-5xl flex flex-col items-center gap-6">
           <div className="flex items-center gap-2">
             <HomeIcon size={18} className="text-slate-900" strokeWidth={2.5} />
-            <span className="text-lg font-bold tracking-tight text-slate-900">Share<span className="text-brand-600">House</span></span>
+            <span className="text-lg font-bold tracking-tight text-slate-900">Share<span className="text-brand-500">House</span></span>
           </div>
           <p className="text-xs font-medium text-slate-400 tracking-tight text-center">
             {t("footer.copyright", { year: new Date().getFullYear() })}
@@ -66,7 +66,7 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
   }
 
   return (
-    <footer className="mt-auto bg-white border-t border-slate-100 relative overflow-hidden">
+    <footer className="mt-auto bg-slate-50 border-t border-slate-100 relative overflow-hidden">
 
       <div className="container mx-auto px-6 pt-16 pb-24 sm:pb-16 max-w-6xl relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8 lg:gap-16">
@@ -76,7 +76,7 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
             <Link href="/" className="flex items-center gap-2 group">
               <HomeIcon size={22} className="text-slate-900 transition-transform group-hover:scale-105" strokeWidth={2.5} />
               <span className="text-2xl font-black tracking-tight text-slate-900">
-                Share<span className="text-brand-600">House</span>
+                Share<span className="text-brand-500">House</span>
               </span>
             </Link>
             <p className="text-sm font-medium text-slate-500 mt-6 leading-relaxed max-w-xs">
@@ -109,7 +109,7 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
           <div className="flex items-center gap-4">
             <button
               onClick={scrollToTop}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-all text-xs font-bold ring-1 ring-slate-200/50"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-all duration-400 ease-out text-xs font-bold ring-1 ring-slate-200/50"
             >
               <ArrowUpIcon size={14} />
               {t("footer.backToTop")}
