@@ -1,13 +1,23 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { MobileNav } from "@/components/mobile-nav";
-import { ProfileEditForm } from "@/components/profile-edit-form";
 import { RoomPhotoManager } from "@/components/room-photo-manager";
-import { AccountSettings } from "@/components/account-settings";
+import { Spinner } from "@/components/ui/spinner";
 import { Profile } from "@/domain/profile";
+
+const ProfileEditForm = dynamic(
+  () => import("@/components/profile-edit-form").then((m) => m.ProfileEditForm),
+  { loading: () => <div className="flex justify-center py-20"><Spinner size="lg" variant="dark" /></div> },
+);
+
+const AccountSettings = dynamic(
+  () => import("@/components/account-settings").then((m) => m.AccountSettings),
+  { loading: () => <div className="flex justify-center py-10"><Spinner variant="dark" /></div> },
+);
 import { getTeaTimeSetting } from "@/lib/tea-time/actions";
 import { getNotificationSettings } from "@/lib/notifications/actions";
 import { getRoomPhotos } from "@/lib/room-photos/actions";
