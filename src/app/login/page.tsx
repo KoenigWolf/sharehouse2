@@ -119,20 +119,20 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
       <main className="flex-1 flex">
-        <div className="hidden lg:flex lg:w-1/2 bg-[#f4f4f5] items-center justify-center p-12">
+        <div className="hidden lg:flex lg:w-1/2 bg-slate-100 items-center justify-center p-12">
           <div className="max-w-md">
-            <h1 className="text-3xl font-light text-[#18181b] tracking-wider mb-6">
+            <h1 className="text-3xl font-light text-slate-900 tracking-wider mb-6">
               SHARE HOUSE
             </h1>
-            <p className="text-[#71717a] leading-relaxed text-sm">
+            <p className="text-slate-500 leading-relaxed text-sm">
               {t("auth.portalLead")}
               <br />
               {t("auth.portalSublead")}
             </p>
-            <div className="mt-12 pt-12 border-t border-[#e4e4e7]">
-              <p className="text-xs text-[#a1a1aa] leading-loose">
+            <div className="mt-12 pt-12 border-t border-slate-200">
+              <p className="text-xs text-slate-400 leading-loose">
                 {t("auth.portalDescriptionLine1")}
                 <br />
                 {t("auth.portalDescriptionLine2")}
@@ -146,10 +146,10 @@ export default function LoginPage() {
         <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12">
           <div className="w-full max-w-sm">
             <div className="lg:hidden text-center mb-12">
-              <h1 className="text-xl font-light text-[#18181b] tracking-wider">
+              <h1 className="text-xl font-light text-slate-900 tracking-wider">
                 SHARE HOUSE
               </h1>
-              <p className="text-xs text-[#a1a1aa] mt-2">
+              <p className="text-xs text-slate-400 mt-2">
                 {t("auth.residentPortal")}
               </p>
             </div>
@@ -160,7 +160,7 @@ export default function LoginPage() {
                   type="button"
                   variant="ghost"
                   onClick={() => switchMode("login")}
-                  className={`flex-1 h-auto py-3 relative z-10 hover:bg-transparent ${mode === "login" ? "text-[#18181b]" : "text-[#a1a1aa]"
+                  className={`flex-1 h-auto py-3 relative z-10 hover:bg-transparent ${mode === "login" ? "text-slate-900" : "text-slate-400"
                     }`}
                 >
                   {t("auth.login")}
@@ -169,7 +169,7 @@ export default function LoginPage() {
                   type="button"
                   variant="ghost"
                   onClick={() => switchMode("signup")}
-                  className={`flex-1 h-auto py-3 relative z-10 hover:bg-transparent ${mode === "signup" ? "text-[#18181b]" : "text-[#a1a1aa]"
+                  className={`flex-1 h-auto py-3 relative z-10 hover:bg-transparent ${mode === "signup" ? "text-slate-900" : "text-slate-400"
                     }`}
                 >
                   {t("auth.signup")}
@@ -177,7 +177,7 @@ export default function LoginPage() {
               </div>
               <div className="absolute bottom-0 left-0 right-0 h-px bg-[#e4e4e7]" />
               <m.div
-                className="absolute bottom-0 h-px bg-[#18181b]"
+                className="absolute bottom-0 h-px bg-slate-900"
                 initial={false}
                 animate={{
                   left: mode === "login" ? "0%" : "50%",
@@ -210,7 +210,7 @@ export default function LoginPage() {
                     <div className="space-y-2 pb-6">
                       <label
                         htmlFor="name"
-                        className="block text-xs text-[#71717a] tracking-wide"
+                        className="block text-xs text-slate-500 tracking-wide"
                       >
                         {t("auth.name")}
                       </label>
@@ -221,7 +221,7 @@ export default function LoginPage() {
                         onChange={(e) => setName(e.target.value)}
                         placeholder={t("auth.namePlaceholder")}
                         required
-                        className="w-full h-12 px-4 bg-white border border-[#e4e4e7] rounded-md text-[#18181b] text-sm placeholder:text-[#d4d4d8] focus:outline-none focus:border-[#18181b] transition-colors"
+                        className="w-full h-12 px-4 bg-white border border-slate-200 rounded-md text-slate-900 text-sm placeholder:text-slate-300 focus:outline-none focus:border-slate-900 transition-colors"
                       />
                     </div>
                   </m.div>
@@ -231,7 +231,7 @@ export default function LoginPage() {
               <div className="space-y-2">
                 <label
                   htmlFor="email"
-                  className="block text-xs text-[#71717a] tracking-wide"
+                  className="block text-xs text-slate-500 tracking-wide"
                 >
                   {t("auth.email")}
                 </label>
@@ -243,7 +243,7 @@ export default function LoginPage() {
                   placeholder="example@email.com"
                   required
                   autoComplete="email"
-                  className="w-full h-12 px-4 bg-white border border-[#e4e4e7] rounded-md text-[#18181b] text-sm placeholder:text-[#d4d4d8] focus:outline-none focus:border-[#18181b] transition-colors"
+                  className="w-full h-12 px-4 bg-white border border-slate-200 rounded-md text-slate-900 text-sm placeholder:text-slate-300 focus:outline-none focus:border-slate-900 transition-colors"
                 />
               </div>
 
@@ -252,7 +252,7 @@ export default function LoginPage() {
                   <div className="flex items-center justify-between">
                     <label
                       htmlFor="password"
-                      className="block text-xs text-[#71717a] tracking-wide"
+                      className="block text-xs text-slate-500 tracking-wide"
                     >
                       {t("auth.password")}
                     </label>
@@ -264,7 +264,7 @@ export default function LoginPage() {
                           setError(null);
                           setSuccess(null);
                         }}
-                        className="text-xs text-[#a1a1aa] hover:text-[#71717a] transition-colors"
+                        className="text-xs text-slate-400 hover:text-slate-500 transition-colors"
                       >
                         {t("auth.forgotPassword")}
                       </button>
@@ -277,7 +277,7 @@ export default function LoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     autoComplete={mode === "login" ? "current-password" : "new-password"}
-                    className="w-full h-12 px-4 bg-white border border-[#e4e4e7] rounded-md text-[#18181b] text-sm placeholder:text-[#d4d4d8] focus:outline-none focus:border-[#18181b] transition-colors"
+                    className="w-full h-12 px-4 bg-white border border-slate-200 rounded-md text-slate-900 text-sm placeholder:text-slate-300 focus:outline-none focus:border-slate-900 transition-colors"
                   />
                   <AnimatePresence>
                     {mode === "signup" && (
@@ -287,7 +287,7 @@ export default function LoginPage() {
                         exit={{ opacity: 0 }}
                         className="pt-1 space-y-2"
                       >
-                        <p className="text-xs text-[#a1a1aa]">
+                        <p className="text-xs text-slate-400">
                           {t("auth.passwordHint")}
                         </p>
                         {password.length > 0 && (
@@ -306,7 +306,7 @@ export default function LoginPage() {
                     setIsForgotMode(false);
                     setError(null);
                   }}
-                  className="text-xs text-[#a1a1aa] hover:text-[#71717a] transition-colors"
+                  className="text-xs text-slate-400 hover:text-slate-500 transition-colors"
                 >
                   {t("auth.backToLogin")}
                 </button>
@@ -367,7 +367,7 @@ export default function LoginPage() {
             </form>
 
             {!isForgotMode && (
-              <div className="mt-8 pt-6 border-t border-[#e4e4e7] text-center">
+              <div className="mt-8 pt-6 border-t border-slate-200 text-center">
                 <Link
                   href="/residents"
                   className="text-sm font-medium text-brand-600 hover:text-brand-700 transition-colors inline-flex items-center gap-2 mx-auto"
@@ -386,7 +386,7 @@ export default function LoginPage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="text-xs text-[#a1a1aa] text-center mt-8 leading-relaxed"
+                  className="text-xs text-slate-400 text-center mt-8 leading-relaxed"
                 >
                   {t("auth.signupHint")}
                 </m.p>
@@ -397,7 +397,7 @@ export default function LoginPage() {
       </main>
 
       <footer className="py-6">
-        <p className="text-xs text-[#a1a1aa] text-center">Share House Portal</p>
+        <p className="text-xs text-slate-400 text-center">Share House Portal</p>
       </footer>
     </div>
   );
@@ -413,7 +413,7 @@ function PasswordStrengthMeter({ password }: { password: string }) {
     t("auth.passwordStrength.fair"),
     t("auth.passwordStrength.strong"),
   ];
-  const colors = ["var(--error-border)", "var(--error-border)", "#d4d4d8", "var(--success-border)"];
+  const colors = ["var(--error-border)", "var(--error-border)", "var(--color-slate-300)", "var(--success-border)"];
 
   return (
     <div className="space-y-1">
@@ -423,7 +423,7 @@ function PasswordStrengthMeter({ password }: { password: string }) {
             key={i}
             className="h-0.5 flex-1 rounded-full transition-colors duration-300"
             style={{
-              backgroundColor: i < strength ? colors[strength] : "#e4e4e7",
+              backgroundColor: i < strength ? colors[strength] : "var(--color-slate-200)",
             }}
           />
         ))}
