@@ -221,6 +221,7 @@ describe("validateSignUp", () => {
       password: "Password123",
     }, t);
     expect(result.success).toBe(true);
+    if (!result.success) return;
     expect(result.data).toBeDefined();
   });
 
@@ -231,6 +232,7 @@ describe("validateSignUp", () => {
       password: "Password123",
     }, t);
     expect(result.success).toBe(false);
+    if (result.success) return;
     expect(result.error).toBeDefined();
   });
 
@@ -241,7 +243,8 @@ describe("validateSignUp", () => {
       password: "Password123",
     }, t);
     expect(result.success).toBe(true);
-    expect(result.data?.name).toBe("山田 太郎");
+    if (!result.success) return;
+    expect(result.data.name).toBe("山田 太郎");
   });
 });
 
@@ -252,6 +255,7 @@ describe("validateSignIn", () => {
       password: "password123",
     }, t);
     expect(result.success).toBe(true);
+    if (!result.success) return;
     expect(result.data).toBeDefined();
   });
 
@@ -260,6 +264,7 @@ describe("validateSignIn", () => {
       password: "password123",
     }, t);
     expect(result.success).toBe(false);
+    if (result.success) return;
     expect(result.error).toBeDefined();
   });
 
@@ -268,6 +273,7 @@ describe("validateSignIn", () => {
       email: "test@example.com",
     }, t);
     expect(result.success).toBe(false);
+    if (result.success) return;
     expect(result.error).toBeDefined();
   });
 });

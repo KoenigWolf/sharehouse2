@@ -1,5 +1,11 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+
+vi.mock("@/lib/env", () => ({
+  SUPABASE_URL: "http://localhost:54321",
+  SUPABASE_ANON_KEY: "test-anon-key",
+}));
+
 import { ProfileDetail } from "@/components/profile-detail";
 import { Profile } from "@/domain/profile";
 

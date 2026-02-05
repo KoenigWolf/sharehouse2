@@ -66,19 +66,19 @@ describe("ResidentCard", () => {
   });
 
   describe("current user badge", () => {
-    it("shows 'あなた' badge when isCurrentUser is true", () => {
+    it("shows 'YOU' badge when isCurrentUser is true", () => {
       render(<ResidentCard profile={mockProfile} isCurrentUser={true} />);
-      expect(screen.getByText("あなた")).toBeInTheDocument();
+      expect(screen.getByText("YOU")).toBeInTheDocument();
     });
 
     it("does not show badge when isCurrentUser is false", () => {
       render(<ResidentCard profile={mockProfile} isCurrentUser={false} />);
-      expect(screen.queryByText("あなた")).not.toBeInTheDocument();
+      expect(screen.queryByText("YOU")).not.toBeInTheDocument();
     });
 
     it("does not show badge by default", () => {
       render(<ResidentCard profile={mockProfile} />);
-      expect(screen.queryByText("あなた")).not.toBeInTheDocument();
+      expect(screen.queryByText("YOU")).not.toBeInTheDocument();
     });
   });
 

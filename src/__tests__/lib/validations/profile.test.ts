@@ -395,6 +395,7 @@ describe("validateProfileUpdate", () => {
       move_in_date: "2024-01-15",
     }, t);
     expect(result.success).toBe(true);
+    if (!result.success) return;
     expect(result.data).toBeDefined();
   });
 
@@ -407,6 +408,7 @@ describe("validateProfileUpdate", () => {
       move_in_date: null,
     }, t);
     expect(result.success).toBe(false);
+    if (result.success) return;
     expect(result.error).toBeDefined();
   });
 });
@@ -426,6 +428,7 @@ describe("validateFileUpload", () => {
       type: "image/jpeg",
     }, t);
     expect(result.success).toBe(false);
+    if (result.success) return;
     expect(result.error).toBeDefined();
   });
 
@@ -435,6 +438,7 @@ describe("validateFileUpload", () => {
       type: "image/gif",
     }, t);
     expect(result.success).toBe(false);
+    if (result.success) return;
     expect(result.error).toBeDefined();
   });
 });

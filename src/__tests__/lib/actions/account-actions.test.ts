@@ -6,6 +6,11 @@ const mockUpdateUser = vi.fn();
 const mockFrom = vi.fn();
 const mockStorage = vi.fn();
 
+vi.mock("@/lib/env", () => ({
+  SUPABASE_URL: "http://localhost:54321",
+  SUPABASE_ANON_KEY: "test-anon-key",
+}));
+
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn(() => ({
     auth: { getUser: mockGetUser, updateUser: mockUpdateUser },
