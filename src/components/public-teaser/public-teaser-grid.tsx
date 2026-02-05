@@ -24,10 +24,10 @@ export function PublicTeaserGrid({ profiles }: PublicTeaserGridProps) {
   return (
     <div className="space-y-8 sm:space-y-12">
       <div>
-        <h2 className="text-lg sm:text-xl text-[#18181b] tracking-wide font-light">
+        <h2 className="text-lg sm:text-xl text-slate-900 tracking-wide font-light">
           {t("residents.title")}
         </h2>
-        <p className="text-[11px] sm:text-xs text-[#a1a1aa] mt-1">
+        <p className="text-[11px] sm:text-xs text-slate-400 mt-1">
           {t("residents.countLabel", { count: profiles.length })}
         </p>
       </div>

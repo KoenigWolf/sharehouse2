@@ -13,7 +13,7 @@ export const SharedInfoList = memo(function SharedInfoList({
   if (sharedInfos.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-sm text-[#71717a]">情報がありません</p>
+        <p className="text-sm text-slate-500">情報がありません</p>
       </div>
     );
   }
@@ -23,16 +23,16 @@ export const SharedInfoList = memo(function SharedInfoList({
       {sharedInfos.map((info) => (
         <div
           key={info.id}
-          className="bg-white border border-[#e4e4e7] rounded-lg p-4"
+          className="bg-white border border-slate-200 rounded-lg p-4"
         >
-          <p className="text-[10px] text-[#a1a1aa] tracking-wide uppercase mb-2">
+          <p className="text-[10px] text-slate-400 tracking-wide uppercase mb-2">
             {info.title}
           </p>
-          <p className="text-sm text-[#18181b] font-medium tracking-wide">
+          <p className="text-sm text-slate-900 font-medium tracking-wide">
             {info.content}
           </p>
           {info.notes && (
-            <p className="text-xs text-[#71717a] mt-2">
+            <p className="text-xs text-slate-500 mt-2">
               {info.notes}
             </p>
           )}
