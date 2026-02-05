@@ -19,6 +19,7 @@ Next.js 16 (App Router) / TypeScript / Tailwind CSS 4 / shadcn/ui / Supabase / F
 - `any` 禁止。Boolean は `is/has/can`、関数は動詞で始める
 - 1関数50行以内。早期リターン（ガード節）を使う
 - エラーは `logError` ユーティリティを使う（`console.error` 禁止）
+- null/undefined は「状態」か「前提違反」か判断し暗黙処理しない。nullable フィールドは `??` でフォールバック、前提違反はガード節か型で排除（`!` 禁止）。詳細: @docs/coding-guidelines.md
 - 詳細: @docs/coding-guidelines.md
 
 - 背景 `slate-50` / 見出し `slate-900` / ブランド `brand-500` (Emerald)
