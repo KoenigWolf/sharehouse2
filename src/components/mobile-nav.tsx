@@ -88,7 +88,7 @@ export const MobileNav = memo(function MobileNav() {
   }, [isDrawerOpen]);
 
   const profileItem = {
-    href: userId ? `/profile/${userId}` : "/settings",
+    href: userId ? `/profile/${userId}` : "/login",
     labelKey: (userId ? "nav.myPage" : "auth.login") as TranslationKey,
     icon: userId ? User : LogIn,
     matchPaths: userId ? ["/settings", "/profile/"] : ["/login"],
@@ -144,7 +144,7 @@ export const MobileNav = memo(function MobileNav() {
                 strokeWidth={2}
               />
             </div>
-            <span className="sr-only">More</span>
+            <span className="sr-only">{t("mobileNav.more")}</span>
           </button>
         </div>
       </nav>
@@ -166,7 +166,6 @@ export const MobileNav = memo(function MobileNav() {
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="fixed inset-x-0 bottom-0 z-[70] bg-white rounded-t-[2.5rem] p-6 pb-20 shadow-2xl sm:hidden max-h-[85vh] overflow-y-auto overflow-x-hidden"
             >
-              {/* Decorative Background Elements */}
               <div className="absolute top-0 left-0 w-full h-32 bg-linear-to-b from-brand-50/50 to-transparent pointer-events-none" />
               <div className="absolute top-10 right-[-10%] w-48 h-48 bg-brand-200/20 rounded-full blur-[80px] pointer-events-none" />
               <div className="absolute bottom-20 left-[-10%] w-48 h-48 bg-slate-200/30 rounded-full blur-[80px] pointer-events-none" />
@@ -174,7 +173,7 @@ export const MobileNav = memo(function MobileNav() {
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-8">
                   <h2 className="text-xl font-black tracking-tight text-slate-900">
-                    Menu
+                    {t("mobileNav.menu")}
                   </h2>
                   <Button
                     variant="ghost"
@@ -237,7 +236,7 @@ export const MobileNav = memo(function MobileNav() {
                 </div>
 
                 <div className="mt-8 text-center">
-                  <p className="text-xs text-slate-400">Share House Portal v1.0</p>
+                  <p className="text-xs text-slate-400">{t("mobileNav.brand")}</p>
                 </div>
               </div>
             </m.div>
