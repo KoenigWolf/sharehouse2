@@ -39,6 +39,67 @@ import type { Translator } from "@/lib/i18n";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
 import { logError } from "@/lib/errors";
 
+const MBTI_GROUPS = {
+  Analysts: ["INTJ", "INTP", "ENTJ", "ENTP"],
+  Diplomats: ["INFJ", "INFP", "ENFJ", "ENFP"],
+  Sentinels: ["ISTJ", "ISFJ", "ESTJ", "ESFJ"],
+  Explorers: ["ISTP", "ISFP", "ESTP", "ESFP"],
+} as const;
+
+const MBTI_COLORS: Record<string, { bg: string; text: string; border: string; icon: string }> = {
+  Analysts: {
+    bg: "bg-purple-50/50",
+    text: "text-purple-700",
+    border: "border-purple-100",
+    icon: "text-purple-400"
+  },
+  Diplomats: {
+    bg: "bg-emerald-50/50",
+    text: "text-emerald-700",
+    border: "border-emerald-100",
+    icon: "text-emerald-400"
+  },
+  Sentinels: {
+    bg: "bg-blue-50/50",
+    text: "text-blue-700",
+    border: "border-blue-100",
+    icon: "text-blue-400"
+  },
+  Explorers: {
+    bg: "bg-amber-50/50",
+    text: "text-amber-700",
+    border: "border-amber-100",
+    icon: "text-amber-400"
+  },
+};
+
+function getMBTIGroup(mbti: string): keyof typeof MBTI_GROUPS {
+  for (const [group, types] of Object.entries(MBTI_GROUPS)) {
+    if ((types as readonly string[]).includes(mbti)) return group as keyof typeof MBTI_GROUPS;
+  }
+  return "Sentinels"; // Fallback
+}
+
+function MBTIBadge({ mbti, className = "" }: { mbti: string; className?: string }) {
+  const locale = useLocale();
+  const group = getMBTIGroup(mbti);
+  const colors = MBTI_COLORS[group];
+
+  return (
+    <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all hover:shadow-sm ${colors.bg} ${colors.text} ${colors.border} ${className}`}>
+      <svg className={`w-3.5 h-3.5 ${colors.icon}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
+      </svg>
+      <div className="flex items-baseline gap-1.5">
+        <span className="font-bold tracking-wider text-[13px]">{mbti}</span>
+        <span className="text-[10px] opacity-70 font-medium">
+          {MBTI_LABELS[mbti as keyof typeof MBTI_LABELS][locale === "ja" ? "ja" : "en"]}
+        </span>
+      </div>
+    </span>
+  );
+}
+
 interface ProfileDetailProps {
   profile: Profile;
   isOwnProfile: boolean;
@@ -282,9 +343,13 @@ export function ProfileDetail({
 
   const sharedSpaceUsage = profile.shared_space_usage;
   const personalityInfo = [
-    { label: t("profile.personalityType"), value: profile.personality_type },
+    {
+      label: t("profile.personalityType"),
+      value: profile.personality_type,
+      node: profile.mbti ? <MBTIBadge mbti={profile.mbti} className="mt-2" /> : null
+    },
     { label: t("profile.weekendActivities"), value: profile.weekend_activities },
-  ].filter((f) => f.value);
+  ].filter((f) => f.value || f.node);
 
   const snsLinks = [
     { platform: "x", username: profile.sns_x, url: `https://x.com/${profile.sns_x}`, label: t("profile.snsX") },
@@ -482,15 +547,7 @@ export function ProfileDetail({
                   </span>
                 )}
                 {profile.mbti && (
-                  <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded bg-[#f4f4f5] text-[#71717a]">
-                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
-                    </svg>
-                    <span className="font-medium">{profile.mbti}</span>
-                    <span className="text-[#a1a1aa]">
-                      {MBTI_LABELS[profile.mbti][locale === "ja" ? "ja" : "en"]}
-                    </span>
-                  </span>
+                  <MBTIBadge mbti={profile.mbti} />
                 )}
                 <span className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded ${teaTimeEnabled
                   ? "bg-brand-50 text-brand-700"
@@ -636,7 +693,19 @@ export function ProfileDetail({
             >
               <dl className="grid sm:grid-cols-2 gap-x-12">
                 {personalityInfo.map((field, i) => (
-                  <FieldRow key={i} label={field.label} value={field.value} />
+                  <div key={i} className="py-3 border-b border-[#f4f4f5] last:border-0">
+                    <dt className="text-[10px] text-[#a1a1aa] tracking-wide mb-1.5">{field.label}</dt>
+                    <dd className="text-sm text-[#18181b] leading-relaxed">
+                      {("node" in field && field.node) ? (
+                        <div className="flex flex-col gap-2">
+                          {field.value && <span>{field.value}</span>}
+                          {field.node}
+                        </div>
+                      ) : (
+                        field.value
+                      )}
+                    </dd>
+                  </div>
                 ))}
               </dl>
             </ProfileSection>
