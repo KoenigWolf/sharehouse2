@@ -120,9 +120,8 @@ const LightboxImage = memo(function LightboxImage({
         src={photo.photo_url}
         alt={t("roomPhotos.photoAlt")}
         fill
-        className={`object-cover transition-opacity duration-200 ${
-          isLoaded ? "opacity-100" : "opacity-0"
-        }`}
+        className={`object-cover transition-opacity duration-200 ${isLoaded ? "opacity-100" : "opacity-0"
+          }`}
         onLoad={handleLoad}
         priority
       />
@@ -329,11 +328,24 @@ export function PhotoLightbox({
 
           <m.div
             key={photo.id}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.7}
+            onDragEnd={(_, info) => {
+              const swipeDelta = info.offset.x;
+              const swipeVelocity = info.velocity.x;
+
+              if (swipeDelta < -50 || swipeVelocity < -500) {
+                if (hasNext) handleNext();
+              } else if (swipeDelta > 50 || swipeVelocity > 500) {
+                if (hasPrev) handlePrev();
+              }
+            }}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="relative flex flex-col w-fit"
+            className="relative flex flex-col w-fit touch-none"
             onClick={(e) => e.stopPropagation()}
           >
             <LightboxImage key={photo.id} photo={photo} />
@@ -408,11 +420,10 @@ export function PhotoLightbox({
                   ) : (
                     <p
                       onClick={isOwner ? handleStartEdit : undefined}
-                      className={`text-sm ${
-                        photo.caption
+                      className={`text-sm ${photo.caption
                           ? "text-white/60"
                           : "text-white/30 italic"
-                      } ${isOwner ? "cursor-text hover:text-white/80 transition-colors" : ""}`}
+                        } ${isOwner ? "cursor-text hover:text-white/80 transition-colors" : ""}`}
                     >
                       {photo.caption || t("roomPhotos.captionPlaceholder")}
                     </p>
