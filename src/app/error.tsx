@@ -43,7 +43,7 @@ export default function Error({
             transition={{ delay: 0.2, duration: 0.8, type: "spring" }}
             className="text-[10rem] sm:text-[14rem] font-bold text-slate-100 select-none leading-none tracking-tighter uppercase"
           >
-            Error
+            {t("pages.error.label")}
           </m.div>
           <div className="absolute inset-0 flex items-center justify-center">
             <m.div
