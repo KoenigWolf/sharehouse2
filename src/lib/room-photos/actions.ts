@@ -262,7 +262,8 @@ export async function getAllRoomPhotos(): Promise<
       supabase
         .from("room_photos")
         .select("*")
-        .order("created_at", { ascending: false }),
+        .order("created_at", { ascending: false })
+        .limit(200),
       supabase
         .from("profiles")
         .select("id, name, avatar_url"),
