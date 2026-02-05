@@ -27,7 +27,10 @@ import {
   COOKING_FREQUENCIES,
   SHARED_MEAL_OPTIONS,
   LANGUAGES,
+  MBTI_GROUPS,
+  getMBTIGroup,
 } from "@/domain/profile";
+import { MBTI_COLORS } from "@/lib/constants/mbti";
 import type { RoomPhoto } from "@/domain/room-photo";
 import { getInitials, calculateResidenceDuration } from "@/lib/utils";
 import { TeaserOverlay } from "./public-teaser/teaser-overlay";
@@ -38,47 +41,6 @@ import { FILE_UPLOAD } from "@/lib/constants/config";
 import type { Translator } from "@/lib/i18n";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
 import { logError } from "@/lib/errors";
-
-const MBTI_GROUPS = {
-  Analysts: ["INTJ", "INTP", "ENTJ", "ENTP"],
-  Diplomats: ["INFJ", "INFP", "ENFJ", "ENFP"],
-  Sentinels: ["ISTJ", "ISFJ", "ESTJ", "ESFJ"],
-  Explorers: ["ISTP", "ISFP", "ESTP", "ESFP"],
-} as const;
-
-const MBTI_COLORS: Record<string, { bg: string; text: string; border: string; icon: string }> = {
-  Analysts: {
-    bg: "bg-purple-50/50",
-    text: "text-purple-700",
-    border: "border-purple-100",
-    icon: "text-purple-400"
-  },
-  Diplomats: {
-    bg: "bg-emerald-50/50",
-    text: "text-emerald-700",
-    border: "border-emerald-100",
-    icon: "text-emerald-400"
-  },
-  Sentinels: {
-    bg: "bg-blue-50/50",
-    text: "text-blue-700",
-    border: "border-blue-100",
-    icon: "text-blue-400"
-  },
-  Explorers: {
-    bg: "bg-amber-50/50",
-    text: "text-amber-700",
-    border: "border-amber-100",
-    icon: "text-amber-400"
-  },
-};
-
-function getMBTIGroup(mbti: string): keyof typeof MBTI_GROUPS {
-  for (const [group, types] of Object.entries(MBTI_GROUPS)) {
-    if ((types as readonly string[]).includes(mbti)) return group as keyof typeof MBTI_GROUPS;
-  }
-  return "Sentinels"; // Fallback
-}
 
 function MBTIBadge({ mbti, className = "" }: { mbti: string; className?: string }) {
   const locale = useLocale();

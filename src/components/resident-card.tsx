@@ -7,7 +7,9 @@ import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import type { Profile } from "@/domain/profile";
 import { getInitials } from "@/lib/utils";
 import { PROFILE } from "@/lib/constants/config";
-import { useI18n } from "@/hooks/use-i18n";
+import { MBTI_LABELS, getMBTIGroup } from "@/domain/profile";
+import { MBTI_COLORS } from "@/lib/constants/mbti";
+import { useI18n, useLocale } from "@/hooks/use-i18n";
 import type { Translator } from "@/lib/i18n";
 
 interface ResidentCardProps {
@@ -273,6 +275,7 @@ export const ResidentCard = memo(function ResidentCard({
   teaTimeEnabled = false,
 }: ResidentCardProps) {
   const t = useI18n();
+  const locale = useLocale();
 
   const {
     isMock,
@@ -296,7 +299,7 @@ export const ResidentCard = memo(function ResidentCard({
     <Link
       href={`/profile/${profile.id}`}
       aria-label={t("a11y.viewProfile", { name: profile.name })}
-      className="block group select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+      className="block h-full group select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
       prefetch={false}
     >
       <article
@@ -322,9 +325,15 @@ export const ResidentCard = memo(function ResidentCard({
             {isNewResident && !isMock && (
               <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-brand-600 text-white text-[10px] font-bold tracking-wider">{t("residents.badgeNew")}</span>
             )}
-            {profile.mbti && !isMock && (
-              <Badge variant="muted" className="glass border-white/40 text-slate-700 text-[10px] font-semibold">{profile.mbti}</Badge>
-            )}
+            {profile.mbti && !isMock && (() => {
+              const group = getMBTIGroup(profile.mbti);
+              const colors = MBTI_COLORS[group];
+              return (
+                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg border text-[10px] font-bold shadow-sm backdrop-blur-sm ${colors.bg} ${colors.text} ${colors.border}`}>
+                  {profile.mbti}
+                </span>
+              );
+            })()}
           </div>
 
           <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5">
@@ -398,7 +407,7 @@ export const ResidentCard = memo(function ResidentCard({
           </AnimatePresence>
         </div>
 
-        <div className={`p-4 sm:p-5 ${CARD_HEIGHTS.mobile} ${CARD_HEIGHTS.desktop} flex flex-col overflow-hidden bg-white`}>
+        <div className={`p-4 sm:p-5 ${CARD_HEIGHTS.mobile} ${CARD_HEIGHTS.desktop} flex-1 flex flex-col overflow-hidden bg-white`}>
           <div className="flex items-center justify-between gap-2 shrink-0">
             <h3 className="text-base sm:text-lg text-slate-900 tracking-tight truncate font-semibold">
               {displayName}
