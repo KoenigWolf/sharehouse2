@@ -109,7 +109,7 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
           <div className="flex items-center gap-4">
             <button
               onClick={scrollToTop}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-all duration-400 ease-out text-xs font-bold ring-1 ring-slate-200/50"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-all duration-400 ease-out delay-150 text-xs font-bold ring-1 ring-slate-200/50"
             >
               <ArrowUpIcon size={14} />
               {t("footer.backToTop")}

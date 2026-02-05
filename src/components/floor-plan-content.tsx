@@ -143,7 +143,7 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
                   `}
                 >
                   {isCurrentUser && (
-                    <span className="absolute -top-2 -right-2 bg-brand-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full z-10 shadow-sm">
+                    <span className="absolute -top-2 -right-2 bg-brand-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full z-10 shadow-sm">
                       {t("common.you")}
                     </span>
                   )}
@@ -287,7 +287,7 @@ function RoomDetailOccupied({
               {displayName}
             </p>
             {isCurrentUser && (
-              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-brand-600 text-white shadow-sm shrink-0`}>
+              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-brand-500 text-white shadow-sm shrink-0`}>
                 {t("common.you")}
               </span>
             )}
@@ -326,7 +326,7 @@ function RoomDetailOccupied({
       {!isMock && (
         <Link
           href={`/profile/${profile.id}`}
-          className="block w-full text-center text-sm font-bold py-3.5 bg-brand-600 text-white rounded-xl shadow-lg shadow-brand-100 hover:bg-brand-700 hover:shadow-brand-200 transition-all active:scale-[0.98]"
+          className="block w-full text-center text-sm font-bold py-3.5 bg-brand-500 text-white rounded-xl shadow-lg shadow-brand-100 hover:bg-brand-700 hover:shadow-brand-200 transition-all active:scale-[0.98]"
         >
           {t("floorPlan.viewProfile")}
         </Link>

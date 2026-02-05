@@ -166,6 +166,7 @@ export default function GlobalError({
                   cursor: "pointer",
                   boxShadow: "0 10px 15px -3px rgba(15, 23, 42, 0.3)",
                   transition: "all 0.4s ease-out",
+                  transitionDelay: "100ms",
                 }}
               >
                 {t("pages.globalError.reload")}

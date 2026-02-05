@@ -145,7 +145,7 @@ function PasswordSection() {
         type="submit"
         disabled={isSubmitting || !isValid}
         size="lg"
-        className="w-full sm:w-auto h-11 px-8 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-bold tracking-wider uppercase text-[11px] transition-all duration-300"
+        className="w-full sm:w-auto h-11 px-8 rounded-full bg-brand-500 hover:bg-brand-700 text-white font-bold tracking-wider uppercase text-[11px] transition-all duration-300"
       >
         {isSubmitting ? t("account.changingPassword") : t("account.changePassword")}
       </Button>
@@ -225,7 +225,7 @@ function EmailSection({ userEmail }: { userEmail: string | undefined }) {
         type="submit"
         disabled={isSubmitting || newEmail.length === 0}
         size="lg"
-        className="w-full sm:w-auto h-11 px-8 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-bold tracking-wider uppercase text-[11px] transition-all duration-300"
+        className="w-full sm:w-auto h-11 px-8 rounded-full bg-brand-500 hover:bg-brand-700 text-white font-bold tracking-wider uppercase text-[11px] transition-all duration-300"
       >
         {isSubmitting ? t("account.changingEmail") : t("account.changeEmail")}
       </Button>

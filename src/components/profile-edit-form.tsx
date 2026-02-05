@@ -509,7 +509,7 @@ export function ProfileEditForm({
             {interestsArray.length > 0 && (
               <div className="flex flex-wrap gap-2 px-1">
                 {interestsArray.map((interest, i) => (
-                  <span key={i} className="text-[10px] font-bold tracking-wider px-3 py-1 bg-brand-50 text-brand-600 rounded-full border border-brand-100/50 uppercase">
+                  <span key={i} className="text-[10px] font-bold tracking-wider px-3 py-1 bg-brand-50 text-brand-500 rounded-full border border-brand-100/50 uppercase">
                     {interest}
                   </span>
                 ))}
@@ -885,7 +885,7 @@ export function ProfileEditForm({
             <div className="flex items-center justify-between py-5 group first:pt-0">
               <div className="space-y-1">
                 <p className="text-[13px] font-bold text-slate-600 tracking-wide">{t("teaTime.title")}</p>
-                <p className={`text-[11px] font-medium ${teaTimeEnabled ? "text-brand-600" : "text-slate-400"}`}>
+                <p className={`text-[11px] font-medium ${teaTimeEnabled ? "text-brand-500" : "text-slate-400"}`}>
                   {teaTimeEnabled ? t("teaTime.participating") : t("teaTime.notParticipating")}
                 </p>
               </div>
@@ -942,7 +942,7 @@ export function ProfileEditForm({
               size="xl"
               disabled={isLoading || isUploading}
               aria-busy={isLoading}
-              className="w-full sm:w-auto h-14 sm:h-12 px-10 rounded-full bg-brand-600 hover:bg-brand-700 text-white shadow-lg shadow-brand-200 hover:shadow-brand-300 transition-all duration-300 font-bold tracking-wider uppercase text-[12px]"
+              className="w-full sm:w-auto h-14 sm:h-12 px-10 rounded-full bg-brand-500 hover:bg-brand-700 text-white shadow-lg shadow-brand-200 hover:shadow-brand-300 transition-all duration-300 font-bold tracking-wider uppercase text-[12px]"
             >
               {isLoading ? (
                 <Spinner variant="light" size="sm" />

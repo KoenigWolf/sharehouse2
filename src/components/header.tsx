@@ -113,7 +113,7 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
 
   if (!userId) {
     return (
-      <Button asChild variant="ghost" className="text-sm font-medium text-slate-600 hover:text-brand-600">
+      <Button asChild variant="ghost" className="text-sm font-medium text-slate-600 hover:text-brand-500">
         <Link href="/login">{t("auth.login")}</Link>
       </Button>
     );
@@ -201,7 +201,7 @@ export const Header = memo(function Header() {
             <Home size={22} className="text-slate-900" strokeWidth={2.5} />
             <div className="flex flex-col leading-none">
               <span className="text-xl font-bold tracking-tight text-slate-900">
-                Share<span className="text-brand-600">House</span>
+                Share<span className="text-brand-500">House</span>
               </span>
             </div>
           </Link>

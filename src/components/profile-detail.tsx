@@ -571,7 +571,7 @@ export function ProfileDetail({
                 </p>
                 <Link
                   href="/room-photos"
-                  className="text-[10px] text-brand-600 font-bold tracking-wider uppercase hover:text-brand-700 transition-colors bg-brand-50 px-3 py-1.5 rounded-full"
+                  className="text-[10px] text-brand-500 font-bold tracking-wider uppercase hover:text-brand-700 transition-colors bg-brand-50 px-3 py-1.5 rounded-full"
                 >
                   {t("roomPhotos.viewGallery")}
                 </Link>

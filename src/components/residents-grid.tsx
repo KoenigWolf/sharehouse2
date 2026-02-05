@@ -203,7 +203,7 @@ export function ResidentsGrid({
                   size="icon-sm"
                   onClick={() => setViewMode(option.value)}
                   className={`${isActive
-                    ? "bg-white text-brand-600 shadow-sm"
+                    ? "bg-white text-brand-500 shadow-sm"
                     : "text-slate-500 hover:text-slate-900"
                     } rounded-lg transition-all`}
                   title={option.label}
@@ -233,7 +233,7 @@ export function ResidentsGrid({
                   onClick={() => setFloorFilter(floor)}
                   className={`shrink-0 h-auto px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl transition-all ${isActive
                     ? isAll
-                      ? "bg-brand-600 text-white shadow-lg shadow-brand-200 border-brand-600"
+                      ? "bg-brand-500 text-white shadow-lg shadow-brand-200 border-brand-500"
                       : `${colors?.bg} ${colors?.text} border-transparent shadow-sm`
                     : "bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300"
                     }`}
@@ -572,7 +572,7 @@ function ResidentListItem({
             />
           </Avatar>
           {isCurrentUser && (
-            <span className="absolute -top-1.5 -right-1.5 bg-brand-600 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase shadow-sm">
+            <span className="absolute -top-1.5 -right-1.5 bg-brand-500 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase shadow-sm">
               {t("common.you")}
             </span>
           )}
@@ -611,7 +611,7 @@ function ResidentListItem({
             {profile.occupation && (
               <span className="bg-slate-50 px-2 py-0.5 rounded-md">{t(`profileOptions.occupation.${profile.occupation}` as Parameters<typeof t>[0])}</span>
             )}
-            {profile.mbti && <span className="text-brand-600 font-semibold">{profile.mbti}</span>}
+            {profile.mbti && <span className="text-brand-500 font-semibold">{profile.mbti}</span>}
           </div>
         </div>
 

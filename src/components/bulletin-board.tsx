@@ -94,7 +94,7 @@ export function BulletinBoard({ bulletins, currentUserId, isTeaser = false }: Bu
           <button
             type="button"
             onClick={handleStartEdit}
-            className="h-9 px-5 rounded-full bg-brand-600 hover:bg-brand-700 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
+            className="h-9 px-5 rounded-full bg-brand-500 hover:bg-brand-700 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
           >
             {myBulletin ? t("bulletin.update") : t("bulletin.post")}
           </button>
@@ -152,7 +152,7 @@ export function BulletinBoard({ bulletins, currentUserId, isTeaser = false }: Bu
                     type="button"
                     onClick={handlePost}
                     disabled={!message.trim() || isSubmitting}
-                    className="h-9 px-7 rounded-full bg-brand-600 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
+                    className="h-9 px-7 rounded-full bg-brand-500 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
                   >
                     {isSubmitting ? t("common.processing") : t("bulletin.post")}
                   </button>

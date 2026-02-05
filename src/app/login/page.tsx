@@ -370,7 +370,7 @@ export default function LoginPage() {
               <div className="mt-8 pt-6 border-t border-slate-200 text-center">
                 <Link
                   href="/residents"
-                  className="text-sm font-medium text-brand-600 hover:text-brand-700 transition-colors inline-flex items-center gap-2 mx-auto"
+                  className="text-sm font-medium text-brand-500 hover:text-brand-700 transition-colors inline-flex items-center gap-2 mx-auto"
                 >
                   {t("auth.browseAsGuest")}
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="mt-0.5">

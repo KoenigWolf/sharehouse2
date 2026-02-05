@@ -74,7 +74,7 @@ export default function ResetPasswordPage() {
             <h1 className="text-xl font-light text-slate-900 tracking-wider">
               SHARE HOUSE
             </h1>
-            <p className="text-[10px] font-bold tracking-widest uppercase text-brand-600 mt-2">
+            <p className="text-[10px] font-bold tracking-widest uppercase text-brand-500 mt-2">
               {t("auth.resetPassword")}
             </p>
           </div>
@@ -190,7 +190,7 @@ export default function ResetPasswordPage() {
                 <div className="text-center pt-2">
                   <a
                     href="/login"
-                    className="text-[11px] font-bold text-slate-400 hover:text-brand-600 transition-colors uppercase tracking-widest"
+                    className="text-[11px] font-bold text-slate-400 hover:text-brand-500 transition-colors uppercase tracking-widest"
                   >
                     {t("auth.backToLogin")}
                   </a>

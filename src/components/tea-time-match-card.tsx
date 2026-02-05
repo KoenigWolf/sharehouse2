@@ -93,7 +93,7 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
         <div className="flex-1 min-w-0">
           <Link
             href={`/profile/${match.partner.id}`}
-            className="text-lg font-bold text-slate-900 hover:text-brand-600 transition-colors tracking-tight"
+            className="text-lg font-bold text-slate-900 hover:text-brand-500 transition-colors tracking-tight"
           >
             {match.partner.name}
           </Link>

@@ -116,7 +116,7 @@ export const MobileNav = memo(function MobileNav() {
                   <Icon
                     size={24}
                     strokeWidth={active ? 2.5 : 2}
-                    className={`transition-colors duration-300 ${active ? "text-brand-600" : "text-slate-400 group-hover:text-slate-600"
+                    className={`transition-colors duration-300 ${active ? "text-brand-500" : "text-slate-400 group-hover:text-slate-600"
                       }`}
                   />
                   {active && (

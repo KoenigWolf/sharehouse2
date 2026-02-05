@@ -90,7 +90,7 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
           <button
             type="button"
             onClick={() => { setIsFormOpen(true); setFeedback(null); }}
-            className="h-9 px-5 rounded-full bg-brand-600 hover:bg-brand-700 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
+            className="h-9 px-5 rounded-full bg-brand-500 hover:bg-brand-700 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
           >
             {t("share.post")}
           </button>
@@ -162,7 +162,7 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                   type="button"
                   onClick={handlePost}
                   disabled={!title.trim() || isSubmitting}
-                  className="h-10 px-8 rounded-full bg-brand-600 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
+                  className="h-10 px-8 rounded-full bg-brand-500 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
                 >
                   {isSubmitting ? t("share.posting") : t("share.post")}
                 </button>
@@ -221,7 +221,7 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                     </div>
                   </div>
                   {timeLeft && !isClaimed && (
-                    <span className="text-[10px] font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-full tracking-wider">
+                    <span className="text-[10px] font-bold text-brand-500 bg-brand-50 px-2 py-0.5 rounded-full tracking-wider">
                       {timeLeft}
                     </span>
                   )}
@@ -248,7 +248,7 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                       type="button"
                       onClick={() => !isTeaser && handleClaim(item.id)}
                       disabled={isSubmitting || isTeaser}
-                      className={`h-8 px-6 rounded-full bg-brand-600 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[10px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100 ${isTeaser ? "opacity-50 cursor-not-allowed" : ""}`}
+                      className={`h-8 px-6 rounded-full bg-brand-500 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[10px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100 ${isTeaser ? "opacity-50 cursor-not-allowed" : ""}`}
                     >
                       {t("share.claim")}
                     </button>

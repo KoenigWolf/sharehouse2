@@ -37,7 +37,7 @@ export default function NotFound() {
               transition={{ delay: 0.5, duration: 0.5 }}
               className="bg-white/80 backdrop-blur-xl p-8 sm:p-12 rounded-[2.5rem] shadow-2xl border border-white/50 premium-surface"
             >
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-brand-50 text-brand-600 mb-6">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-brand-50 text-brand-500 mb-6">
                 <MoveLeft size={32} strokeWidth={1.5} />
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4 tracking-tight">
