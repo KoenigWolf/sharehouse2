@@ -119,73 +119,68 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
-      <main className="flex-1 flex">
-        <div className="hidden lg:flex lg:w-1/2 bg-slate-100 items-center justify-center p-12">
-          <div className="max-w-md">
-            <h1 className="text-3xl font-light text-slate-900 tracking-wider mb-6">
-              SHARE HOUSE
-            </h1>
-            <p className="text-slate-500 leading-relaxed text-sm">
-              {t("auth.portalLead")}
-              <br />
-              {t("auth.portalSublead")}
-            </p>
-            <div className="mt-12 pt-12 border-t border-slate-200">
-              <p className="text-xs text-slate-400 leading-loose">
-                {t("auth.portalDescriptionLine1")}
-                <br />
-                {t("auth.portalDescriptionLine2")}
-                <br />
-                {t("auth.portalDescriptionLine3")}
-              </p>
-            </div>
+    <div className="min-h-screen bg-slate-50 flex flex-col relative overflow-hidden">
+      {/* Decorative Background Elements */}
+      <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-brand-50/50 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-50/30 rounded-full blur-[120px] pointer-events-none" />
+
+      <main className="flex-1 flex flex-col items-center justify-center p-6 relative z-10">
+        <m.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="w-full max-w-[440px] space-y-8"
+        >
+          {/* Header/Logo Section */}
+          <div className="text-center space-y-2">
+            <m.h1
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="text-3xl font-black text-slate-900 tracking-tighter"
+            >
+              Share<span className="text-brand-500">House</span>
+            </m.h1>
+            <m.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]"
+            >
+              {isForgotMode ? t("auth.forgotPassword") : t("auth.residentPortal")}
+            </m.p>
           </div>
-        </div>
 
-        <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12">
-          <div className="w-full max-w-sm">
-            <div className="lg:hidden text-center mb-12">
-              <h1 className="text-xl font-light text-slate-900 tracking-wider">
-                SHARE HOUSE
-              </h1>
-              <p className="text-xs text-slate-400 mt-2">
-                {t("auth.residentPortal")}
-              </p>
-            </div>
-
-            <div className="relative mb-10">
-              <div className="flex">
-                <Button
-                  type="button"
-                  variant="ghost"
+          {/* Form Card */}
+          <div className="bg-white/70 backdrop-blur-2xl rounded-[2.5rem] p-8 sm:p-10 shadow-2xl shadow-slate-200/50 border border-white/50">
+            {/* Mode Switcher */}
+            {!isForgotMode && (
+              <div className="bg-slate-100/50 p-1.5 rounded-2xl flex relative mb-10">
+                <m.div
+                  className="absolute inset-y-1.5 bg-white rounded-xl shadow-sm z-0"
+                  initial={false}
+                  animate={{
+                    left: mode === "login" ? "6px" : "calc(50% + 3px)",
+                    width: "calc(50% - 9px)",
+                  }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                />
+                <button
                   onClick={() => switchMode("login")}
-                  className={`flex-1 h-auto py-3 relative z-10 hover:bg-transparent ${mode === "login" ? "text-slate-900" : "text-slate-400"
+                  className={`flex-1 py-2.5 text-xs font-black uppercase tracking-widest relative z-10 transition-colors duration-300 ${mode === "login" ? "text-slate-900" : "text-slate-400"
                     }`}
                 >
                   {t("auth.login")}
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
+                </button>
+                <button
                   onClick={() => switchMode("signup")}
-                  className={`flex-1 h-auto py-3 relative z-10 hover:bg-transparent ${mode === "signup" ? "text-slate-900" : "text-slate-400"
+                  className={`flex-1 py-2.5 text-xs font-black uppercase tracking-widest relative z-10 transition-colors duration-300 ${mode === "signup" ? "text-slate-900" : "text-slate-400"
                     }`}
                 >
                   {t("auth.signup")}
-                </Button>
+                </button>
               </div>
-              <div className="absolute bottom-0 left-0 right-0 h-px bg-slate-200" />
-              <m.div
-                className="absolute bottom-0 h-px bg-slate-900"
-                initial={false}
-                animate={{
-                  left: mode === "login" ? "0%" : "50%",
-                  width: "50%",
-                }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
-              />
-            </div>
+            )}
 
             <form
               onSubmit={
@@ -204,35 +199,26 @@ export default function LoginPage() {
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="overflow-hidden"
+                    className="space-y-2"
                   >
-                    <div className="space-y-2 pb-6">
-                      <label
-                        htmlFor="name"
-                        className="block text-xs text-slate-500 tracking-wide"
-                      >
-                        {t("auth.name")}
-                      </label>
-                      <input
-                        id="name"
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder={t("auth.namePlaceholder")}
-                        required
-                        className="w-full h-12 px-4 bg-white border border-slate-200 rounded-md text-slate-900 text-sm placeholder:text-slate-300 focus:outline-none focus:border-slate-900 transition-colors"
-                      />
-                    </div>
+                    <label htmlFor="name" className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                      {t("auth.name")}
+                    </label>
+                    <input
+                      id="name"
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder={t("auth.namePlaceholder")}
+                      required
+                      className="w-full h-14 px-5 bg-white border border-slate-100 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all"
+                    />
                   </m.div>
                 )}
               </AnimatePresence>
 
               <div className="space-y-2">
-                <label
-                  htmlFor="email"
-                  className="block text-xs text-slate-500 tracking-wide"
-                >
+                <label htmlFor="email" className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
                   {t("auth.email")}
                 </label>
                 <input
@@ -240,20 +226,17 @@ export default function LoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="example@email.com"
+                  placeholder="name@example.com"
                   required
                   autoComplete="email"
-                  className="w-full h-12 px-4 bg-white border border-slate-200 rounded-md text-slate-900 text-sm placeholder:text-slate-300 focus:outline-none focus:border-slate-900 transition-colors"
+                  className="w-full h-14 px-5 bg-white border border-slate-100 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all"
                 />
               </div>
 
-              {!(mode === "login" && isForgotMode) && (
+              {!isForgotMode && (
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <label
-                      htmlFor="password"
-                      className="block text-xs text-slate-500 tracking-wide"
-                    >
+                  <div className="flex items-center justify-between ml-1">
+                    <label htmlFor="password" className="block text-[10px] font-black text-slate-400 uppercase tracking-widest">
                       {t("auth.password")}
                     </label>
                     {mode === "login" && (
@@ -264,7 +247,7 @@ export default function LoginPage() {
                           setError(null);
                           setSuccess(null);
                         }}
-                        className="text-xs text-slate-400 hover:text-slate-500 transition-colors"
+                        className="text-[10px] font-bold text-slate-400 hover:text-brand-500 transition-colors uppercase tracking-widest"
                       >
                         {t("auth.forgotPassword")}
                       </button>
@@ -277,127 +260,118 @@ export default function LoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     autoComplete={mode === "login" ? "current-password" : "new-password"}
-                    className="w-full h-12 px-4 bg-white border border-slate-200 rounded-md text-slate-900 text-sm placeholder:text-slate-300 focus:outline-none focus:border-slate-900 transition-colors"
+                    className="w-full h-14 px-5 bg-white border border-slate-100 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all"
                   />
                   <AnimatePresence>
-                    {mode === "signup" && (
+                    {mode === "signup" && password.length > 0 && (
                       <m.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
-                        className="pt-1 space-y-2"
+                        className="pt-2"
                       >
-                        <p className="text-xs text-slate-400">
-                          {t("auth.passwordHint")}
-                        </p>
-                        {password.length > 0 && (
-                          <PasswordStrengthMeter password={password} />
-                        )}
+                        <PasswordStrengthMeter password={password} />
                       </m.div>
                     )}
                   </AnimatePresence>
                 </div>
               )}
 
-              {mode === "login" && isForgotMode && (
+              {isForgotMode && (
                 <button
                   type="button"
                   onClick={() => {
                     setIsForgotMode(false);
                     setError(null);
+                    setSuccess(null);
                   }}
-                  className="text-xs text-slate-400 hover:text-slate-500 transition-colors"
+                  className="text-[10px] font-black text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-[0.2em] w-full text-center"
                 >
-                  {t("auth.backToLogin")}
+                  ← {t("auth.backToLogin")}
                 </button>
               )}
 
-              <AnimatePresence>
-                {error && (
-                  <m.div
-                    role="alert"
-                    aria-live="polite"
-                    initial={{ opacity: 0, y: -8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    className="py-3 px-4 bg-error-bg border-l-2 border-error-border"
-                  >
-                    <p className="text-sm text-error">{error}</p>
-                  </m.div>
-                )}
-              </AnimatePresence>
+              <div className="pt-2">
+                <AnimatePresence mode="wait">
+                  {error && (
+                    <m.div
+                      key="error"
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      className="mb-6 p-4 bg-error-bg/50 border border-error-border/20 rounded-2xl"
+                    >
+                      <p className="text-xs font-bold text-error text-center">{error}</p>
+                    </m.div>
+                  )}
+                  {success && (
+                    <m.div
+                      key="success"
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      className="mb-6 p-4 bg-success-bg/50 border border-success-border/20 rounded-2xl"
+                    >
+                      <p className="text-xs font-bold text-success text-center">{success}</p>
+                    </m.div>
+                  )}
+                </AnimatePresence>
 
-              <AnimatePresence>
-                {success && (
-                  <m.div
-                    role="status"
-                    aria-live="polite"
-                    initial={{ opacity: 0, y: -8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    className="py-3 px-4 bg-success-bg border-l-2 border-success-border"
-                  >
-                    <p className="text-sm text-success">{success}</p>
-                  </m.div>
-                )}
-              </AnimatePresence>
-
-              <Button
-                type="submit"
-                size="xl"
-                disabled={isLoading}
-                aria-busy={isLoading}
-                className="w-full"
-              >
-                {isLoading ? (
-                  <span className="inline-flex items-center gap-2">
+                <Button
+                  type="submit"
+                  size="xl"
+                  disabled={isLoading}
+                  className="w-full rounded-2xl shadow-xl shadow-brand-100/50 h-14 text-sm font-black uppercase tracking-widest bg-slate-900 hover:bg-slate-800 transition-all active:scale-[0.98]"
+                >
+                  {isLoading ? (
                     <Spinner size="sm" variant="light" />
-                    {isForgotMode
-                      ? t("auth.sendingResetLink")
-                      : t("common.processing")}
-                  </span>
-                ) : isForgotMode ? (
-                  t("auth.sendResetLink")
-                ) : mode === "login" ? (
-                  t("auth.login")
-                ) : (
-                  t("auth.register")
-                )}
-              </Button>
+                  ) : isForgotMode ? (
+                    t("auth.sendResetLink")
+                  ) : mode === "login" ? (
+                    t("auth.login")
+                  ) : (
+                    t("auth.register")
+                  )}
+                </Button>
+              </div>
             </form>
 
-            {!isForgotMode && (
-              <div className="mt-8 pt-6 border-t border-slate-200 text-center">
+            <div className="mt-10 pt-8 border-t border-slate-50 flex flex-col items-center gap-6">
+              {!isForgotMode && (
                 <Link
                   href="/residents"
-                  className="text-sm font-medium text-brand-500 hover:text-brand-700 transition-colors inline-flex items-center gap-2 mx-auto"
+                  className="text-[10px] font-black text-slate-400 hover:text-brand-500 transition-all uppercase tracking-[0.2em] flex items-center gap-2 group"
                 >
                   {t("auth.browseAsGuest")}
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="mt-0.5">
-                    <path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+                  <span className="group-hover:translate-x-1 transition-transform">→</span>
                 </Link>
-              </div>
-            )}
-
-            <AnimatePresence>
-              {mode === "signup" && (
-                <m.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="text-xs text-slate-400 text-center mt-8 leading-relaxed"
-                >
-                  {t("auth.signupHint")}
-                </m.p>
               )}
-            </AnimatePresence>
+            </div>
           </div>
-        </div>
+
+          {/* Tagline for Desktop-like feel */}
+          <m.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            className="text-center space-y-4"
+          >
+            <p className="text-xs text-slate-400 font-medium leading-relaxed max-w-[280px] mx-auto">
+              {t("auth.portalLead")}
+            </p>
+            <div className="flex items-center justify-center gap-3">
+              <span className="h-px w-6 bg-slate-200" />
+              <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Share House Portal</span>
+              <span className="h-px w-6 bg-slate-200" />
+            </div>
+          </m.div>
+        </m.div>
       </main>
 
-      <footer className="py-6">
-        <p className="text-xs text-slate-400 text-center">Share House Portal</p>
+      <footer className="py-8 relative z-10">
+        <p className="text-[10px] font-bold text-slate-300 text-center uppercase tracking-[0.3em]">
+          © {new Date().getFullYear()}
+        </p>
       </footer>
     </div>
   );
@@ -413,24 +387,38 @@ function PasswordStrengthMeter({ password }: { password: string }) {
     t("auth.passwordStrength.fair"),
     t("auth.passwordStrength.strong"),
   ];
-  const colors = ["var(--error-border)", "var(--error-border)", "var(--color-slate-300)", "var(--success-border)"];
+  const colors = [
+    "bg-slate-200",
+    "bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.4)]",
+    "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.4)]",
+    "bg-brand-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]"
+  ];
+  const textColors = [
+    "text-slate-300",
+    "text-red-500",
+    "text-amber-500",
+    "text-brand-500"
+  ];
 
   return (
-    <div className="space-y-1">
-      <div className="flex gap-1">
-        {[0, 1, 2].map((i) => (
+    <div className="space-y-2">
+      <div className="flex gap-1.5 h-1">
+        {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="h-0.5 flex-1 rounded-full transition-colors duration-300"
-            style={{
-              backgroundColor: i < strength ? colors[strength] : "var(--color-slate-200)",
-            }}
+            className={`flex-1 rounded-full transition-all duration-500 ${i <= strength ? colors[strength] : "bg-slate-100"
+              }`}
           />
         ))}
       </div>
-      <p className="text-[10px]" style={{ color: colors[strength] }}>
-        {labels[strength]}
-      </p>
+      <div className="flex justify-between items-center h-3">
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+          {t("auth.passwordHint")}
+        </p>
+        <p className={`text-[10px] font-black uppercase tracking-widest ${textColors[strength]}`}>
+          {labels[strength]}
+        </p>
+      </div>
     </div>
   );
 }
