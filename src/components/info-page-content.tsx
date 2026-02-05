@@ -46,22 +46,22 @@ const QuickAccessCard = memo(function QuickAccessCard({
   }, [value, onCopy]);
 
   return (
-    <div className="bg-white border border-[#e4e4e7] rounded-lg p-4 flex items-center gap-4">
-      <div className="w-10 h-10 rounded-md bg-[#f4f4f5] flex items-center justify-center flex-shrink-0 text-[#71717a]">
+    <div className="premium-surface rounded-2xl p-5 flex items-center gap-4 transition-all hover:shadow-xl hover:-translate-y-0.5 border-slate-50">
+      <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center flex-shrink-0 text-slate-400 border border-slate-100 shadow-inner">
         {icon}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-[10px] text-[#a1a1aa] tracking-wide uppercase">{label}</p>
-        <p className="text-sm text-[#18181b] font-medium font-mono truncate">{value}</p>
-        {subtext && <p className="text-[10px] text-[#a1a1aa] mt-0.5">{subtext}</p>}
+        <p className="text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-0.5">{label}</p>
+        <p className="text-[15px] text-slate-900 font-bold font-mono tracking-tight truncate">{value}</p>
+        {subtext && <p className="text-[10px] text-slate-400 mt-0.5 font-medium">{subtext}</p>}
       </div>
       {copyLabel && (
         <Button
           type="button"
-          variant="outline"
-          size="xs"
+          variant="secondary"
+          size="sm"
           onClick={handleCopy}
-          className="flex-shrink-0"
+          className="flex-shrink-0 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-[11px] h-9"
         >
           {copied ? "✓" : copyLabel}
         </Button>
@@ -79,9 +79,9 @@ interface SectionHeaderProps {
 
 const SectionHeader = memo(function SectionHeader({ icon, title }: SectionHeaderProps) {
   return (
-    <div className="flex items-center gap-2 mb-4">
-      <span className="text-[#a1a1aa]">{icon}</span>
-      <h2 className="text-xs text-[#a1a1aa] tracking-wide uppercase">{title}</h2>
+    <div className="flex items-center gap-2 mb-4 mt-2">
+      <span className="text-slate-300">{icon}</span>
+      <h2 className="text-[11px] font-bold tracking-widest uppercase text-slate-400">{title}</h2>
     </div>
   );
 });
@@ -108,14 +108,14 @@ const WifiCard = memo(function WifiCard({ wifiInfos }: WifiCardProps) {
   if (wifiInfos.length === 0) return null;
 
   return (
-    <div className="bg-white border border-[#e4e4e7] rounded-lg overflow-hidden">
-      <div className="px-4 py-3 border-b border-[#e4e4e7] bg-[#f4f4f5]">
+    <div className="premium-surface rounded-2xl overflow-hidden border-slate-50">
+      <div className="px-5 py-4 border-b border-slate-50 bg-slate-50/50">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-[10px] text-[#a1a1aa] tracking-wide uppercase">
+            <p className="text-[10px] font-bold tracking-widest uppercase text-slate-400">
               {t("wifi.password")}
             </p>
-            <p className="text-sm text-[#18181b] font-mono mt-0.5">
+            <p className="text-lg font-bold text-slate-900 font-mono tracking-tight mt-0.5">
               {showPassword ? password : "••••••••••••"}
             </p>
           </div>
@@ -125,15 +125,17 @@ const WifiCard = memo(function WifiCard({ wifiInfos }: WifiCardProps) {
               variant="ghost"
               size="icon-sm"
               onClick={() => setShowPassword(!showPassword)}
+              className="text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-xl w-10 h-10"
               aria-label={showPassword ? t("wifi.hidePassword") : t("wifi.showPassword")}
             >
               {showPassword ? <EyeOffIcon /> : <EyeIcon />}
             </Button>
             <Button
               type="button"
-              variant="outline"
-              size="xs"
+              variant="secondary"
+              size="sm"
               onClick={handleCopyPassword}
+              className="rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-[11px] h-10 px-4"
             >
               {copied ? "✓" : t("common.copy")}
             </Button>
@@ -141,19 +143,19 @@ const WifiCard = memo(function WifiCard({ wifiInfos }: WifiCardProps) {
         </div>
       </div>
 
-      <div className="divide-y divide-[#e4e4e7]">
+      <div className="divide-y divide-slate-50 bg-white">
         {wifiInfos.map((wifi) => (
-          <div key={wifi.id} className="px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className="text-[10px] text-[#a1a1aa] w-14">{wifi.area_name}</span>
-              <span className="text-sm text-[#18181b] font-mono">{wifi.ssid}</span>
+          <div key={wifi.id} className="px-5 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest w-16">{wifi.area_name}</span>
+              <span className="text-[15px] text-slate-900 font-mono font-bold tracking-tight">{wifi.ssid}</span>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="px-4 py-2 bg-[#f4f4f5] border-t border-[#e4e4e7]">
-        <p className="text-[10px] text-[#a1a1aa]">
+      <div className="px-5 py-3 bg-slate-50/30 border-t border-slate-50">
+        <p className="text-[11px] text-slate-400 font-medium italic italic">
           {t("info.wifiNote")}
         </p>
       </div>
@@ -254,11 +256,11 @@ export function InfoPageContent({
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-xl text-[#18181b] tracking-wide font-light">
+      <div className="mb-2">
+        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
           {t("info.title")}
         </h1>
-        <p className="text-xs text-[#a1a1aa] mt-1">
+        <p className="text-sm text-slate-500 mt-1.5 font-medium">
           {t("info.subtitle")}
         </p>
       </div>
@@ -318,28 +320,28 @@ export function InfoPageContent({
           transition={{ duration: 0.3, delay: 0.3 }}
         >
           <SectionHeader icon={<BuildingIcon />} title={t("info.tabBuilding")} />
-          <div className="space-y-3">
+          <div className="space-y-4">
             {addressInfo && (
-              <div className="bg-white border border-[#e4e4e7] rounded-lg p-4">
-                <p className="text-[10px] text-[#a1a1aa] tracking-wide uppercase mb-1">
+              <div className="premium-surface rounded-2xl p-5 border-slate-50">
+                <p className="text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-2">
                   {addressInfo.title}
                 </p>
-                <p className="text-sm text-[#18181b]">{addressInfo.content}</p>
+                <p className="text-[15px] font-bold text-slate-900 leading-snug">{addressInfo.content}</p>
                 {addressInfo.notes && (
-                  <p className="text-xs text-[#71717a] mt-2">{addressInfo.notes}</p>
+                  <p className="text-xs text-slate-500 mt-2 font-medium italic">{addressInfo.notes}</p>
                 )}
               </div>
             )}
             {sharedInfos
               .filter((info) => info.info_key !== "mailbox_code" && info.info_key !== "address")
               .map((info) => (
-                <div key={info.id} className="bg-white border border-[#e4e4e7] rounded-lg p-4">
-                  <p className="text-[10px] text-[#a1a1aa] tracking-wide uppercase mb-1">
+                <div key={info.id} className="premium-surface rounded-2xl p-5 border-slate-50">
+                  <p className="text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-2">
                     {info.title}
                   </p>
-                  <p className="text-sm text-[#18181b]">{info.content}</p>
+                  <p className="text-[15px] font-bold text-slate-900 leading-snug">{info.content}</p>
                   {info.notes && (
-                    <p className="text-xs text-[#71717a] mt-2">{info.notes}</p>
+                    <p className="text-xs text-slate-500 mt-2 font-medium italic">{info.notes}</p>
                   )}
                 </div>
               ))}

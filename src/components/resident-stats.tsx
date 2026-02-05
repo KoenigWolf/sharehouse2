@@ -45,62 +45,64 @@ export function ResidentStats({ profiles, teaTimeParticipants }: ResidentStatsPr
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <StatCard
           label={t("residents.statsRegistered")}
           value={stats.registered}
           subValue={`/ ${stats.total}`}
-          color="#18181b"
+          color="var(--foreground)"
         />
         <StatCard
           label={t("residents.statsNew")}
           value={stats.newResidents}
           subValue={t("residents.statsNewSub")}
-          color="var(--success)"
+          color="var(--brand-600)"
         />
         <StatCard
           label={t("residents.statsTeaTime")}
           value={stats.teaTimeCount}
           subValue={t("residents.statsParticipants")}
-          color="var(--success)"
+          color="#8b5cf6"
         />
         <StatCard
           label={t("residents.statsUnregistered")}
           value={stats.unregistered}
           subValue={t("residents.statsRooms")}
-          color="#a1a1aa"
+          color="var(--muted-foreground)"
         />
       </div>
 
-      <div className="space-y-2">
-        <p className="text-[10px] text-[#a1a1aa] tracking-wide">
-          {t("residents.floorOccupancy")}
-        </p>
-        <div className="flex gap-2">
-          {(["5F", "4F", "3F", "2F"] as const).map((floor) => {
-            const floorStat = stats.floorStats[floor];
-            const percentage = (floorStat.registered / floorStat.total) * 100;
-            const colors = FLOOR_COLORS[floor];
-            return (
-              <div key={floor} className="flex-1">
-                <div className="flex items-center justify-between mb-1">
-                  <span className={`text-[10px] ${colors.text}`}>{floor}</span>
-                  <span className="text-[10px] text-[#a1a1aa]">
-                    {floorStat.registered}/{floorStat.total}
-                  </span>
+      <div className="premium-surface rounded-2xl p-6 sm:p-8 space-y-6">
+        <div>
+          <h2 className="text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-4">
+            {t("residents.floorOccupancy")}
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
+            {(["5F", "4F", "3F", "2F"] as const).map((floor) => {
+              const floorStat = stats.floorStats[floor];
+              const percentage = (floorStat.registered / floorStat.total) * 100;
+              const colors = FLOOR_COLORS[floor];
+              return (
+                <div key={floor} className="flex-1">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className={`text-sm font-bold tracking-tight ${colors.text}`}>{floor}</span>
+                    <span className="text-xs font-semibold text-slate-400">
+                      {floorStat.registered} <span className="opacity-50">/</span> {floorStat.total}
+                    </span>
+                  </div>
+                  <div className="h-2 bg-slate-50 rounded-full overflow-hidden p-0.5 border border-slate-100/50 shadow-inner">
+                    <m.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${percentage}%` }}
+                      transition={{ duration: 0.8, ease: "circOut", delay: 0.2 }}
+                      style={{ backgroundColor: colors.fill }}
+                      className="h-full rounded-full shadow-sm"
+                    />
+                  </div>
                 </div>
-                <div className="h-1.5 bg-[#f4f4f5] rounded-full overflow-hidden">
-                  <m.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${percentage}%` }}
-                    transition={{ duration: 0.3, delay: 0.1 }}
-                    style={{ backgroundColor: colors.fill }}
-                    className="h-full"
-                  />
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
@@ -119,14 +121,18 @@ function StatCard({
   color: string;
 }) {
   return (
-    <div className="text-center p-4 rounded-lg border border-[#e4e4e7]">
-      <p className="text-[10px] text-slate-400 mb-1 tracking-widest font-semibold uppercase">
+    <div className="premium-surface rounded-2xl p-5 sm:p-6 transition-all hover:shadow-xl hover:-translate-y-0.5 border-slate-50">
+      <p className="text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-1.5">
         {label}
       </p>
-      <p className="text-2xl sm:text-3xl font-bold tracking-tight" style={{ color }}>
-        {value}
-        <span className="text-sm text-slate-400 ml-1 font-normal">{subValue}</span>
-      </p>
+      <div className="flex items-baseline gap-1">
+        <p className="text-2xl sm:text-3xl font-bold tracking-tight" style={{ color }}>
+          {value}
+        </p>
+        <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-tight">
+          {subValue}
+        </p>
+      </div>
     </div>
   );
 }

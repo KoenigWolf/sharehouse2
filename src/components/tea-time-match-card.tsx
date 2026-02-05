@@ -44,25 +44,25 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
   // 過去のマッチ（完了・スキップ済み）
   if (status !== "scheduled") {
     return (
-      <div className="bg-[#f4f4f5] p-3 border border-[#e4e4e7] rounded-lg">
+      <div className="bg-slate-50/80 p-3 border border-slate-100 rounded-xl">
         <div className="flex items-center gap-3">
-          <Avatar className="w-8 h-8 rounded-full">
+          <Avatar className="w-8 h-8 rounded-full border border-white shadow-sm">
             <OptimizedAvatarImage
               src={match.partner.avatar_url}
               context="card"
               alt={t("a11y.profilePhotoAlt", { name: match.partner.name })}
               fallback={getInitials(match.partner.name)}
-              fallbackClassName="bg-white text-[#a1a1aa] text-xs rounded-full"
+              fallbackClassName="bg-white text-slate-300 text-[10px] font-bold"
             />
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="text-sm text-[#71717a] truncate">
+            <p className="text-xs font-bold text-slate-500 truncate">
               {match.partner.name}
             </p>
           </div>
-          <span className="text-[10px] text-[#a1a1aa]">
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">
             {formatDate(match.matched_at)}
-            <span className="mx-1">·</span>
+            <span className="mx-1.5 opacity-30">·</span>
             {status === "done" ? t("teaTime.done") : t("teaTime.skipped")}
           </span>
         </div>
@@ -73,54 +73,56 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
   // アクティブなマッチ
   return (
     <m.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="bg-white p-4 border border-[#e4e4e7] rounded-lg"
+      transition={{ duration: 0.5, ease: "circOut" }}
+      className="premium-surface p-6 rounded-3xl border-slate-50 relative overflow-hidden ring-1 ring-slate-100/50"
     >
-      <div className="flex items-center gap-4 mb-4">
+      <div className="flex items-center gap-5 mb-6">
         <Link href={`/profile/${match.partner.id}`}>
-          <Avatar className="w-14 h-14 rounded-full">
+          <Avatar className="w-16 h-16 rounded-2xl border-2 border-slate-50 shadow-md transition-transform hover:scale-105">
             <OptimizedAvatarImage
               src={match.partner.avatar_url}
               context="card"
               alt={t("a11y.profilePhotoAlt", { name: match.partner.name })}
               fallback={getInitials(match.partner.name)}
-              fallbackClassName="bg-[#f4f4f5] text-[#a1a1aa] text-lg rounded-full"
+              fallbackClassName="bg-slate-100 text-slate-300 text-xl font-bold"
             />
           </Avatar>
         </Link>
         <div className="flex-1 min-w-0">
           <Link
             href={`/profile/${match.partner.id}`}
-            className="text-sm text-[#18181b] hover:text-[#71717a] transition-colors"
+            className="text-lg font-bold text-slate-900 hover:text-brand-600 transition-colors tracking-tight"
           >
             {match.partner.name}
           </Link>
-          <p className="text-[10px] text-[#a1a1aa] mt-1">
-            {match.partner.room_number &&
-              `${match.partner.room_number}${t("profile.room")}`}
-            {match.partner.room_number && <span className="mx-1">·</span>}
-            {formatDate(match.matched_at)}
-          </p>
+          <div className="flex items-center gap-1.5 mt-1">
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+              {match.partner.room_number &&
+                `${match.partner.room_number}${t("profile.room")}`}
+              {match.partner.room_number && <span className="mx-1.5 opacity-30">·</span>}
+              {formatDate(match.matched_at)}
+            </p>
+          </div>
         </div>
       </div>
 
       <div className="flex gap-3">
         <Button
-          size="lg"
+          size="xl"
           onClick={() => handleStatusUpdate("done")}
           disabled={isLoading}
-          className="flex-1"
+          className="flex-1 rounded-2xl shadow-lg shadow-brand-100 active:scale-[0.98] transition-transform font-bold tracking-tight"
         >
           {isLoading ? t("common.processing") : t("teaTime.hadTea")}
         </Button>
         <Button
-          variant="outline"
-          size="lg"
+          variant="secondary"
+          size="xl"
           onClick={() => handleStatusUpdate("skipped")}
           disabled={isLoading}
-          className="flex-1"
+          className="flex-1 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold tracking-tight active:scale-[0.98] transition-transform"
         >
           {t("teaTime.skip")}
         </Button>

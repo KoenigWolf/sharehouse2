@@ -23,6 +23,8 @@ type SortOption = "name" | "room_number" | "move_in_date";
 type ViewMode = "grid" | "floor" | "list";
 type FloorFilter = "all" | "2F" | "3F" | "4F" | "5F";
 
+const SEARCH_VISIBLE_THRESHOLD = 30;
+
 /**
  * 住人一覧グリッドコンポーネント
  * 統計ダッシュボード付き
@@ -248,27 +250,29 @@ export function ResidentsGrid({
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-4 border-b border-[#e4e4e7]">
-          <div className="relative group">
-            <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10" />
-            <input
-              type="search"
-              placeholder={t("residents.searchPlaceholder")}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full sm:w-80 h-12 pl-11 pr-4 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all shadow-sm"
-            />
-            {searchQuery && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-xs"
-                onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 hover:bg-transparent"
-              >
-                <CloseIcon />
-              </Button>
-            )}
-          </div>
+          {totalCount >= SEARCH_VISIBLE_THRESHOLD && (
+            <div className="relative group">
+              <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10" />
+              <input
+                type="search"
+                placeholder={t("residents.searchPlaceholder")}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full sm:w-80 h-12 pl-11 pr-4 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all shadow-sm"
+              />
+              {searchQuery && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-xs"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 hover:bg-transparent"
+                >
+                  <CloseIcon />
+                </Button>
+              )}
+            </div>
+          )}
 
           <div className="relative sm:flex sm:gap-0">
             <div className="flex overflow-x-auto scrollbar-hide sm:overflow-visible -mx-1 px-1 sm:mx-0 sm:px-0 snap-x snap-mandatory sm:snap-none">
@@ -382,6 +386,7 @@ function GridView({
       {profiles.map((profile, index) => (
         <m.div
           key={profile.id}
+          className="h-full"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{
@@ -468,6 +473,7 @@ function FloorView({
               {profiles.map((profile, index) => (
                 <m.div
                   key={profile.id}
+                  className="h-full"
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: index * 0.04, ease: "easeOut" }}

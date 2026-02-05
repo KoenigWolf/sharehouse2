@@ -70,7 +70,7 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
 
   return (
     <div>
-      <div className="flex gap-3 mb-8">
+      <div className="flex gap-4 mb-10 overflow-x-auto pb-4 no-scrollbar">
         {FLOORS.slice().reverse().map((floor) => {
           const isActive = floor === activeFloor;
           const floorColors = FLOOR_COLORS[floor];
@@ -81,17 +81,17 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
               type="button"
               onClick={() => { setActiveFloor(floor); setSelectedRoom(null); }}
               className={`
-                relative flex-1 py-4 text-sm font-semibold tracking-tight
-                transition-all duration-300 rounded-xl overflow-hidden
+                relative flex-1 min-w-[70px] py-4 text-sm font-bold tracking-tight
+                transition-all duration-500 rounded-2xl overflow-hidden shadow-sm
                 ${isActive
-                  ? `${floorColors.bg} ${floorColors.text} shadow-lg shadow-brand-100 ring-2 ring-brand-500/20`
-                  : "bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-900 border border-slate-100"
+                  ? `${floorColors.bg} ${floorColors.text} shadow-xl shadow-brand-100 ring-4 ring-brand-500/10`
+                  : "bg-white text-slate-400 hover:bg-slate-50 hover:text-slate-600 border border-slate-100"
                 }
-                active:scale-[0.98]
+                active:scale-[0.96]
               `}
             >
-              <span className="block text-lg">{floor}</span>
-              <span className={`block text-[10px] uppercase font-bold tracking-wider mt-1 ${isActive ? "opacity-70" : "opacity-50"}`}>
+              <span className="block text-xl">{floor}</span>
+              <span className={`block text-[9px] uppercase font-black tracking-[0.15em] mt-1.5 ${isActive ? "opacity-70" : "opacity-40"}`}>
                 {t("floorPlan.occupancy", { count: occupancyByFloor[floor] })}
               </span>
             </button>
@@ -135,10 +135,10 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
                   type="button"
                   onClick={() => setSelectedRoom(roomNumber)}
                   className={`
-                    relative flex flex-col items-center p-3 sm:p-4 transition-all duration-300 rounded-xl
+                    relative flex flex-col items-center p-3 sm:p-5 transition-all duration-500 rounded-2xl
                     ${isOccupied
-                      ? "bg-white border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1"
-                      : "bg-slate-50 border border-dashed border-slate-200 hover:border-slate-300 opacity-60"
+                      ? "bg-white border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-1.5 ring-1 ring-slate-100/50"
+                      : "bg-slate-50 border border-dashed border-slate-200 hover:border-slate-300 opacity-60 hover:opacity-100"
                     }
                   `}
                 >
@@ -148,36 +148,36 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
                     </span>
                   )}
 
-                  <div className="w-12 h-12 sm:w-14 sm:h-14 mb-3">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 mb-4 relative">
                     {profile ? (
-                      <Avatar className="w-full h-full rounded-xl border border-slate-100 shadow-sm">
+                      <Avatar className="w-full h-full rounded-2xl border-2 border-slate-50 shadow-md">
                         <OptimizedAvatarImage
                           src={profile.avatar_url}
                           alt={profile.nickname || profile.name}
                           context="card"
                           fallback={
-                            <span className="text-xs text-slate-300">
+                            <span className="text-sm font-bold text-slate-300">
                               {getInitials(profile.nickname || profile.name)}
                             </span>
                           }
-                          fallbackClassName="bg-slate-50"
+                          fallbackClassName="bg-slate-100"
                         />
                       </Avatar>
                     ) : (
-                      <div className="w-full h-full rounded-xl bg-slate-100 flex items-center justify-center border border-dashed border-slate-300">
-                        <span className="text-[10px] text-slate-400 font-medium">
+                      <div className="w-full h-full rounded-2xl bg-white/50 flex items-center justify-center border-2 border-dashed border-slate-200 shadow-inner">
+                        <span className="text-[10px] font-bold text-slate-300 tracking-wider">
                           {t("floorPlan.vacant")}
                         </span>
                       </div>
                     )}
                   </div>
 
-                  <span className={`text-xs font-semibold tracking-tight ${isOccupied ? "text-slate-900" : "text-slate-400"}`}>
+                  <span className={`text-[11px] font-black tracking-[0.1em] ${isOccupied ? "text-slate-900" : "text-slate-300"}`}>
                     {roomNumber}
                   </span>
 
                   {profile && (
-                    <span className={`text-[10px] truncate max-w-full mt-1.5 font-medium ${isMock ? "text-slate-200" : "text-slate-500"}`}>
+                    <span className={`text-[10px] truncate max-w-full mt-1.5 font-bold ${isMock ? "text-slate-200" : "text-slate-500"}`}>
                       {profile.nickname || profile.name}
                     </span>
                   )}
