@@ -332,6 +332,7 @@ export function PhotoLightbox({
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.7}
             onDragEnd={(_, info) => {
+              if (isEditingCaption) return;
               const swipeDelta = info.offset.x;
               const swipeVelocity = info.velocity.x;
 
