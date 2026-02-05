@@ -63,125 +63,150 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
-      <main className="flex-1 flex items-center justify-center p-6 sm:p-12">
+    <div className="min-h-screen bg-slate-50 flex flex-col relative overflow-hidden">
+      {/* Decorative Background Elements */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-200/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-brand-300/20 rounded-full blur-[120px] pointer-events-none" />
+
+      <main className="flex-1 flex items-center justify-center p-6 relative z-10">
         <div className="w-full max-w-sm">
-          <div className="text-center mb-12">
-            <h1 className="text-xl font-light text-[#18181b] tracking-wider">
+          <div className="text-center mb-10">
+            <h1 className="text-xl font-light text-slate-900 tracking-wider">
               SHARE HOUSE
             </h1>
-            <p className="text-xs text-[#a1a1aa] mt-2">
+            <p className="text-[10px] font-bold tracking-widest uppercase text-brand-600 mt-2">
               {t("auth.resetPassword")}
             </p>
           </div>
 
-          {isComplete ? (
-            <m.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-center space-y-4"
-            >
-              <div className="py-3 px-4 bg-success-bg border-l-2 border-success-border">
-                <p className="text-sm text-success">
+          <div className="premium-surface rounded-3xl p-8 sm:p-10">
+            {isComplete ? (
+              <m.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="text-center space-y-4"
+              >
+                <div className="w-12 h-12 bg-success-bg text-success rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </div>
+                <p className="text-sm font-semibold text-slate-900">
                   {t("auth.passwordResetSuccess")}
                 </p>
-              </div>
-            </m.div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <p className="text-sm text-[#71717a]">
-                {t("auth.resetPasswordDescription")}
-              </p>
-
-              <div className="space-y-2">
-                <label
-                  htmlFor="new-password"
-                  className="block text-xs text-[#71717a] tracking-wide"
-                >
-                  {t("auth.newPassword")}
-                </label>
-                <input
-                  id="new-password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  autoComplete="new-password"
-                  className="w-full h-12 px-4 bg-white border border-[#e4e4e7] rounded-md text-[#18181b] text-sm placeholder:text-[#d4d4d8] focus:outline-none focus:border-[#18181b] transition-colors"
-                />
-                <p className="text-xs text-[#a1a1aa]">
-                  {t("auth.passwordHint")}
+                <p className="text-xs text-slate-500">
+                  {t("common.processing")}...
                 </p>
-                {password.length > 0 && (
-                  <PasswordStrengthMeter password={password} />
-                )}
-              </div>
+              </m.div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <p className="text-xs text-slate-500 leading-relaxed text-center mb-2">
+                  {t("auth.resetPasswordDescription")}
+                </p>
 
-              <div className="space-y-2">
-                <label
-                  htmlFor="confirm-password"
-                  className="block text-xs text-[#71717a] tracking-wide"
-                >
-                  {t("auth.confirmNewPassword")}
-                </label>
-                <input
-                  id="confirm-password"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  autoComplete="new-password"
-                  className="w-full h-12 px-4 bg-white border border-[#e4e4e7] rounded-md text-[#18181b] text-sm placeholder:text-[#d4d4d8] focus:outline-none focus:border-[#18181b] transition-colors"
-                />
-              </div>
-
-              <AnimatePresence>
-                {error && (
-                  <m.div
-                    role="alert"
-                    aria-live="polite"
-                    initial={{ opacity: 0, y: -8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    className="py-3 px-4 bg-error-bg border-l-2 border-error-border"
+                <div className="space-y-2">
+                  <label
+                    htmlFor="new-password"
+                    className="block text-[10px] font-bold text-slate-400 tracking-wider uppercase"
                   >
-                    <p className="text-sm text-error">{error}</p>
-                  </m.div>
-                )}
-              </AnimatePresence>
+                    {t("auth.newPassword")}
+                  </label>
+                  <input
+                    id="new-password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    autoComplete="new-password"
+                    className="w-full h-12 px-4 bg-slate-50 border border-slate-100 rounded-xl text-slate-900 text-sm placeholder:text-slate-300 focus:outline-none focus:border-brand-500 focus:bg-white transition-all shadow-inner"
+                  />
+                  {password.length > 0 && (
+                    <div className="pt-1">
+                      <PasswordStrengthMeter password={password} />
+                    </div>
+                  )}
+                  <p className="text-[10px] text-slate-400 mt-1">
+                    {t("auth.passwordHint")}
+                  </p>
+                </div>
 
-              <Button
-                type="submit"
-                size="xl"
-                disabled={isLoading}
-                aria-busy={isLoading}
-                className="w-full"
-              >
-                {isLoading ? (
-                  <span className="inline-flex items-center gap-2">
-                    <Spinner size="sm" variant="light" />
-                    {t("auth.settingNewPassword")}
-                  </span>
-                ) : (
-                  t("auth.setNewPassword")
-                )}
-              </Button>
+                <div className="space-y-2">
+                  <label
+                    htmlFor="confirm-password"
+                    className="block text-[10px] font-bold text-slate-400 tracking-wider uppercase"
+                  >
+                    {t("auth.confirmNewPassword")}
+                  </label>
+                  <input
+                    id="confirm-password"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    autoComplete="new-password"
+                    className="w-full h-12 px-4 bg-slate-50 border border-slate-100 rounded-xl text-slate-900 text-sm placeholder:text-slate-300 focus:outline-none focus:border-brand-500 focus:bg-white transition-all shadow-inner"
+                  />
+                </div>
 
-              <div className="text-center">
-                <a
-                  href="/login"
-                  className="text-xs text-[#a1a1aa] hover:text-[#71717a] transition-colors"
+                <AnimatePresence mode="wait">
+                  {error && (
+                    <m.div
+                      role="alert"
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="py-2.5 px-4 bg-error-bg text-error text-[11px] font-semibold border border-error-border rounded-xl flex items-center gap-2">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <line x1="12" y1="8" x2="12" y2="12"></line>
+                          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        {error}
+                      </div>
+                    </m.div>
+                  )}
+                </AnimatePresence>
+
+                <Button
+                  type="submit"
+                  size="xl"
+                  disabled={isLoading}
+                  className="w-full rounded-2xl shadow-lg shadow-brand-100 active:scale-[0.98] transition-transform"
                 >
-                  {t("auth.backToLogin")}
-                </a>
-              </div>
-            </form>
-          )}
+                  {isLoading ? (
+                    <span className="inline-flex items-center gap-2 font-bold tracking-tight">
+                      <Spinner size="sm" variant="light" />
+                      {t("auth.settingNewPassword")}
+                    </span>
+                  ) : (
+                    <span className="font-bold tracking-tight">
+                      {t("auth.setNewPassword")}
+                    </span>
+                  )}
+                </Button>
+
+                <div className="text-center pt-2">
+                  <a
+                    href="/login"
+                    className="text-[11px] font-bold text-slate-400 hover:text-brand-600 transition-colors uppercase tracking-widest"
+                  >
+                    {t("auth.backToLogin")}
+                  </a>
+                </div>
+              </form>
+            )}
+          </div>
         </div>
       </main>
 
-      <footer className="py-6">
-        <p className="text-xs text-[#a1a1aa] text-center">Share House Portal</p>
+      <footer className="py-8 relative z-10">
+        <div className="flex items-center justify-center gap-2 text-slate-300">
+          <span className="w-8 h-px bg-slate-200" />
+          <p className="text-[10px] font-bold tracking-[0.2em] uppercase">Share House Portal</p>
+          <span className="w-8 h-px bg-slate-200" />
+        </div>
       </footer>
     </div>
   );
