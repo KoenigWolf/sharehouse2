@@ -17,6 +17,7 @@ interface RoomPhotoManagerProps {
   photos: RoomPhoto[];
   maxPhotos?: number;
   compact?: boolean;
+  previewLimit?: number;
 }
 
 /**
@@ -32,6 +33,7 @@ export function RoomPhotoManager({
   photos,
   maxPhotos = ROOM_PHOTOS.maxPhotosPerUser,
   compact = false,
+  previewLimit,
 }: RoomPhotoManagerProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const t = useI18n();
@@ -39,6 +41,7 @@ export function RoomPhotoManager({
   const [currentPhotos, setCurrentPhotos] = useState<RoomPhoto[]>(photos);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     setCurrentPhotos(photos);
@@ -57,6 +60,7 @@ export function RoomPhotoManager({
   const remainingTotal = Math.max(0, maxPhotos - currentPhotos.length);
   const effectiveBulkLimit = Math.min(ROOM_PHOTOS.maxBulkUpload, remainingTotal);
   const canUpload = !isUploading && remainingTotal > 0;
+  const hasPreviewLimit = compact && previewLimit !== undefined && currentPhotos.length > previewLimit;
 
   const handleUploadClick = () => {
     if (canUpload) {
@@ -151,7 +155,7 @@ export function RoomPhotoManager({
         </AnimatePresence>
 
         <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 gap-4">
-          {currentPhotos.map((photo) => (
+          {(hasPreviewLimit && !isExpanded ? currentPhotos.slice(0, previewLimit) : currentPhotos).map((photo) => (
             <m.div
               key={photo.id}
               initial={{ opacity: 0, scale: 0.95 }}
@@ -211,6 +215,18 @@ export function RoomPhotoManager({
             </m.button>
           )}
         </div>
+
+        {hasPreviewLimit && !isExpanded && (
+          <div className="flex justify-center">
+            <button
+              type="button"
+              onClick={() => setIsExpanded(true)}
+              className="h-9 px-6 rounded-full border border-slate-200 text-[11px] font-bold text-slate-500 hover:text-slate-700 hover:border-slate-300 tracking-wider uppercase transition-all duration-300"
+            >
+              {t("roomPhotos.showMore", { count: currentPhotos.length - (previewLimit ?? 0) })}
+            </button>
+          </div>
+        )}
 
         {canUpload ? (
           <div className="pt-2">
