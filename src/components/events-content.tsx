@@ -105,11 +105,8 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold tracking-tight text-slate-900">
-          {t("events.title")}
-        </h2>
-        {!isFormOpen && !isTeaser && (
+      {!isFormOpen && !isTeaser && (
+        <div className="flex justify-end">
           <button
             type="button"
             onClick={() => { setIsFormOpen(true); setFeedback(null); }}
@@ -117,8 +114,8 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
           >
             {t("events.create")}
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       <AnimatePresence>
         {feedback && (

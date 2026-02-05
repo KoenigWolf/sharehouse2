@@ -85,9 +85,8 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold tracking-tight text-slate-900">{t("share.title")}</h2>
-        {!isFormOpen && !isTeaser && (
+      {!isFormOpen && !isTeaser && (
+        <div className="flex justify-end">
           <button
             type="button"
             onClick={() => { setIsFormOpen(true); setFeedback(null); }}
@@ -95,8 +94,8 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
           >
             {t("share.post")}
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       <AnimatePresence>
         {feedback && (

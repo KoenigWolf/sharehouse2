@@ -89,9 +89,8 @@ export function BulletinBoard({ bulletins, currentUserId, isTeaser = false }: Bu
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold tracking-tight text-slate-900">{t("bulletin.title")}</h2>
-        {!isEditing && !isTeaser && (
+      {!isEditing && !isTeaser && (
+        <div className="flex justify-end">
           <button
             type="button"
             onClick={handleStartEdit}
@@ -99,8 +98,8 @@ export function BulletinBoard({ bulletins, currentUserId, isTeaser = false }: Bu
           >
             {myBulletin ? t("bulletin.update") : t("bulletin.post")}
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       <AnimatePresence>
         {feedback && (
