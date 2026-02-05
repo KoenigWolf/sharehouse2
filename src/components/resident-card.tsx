@@ -7,9 +7,9 @@ import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import type { Profile } from "@/domain/profile";
 import { getInitials } from "@/lib/utils";
 import { PROFILE } from "@/lib/constants/config";
-import { MBTI_LABELS, getMBTIGroup } from "@/domain/profile";
+import { getMBTIGroup } from "@/domain/profile";
 import { MBTI_COLORS } from "@/lib/constants/mbti";
-import { useI18n, useLocale } from "@/hooks/use-i18n";
+import { useI18n } from "@/hooks/use-i18n";
 import type { Translator } from "@/lib/i18n";
 
 interface ResidentCardProps {
@@ -275,7 +275,6 @@ export const ResidentCard = memo(function ResidentCard({
   teaTimeEnabled = false,
 }: ResidentCardProps) {
   const t = useI18n();
-  const locale = useLocale();
 
   const {
     isMock,

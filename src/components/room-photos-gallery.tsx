@@ -181,7 +181,7 @@ const SectionHeader = memo(function SectionHeader({ icon, title, count }: Sectio
   return (
     <div className="flex items-center gap-2 mb-4">
       <span className="text-slate-400">{icon}</span>
-      <h2 className="text-xs text-slate-400 tracking-wide uppercase">{title}</h2>
+      <h2 className="text-xs text-slate-900 tracking-wide uppercase">{title}</h2>
       {count !== undefined && (
         <span className="text-[10px] text-slate-400 font-mono ml-auto">
           {count}
@@ -351,7 +351,7 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
             <button
               type="button"
               onClick={handleShowMore}
-              className="h-10 px-8 rounded-full border border-slate-200 text-sm font-medium text-slate-500 hover:text-slate-700 hover:border-slate-300 transition-all duration-300"
+              className="h-10 px-8 rounded-full border border-slate-200 text-sm font-medium text-slate-500 hover:text-slate-700 hover:border-slate-300 transition-all duration-400 ease-out"
             >
               {t("roomPhotos.showMore", { count: remainingPhotos })}
             </button>

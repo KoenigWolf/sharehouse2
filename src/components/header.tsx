@@ -188,7 +188,7 @@ export const Header = memo(function Header() {
 
   return (
     <header
-      className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-slate-100"
+      className="sticky top-0 z-40 bg-slate-50 backdrop-blur-sm border-b border-slate-100"
       role="banner"
     >
       <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between max-w-5xl">

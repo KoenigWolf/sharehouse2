@@ -164,7 +164,7 @@ function FooterLinkSection({ title, links, t }: { title: string; links: typeof C
       </h3>
       <ul className="flex flex-col gap-4">
         {links.map(({ href, labelKey }) => (
-          <li key={labelKey}>
+          <li key={labelKey as string}>
             {href ? (
               <Link
                 href={href}
