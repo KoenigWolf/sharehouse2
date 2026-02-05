@@ -3,7 +3,7 @@
 import { useState, memo, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, motion, AnimatePresence } from "framer-motion";
 import {
   Users,
   MessageCircle,
@@ -18,8 +18,9 @@ import {
   Coffee,
   LayoutGrid,
   X,
-  ChevronRight
+  ChevronRight,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useI18n } from "@/hooks/use-i18n";
 import { useUser } from "@/hooks/use-user";
 import type { TranslationKey } from "@/lib/i18n";
@@ -28,7 +29,7 @@ import { Button } from "@/components/ui/button";
 const NAV_ITEMS: {
   href: string;
   labelKey: TranslationKey;
-  icon: any;
+  icon: LucideIcon;
   matchPaths?: string[];
 }[] = [
     { href: "/residents", labelKey: "nav.residents", icon: Users },
@@ -40,7 +41,7 @@ const NAV_ITEMS: {
 const EXTRA_NAV_ITEMS: {
   href: string;
   labelKey: TranslationKey;
-  icon: any;
+  icon: LucideIcon;
 }[] = [
     { href: "/share", labelKey: "nav.share", icon: Gift },
     { href: "/stats", labelKey: "nav.stats", icon: BarChart3 },
@@ -53,6 +54,12 @@ export const MobileNav = memo(function MobileNav() {
   const pathname = usePathname();
   const t = useI18n();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [prevPathname, setPrevPathname] = useState(pathname);
+
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    setIsDrawerOpen(false);
+  }
 
   const isActive = useCallback((href: string, matchPaths?: string[]) => {
     if (matchPaths) {
@@ -79,10 +86,6 @@ export const MobileNav = memo(function MobileNav() {
       document.body.style.overflow = "";
     };
   }, [isDrawerOpen]);
-
-  useEffect(() => {
-    closeDrawer();
-  }, [pathname, closeDrawer]);
 
   const profileItem = {
     href: userId ? `/profile/${userId}` : "/settings",
@@ -149,86 +152,95 @@ export const MobileNav = memo(function MobileNav() {
       <AnimatePresence>
         {isDrawerOpen && (
           <>
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={closeDrawer}
               className="fixed inset-0 z-[60] bg-slate-900/40 backdrop-blur-sm sm:hidden"
             />
-            <motion.div
+            <m.div
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed inset-x-0 bottom-0 z-[70] bg-white rounded-t-[2rem] p-6 pb-20 shadow-2xl sm:hidden max-h-[85vh] overflow-y-auto"
+              className="fixed inset-x-0 bottom-0 z-[70] bg-white rounded-t-[2.5rem] p-6 pb-20 shadow-2xl sm:hidden max-h-[85vh] overflow-y-auto overflow-x-hidden"
             >
-              <div className="flex items-center justify-between mb-8">
-                <h2 className="text-xl font-bold text-slate-900">Menu</h2>
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  onClick={closeDrawer}
-                  className="rounded-full bg-slate-50"
-                >
-                  <X size={20} className="text-slate-500" />
-                </Button>
-              </div>
+              {/* Decorative Background Elements */}
+              <div className="absolute top-0 left-0 w-full h-32 bg-linear-to-b from-brand-50/50 to-transparent pointer-events-none" />
+              <div className="absolute top-10 right-[-10%] w-48 h-48 bg-brand-200/20 rounded-full blur-[80px] pointer-events-none" />
+              <div className="absolute bottom-20 left-[-10%] w-48 h-48 bg-slate-200/30 rounded-full blur-[80px] pointer-events-none" />
 
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 gap-1">
-                  {[...NAV_ITEMS, profileItem].map((item) => {
-                    const active = isActive(item.href, item.matchPaths);
-                    const Icon = item.icon;
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className={`flex items-center gap-4 p-4 rounded-2xl transition-all ${active
-                          ? "bg-brand-50 text-brand-700"
-                          : "text-slate-600 active:bg-slate-50"
-                          }`}
-                      >
-                        <div className={`p-2.5 rounded-xl ${active ? "bg-white shadow-sm" : "bg-slate-100"}`}>
-                          <Icon size={22} strokeWidth={active ? 2.5 : 2} />
-                        </div>
-                        <span className="flex-1 font-semibold">{t(item.labelKey)}</span>
-                        <ChevronRight size={18} className={active ? "text-brand-400" : "text-slate-300"} />
-                      </Link>
-                    );
-                  })}
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-8">
+                  <h2 className="text-xl font-black tracking-tight text-slate-900">
+                    Menu
+                  </h2>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    onClick={closeDrawer}
+                    className="rounded-full bg-slate-50"
+                  >
+                    <X size={20} className="text-slate-500" />
+                  </Button>
                 </div>
 
-                <div className="h-px bg-slate-100 mx-1" />
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 gap-1">
+                    {[...NAV_ITEMS, profileItem].map((item) => {
+                      const active = isActive(item.href, item.matchPaths);
+                      const Icon = item.icon;
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className={`flex items-center gap-4 p-4 rounded-2xl transition-all ${active
+                            ? "bg-brand-50 text-brand-700"
+                            : "text-slate-600 active:bg-slate-50"
+                            }`}
+                        >
+                          <div className={`p-2.5 rounded-xl ${active ? "bg-white shadow-sm" : "bg-slate-100"}`}>
+                            <Icon size={22} strokeWidth={active ? 2.5 : 2} />
+                          </div>
+                          <span className="flex-1 font-semibold">{t(item.labelKey)}</span>
+                          <ChevronRight size={18} className={active ? "text-brand-400" : "text-slate-300"} />
+                        </Link>
+                      );
+                    })}
+                  </div>
 
-                <div className="grid grid-cols-1 gap-1">
-                  {EXTRA_NAV_ITEMS.map((item) => {
-                    const active = isActive(item.href);
-                    const Icon = item.icon;
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className={`flex items-center gap-4 p-4 rounded-2xl transition-all ${active
-                          ? "bg-brand-50 text-brand-700"
-                          : "text-slate-600 active:bg-slate-50"
-                          }`}
-                      >
-                        <div className={`p-2.5 rounded-xl ${active ? "bg-white shadow-sm" : "bg-slate-100"}`}>
-                          <Icon size={22} strokeWidth={active ? 2.5 : 2} />
-                        </div>
-                        <span className="flex-1 font-semibold">{t(item.labelKey)}</span>
-                        <ChevronRight size={18} className={active ? "text-brand-400" : "text-slate-300"} />
-                      </Link>
-                    );
-                  })}
+                  <div className="h-px bg-slate-100 mx-1" />
+
+                  <div className="grid grid-cols-1 gap-1">
+                    {EXTRA_NAV_ITEMS.map((item) => {
+                      const active = isActive(item.href);
+                      const Icon = item.icon;
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className={`flex items-center gap-4 p-4 rounded-2xl transition-all ${active
+                            ? "bg-brand-50 text-brand-700"
+                            : "text-slate-600 active:bg-slate-50"
+                            }`}
+                        >
+                          <div className={`p-2.5 rounded-xl ${active ? "bg-white shadow-sm" : "bg-slate-100"}`}>
+                            <Icon size={22} strokeWidth={active ? 2.5 : 2} />
+                          </div>
+                          <span className="flex-1 font-semibold">{t(item.labelKey)}</span>
+                          <ChevronRight size={18} className={active ? "text-brand-400" : "text-slate-300"} />
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="mt-8 text-center">
+                  <p className="text-xs text-slate-400">Share House Portal v1.0</p>
                 </div>
               </div>
-
-              <div className="mt-8 text-center">
-                <p className="text-xs text-slate-400">Share House Portal v1.0</p>
-              </div>
-            </motion.div>
+            </m.div>
           </>
         )}
       </AnimatePresence>

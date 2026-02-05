@@ -13,6 +13,7 @@ import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
 import { getFloorFromRoom, isNewResident, FLOOR_COLORS, type FloorId } from "@/lib/utils/residents";
 import { VibeInput } from "@/components/vibe-input";
+
 interface ResidentsGridProps {
   profiles: Profile[];
   currentUserId: string;
@@ -161,7 +162,7 @@ export function ResidentsGrid({
   if (totalCount === 0) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <p className="text-[#71717a] text-sm">{t("residents.noResidents")}</p>
+        <p className="text-slate-500 text-sm">{t("residents.noResidents")}</p>
       </div>
     );
   }
@@ -180,10 +181,10 @@ export function ResidentsGrid({
       <div className="flex flex-col gap-4">
         <div className="flex items-end justify-between">
           <div>
-            <h2 className="text-lg sm:text-xl text-[#18181b] tracking-wide font-light">
+            <h2 className="text-lg sm:text-xl text-slate-900 tracking-wide font-light">
               {t("residents.title")}
             </h2>
-            <p className="text-[11px] sm:text-xs text-[#a1a1aa] mt-1">
+            <p className="text-[11px] sm:text-xs text-slate-400 mt-1">
               {t("residents.countLabel", { count: displayCount })}
               {(searchQuery || floorFilter !== "all") &&
                 ` ${t("residents.countOf", { total: totalCount })}`}
@@ -216,154 +217,155 @@ export function ResidentsGrid({
           </div>
         </div>
 
-        <div className="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide -mx-1 px-1 pb-2">
-          {floors.map((floor) => {
-            const isAll = floor === "all";
-            const isActive = floorFilter === floor;
-            const floorStat = isAll ? null : floorStats[floor];
-            const colors = isAll ? null : FLOOR_COLORS[floor as keyof typeof FLOOR_COLORS];
+        <div className="sticky top-[64px] z-30 bg-slate-50/95 backdrop-blur-sm -mx-4 px-4 py-3 sm:relative sm:top-0 sm:bg-transparent sm:backdrop-none sm:mx-0 sm:px-0 sm:py-0">
+          <div className="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide -mx-1 px-1 pb-1 sm:pb-0">
+            {floors.map((floor) => {
+              const isAll = floor === "all";
+              const isActive = floorFilter === floor;
+              const floorStat = isAll ? null : floorStats[floor];
+              const colors = isAll ? null : FLOOR_COLORS[floor as keyof typeof FLOOR_COLORS];
 
-            return (
-              <Button
-                key={floor}
-                type="button"
-                variant="outline"
-                onClick={() => setFloorFilter(floor)}
-                className={`shrink-0 h-auto px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl transition-all ${isActive
-                  ? isAll
-                    ? "bg-brand-600 text-white shadow-lg shadow-brand-200 border-brand-600"
-                    : `${colors?.bg} ${colors?.text} border-transparent shadow-sm`
-                  : "bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300"
-                  }`}
-              >
-                <span className="text-sm font-semibold tracking-tight">
-                  {isAll ? t("residents.filterAll") : floor}
-                </span>
-                {floorStat && (
-                  <span className={`ml-2 text-xs font-medium ${isActive ? "opacity-70" : "text-slate-400"}`}>
-                    {floorStat.registered}/{floorStat.total}
-                  </span>
-                )}
-              </Button>
-            );
-          })}
-        </div>
-
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-4 border-b border-[#e4e4e7]">
-          {totalCount >= SEARCH_VISIBLE_THRESHOLD && (
-            <div className="relative group">
-              <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10" />
-              <input
-                type="search"
-                placeholder={t("residents.searchPlaceholder")}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full sm:w-80 h-12 pl-11 pr-4 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all shadow-sm"
-              />
-              {searchQuery && (
+              return (
                 <Button
+                  key={floor}
                   type="button"
-                  variant="ghost"
-                  size="icon-xs"
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 hover:bg-transparent"
+                  variant="outline"
+                  onClick={() => setFloorFilter(floor)}
+                  className={`shrink-0 h-auto px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl transition-all ${isActive
+                    ? isAll
+                      ? "bg-brand-600 text-white shadow-lg shadow-brand-200 border-brand-600"
+                      : `${colors?.bg} ${colors?.text} border-transparent shadow-sm`
+                    : "bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300"
+                    }`}
                 >
-                  <CloseIcon />
+                  <span className="text-sm font-semibold tracking-tight">
+                    {isAll ? t("residents.filterAll") : floor}
+                  </span>
+                  {floorStat && (
+                    <span className={`ml-2 text-xs font-medium ${isActive ? "opacity-70" : "text-slate-400"}`}>
+                      {floorStat.registered}/{floorStat.total}
+                    </span>
+                  )}
                 </Button>
-              )}
-            </div>
-          )}
+              );
+            })}
+          </div>
 
-          <div className="relative sm:flex sm:gap-0">
-            <div className="flex overflow-x-auto scrollbar-hide sm:overflow-visible -mx-1 px-1 sm:mx-0 sm:px-0 snap-x snap-mandatory sm:snap-none">
-              {sortOptions.map((option) => {
-                const isActive = sortBy === option.value;
-                return (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mt-4 sm:pb-4 sm:border-b sm:border-slate-200">
+            {totalCount >= SEARCH_VISIBLE_THRESHOLD && (
+              <div className="relative group">
+                <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10" />
+                <input
+                  type="search"
+                  placeholder={t("residents.searchPlaceholder")}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full sm:w-80 h-12 pl-11 pr-4 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all shadow-sm"
+                />
+                {searchQuery && (
                   <Button
-                    key={option.value}
                     type="button"
                     variant="ghost"
-                    onClick={() => handleSortChange(option.value)}
-                    className="relative h-auto px-4 sm:px-4 py-2.5 sm:py-2 tracking-wide group whitespace-nowrap active:opacity-70 snap-center sm:snap-align-none shrink-0 hover:bg-transparent"
+                    size="icon-xs"
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 hover:bg-transparent"
                   >
-                    <span
-                      className={`text-sm ${isActive
-                        ? "text-[#18181b] font-medium"
-                        : "text-[#a1a1aa] group-hover:text-[#71717a]"
-                        }`}
-                    >
-                      {option.label}
-                    </span>
-                    {isActive && (
-                      <motion.span
-                        layoutId="sort-underline"
-                        className="absolute bottom-0 left-3 right-3 sm:left-4 sm:right-4 h-px bg-[#18181b]"
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
-                      />
-                    )}
+                    <CloseIcon />
                   </Button>
-                );
-              })}
+                )}
+              </div>
+            )}
+
+            <div className="relative sm:flex sm:gap-0">
+              <div className="flex overflow-x-auto scrollbar-hide sm:overflow-visible -mx-1 px-1 sm:mx-0 sm:px-0 snap-x snap-mandatory sm:snap-none">
+                {sortOptions.map((option) => {
+                  const isActive = sortBy === option.value;
+                  return (
+                    <Button
+                      key={option.value}
+                      type="button"
+                      variant="ghost"
+                      onClick={() => handleSortChange(option.value)}
+                      className="relative h-auto px-4 sm:px-4 py-2.5 sm:py-2 tracking-wide group whitespace-nowrap active:opacity-70 snap-center sm:snap-align-none shrink-0 hover:bg-transparent"
+                    >
+                      <span
+                        className={`text-sm ${isActive
+                          ? "text-slate-900 font-medium"
+                          : "text-slate-400 group-hover:text-slate-500"
+                          }`}
+                      >
+                        {option.label}
+                      </span>
+                      {isActive && (
+                        <motion.span
+                          layoutId="sort-underline"
+                          className="absolute bottom-0 left-3 right-3 sm:left-4 sm:right-4 h-px bg-slate-900"
+                          transition={{ duration: 0.3, ease: "easeInOut" }}
+                        />
+                      )}
+                    </Button>
+                  );
+                })}
+              </div>
+              <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-white to-transparent pointer-events-none" />
             </div>
-            <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-white to-transparent pointer-events-none" />
           </div>
         </div>
-      </div>
 
-      <AnimatePresence mode="wait">
-        {filteredAndSortedProfiles.length === 0 ? (
-          <m.div
-            key="empty"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="text-center py-12 sm:py-16"
-          >
-            <div className="w-16 h-16 mx-auto mb-4 bg-[#f4f4f5] rounded-lg flex items-center justify-center">
-              <SearchIcon className="w-8 h-8 text-[#d4d4d8]" />
-            </div>
-            <p className="text-[#71717a] text-sm">{t("residents.noMatch")}</p>
-            <Button
-              type="button"
-              variant="outline"
-              size="lg"
-              onClick={() => {
-                setSearchQuery("");
-                setFloorFilter("all");
-              }}
-              className="mt-4 active:scale-[0.98]"
+        <AnimatePresence mode="wait">
+          {filteredAndSortedProfiles.length === 0 ? (
+            <m.div
+              key="empty"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="text-center py-12 sm:py-16"
             >
-              {t("residents.clearSearch")}
-            </Button>
-          </m.div>
-        ) : viewMode === "floor" ? (
-          <FloorView
-            key="floor-view"
-            groupedByFloor={groupedByFloor}
-            currentUserId={currentUserId}
-            floorStats={floorStats}
-            teaTimeSet={teaTimeSet}
-            t={t}
-          />
-        ) : viewMode === "list" ? (
-          <ListView
-            key="list-view"
-            profiles={filteredAndSortedProfiles}
-            currentUserId={currentUserId}
-            teaTimeSet={teaTimeSet}
-            t={t}
-          />
-        ) : (
-          <GridView
-            key="grid-view"
-            profiles={filteredAndSortedProfiles}
-            currentUserId={currentUserId}
-            teaTimeSet={teaTimeSet}
-          />
-        )
-        }
-      </AnimatePresence >
-    </div >
+              <div className="w-16 h-16 mx-auto mb-4 bg-slate-100 rounded-lg flex items-center justify-center">
+                <SearchIcon className="w-8 h-8 text-slate-300" />
+              </div>
+              <p className="text-slate-500 text-sm">{t("residents.noMatch")}</p>
+              <Button
+                type="button"
+                variant="outline"
+                size="lg"
+                onClick={() => {
+                  setSearchQuery("");
+                  setFloorFilter("all");
+                }}
+                className="mt-4 active:scale-[0.98]"
+              >
+                {t("residents.clearSearch")}
+              </Button>
+            </m.div>
+          ) : viewMode === "floor" ? (
+            <FloorView
+              key="floor-view"
+              groupedByFloor={groupedByFloor}
+              currentUserId={currentUserId}
+              floorStats={floorStats}
+              teaTimeSet={teaTimeSet}
+              t={t}
+            />
+          ) : viewMode === "list" ? (
+            <ListView
+              key="list-view"
+              profiles={filteredAndSortedProfiles}
+              currentUserId={currentUserId}
+              teaTimeSet={teaTimeSet}
+              t={t}
+            />
+          ) : (
+            <GridView
+              key="grid-view"
+              profiles={filteredAndSortedProfiles}
+              currentUserId={currentUserId}
+              teaTimeSet={teaTimeSet}
+            />
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
   );
 }
 
