@@ -73,9 +73,14 @@ const VW_FRACTION = 0.94;
 const VH_FRACTION = 0.88;
 
 function computeDisplaySize(naturalWidth: number, naturalHeight: number) {
-  const naturalRatio = naturalWidth / naturalHeight;
   const maxW = window.innerWidth * VW_FRACTION;
   const maxH = window.innerHeight * VH_FRACTION;
+
+  if (naturalHeight <= 0 || naturalWidth <= 0) {
+    return { width: Math.round(maxW), height: Math.round(maxH) };
+  }
+
+  const naturalRatio = naturalWidth / naturalHeight;
 
   let w = maxW;
   let h = w / naturalRatio;
