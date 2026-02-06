@@ -476,6 +476,8 @@ export const ja = {
     uploadInstructions: "ドラッグ＆ドロップまたはクリックして選択（複数選択・一括アップロード可）",
     showMore: "もっと見る（残り{{count}}枚）",
     infoLabel: "INFO",
+    captionUpdateFailed: "キャプションの更新に失敗しました",
+    deleteFailed: "写真の削除に失敗しました",
   },
 
   wifi: {

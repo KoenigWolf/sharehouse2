@@ -477,6 +477,8 @@ export const en: Translations = {
     uploadInstructions: "Drag & drop or click to select (Multiple selection supported)",
     showMore: "Show more ({{count}} remaining)",
     infoLabel: "INFO",
+    captionUpdateFailed: "Failed to update caption",
+    deleteFailed: "Failed to delete photo",
   },
 
   wifi: {
