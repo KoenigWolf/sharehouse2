@@ -1,150 +1,51 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback, memo } from "react";
+import { memo, useCallback } from "react";
 import { m, AnimatePresence } from "framer-motion";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { Plus } from "lucide-react";
-import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import dynamic from "next/dynamic";
 import { useI18n } from "@/hooks/use-i18n";
-import { getInitials } from "@/lib/utils";
 import { useUser } from "@/hooks/use-user";
 import { useBulkUpload } from "@/hooks/use-bulk-upload";
+import { usePhotoGallery } from "@/hooks/use-photo-gallery";
+import { useLightbox } from "@/hooks/use-lightbox";
 import { BulkUploadProgress } from "@/components/bulk-upload-progress";
-import { PhotoLightbox } from "@/components/photo-lightbox";
-import { deleteRoomPhoto, updateRoomPhotoCaption } from "@/lib/room-photos/actions";
+import { PhotoCard, UploadCard } from "@/components/gallery";
 import { ROOM_PHOTOS } from "@/lib/constants/config";
-import type { RoomPhoto } from "@/domain/room-photo";
-import type { Profile } from "@/domain/profile";
+import type { PhotoWithProfile } from "@/domain/room-photo";
 
-type PhotoWithProfile = RoomPhoto & { profile: Profile | null };
+const PhotoLightbox = dynamic(
+  () => import("@/components/photo-lightbox").then((mod) => mod.PhotoLightbox),
+  { ssr: false }
+);
+
+// ============================================================================
+// Types
+// ============================================================================
 
 interface RoomPhotosGalleryProps {
   photos: PhotoWithProfile[];
 }
 
+// ============================================================================
+// Sub-components
+// ============================================================================
+
 function CameraIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
       <circle cx="12" cy="13" r="3" />
     </svg>
-  );
-}
-
-interface PhotoCardProps {
-  photo: PhotoWithProfile;
-  index: number;
-  onClick: () => void;
-}
-
-const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardProps) {
-  const t = useI18n();
-
-  return (
-    <m.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1], delay: index * 0.015 }}
-    >
-      <div
-        role="button"
-        tabIndex={0}
-        onClick={() => onClick()}
-        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } }}
-        className="group relative w-full aspect-square overflow-hidden cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-inset bg-slate-200"
-      >
-        <Image
-          src={photo.photo_url}
-          alt={t("roomPhotos.photoAlt")}
-          fill
-          sizes="(max-width: 640px) 33vw, (max-width: 1024px) 25vw, 20vw"
-          className="object-cover object-center"
-        />
-        {/* Instagram-style hover overlay */}
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-200 flex items-center justify-center">
-          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-2">
-            <Avatar className="w-7 h-7 rounded-full ring-2 ring-white/80 shadow-lg">
-              <OptimizedAvatarImage
-                src={photo.profile?.avatar_url}
-                alt={photo.profile?.name || ""}
-                context="card"
-                fallback={getInitials(photo.profile?.name || "?")}
-                fallbackClassName="bg-white text-slate-600 text-[10px] font-bold"
-              />
-            </Avatar>
-            <span className="text-[13px] text-white font-semibold drop-shadow-lg max-w-[120px] truncate">
-              {photo.profile?.name || t("roomPhotos.unknownUser")}
-            </span>
-          </div>
-        </div>
-      </div>
-    </m.div>
-  );
-});
-
-PhotoCard.displayName = "PhotoCard";
-
-function UploadCard({
-  onSelectFiles,
-  isUploading,
-}: {
-  onSelectFiles: (files: File[]) => void;
-  isUploading: boolean;
-}) {
-  const t = useI18n();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      onSelectFiles(Array.from(files));
-    }
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-
-  return (
-    <m.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-    >
-      <Button
-        type="button"
-        variant="ghost"
-        onClick={handleClick}
-        disabled={isUploading}
-        className="w-full h-auto p-0 flex-col aspect-square bg-slate-100 hover:bg-slate-200 border-0 rounded-none"
-      >
-        {isUploading ? (
-          <Spinner />
-        ) : (
-          <>
-            <Plus className="w-6 h-6 text-slate-400" strokeWidth={1.5} />
-            <span className="text-[11px] text-slate-400 mt-1.5 font-medium">
-              {t("roomPhotos.uploadButton")}
-            </span>
-          </>
-        )}
-      </Button>
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/jpeg,image/png,image/webp"
-        multiple
-        onChange={handleFileChange}
-        className="hidden"
-        aria-hidden="true"
-      />
-    </m.div>
   );
 }
 
@@ -154,44 +55,155 @@ interface SectionHeaderProps {
   count?: number;
 }
 
-const SectionHeader = memo(function SectionHeader({ icon, title, count }: SectionHeaderProps) {
+const SectionHeader = memo(function SectionHeader({
+  icon,
+  title,
+  count,
+}: SectionHeaderProps) {
   return (
-    <div className="flex items-center gap-2 mb-5">
+    <header className="flex items-center gap-2 mb-5">
       <span className="text-slate-400">{icon}</span>
-      <h2 className="text-xs text-slate-900 tracking-wide uppercase font-medium">{title}</h2>
+      <h2 className="text-xs text-slate-900 tracking-wide uppercase font-medium">
+        {title}
+      </h2>
       {count !== undefined && (
-        <span className="text-[11px] text-slate-400 ml-1">
+        <span className="text-[11px] text-slate-400 ml-1" aria-label={`${count} photos`}>
           {count}
         </span>
       )}
-    </div>
+    </header>
   );
 });
 
 SectionHeader.displayName = "SectionHeader";
 
-export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
+interface FeedbackMessageProps {
+  type: "success" | "error";
+  message: string;
+}
+
+const FeedbackMessage = memo(function FeedbackMessage({
+  type,
+  message,
+}: FeedbackMessageProps) {
+  const isError = type === "error";
+
+  return (
+    <m.div
+      role={isError ? "alert" : "status"}
+      aria-live="polite"
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -8 }}
+      transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+      className={`mb-5 py-3 px-4 rounded-lg ${
+        isError
+          ? "bg-error-bg/50 border-l-2 border-error-border"
+          : "bg-success-bg/50 border-l-2 border-success-border"
+      }`}
+    >
+      <p className={`text-sm ${isError ? "text-error" : "text-success"}`}>
+        {message}
+      </p>
+    </m.div>
+  );
+});
+
+FeedbackMessage.displayName = "FeedbackMessage";
+
+interface ShowMoreButtonProps {
+  onClick: () => void;
+  remainingCount: number;
+}
+
+const ShowMoreButton = memo(function ShowMoreButton({
+  onClick,
+  remainingCount,
+}: ShowMoreButtonProps) {
   const t = useI18n();
-  const router = useRouter();
+
+  return (
+    <div className="flex justify-center mt-8">
+      <button
+        type="button"
+        onClick={onClick}
+        className="h-11 px-8 rounded-full border border-slate-200 text-sm font-medium text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:bg-slate-50 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+        aria-label={t("roomPhotos.showMore", { count: remainingCount })}
+      >
+        {t("roomPhotos.showMore", { count: remainingCount })}
+      </button>
+    </div>
+  );
+});
+
+ShowMoreButton.displayName = "ShowMoreButton";
+
+interface GalleryFooterProps {
+  maxPhotos: number;
+  maxBulkUpload: number;
+}
+
+const GalleryFooter = memo(function GalleryFooter({
+  maxPhotos,
+  maxBulkUpload,
+}: GalleryFooterProps) {
+  const t = useI18n();
+
+  return (
+    <footer className="mt-10 pt-6 border-t border-slate-100">
+      <p className="text-[11px] text-slate-400 leading-relaxed">
+        <span className="text-brand-500 font-semibold mr-1">
+          {t("roomPhotos.infoLabel")}
+        </span>
+        {t("roomPhotos.uploadLimit", { max: maxPhotos, bulk: maxBulkUpload })}
+        <span className="mx-1.5 text-slate-300" aria-hidden="true">·</span>
+        {t("roomPhotos.supportedFormats")}
+      </p>
+    </footer>
+  );
+});
+
+GalleryFooter.displayName = "GalleryFooter";
+
+// ============================================================================
+// Main Component
+// ============================================================================
+
+/**
+ * Room photos gallery component
+ *
+ * Features:
+ * - Instagram-style 3-column grid layout
+ * - Lazy loading for performance
+ * - Lightbox for fullscreen viewing
+ * - Bulk photo upload with progress
+ * - Delete and caption editing
+ * - Fully accessible with keyboard navigation
+ */
+export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryProps) {
+  const t = useI18n();
   const { userId } = useUser();
-  const INITIAL_VISIBLE = 24;
-  const [localPhotos, setLocalPhotos] = useState(photos);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
 
-  useEffect(() => {
-    setLocalPhotos(photos);
-  }, [photos]);
+  // Gallery state management
+  const {
+    photos,
+    visiblePhotos,
+    hasPhotos,
+    hasMore,
+    remainingCount,
+    remainingUploadSlots,
+    maxBulkUpload,
+    showMore,
+    actionHandlers,
+  } = usePhotoGallery({
+    initialPhotos,
+    userId,
+  });
 
-  useEffect(() => {
-    if (selectedIndex === null) return;
-    if (localPhotos.length === 0) {
-      setSelectedIndex(null);
-    } else if (selectedIndex >= localPhotos.length) {
-      setSelectedIndex(localPhotos.length - 1);
-    }
-  }, [localPhotos.length, selectedIndex]);
+  // Lightbox state management
+  const lightbox = useLightbox({ photos });
 
+  // Upload state management
   const {
     items: uploadItems,
     isUploading,
@@ -201,65 +213,22 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
     startUpload,
   } = useBulkUpload();
 
-  const userPhotoCount = userId
-    ? localPhotos.filter((p) => p.user_id === userId).length
-    : 0;
-  const remainingTotal = Math.max(0, ROOM_PHOTOS.maxPhotosPerUser - userPhotoCount);
-  const effectiveBulkLimit = Math.min(ROOM_PHOTOS.maxBulkUpload, remainingTotal);
-
-  const handlePhotoClick = useCallback((index: number) => {
-    setSelectedIndex(index);
-  }, []);
-
-  const handleClose = useCallback(() => {
-    setSelectedIndex(null);
-  }, []);
-
-  const handleNavigate = useCallback((index: number) => {
-    setSelectedIndex(index);
-  }, []);
-
+  // Handlers
   const handleSelectFiles = useCallback(
     (files: File[]) => {
-      startUpload(files, remainingTotal);
+      startUpload(files, remainingUploadSlots);
     },
-    [startUpload, remainingTotal]
+    [startUpload, remainingUploadSlots]
   );
 
-  const handleDeletePhoto = useCallback(
-    async (photoId: string): Promise<boolean> => {
-      const result = await deleteRoomPhoto(photoId);
-      if ("error" in result) return false;
-
-      setLocalPhotos((prev) => prev.filter((p) => p.id !== photoId));
-      router.refresh();
-      return true;
+  const handlePhotoClick = useCallback(
+    (index: number) => {
+      lightbox.open(index);
     },
-    [router]
+    [lightbox]
   );
 
-  const handleUpdateCaption = useCallback(
-    async (photoId: string, caption: string | null): Promise<boolean> => {
-      const result = await updateRoomPhotoCaption(photoId, caption);
-      if ("error" in result) return false;
-
-      setLocalPhotos((prev) =>
-        prev.map((p) => (p.id === photoId ? { ...p, caption } : p))
-      );
-      router.refresh();
-      return true;
-    },
-    [router]
-  );
-
-  const hasPhotos = localPhotos.length > 0;
-  const visiblePhotos = localPhotos.slice(0, visibleCount);
-  const hasMore = localPhotos.length > visibleCount;
-  const remainingPhotos = localPhotos.length - visibleCount;
-
-  const handleShowMore = useCallback(() => {
-    setVisibleCount((prev) => prev + INITIAL_VISIBLE);
-  }, []);
+  const canUpload = remainingUploadSlots > 0;
 
   return (
     <>
@@ -267,13 +236,15 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+        aria-labelledby="gallery-title"
       >
         <SectionHeader
           icon={<CameraIcon />}
           title={t("roomPhotos.gallery")}
-          count={hasPhotos ? localPhotos.length : undefined}
+          count={hasPhotos ? photos.length : undefined}
         />
 
+        {/* Upload progress and feedback */}
         <AnimatePresence mode="wait">
           {isUploading && (
             <BulkUploadProgress
@@ -284,30 +255,21 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
             />
           )}
           {!isUploading && feedback && (
-            <m.div
+            <FeedbackMessage
               key={feedback.type}
-              role={feedback.type === "error" ? "alert" : undefined}
-              aria-live="polite"
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-              className={`mb-5 py-3 px-4 rounded-lg ${feedback.type === "error"
-                ? "bg-error-bg/50 border-l-2 border-error-border"
-                : "bg-success-bg/50 border-l-2 border-success-border"
-                }`}
-            >
-              <p className={`text-sm ${feedback.type === "error" ? "text-error" : "text-success"
-                }`}>
-                {feedback.message}
-              </p>
-            </m.div>
+              type={feedback.type}
+              message={feedback.message}
+            />
           )}
         </AnimatePresence>
 
-        {/* Instagram-style grid: 3 columns, minimal gap */}
-        <div className="grid grid-cols-3 gap-[2px] sm:gap-1 bg-slate-200/50 rounded-sm overflow-hidden">
-          {remainingTotal > 0 && (
+        {/* Photo grid */}
+        <div
+          className="grid grid-cols-3 gap-[2px] sm:gap-1 bg-slate-200/50 rounded-sm overflow-hidden"
+          role="list"
+          aria-label={t("roomPhotos.gallery")}
+        >
+          {canUpload && (
             <UploadCard
               onSelectFiles={handleSelectFiles}
               isUploading={isUploading}
@@ -323,27 +285,18 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
           ))}
         </div>
 
+        {/* Show more button */}
         {hasMore && (
-          <div className="flex justify-center mt-8">
-            <button
-              type="button"
-              onClick={handleShowMore}
-              className="h-11 px-8 rounded-full border border-slate-200 text-sm font-medium text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:bg-slate-50 transition-all duration-200"
-            >
-              {t("roomPhotos.showMore", { count: remainingPhotos })}
-            </button>
-          </div>
+          <ShowMoreButton onClick={showMore} remainingCount={remainingCount} />
         )}
 
-        <div className="mt-10 pt-6 border-t border-slate-100">
-          <p className="text-[11px] text-slate-400 leading-relaxed">
-            <span className="text-brand-500 font-semibold mr-1">{t("roomPhotos.infoLabel")}</span>
-            {t("roomPhotos.uploadLimit", { max: ROOM_PHOTOS.maxPhotosPerUser, bulk: effectiveBulkLimit })}
-            <span className="mx-1.5 text-slate-300">·</span>
-            {t("roomPhotos.supportedFormats")}
-          </p>
-        </div>
+        {/* Footer with upload info */}
+        <GalleryFooter
+          maxPhotos={ROOM_PHOTOS.maxPhotosPerUser}
+          maxBulkUpload={maxBulkUpload}
+        />
 
+        {/* Empty state */}
         {!hasPhotos && (
           <p className="text-sm text-slate-400 mt-6 text-center py-12">
             {t("roomPhotos.noPhotosHint")}
@@ -351,14 +304,15 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
         )}
       </m.section>
 
+      {/* Lightbox */}
       <PhotoLightbox
-        photos={localPhotos}
-        selectedIndex={selectedIndex}
-        onClose={handleClose}
-        onNavigate={handleNavigate}
+        photos={photos}
+        selectedIndex={lightbox.selectedIndex}
+        onClose={lightbox.close}
+        onNavigate={lightbox.goTo}
         currentUserId={userId}
-        onDelete={handleDeletePhoto}
-        onUpdateCaption={handleUpdateCaption}
+        onDelete={actionHandlers.onDelete}
+        onUpdateCaption={actionHandlers.onUpdateCaption}
       />
     </>
   );
