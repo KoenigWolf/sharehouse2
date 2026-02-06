@@ -183,7 +183,6 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
     setLocalPhotos(photos);
   }, [photos]);
 
-  // 削除後に selectedIndex が範囲外になった場合の補正
   useEffect(() => {
     if (selectedIndex === null) return;
     if (localPhotos.length === 0) {
@@ -293,7 +292,7 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-              className={`mb-4 py-3 px-4 ${feedback.type === "error"
+              className={`mb-5 py-3 px-4 rounded-lg ${feedback.type === "error"
                 ? "bg-error-bg border-l-2 border-error-border"
                 : "bg-success-bg border-l-2 border-success-border"
                 }`}
@@ -346,7 +345,7 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
         </div>
 
         {!hasPhotos && (
-          <p className="text-xs text-slate-400 mt-4 italic">
+          <p className="text-sm text-slate-400 mt-6 text-center py-12">
             {t("roomPhotos.noPhotosHint")}
           </p>
         )}
