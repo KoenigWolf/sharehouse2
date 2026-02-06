@@ -94,6 +94,18 @@ Tailwind **Slate** スケールをベースに、鮮やかな **Brand (Emerald)*
 
 ---
 
+## 写真ギャラリー（Instagram準拠）
+
+写真表示体験はInstagram基準に準拠し、Premium Modern Minimalismの例外とする。
+
+- **グリッド**: 3列固定、最小ギャップ（2px/4px）、角丸なし
+- **カード**: 正方形、`object-cover object-center` でトリミング
+- **ホバー**: 中央配置のアバター + 名前オーバーレイ（`bg-black/40`）
+- **ライトボックス**: フルスクリーン表示、`bg-black/95`、`backdrop-blur-sm`
+- **アニメーション**: 0.25〜0.3秒（高速レスポンス優先）
+
+---
+
 ## 避けるべき事項
 
 - **Generic Themes**: 既視感のあるSaaS管理画面風のUI
