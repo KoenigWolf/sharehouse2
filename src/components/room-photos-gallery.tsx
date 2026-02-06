@@ -293,8 +293,8 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
               className={`mb-5 py-3 px-4 rounded-lg ${feedback.type === "error"
-                ? "bg-error-bg border-l-2 border-error-border"
-                : "bg-success-bg border-l-2 border-success-border"
+                ? "bg-error-bg/50 border-l-2 border-error-border"
+                : "bg-success-bg/50 border-l-2 border-success-border"
                 }`}
             >
               <p className={`text-sm ${feedback.type === "error" ? "text-error" : "text-success"
@@ -337,7 +337,7 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
 
         <div className="mt-10 pt-6 border-t border-slate-100">
           <p className="text-[11px] text-slate-400 leading-relaxed">
-            <span className="text-brand-500 font-semibold mr-1">INFO</span>
+            <span className="text-brand-500 font-semibold mr-1">{t("roomPhotos.infoLabel")}</span>
             {t("roomPhotos.uploadLimit", { max: ROOM_PHOTOS.maxPhotosPerUser, bulk: effectiveBulkLimit })}
             <span className="mx-1.5 text-slate-300">·</span>
             {t("roomPhotos.supportedFormats")}

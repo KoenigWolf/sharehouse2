@@ -475,6 +475,7 @@ export const ja = {
     supportedFormats: "対応形式: JPEG, PNG, WebP, HEIC",
     uploadInstructions: "ドラッグ＆ドロップまたはクリックして選択（複数選択・一括アップロード可）",
     showMore: "もっと見る（残り{{count}}枚）",
+    infoLabel: "INFO",
   },
 
   wifi: {

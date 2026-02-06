@@ -476,6 +476,7 @@ export const en: Translations = {
     supportedFormats: "Supported formats: JPEG, PNG, WebP, HEIC",
     uploadInstructions: "Drag & drop or click to select (Multiple selection supported)",
     showMore: "Show more ({{count}} remaining)",
+    infoLabel: "INFO",
   },
 
   wifi: {
