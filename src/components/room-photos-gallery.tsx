@@ -34,17 +34,6 @@ function CameraIcon() {
   );
 }
 
-function ExpandIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="15 3 21 3 21 9" />
-      <polyline points="9 21 3 21 3 15" />
-      <line x1="21" y1="3" x2="14" y2="10" />
-      <line x1="3" y1="21" x2="10" y2="14" />
-    </svg>
-  );
-}
-
 interface PhotoCardProps {
   photo: PhotoWithProfile;
   index: number;
@@ -56,45 +45,40 @@ const PhotoCard = memo(function PhotoCard({ photo, index, onClick }: PhotoCardPr
 
   return (
     <m.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1], delay: index * 0.03 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1], delay: index * 0.015 }}
     >
       <div
         role="button"
         tabIndex={0}
         onClick={() => onClick()}
         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } }}
-        className="group w-full premium-surface rounded-2xl overflow-hidden transition-all outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2 hover:shadow-xl hover:-translate-y-0.5 cursor-pointer"
+        className="group relative w-full aspect-square overflow-hidden cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-inset bg-slate-200"
       >
-        <div className="relative w-full overflow-hidden" style={{ paddingBottom: "100%" }}>
-          <Image
-            src={photo.photo_url}
-            alt={t("roomPhotos.photoAlt")}
-            fill
-            sizes="(max-width: 640px) 50vw, 33vw"
-            className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-          />
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-            <span className="opacity-0 group-hover:opacity-100 transition-opacity p-2 bg-white/90 text-slate-900">
-              <ExpandIcon />
+        <Image
+          src={photo.photo_url}
+          alt={t("roomPhotos.photoAlt")}
+          fill
+          sizes="(max-width: 640px) 33vw, (max-width: 1024px) 25vw, 20vw"
+          className="object-cover object-center"
+        />
+        {/* Instagram-style hover overlay */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-200 flex items-center justify-center">
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-2">
+            <Avatar className="w-7 h-7 rounded-full ring-2 ring-white/80 shadow-lg">
+              <OptimizedAvatarImage
+                src={photo.profile?.avatar_url}
+                alt={photo.profile?.name || ""}
+                context="card"
+                fallback={getInitials(photo.profile?.name || "?")}
+                fallbackClassName="bg-white text-slate-600 text-[10px] font-bold"
+              />
+            </Avatar>
+            <span className="text-[13px] text-white font-semibold drop-shadow-lg max-w-[120px] truncate">
+              {photo.profile?.name || t("roomPhotos.unknownUser")}
             </span>
           </div>
-        </div>
-
-        <div className="flex items-center gap-2 p-2.5 border-t border-slate-200">
-          <Avatar className="w-5 h-5 rounded-full shrink-0">
-            <OptimizedAvatarImage
-              src={photo.profile?.avatar_url}
-              alt={photo.profile?.name || ""}
-              context="card"
-              fallback={getInitials(photo.profile?.name || "?")}
-              fallbackClassName="bg-slate-100 text-slate-400 text-[8px] font-bold"
-            />
-          </Avatar>
-          <span className="text-[11px] text-slate-500 truncate">
-            {photo.profile?.name || t("roomPhotos.unknownUser")}
-          </span>
         </div>
       </div>
     </m.div>
@@ -129,27 +113,24 @@ function UploadCard({
 
   return (
     <m.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
     >
       <Button
         type="button"
-        variant="dashed"
+        variant="ghost"
         onClick={handleClick}
         disabled={isUploading}
-        className="w-full h-auto p-0 flex-col aspect-square bg-slate-100 hover:bg-slate-200 hover:border-slate-400"
+        className="w-full h-auto p-0 flex-col aspect-square bg-slate-100 hover:bg-slate-200 border-0 rounded-none"
       >
         {isUploading ? (
           <Spinner />
         ) : (
           <>
-            <Plus className="w-6 h-6 text-slate-400" />
-            <span className="text-[10px] text-slate-400 mt-1">
+            <Plus className="w-6 h-6 text-slate-400" strokeWidth={1.5} />
+            <span className="text-[11px] text-slate-400 mt-1.5 font-medium">
               {t("roomPhotos.uploadButton")}
-            </span>
-            <span className="text-[9px] text-slate-300 mt-0.5">
-              {t("roomPhotos.selectMultiple")}
             </span>
           </>
         )}
@@ -175,11 +156,11 @@ interface SectionHeaderProps {
 
 const SectionHeader = memo(function SectionHeader({ icon, title, count }: SectionHeaderProps) {
   return (
-    <div className="flex items-center gap-2 mb-4">
+    <div className="flex items-center gap-2 mb-5">
       <span className="text-slate-400">{icon}</span>
-      <h2 className="text-xs text-slate-900 tracking-wide uppercase">{title}</h2>
+      <h2 className="text-xs text-slate-900 tracking-wide uppercase font-medium">{title}</h2>
       {count !== undefined && (
-        <span className="text-[10px] text-slate-400 font-mono ml-auto">
+        <span className="text-[11px] text-slate-400 ml-1">
           {count}
         </span>
       )}
@@ -193,7 +174,7 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
   const t = useI18n();
   const router = useRouter();
   const { userId } = useUser();
-  const INITIAL_VISIBLE = 12;
+  const INITIAL_VISIBLE = 24;
   const [localPhotos, setLocalPhotos] = useState(photos);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
@@ -325,7 +306,8 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
           )}
         </AnimatePresence>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+        {/* Instagram-style grid: 3 columns, minimal gap */}
+        <div className="grid grid-cols-3 gap-[2px] sm:gap-1 bg-slate-200/50 rounded-sm overflow-hidden">
           {remainingTotal > 0 && (
             <UploadCard
               onSelectFiles={handleSelectFiles}
@@ -343,29 +325,23 @@ export function RoomPhotosGallery({ photos }: RoomPhotosGalleryProps) {
         </div>
 
         {hasMore && (
-          <div className="flex justify-center mt-6">
+          <div className="flex justify-center mt-8">
             <button
               type="button"
               onClick={handleShowMore}
-              className="h-10 px-8 rounded-full border border-slate-200 text-sm font-medium text-slate-500 hover:text-slate-700 hover:border-slate-300 transition-all duration-400 ease-out"
+              className="h-11 px-8 rounded-full border border-slate-200 text-sm font-medium text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:bg-slate-50 transition-all duration-200"
             >
               {t("roomPhotos.showMore", { count: remainingPhotos })}
             </button>
           </div>
         )}
 
-        {hasPhotos && (
-          <p className="text-[10px] text-slate-400 mt-4 tracking-wide">
-            {t("roomPhotos.clickToEnlarge")}
-          </p>
-        )}
-
-        <div className="mt-8 pt-6 border-t border-slate-50">
-          <p className="text-[10px] text-slate-400 leading-relaxed font-medium">
-            <span className="text-brand-500 font-bold mr-1">INFO:</span>
+        <div className="mt-10 pt-6 border-t border-slate-100">
+          <p className="text-[11px] text-slate-400 leading-relaxed">
+            <span className="text-brand-500 font-semibold mr-1">INFO</span>
             {t("roomPhotos.uploadLimit", { max: ROOM_PHOTOS.maxPhotosPerUser, bulk: effectiveBulkLimit })}
-            <br />
-            {t("roomPhotos.supportedFormats")} — {t("roomPhotos.uploadInstructions")}
+            <span className="mx-1.5 text-slate-300">·</span>
+            {t("roomPhotos.supportedFormats")}
           </p>
         </div>
 

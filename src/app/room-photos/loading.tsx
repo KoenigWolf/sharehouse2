@@ -12,12 +12,9 @@ export default function RoomPhotosLoading() {
                   <Skeleton className="h-5 w-64 mx-auto sm:mx-0" />
                </div>
 
-               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-                  {[...Array(12)].map((_, i) => (
-                     <div key={i} className="space-y-3">
-                        <Skeleton className="aspect-4/3 w-full rounded-2xl" />
-                        <Skeleton className="h-4 w-2/3 mx-auto sm:mx-0" />
-                     </div>
+               <div className="grid grid-cols-3 gap-[2px] sm:gap-1 bg-slate-200/50 rounded-sm overflow-hidden">
+                  {[...Array(24)].map((_, i) => (
+                     <Skeleton key={i} className="aspect-square w-full rounded-none" />
                   ))}
                </div>
             </div>
