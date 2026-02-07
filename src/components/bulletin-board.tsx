@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { m, AnimatePresence } from "framer-motion";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
-import { useI18n } from "@/hooks/use-i18n";
+import { useI18n, useLocale } from "@/hooks/use-i18n";
 import { createBulletin, deleteBulletin } from "@/lib/bulletin/actions";
 import { BULLETIN } from "@/lib/constants/config";
 import { getInitials } from "@/lib/utils";
@@ -22,13 +22,14 @@ interface BulletinBoardProps {
   isTeaser?: boolean;
 }
 
-function formatTimestamp(dateString: string): string {
+function formatTimestamp(dateString: string, locale: string): string {
   const date = new Date(dateString);
-  return date.toLocaleDateString("ja-JP", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" });
+  return date.toLocaleDateString(locale, { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
 export function BulletinBoard({ bulletins: initialBulletins, currentUserId, currentUserProfile, isTeaser = false }: BulletinBoardProps) {
   const t = useI18n();
+  const locale = useLocale();
   const router = useRouter();
   const [bulletins, setBulletins] = useState(initialBulletins);
   const [isEditing, setIsEditing] = useState(!isTeaser);
@@ -197,7 +198,7 @@ export function BulletinBoard({ bulletins: initialBulletins, currentUserId, curr
                       </span>
                     )}
                     <span className="text-[10px] font-bold text-slate-300 tracking-tight ml-auto">
-                      {formatTimestamp(bulletin.created_at)}
+                      {formatTimestamp(bulletin.created_at, locale)}
                     </span>
                   </div>
                   <p className={`text-[15px] font-medium text-slate-600 leading-relaxed ${isTeaser ? "blur-[2.5px] select-none" : ""}`}>
