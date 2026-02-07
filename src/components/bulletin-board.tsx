@@ -79,6 +79,9 @@ export function BulletinBoard({ bulletins: initialBulletins, currentUserId, curr
   }, [message, isSubmitting, router, t, currentUserId, currentUserProfile]);
 
   const handleDelete = useCallback(async (bulletinId: string) => {
+    // temp ID（楽観的更新中）の場合は削除をスキップ
+    if (bulletinId.startsWith("temp-")) return;
+
     if (!confirm(t("bulletin.deleteConfirm"))) return;
     setIsSubmitting(true);
 
@@ -206,7 +209,7 @@ export function BulletinBoard({ bulletins: initialBulletins, currentUserId, curr
                   </p>
                 </div>
 
-                {isMine && (
+                {isMine && !bulletin.id.startsWith("temp-") && (
                   <button
                     type="button"
                     onClick={() => handleDelete(bulletin.id)}
