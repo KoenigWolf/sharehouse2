@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import { logError } from "@/lib/errors";
 import { mockProfiles } from "@/lib/mock-data";
 import type { Profile } from "@/domain/profile";
@@ -25,10 +26,17 @@ export async function getProfilesWithMock(
   supabase: SupabaseClient,
   orderBy: string = "name",
 ): Promise<{ profiles: Profile[]; dbProfiles: Profile[] }> {
+  // Force dynamic rendering - ensures fresh data on every request
+  await connection();
+
   // 並列で取得を試みる
   const [profilesRes, bulletinsRes] = await Promise.all([
     supabase.from("profiles").select(PROFILE_BASE_COLUMNS).order(orderBy),
-    supabase.from("bulletins").select("user_id, message, updated_at").limit(100),
+    // DBビュー latest_bulletins_per_user は DISTINCT ON (user_id) で
+    // 各ユーザーの最新投稿1件のみを返す（DB側で重複排除済み）
+    supabase
+      .from("latest_bulletins_per_user")
+      .select("user_id, message, updated_at"),
   ]);
 
   if (profilesRes.error) {
@@ -38,15 +46,15 @@ export async function getProfilesWithMock(
     logError(bulletinsRes.error, { action: "getProfilesWithMock:bulletins" });
   }
 
-  // 掲示板データをマッピング
-  const vibeMap = new Map();
+  // ビューが既に各ユーザー1件のみ返すためそのままMapに格納
+  const vibeMap = new Map<string, { message: string; updated_at: string }>();
   if (bulletinsRes.data) {
-    bulletinsRes.data.forEach((b) => {
+    for (const b of bulletinsRes.data) {
       vibeMap.set(b.user_id, {
         message: b.message,
         updated_at: b.updated_at,
       });
-    });
+    }
   }
 
   const dbProfiles = (profilesRes.data ?? []).map((p) => ({
@@ -76,6 +84,9 @@ export async function getProfilesWithMock(
 export async function getPublicProfilesWithMock(
   supabase: SupabaseClient,
 ): Promise<{ profiles: PublicProfileTeaser[] }> {
+  // Force dynamic rendering - ensures fresh data on every request
+  await connection();
+
   const { data, error } = await supabase
     .from("residents_public_teaser")
     .select("*")

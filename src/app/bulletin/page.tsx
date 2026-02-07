@@ -6,6 +6,9 @@ import { MobileNav } from "@/components/mobile-nav";
 import { BulletinBoard } from "@/components/bulletin-board";
 import { getBulletins } from "@/lib/bulletin/actions";
 import { getServerTranslator } from "@/lib/i18n/server";
+import { logError } from "@/lib/errors";
+
+export const dynamic = "force-dynamic";
 
 export default async function BulletinPage() {
   const t = await getServerTranslator();
@@ -19,7 +22,16 @@ export default async function BulletinPage() {
     redirect("/login");
   }
 
-  const bulletins = await getBulletins();
+  const [bulletins, profileResult] = await Promise.all([
+    getBulletins(),
+    supabase.from("profiles").select("name, nickname, avatar_url, room_number").eq("id", user.id).single(),
+  ]);
+
+  if (profileResult.error) {
+    logError(profileResult.error, { action: "BulletinPage:fetchProfile", userId: user.id });
+  }
+
+  const currentUserProfile = profileResult.data ?? undefined;
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
@@ -37,6 +49,7 @@ export default async function BulletinPage() {
           <BulletinBoard
             bulletins={bulletins}
             currentUserId={user.id}
+            currentUserProfile={currentUserProfile}
           />
         </div>
       </main>
