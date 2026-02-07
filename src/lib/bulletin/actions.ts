@@ -56,6 +56,7 @@ export async function getBulletins(): Promise<BulletinWithProfile[]> {
 
 /**
  * 各ユーザーの最新投稿のみ取得（/residents ページ用、上書き型）
+ * DB側で DISTINCT ON により重複排除済み
  */
 export async function getLatestBulletinPerUser(): Promise<Map<string, { message: string; updated_at: string }>> {
   await connection();
@@ -63,27 +64,23 @@ export async function getLatestBulletinPerUser(): Promise<Map<string, { message:
   try {
     const supabase = await createClient();
 
-    // DISTINCT ON で各ユーザーの最新投稿を取得
+    // DBビュー latest_bulletins_per_user は DISTINCT ON (user_id) で
+    // 各ユーザーの最新投稿1件のみを返す
     const { data, error } = await supabase
-      .from("bulletins")
-      .select("user_id, message, updated_at")
-      .order("user_id")
-      .order("created_at", { ascending: false });
+      .from("latest_bulletins_per_user")
+      .select("user_id, message, updated_at");
 
     if (error) {
       logError(error, { action: "getLatestBulletinPerUser" });
       return new Map();
     }
 
-    // 各ユーザーの最新投稿のみをMapに格納
     const latestByUser = new Map<string, { message: string; updated_at: string }>();
     for (const bulletin of data ?? []) {
-      if (!latestByUser.has(bulletin.user_id)) {
-        latestByUser.set(bulletin.user_id, {
-          message: bulletin.message,
-          updated_at: bulletin.updated_at,
-        });
-      }
+      latestByUser.set(bulletin.user_id, {
+        message: bulletin.message,
+        updated_at: bulletin.updated_at,
+      });
     }
 
     return latestByUser;
@@ -150,15 +147,27 @@ export async function deleteBulletin(bulletinId: string): Promise<ActionResponse
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { error: t("errors.unauthorized") };
 
-    // RLS が user_id をチェックするが、念のため明示的にチェック
-    const { error } = await supabase
+    // 削除結果を取得して実際に削除されたか確認
+    const { data, error } = await supabase
       .from("bulletins")
       .delete()
       .eq("id", bulletinId)
-      .eq("user_id", user.id);
+      .eq("user_id", user.id)
+      .select("id")
+      .maybeSingle();
 
     if (error) {
       logError(error, { action: "deleteBulletin", userId: user.id, metadata: { bulletinId } });
+      return { error: t("errors.deleteFailed") };
+    }
+
+    // 削除対象が見つからなかった場合
+    if (!data) {
+      logError(new Error("Bulletin not found or not owned by user"), {
+        action: "deleteBulletin:notFound",
+        userId: user.id,
+        metadata: { bulletinId },
+      });
       return { error: t("errors.deleteFailed") };
     }
 
