@@ -30,11 +30,6 @@ export const UploadCard = memo(function UploadCard({
   disabled = false,
 }: UploadCardProps) {
   const t = useI18n();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleClick = useCallback(() => {
-    fileInputRef.current?.click();
-  }, []);
 
   const handleFileChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,13 +52,13 @@ export const UploadCard = memo(function UploadCard({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+      className="relative"
     >
       <Button
         type="button"
         variant="ghost"
-        onClick={handleClick}
         disabled={isDisabled}
-        className="w-full h-auto p-0 flex-col aspect-square bg-slate-100 hover:bg-slate-200 border-0 rounded-none disabled:opacity-50"
+        className="w-full h-auto p-0 flex-col aspect-square bg-slate-100 border-0 rounded-none disabled:opacity-50 pointer-events-none"
         aria-label={t("roomPhotos.uploadButton")}
         aria-busy={isUploading}
       >
@@ -84,14 +79,14 @@ export const UploadCard = memo(function UploadCard({
       </Button>
 
       <input
-        ref={fileInputRef}
         type="file"
         accept={FILE_UPLOAD.inputAccept}
         multiple
         onChange={handleFileChange}
-        className="hidden"
-        aria-hidden="true"
-        tabIndex={-1}
+        disabled={isDisabled}
+        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10"
+        aria-label={t("roomPhotos.uploadButton")}
+        title={t("roomPhotos.uploadButton")}
       />
     </m.div>
   );

@@ -32,7 +32,7 @@ interface Feedback {
   message: string;
 }
 
-const CONCURRENCY = 5;
+const CONCURRENCY = 2; // Reduced from 5 for better stability on mobile devices
 
 /**
  * 一括アップロードフック
