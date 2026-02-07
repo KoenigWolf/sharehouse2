@@ -45,33 +45,50 @@ export async function enforceAllowedOrigin(
 ): Promise<string | null> {
   const origin = await getRequestOrigin();
 
+  // No origin header = same-origin request (allowed)
   if (!origin) {
     return null;
   }
 
   const allowedOrigins = getAllowedOrigins();
-  if (!validateOrigin(origin, allowedOrigins)) {
-    const host = await getRequestHost();
-    if (host) {
-      try {
-        const originHost = new URL(origin).host;
-        const requestHost = new URL(`http://${host}`).host;
-        if (originHost === requestHost) {
-          return null;
-        }
-      } catch {
-        // Fall through to rejection below.
-      }
-    }
-
-    auditLog({
-      timestamp: new Date().toISOString(),
-      eventType: AuditEventType.SECURITY_UNAUTHORIZED_ACCESS,
-      action: `Blocked ${actionName} from origin: ${origin}`,
-      outcome: "failure",
-    });
-    return t("errors.forbidden");
+  if (validateOrigin(origin, allowedOrigins)) {
+    return null;
   }
 
-  return null;
+  // Fallback: compare origin host with request host
+  const host = await getRequestHost();
+  if (host) {
+    try {
+      const originHost = new URL(origin).host;
+      // Host header may or may not include port, normalize both
+      const requestHost = host.includes("://")
+        ? new URL(host).host
+        : new URL(`http://${host}`).host;
+      if (originHost === requestHost) {
+        return null;
+      }
+    } catch {
+      // Fall through to rejection below.
+    }
+  }
+
+  // Development fallback: allow localhost origins in development
+  if (process.env.NODE_ENV === "development") {
+    try {
+      const originUrl = new URL(origin);
+      if (originUrl.hostname === "localhost" || originUrl.hostname === "127.0.0.1") {
+        return null;
+      }
+    } catch {
+      // Invalid URL, continue to rejection
+    }
+  }
+
+  auditLog({
+    timestamp: new Date().toISOString(),
+    eventType: AuditEventType.SECURITY_UNAUTHORIZED_ACCESS,
+    action: `Blocked ${actionName} from origin: ${origin}`,
+    outcome: "failure",
+  });
+  return t("errors.forbidden");
 }
