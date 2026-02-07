@@ -38,9 +38,7 @@ export const UploadCard = memo(function UploadCard({
         onSelectFiles(Array.from(files));
       }
       // Reset input to allow selecting the same file again
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
+      e.target.value = "";
     },
     [onSelectFiles]
   );
