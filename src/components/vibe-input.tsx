@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { m, AnimatePresence } from "framer-motion";
 import { MessageCircle } from "lucide-react";
 import { useI18n } from "@/hooks/use-i18n";
-import { upsertBulletin } from "@/lib/bulletin/actions";
+import { createBulletin } from "@/lib/bulletin/actions";
 import { BULLETIN } from "@/lib/constants/config";
 import { Spinner } from "@/components/ui/spinner";
 
@@ -41,23 +41,24 @@ export function VibeInput({ currentVibe = "", isLoggedIn }: VibeInputProps) {
       setIsSubmitting(true);
       setError(null);
 
-      const result = await upsertBulletin(trimmed);
+      const result = await createBulletin(trimmed);
       setIsSubmitting(false);
 
       if ("error" in result) {
          setError(result.error);
       } else {
+         setMessage(trimmed);
          setIsFocused(false);
          router.refresh();
       }
-   }, [message, currentVibe, isSubmitting, router]);
+   }, [message, currentVibe, router]);
 
    if (!isLoggedIn) return null;
 
    return (
       <div className="w-full">
          <div
-            className={`premium-surface rounded-2xl transition-all duration-300 bg-white border ${isFocused ? "ring-2 ring-brand-500/20 border-brand-500 shadow-lg" : "border-slate-100 hover:border-slate-200"
+            className={`premium-surface rounded-xl transition-all duration-300 bg-white border ${isFocused ? "ring-2 ring-brand-500/20 border-brand-500 shadow-lg" : "border-slate-100 hover:border-slate-200"
                }`}
          >
             <div className="p-4 sm:p-5 flex flex-col gap-3">

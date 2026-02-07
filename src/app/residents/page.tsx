@@ -9,6 +9,8 @@ import { getLatestScheduledMatch } from "@/lib/tea-time/actions";
 import { getServerTranslator } from "@/lib/i18n/server";
 import { getProfilesWithMock, getPublicProfilesWithMock } from "@/lib/residents/queries";
 
+export const dynamic = "force-dynamic";
+
 export default async function ResidentsPage() {
   const t = await getServerTranslator();
   const supabase = await createClient();
