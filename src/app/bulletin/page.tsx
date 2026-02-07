@@ -7,6 +7,8 @@ import { BulletinBoard } from "@/components/bulletin-board";
 import { getBulletins } from "@/lib/bulletin/actions";
 import { getServerTranslator } from "@/lib/i18n/server";
 
+export const dynamic = "force-dynamic";
+
 export default async function BulletinPage() {
   const t = await getServerTranslator();
   const supabase = await createClient();
@@ -19,7 +21,12 @@ export default async function BulletinPage() {
     redirect("/login");
   }
 
-  const bulletins = await getBulletins();
+  const [bulletins, profileResult] = await Promise.all([
+    getBulletins(),
+    supabase.from("profiles").select("name, nickname, avatar_url, room_number").eq("id", user.id).single(),
+  ]);
+
+  const currentUserProfile = profileResult.data ?? undefined;
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
@@ -37,6 +44,7 @@ export default async function BulletinPage() {
           <BulletinBoard
             bulletins={bulletins}
             currentUserId={user.id}
+            currentUserProfile={currentUserProfile}
           />
         </div>
       </main>

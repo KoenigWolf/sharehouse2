@@ -1,5 +1,6 @@
 "use server";
 
+import { connection } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { CacheStrategy } from "@/lib/utils/cache";
 import { BULLETIN } from "@/lib/constants/config";
@@ -10,29 +11,94 @@ import type { BulletinWithProfile } from "@/domain/bulletin";
 
 type ActionResponse = { success: true } | { error: string };
 
+/**
+ * 全ての投稿を取得（/bulletin ページ用、Twitter型）
+ */
 export async function getBulletins(): Promise<BulletinWithProfile[]> {
+  await connection();
+
   try {
     const supabase = await createClient();
-    const { data, error } = await supabase
-      .from("bulletins")
-      .select("*, profiles(name, nickname, avatar_url, room_number)")
-      .order("updated_at", { ascending: false })
-      .limit(BULLETIN.maxDisplayOnHome);
 
-    if (error || !data) {
-      if (error) logError(error, { action: "getBulletins" });
+    const [bulletinsRes, profilesRes] = await Promise.all([
+      supabase
+        .from("bulletins")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(BULLETIN.maxDisplayOnHome),
+      supabase
+        .from("profiles")
+        .select("id, name, nickname, avatar_url, room_number"),
+    ]);
+
+    if (bulletinsRes.error) {
+      logError(bulletinsRes.error, { action: "getBulletins:bulletins" });
       return [];
     }
-    return data as BulletinWithProfile[];
+
+    if (profilesRes.error) {
+      logError(profilesRes.error, { action: "getBulletins:profiles" });
+    }
+
+    const profilesMap = new Map(
+      (profilesRes.data ?? []).map((p) => [p.id, p])
+    );
+
+    return (bulletinsRes.data ?? []).map((bulletin) => ({
+      ...bulletin,
+      profiles: profilesMap.get(bulletin.user_id) ?? null,
+    })) as BulletinWithProfile[];
   } catch (error) {
     logError(error, { action: "getBulletins" });
     return [];
   }
 }
 
-export async function upsertBulletin(message: string): Promise<ActionResponse> {
+/**
+ * 各ユーザーの最新投稿のみ取得（/residents ページ用、上書き型）
+ */
+export async function getLatestBulletinPerUser(): Promise<Map<string, { message: string; updated_at: string }>> {
+  await connection();
+
+  try {
+    const supabase = await createClient();
+
+    // DISTINCT ON で各ユーザーの最新投稿を取得
+    const { data, error } = await supabase
+      .from("bulletins")
+      .select("user_id, message, updated_at")
+      .order("user_id")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      logError(error, { action: "getLatestBulletinPerUser" });
+      return new Map();
+    }
+
+    // 各ユーザーの最新投稿のみをMapに格納
+    const latestByUser = new Map<string, { message: string; updated_at: string }>();
+    for (const bulletin of data ?? []) {
+      if (!latestByUser.has(bulletin.user_id)) {
+        latestByUser.set(bulletin.user_id, {
+          message: bulletin.message,
+          updated_at: bulletin.updated_at,
+        });
+      }
+    }
+
+    return latestByUser;
+  } catch (error) {
+    logError(error, { action: "getLatestBulletinPerUser" });
+    return new Map();
+  }
+}
+
+/**
+ * 新規投稿を作成（Twitter型：積み重ね）
+ */
+export async function createBulletin(message: string): Promise<ActionResponse> {
   const t = await getServerTranslator();
-  const originError = await enforceAllowedOrigin(t, "upsertBulletin");
+  const originError = await enforceAllowedOrigin(t, "createBulletin");
   if (originError) return { error: originError };
 
   try {
@@ -46,29 +112,35 @@ export async function upsertBulletin(message: string): Promise<ActionResponse> {
       return { error: t("errors.invalidInput") };
     }
 
-    const { error } = await supabase.from("bulletins").upsert(
-      {
+    const { data, error } = await supabase
+      .from("bulletins")
+      .insert({
         user_id: user.id,
         message: trimmed,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "user_id" }
-    );
+      })
+      .select("id")
+      .single();
 
-    if (error) {
-      logError(error, { action: "upsertBulletin", userId: user.id });
+    if (error || !data) {
+      logError(error ?? new Error("No data returned from insert"), {
+        action: "createBulletin",
+        userId: user.id,
+      });
       return { error: t("errors.saveFailed") };
     }
 
     CacheStrategy.afterBulletinUpdate();
     return { success: true };
   } catch (error) {
-    logError(error, { action: "upsertBulletin" });
+    logError(error, { action: "createBulletin" });
     return { error: t("errors.serverError") };
   }
 }
 
-export async function deleteBulletin(): Promise<ActionResponse> {
+/**
+ * 投稿を削除（自分の投稿のみ削除可能）
+ */
+export async function deleteBulletin(bulletinId: string): Promise<ActionResponse> {
   const t = await getServerTranslator();
   const originError = await enforceAllowedOrigin(t, "deleteBulletin");
   if (originError) return { error: originError };
@@ -78,13 +150,15 @@ export async function deleteBulletin(): Promise<ActionResponse> {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { error: t("errors.unauthorized") };
 
+    // RLS が user_id をチェックするが、念のため明示的にチェック
     const { error } = await supabase
       .from("bulletins")
       .delete()
+      .eq("id", bulletinId)
       .eq("user_id", user.id);
 
     if (error) {
-      logError(error, { action: "deleteBulletin", userId: user.id });
+      logError(error, { action: "deleteBulletin", userId: user.id, metadata: { bulletinId } });
       return { error: t("errors.deleteFailed") };
     }
 

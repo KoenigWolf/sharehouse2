@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { m, AnimatePresence } from "framer-motion";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { useI18n } from "@/hooks/use-i18n";
-import { upsertBulletin, deleteBulletin } from "@/lib/bulletin/actions";
+import { createBulletin, deleteBulletin } from "@/lib/bulletin/actions";
 import { BULLETIN } from "@/lib/constants/config";
 import { getInitials } from "@/lib/utils";
 import type { BulletinWithProfile } from "@/domain/bulletin";
@@ -13,46 +13,61 @@ import type { BulletinWithProfile } from "@/domain/bulletin";
 interface BulletinBoardProps {
   bulletins: BulletinWithProfile[];
   currentUserId: string;
+  currentUserProfile?: {
+    name: string;
+    nickname: string | null;
+    avatar_url: string | null;
+    room_number: string | null;
+  };
   isTeaser?: boolean;
 }
 
-function formatTimeAgo(dateString: string): string {
-  const now = Date.now();
-  const then = new Date(dateString).getTime();
-  const diffMs = now - then;
-  const diffMin = Math.floor(diffMs / 60000);
-
-  if (diffMin < 1) return "now";
-  if (diffMin < 60) return `${diffMin}m`;
-  const diffHours = Math.floor(diffMin / 60);
-  if (diffHours < 24) return `${diffHours}h`;
-  const diffDays = Math.floor(diffHours / 24);
-  return `${diffDays}d`;
+function formatTimestamp(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("ja-JP", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
-export function BulletinBoard({ bulletins, currentUserId, isTeaser = false }: BulletinBoardProps) {
+export function BulletinBoard({ bulletins: initialBulletins, currentUserId, currentUserProfile, isTeaser = false }: BulletinBoardProps) {
   const t = useI18n();
   const router = useRouter();
-  const [isEditing, setIsEditing] = useState(false);
+  const [bulletins, setBulletins] = useState(initialBulletins);
+  const [isEditing, setIsEditing] = useState(!isTeaser);
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
-  const myBulletin = bulletins.find((b) => b.user_id === currentUserId);
+  // Sync with server data
+  useEffect(() => {
+    setBulletins(initialBulletins);
+  }, [initialBulletins]);
 
   const handlePost = useCallback(async () => {
     if (!message.trim() || isSubmitting) return;
     setIsSubmitting(true);
     setFeedback(null);
 
+    const trimmedMessage = message.trim();
+
     try {
-      const result = await upsertBulletin(message);
+      const result = await createBulletin(trimmedMessage);
 
       if ("error" in result) {
         setFeedback({ type: "error", message: result.error });
         return;
       }
-      setIsEditing(false);
+
+      // Optimistic update: add new bulletin to the top
+      const now = new Date().toISOString();
+      const newBulletin: BulletinWithProfile = {
+        id: `temp-${Date.now()}`,
+        user_id: currentUserId,
+        message: trimmedMessage,
+        created_at: now,
+        updated_at: now,
+        profiles: currentUserProfile ?? null,
+      };
+
+      setBulletins((prev) => [newBulletin, ...prev]);
       setMessage("");
       router.refresh();
     } catch {
@@ -60,18 +75,20 @@ export function BulletinBoard({ bulletins, currentUserId, isTeaser = false }: Bu
     } finally {
       setIsSubmitting(false);
     }
-  }, [message, isSubmitting, router, t]);
+  }, [message, isSubmitting, router, t, currentUserId, currentUserProfile]);
 
-  const handleDelete = useCallback(async () => {
+  const handleDelete = useCallback(async (bulletinId: string) => {
     if (!confirm(t("bulletin.deleteConfirm"))) return;
     setIsSubmitting(true);
 
     try {
-      const result = await deleteBulletin();
+      const result = await deleteBulletin(bulletinId);
 
       if ("error" in result) {
         setFeedback({ type: "error", message: result.error });
       } else {
+        // Optimistic update: remove the bulletin
+        setBulletins((prev) => prev.filter((b) => b.id !== bulletinId));
         router.refresh();
       }
     } catch {
@@ -81,26 +98,8 @@ export function BulletinBoard({ bulletins, currentUserId, isTeaser = false }: Bu
     }
   }, [t, router]);
 
-  const handleStartEdit = useCallback(() => {
-    setMessage(myBulletin?.message || "");
-    setIsEditing(true);
-    setFeedback(null);
-  }, [myBulletin]);
-
   return (
     <div className="space-y-6">
-      {!isEditing && !isTeaser && (
-        <div className="flex justify-end">
-          <button
-            type="button"
-            onClick={handleStartEdit}
-            className="h-9 px-5 rounded-full bg-brand-500 hover:bg-brand-700 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
-          >
-            {myBulletin ? t("bulletin.update") : t("bulletin.post")}
-          </button>
-        </div>
-      )}
-
       <AnimatePresence>
         {feedback && (
           <m.div
@@ -127,7 +126,7 @@ export function BulletinBoard({ bulletins, currentUserId, isTeaser = false }: Bu
             transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
             className="overflow-hidden"
           >
-            <div className="premium-surface rounded-3xl p-6 sm:p-8 space-y-4">
+            <div className="premium-surface rounded p-5 sm:p-6 space-y-4">
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
@@ -140,23 +139,14 @@ export function BulletinBoard({ bulletins, currentUserId, isTeaser = false }: Bu
                 <span className="text-[10px] font-bold text-slate-300 tracking-widest">
                   {message.length}/{BULLETIN.maxMessageLength}
                 </span>
-                <div className="flex gap-3">
-                  <button
-                    type="button"
-                    onClick={() => { setIsEditing(false); setMessage(""); }}
-                    className="h-9 px-5 rounded-full text-[11px] font-bold text-slate-400 hover:text-slate-600 tracking-wider uppercase transition-all duration-300"
-                  >
-                    {t("common.cancel")}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handlePost}
-                    disabled={!message.trim() || isSubmitting}
-                    className="h-9 px-7 rounded-full bg-brand-500 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
-                  >
-                    {isSubmitting ? t("common.processing") : t("bulletin.post")}
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={handlePost}
+                  disabled={!message.trim() || isSubmitting}
+                  className="h-9 px-7 rounded-full bg-brand-500 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
+                >
+                  {isSubmitting ? t("common.processing") : t("bulletin.post")}
+                </button>
               </div>
             </div>
           </m.div>
@@ -207,7 +197,7 @@ export function BulletinBoard({ bulletins, currentUserId, isTeaser = false }: Bu
                       </span>
                     )}
                     <span className="text-[10px] font-bold text-slate-300 tracking-tight ml-auto">
-                      {formatTimeAgo(bulletin.updated_at)}
+                      {formatTimestamp(bulletin.created_at)}
                     </span>
                   </div>
                   <p className={`text-[15px] font-medium text-slate-600 leading-relaxed ${isTeaser ? "blur-[2.5px] select-none" : ""}`}>
@@ -218,7 +208,7 @@ export function BulletinBoard({ bulletins, currentUserId, isTeaser = false }: Bu
                 {isMine && (
                   <button
                     type="button"
-                    onClick={handleDelete}
+                    onClick={() => handleDelete(bulletin.id)}
                     disabled={isSubmitting}
                     className="absolute top-4 right-4 text-[10px] font-bold text-slate-200 hover:text-error opacity-0 group-hover:opacity-100 transition-all uppercase tracking-widest p-2"
                   >
