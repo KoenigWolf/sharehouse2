@@ -1,76 +1,39 @@
 /**
  * Design Tokens - Share House Portal
  *
- * Warm Cottage / Farmhouse Style
- * 温かみのある、親しみやすいデザイン
+ * 構造的トークン（角丸、影、スペーシング、トランジション）のみ定義。
+ * カラーは themes.css で管理し、テーマごとに切り替え可能にする。
  */
 
 :root {
   /* ========================================
-   * カラーパレット（Warm Cottage）
+   * 角丸（Border Radius）- デフォルト値
+   * テーマごとに themes.css で上書き可能
    * ======================================== */
-
-  /* 背景色 - 温かみのあるクリーム/アイボリー */
-  --color-bg-base: #FAF8F3;        /* ページ背景 */
-  --color-bg-surface: #FFFDF9;     /* カード背景 */
-  --color-bg-muted: #F3EFE7;       /* セクション背景 */
-
-  /* ブランドカラー - セージグリーン */
-  --color-brand-50: #F4F6F2;
-  --color-brand-100: #E5EAE0;
-  --color-brand-200: #CDD7C4;
-  --color-brand-300: #A8B99A;
-  --color-brand-400: #8A9E78;
-  --color-brand-500: #6B7B5F;       /* メイン */
-  --color-brand-600: #566447;
-  --color-brand-700: #454F3A;
-  --color-brand-800: #3A4232;
-  --color-brand-900: #32382C;
-
-  /* テキスト - 温かみのあるブラウン系 */
-  --color-text-primary: #3D3929;    /* 見出し */
-  --color-text-body: #5C5647;       /* 本文 */
-  --color-text-muted: #8B8475;      /* 補助テキスト */
-  --color-text-placeholder: #B5AFA3;
-
-  /* ボーダー */
-  --color-border: #E8E2D6;
-  --color-border-light: #F0EBE1;
-
-  /* ステータス */
-  --color-success: #5D7A53;
-  --color-success-bg: #F0F5ED;
-  --color-success-border: #B5CDAA;
-  --color-error: #9B5B5B;
-  --color-error-bg: #FAF0F0;
-  --color-error-border: #D4ABAB;
-
-  /* ========================================
-   * 角丸（Border Radius）- より柔らかく
-   * ======================================== */
-  --radius-card: 1.25rem;
-  --radius-container: 1.5rem;
-  --radius-button: 2rem;
+  --radius-card: 1rem;
+  --radius-container: 1.25rem;
+  --radius-button: 9999px;
   --radius-input: 0.75rem;
-  --radius-badge: 1rem;
+  --radius-badge: 0.375rem;
   --radius-modal: 1.5rem;
 
   /* ========================================
-   * シャドウ（Box Shadow）- 柔らかい影
+   * シャドウ（Box Shadow）- デフォルト値
+   * utilities.css で使用。テーマごとに themes.css で上書き可能
    * ======================================== */
-  --shadow-card: 0 4px 20px -4px rgb(61 57 41 / 0.08),
-                 0 2px 8px -2px rgb(61 57 41 / 0.04);
-  --shadow-card-hover: 0 12px 32px -8px rgb(61 57 41 / 0.12),
-                       0 4px 12px -4px rgb(61 57 41 / 0.06);
-  --shadow-elevated: 0 16px 48px -12px rgb(61 57 41 / 0.15);
-  --shadow-dropdown: 0 8px 24px -4px rgb(61 57 41 / 0.1);
+  --shadow-card: 0 4px 20px -4px rgb(0 0 0 / 0.08),
+                 0 2px 8px -2px rgb(0 0 0 / 0.04);
+  --shadow-card-hover: 0 12px 32px -8px rgb(0 0 0 / 0.12),
+                       0 4px 12px -4px rgb(0 0 0 / 0.06);
+  --shadow-elevated: 0 16px 48px -12px rgb(0 0 0 / 0.15);
+  --shadow-dropdown: 0 8px 24px -4px rgb(0 0 0 / 0.1);
 
   /* ========================================
    * スペーシング（Spacing）
    * ======================================== */
-  --spacing-card: 1.75rem;
-  --spacing-section: 2.5rem;
-  --spacing-page: 1.25rem;
+  --spacing-card: 1.5rem;
+  --spacing-section: 2rem;
+  --spacing-page: 1rem;
 
   /* ========================================
    * トランジション（Transition）
@@ -91,16 +54,4 @@
   --z-dropdown: 50;
   --z-modal: 100;
   --z-toast: 150;
-}
-
-/* ダークモード */
-.dark {
-  --color-bg-base: #1C1B18;
-  --color-bg-surface: #262520;
-  --color-bg-muted: #2E2D28;
-  --color-text-primary: #F5F3EE;
-  --color-text-body: #D4D0C6;
-  --color-text-muted: #9B9588;
-  --color-border: #3D3B35;
-  --shadow-card: 0 4px 20px -4px rgb(0 0 0 / 0.3);
 }

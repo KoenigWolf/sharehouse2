@@ -191,29 +191,29 @@
   --radius-badge: 1rem;
 }
 
-/* Cottage theme dark mode */
+/* Cottage theme dark mode - Olive green identity preserved */
 .theme-cottage.dark,
 :root[data-theme="cottage"].dark {
-  --background: #0a0a0a;
-  --foreground: #fafafa;
-  --card: #171717;
-  --card-foreground: #fafafa;
-  --popover: #171717;
-  --popover-foreground: #fafafa;
-  --primary: #34d399;
-  --primary-foreground: #0a0a0a;
-  --secondary: #27272a;
-  --secondary-foreground: #fafafa;
-  --muted: #27272a;
-  --muted-foreground: #a1a1aa;
-  --accent: #10b981;
-  --accent-foreground: #0a0a0a;
-  --destructive: #ef4444;
-  --border: #3f3f46;
-  --input: #3f3f46;
-  --ring: #34d399;
+  --background: #121210;
+  --foreground: #f5f3ee;
+  --card: #1c1b18;
+  --card-foreground: #f5f3ee;
+  --popover: #1c1b18;
+  --popover-foreground: #f5f3ee;
+  --primary: #9cbd92;
+  --primary-foreground: #1c1b18;
+  --secondary: #2a2924;
+  --secondary-foreground: #f5f3ee;
+  --muted: #2a2924;
+  --muted-foreground: #9b9588;
+  --accent: #d4a85a;
+  --accent-foreground: #1c1b18;
+  --destructive: #c47070;
+  --border: #3d3b35;
+  --input: #3d3b35;
+  --ring: #9cbd92;
 
-  --sidebar: #171717;
-  --sidebar-foreground: #fafafa;
-  --sidebar-border: #3f3f46;
+  --sidebar: #1c1b18;
+  --sidebar-foreground: #f5f3ee;
+  --sidebar-border: #3d3b35;
 }

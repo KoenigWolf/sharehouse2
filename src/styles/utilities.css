@@ -283,46 +283,17 @@
   /* premium-surface は globals.css で維持（既存コードとの互換性） */
 }
 
-/* ダークモード対応 */
+/* ダークモード対応 - セマンティックカラーで自動対応されない差分のみ */
 @layer utilities {
-
-  .dark .card-base,
-  .dark .card-interactive,
-  .dark .card-elevated {
-    @apply bg-card border-border;
-  }
-
+  /* 入力欄の背景を少し明るく（視認性向上） */
   .dark .input-base,
   .dark .textarea-base,
   .dark .select-base {
-    @apply bg-input/20 border-input text-foreground placeholder:text-muted-foreground;
+    @apply bg-input/20;
   }
 
   .dark .select-base {
-    /* Lighter chevron for dark mode visibility */
+    /* ダークモード用の明るいシェブロン */
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-  }
-
-  .dark .heading-page,
-  .dark .heading-section,
-  .dark .heading-card {
-    @apply text-foreground;
-  }
-
-  .dark .text-body {
-    @apply text-foreground/80;
-  }
-
-  .dark .text-muted,
-  .dark .label-uppercase {
-    @apply text-muted-foreground;
-  }
-
-  .dark .badge-default {
-    @apply bg-secondary text-secondary-foreground;
-  }
-
-  .dark .alert-info {
-    @apply bg-secondary border-muted-foreground/30 text-foreground;
   }
 }
