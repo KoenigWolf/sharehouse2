@@ -85,7 +85,7 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
                 transition-all duration-500 rounded-2xl overflow-hidden shadow-sm
                 ${isActive
                   ? `${floorColors.bg} ${floorColors.text} shadow-xl shadow-brand-100 ring-4 ring-brand-500/10`
-                  : "bg-secondary text-foreground hover:bg-muted hover:text-foreground/80 border border-border"
+                  : "bg-slate-50 text-slate-900 hover:bg-muted hover:text-foreground/80 border border-border"
                 }
                 active:scale-[0.96]
               `}
@@ -210,8 +210,8 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
               aria-modal="true"
               aria-label={selectedRoom}
             >
-              <div className="glass border border-white/20 shadow-2xl rounded-3xl p-6 relative overflow-hidden">
-                <div className="absolute inset-0 bg-white/40" />
+              <div className="glass border border-border/20 shadow-2xl rounded-3xl p-6 relative overflow-hidden">
+                <div className="absolute inset-0 bg-card/40" />
 
                 <div className="relative">
                   <button
