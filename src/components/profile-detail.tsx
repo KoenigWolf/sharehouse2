@@ -48,13 +48,22 @@ function MBTIBadge({ mbti, className = "" }: { mbti: string; className?: string 
   const label = t(`mbtiTypes.${mbti}.label` as Parameters<typeof t>[0]);
 
   return (
-    <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all hover:shadow-sm ${colors.bg} ${colors.text} ${colors.border} ${className}`}>
+    <span className={`
+      relative inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all duration-300
+      ${colors.bg} ${colors.text} ${colors.border}
+      shadow-sm hover:shadow-md hover:scale-[1.02]
+      overflow-hidden group
+      ${className}
+    `}>
+      {/* Glow effect on hover */}
+      <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%]`} />
+
       <svg className={`w-3.5 h-3.5 ${colors.icon}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
       </svg>
       <div className="flex items-baseline gap-1.5">
-        <span className="font-bold tracking-wider text-[13px]">{mbti}</span>
-        <span className="text-[10px] opacity-70 font-medium">
+        <span className="font-bold tracking-wider text-[13px] font-mono">{mbti}</span>
+        <span className="text-[10px] opacity-80 font-medium tracking-wide">
           {label}
         </span>
       </div>
@@ -71,29 +80,67 @@ function MBTIDetail({ mbti }: { mbti: string }) {
   const traitsStr = t(`mbtiTypes.${mbti}.traits` as Parameters<typeof t>[0]);
   const traits = traitsStr.split(", ");
 
+  const groupLabel = t(`mbtiGroups.${group}` as Parameters<typeof t>[0]);
+
   return (
-    <div className={`p-4 rounded-xl border ${colors.bg} ${colors.border}`}>
-      <div className="flex items-center gap-2 mb-3">
-        <svg className={`w-4 h-4 ${colors.icon}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
-        </svg>
-        <span className={`font-bold text-[15px] ${colors.text}`}>{mbti}</span>
-        <span className={`text-sm opacity-70 ${colors.text}`}>{label}</span>
+    <div className={`relative overflow-hidden rounded-3xl border ${colors.border} bg-gradient-to-br from-white/80 to-white/40 dark:from-black/40 dark:to-black/20 backdrop-blur-xl shadow-lg transition-all hover:shadow-xl group`}>
+      {/* Decorative Background Watermark */}
+      <div className={`absolute -right-6 -bottom-6 text-[120px] font-black opacity-[0.07] select-none pointer-events-none leading-none tracking-tighter transition-transform duration-700 ease-out group-hover:scale-110 group-hover:rotate-[-5deg] ${colors.text}`}>
+        {mbti}
       </div>
 
-      <p className={`text-sm leading-relaxed mb-3 ${colors.text} opacity-90`}>
-        {summary}
-      </p>
+      {/* Decorative Blob */}
+      <div className={`absolute top-0 right-0 w-64 h-64 ${colors.bg} rounded-full blur-3xl opacity-40 -mr-20 -mt-20 pointer-events-none`} />
 
-      <div className="flex flex-wrap gap-2">
-        {traits.map((trait) => (
-          <span
-            key={trait}
-            className={`text-xs px-2.5 py-1 rounded-full ${colors.bg} ${colors.text} border ${colors.border} font-medium`}
-          >
-            {trait}
-          </span>
-        ))}
+      <div className="relative p-6 sm:p-7">
+        <div className="flex flex-col gap-6">
+          {/* Header Section */}
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className={`w-14 h-14 rounded-2xl ${colors.bg} border ${colors.border} flex items-center justify-center shadow-inner`}>
+                <svg className={`w-7 h-7 ${colors.icon} drop-shadow-sm`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
+                </svg>
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-0.5">
+                  <h3 className={`text-2xl font-bold tracking-tight ${colors.text} font-mono`}>{mbti}</h3>
+                  <span className={`px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest rounded-full border ${colors.border} ${colors.bg} ${colors.text} opacity-80`}>
+                    {groupLabel}
+                  </span>
+                </div>
+                <p className={`text-sm font-medium ${colors.text} opacity-90`}>{label}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Traits */}
+          <div className="flex flex-wrap gap-2">
+            {traits.map((trait) => (
+              <span
+                key={trait}
+                className={`
+                  text-xs px-3 py-1.5 rounded-lg
+                  bg-white/50 dark:bg-black/20
+                  border border-black/5 dark:border-white/10
+                  ${colors.text} font-medium tracking-wide
+                  backdrop-blur-sm
+                  transition-all hover:scale-105 cursor-default
+                `}
+              >
+                {trait}
+              </span>
+            ))}
+          </div>
+
+          {/* Samesize separator line */}
+          <div className={`h-px w-full ${colors.border} opacity-50`} />
+
+          {/* Summary */}
+          <p className={`text-sm leading-[1.8] ${colors.text} opacity-90 font-medium`}>
+            {summary}
+          </p>
+        </div>
       </div>
     </div>
   );
