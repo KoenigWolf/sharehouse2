@@ -134,7 +134,7 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder={t("share.titlePlaceholder")}
                   maxLength={SHARE_ITEMS.maxTitleLength}
-                  className="w-full h-11 px-4 bg-white border border-border rounded-2xl text-foreground/90 text-sm font-medium placeholder:text-muted-foreground/70 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
+                  className="w-full h-11 px-4 bg-card border border-border rounded-2xl text-foreground/90 text-sm font-medium placeholder:text-muted-foreground/70 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
                 />
               </div>
               <div className="space-y-2">
@@ -147,7 +147,7 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                   placeholder={t("share.descriptionPlaceholder")}
                   maxLength={SHARE_ITEMS.maxDescriptionLength}
                   rows={2}
-                  className="w-full px-4 py-3 bg-white border border-border rounded-2xl text-foreground/90 text-sm font-medium placeholder:text-muted-foreground/70 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300 resize-none"
+                  className="w-full px-4 py-3 bg-card border border-border rounded-2xl text-foreground/90 text-sm font-medium placeholder:text-muted-foreground/70 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300 resize-none"
                 />
               </div>
               <div className="flex justify-end gap-3 pt-2">

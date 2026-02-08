@@ -46,7 +46,7 @@ export function TeaserOverlay({ totalCount }: TeaserOverlayProps) {
                </Link>
                <Link
                   href="/login"
-                  className="h-12 px-8 rounded-full bg-white border border-border text-foreground/80 hover:bg-muted font-bold tracking-wider uppercase transition-all duration-300 flex items-center justify-center"
+                  className="h-12 px-8 rounded-full bg-card border border-border text-foreground/80 hover:bg-muted font-bold tracking-wider uppercase transition-all duration-300 flex items-center justify-center"
                >
                   {t("teaser.ctaLogin")}
                </Link>

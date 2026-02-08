@@ -157,7 +157,7 @@ export default function LoginPage() {
             {!isForgotMode && (
               <div className="bg-secondary/50 p-1.5 rounded-2xl flex relative mb-10">
                 <m.div
-                  className="absolute inset-y-1.5 bg-white rounded-xl shadow-sm z-0"
+                  className="absolute inset-y-1.5 bg-card rounded-xl shadow-sm z-0"
                   initial={false}
                   animate={{
                     left: mode === "login" ? "6px" : "calc(50% + 3px)",
@@ -211,7 +211,7 @@ export default function LoginPage() {
                       onChange={(e) => setName(e.target.value)}
                       placeholder={t("auth.namePlaceholder")}
                       required
-                      className="w-full h-14 px-5 bg-white border border-border rounded-2xl text-sm font-medium focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all"
+                      className="w-full h-14 px-5 bg-card border border-border rounded-2xl text-sm font-medium focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all"
                     />
                   </m.div>
                 )}
@@ -229,7 +229,7 @@ export default function LoginPage() {
                   placeholder="name@example.com"
                   required
                   autoComplete="email"
-                  className="w-full h-14 px-5 bg-white border border-border rounded-2xl text-sm font-medium focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all"
+                  className="w-full h-14 px-5 bg-card border border-border rounded-2xl text-sm font-medium focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all"
                 />
               </div>
 
@@ -260,7 +260,7 @@ export default function LoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     autoComplete={mode === "login" ? "current-password" : "new-password"}
-                    className="w-full h-14 px-5 bg-white border border-border rounded-2xl text-sm font-medium focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all"
+                    className="w-full h-14 px-5 bg-card border border-border rounded-2xl text-sm font-medium focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all"
                   />
                   <AnimatePresence>
                     {mode === "signup" && password.length > 0 && (

@@ -57,7 +57,7 @@ export const BulkUploadProgress = memo(function BulkUploadProgress({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.2 }}
-      className="mb-4 py-3 px-4 bg-white border border-border rounded-lg"
+      className="mb-4 py-3 px-4 bg-card border border-border rounded-lg"
     >
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs text-muted-foreground font-mono">

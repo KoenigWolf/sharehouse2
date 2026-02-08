@@ -92,7 +92,7 @@ export function WifiInfoForm({ initialData, onSave, onCancel }: WifiInfoFormProp
           value={formData.area_name}
           onChange={(e) => handleChange("area_name", e.target.value)}
           required
-          className="w-full h-10 px-3 bg-white border border-border rounded-md text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors"
+          className="w-full h-10 px-3 bg-card border border-border rounded-md text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors"
           placeholder={t("wifi.areaNamePlaceholder")}
         />
       </div>
@@ -106,7 +106,7 @@ export function WifiInfoForm({ initialData, onSave, onCancel }: WifiInfoFormProp
           value={formData.ssid}
           onChange={(e) => handleChange("ssid", e.target.value)}
           required
-          className="w-full h-10 px-3 bg-white border border-border rounded-md text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors"
+          className="w-full h-10 px-3 bg-card border border-border rounded-md text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors"
           placeholder={t("wifi.ssidPlaceholder")}
         />
       </div>
@@ -120,7 +120,7 @@ export function WifiInfoForm({ initialData, onSave, onCancel }: WifiInfoFormProp
           value={formData.password}
           onChange={(e) => handleChange("password", e.target.value)}
           required
-          className="w-full h-10 px-3 bg-white border border-border rounded-md text-sm text-foreground font-mono placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors"
+          className="w-full h-10 px-3 bg-card border border-border rounded-md text-sm text-foreground font-mono placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors"
           placeholder={t("wifi.passwordPlaceholder")}
         />
       </div>
@@ -136,7 +136,7 @@ export function WifiInfoForm({ initialData, onSave, onCancel }: WifiInfoFormProp
             handleChange("display_order", parseInt(e.target.value, 10) || 0)
           }
           min={0}
-          className="w-24 h-10 px-3 bg-white border border-border rounded-md text-sm text-foreground focus:outline-none focus:border-foreground transition-colors"
+          className="w-24 h-10 px-3 bg-card border border-border rounded-md text-sm text-foreground focus:outline-none focus:border-foreground transition-colors"
         />
       </div>
 

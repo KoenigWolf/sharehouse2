@@ -118,7 +118,7 @@ export default function ResetPasswordPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     autoComplete="new-password"
-                    className="w-full h-12 px-4 bg-background border border-border rounded-xl text-foreground text-sm placeholder:text-muted-foreground/70 focus:outline-none focus:border-brand-500 focus:bg-white transition-all shadow-inner"
+                    className="w-full h-12 px-4 bg-background border border-border rounded-xl text-foreground text-sm placeholder:text-muted-foreground/70 focus:outline-none focus:border-brand-500 focus:bg-card transition-all shadow-inner"
                   />
                   {password.length > 0 && (
                     <div className="pt-1">
@@ -144,7 +144,7 @@ export default function ResetPasswordPage() {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                     autoComplete="new-password"
-                    className="w-full h-12 px-4 bg-background border border-border rounded-xl text-foreground text-sm placeholder:text-muted-foreground/70 focus:outline-none focus:border-brand-500 focus:bg-white transition-all shadow-inner"
+                    className="w-full h-12 px-4 bg-background border border-border rounded-xl text-foreground text-sm placeholder:text-muted-foreground/70 focus:outline-none focus:border-brand-500 focus:bg-card transition-all shadow-inner"
                   />
                 </div>
 

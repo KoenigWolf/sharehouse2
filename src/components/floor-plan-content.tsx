@@ -340,7 +340,7 @@ function RoomDetailVacant() {
 
   return (
     <div className="py-8 text-center bg-muted/50 rounded-2xl border border-dashed border-border">
-      <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-white border border-border shadow-sm flex items-center justify-center">
+      <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-card border border-border shadow-sm flex items-center justify-center">
         <span className="text-sm text-muted-foreground/70 font-bold tracking-tight">{t("floorPlan.vacant")}</span>
       </div>
       <p className="text-sm text-muted-foreground max-w-[240px] mx-auto font-medium">

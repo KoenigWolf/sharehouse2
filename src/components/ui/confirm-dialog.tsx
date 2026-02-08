@@ -85,7 +85,7 @@ export function ConfirmDialog({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 8 }}
             transition={{ duration: 0.3, ease: EASE }}
-            className="w-full max-w-sm bg-white rounded-2xl premium-surface p-6 space-y-4"
+            className="w-full max-w-sm bg-card rounded-2xl premium-surface p-6 space-y-4"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="space-y-1.5">

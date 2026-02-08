@@ -85,7 +85,7 @@ export function GarbageScheduleView({
               return (
                 <div
                   key={dayIndex}
-                  className="bg-white border border-border rounded-lg px-4 py-3"
+                  className="bg-card border border-border rounded-lg px-4 py-3"
                 >
                   <div className="flex items-center gap-4">
                     <div

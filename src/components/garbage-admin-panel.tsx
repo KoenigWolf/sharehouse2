@@ -115,7 +115,7 @@ export function GarbageAdminPanel({ schedule }: GarbageAdminPanelProps) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15, delay: index * 0.03 }}
-                className="flex items-center justify-between px-4 py-3 bg-white border border-border rounded-lg mb-2"
+                className="flex items-center justify-between px-4 py-3 bg-card border border-border rounded-lg mb-2"
               >
                 {editingId === entry.id ? (
                   <ScheduleEntryForm
@@ -178,7 +178,7 @@ export function GarbageAdminPanel({ schedule }: GarbageAdminPanelProps) {
             <m.div
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
-              className="px-4 py-3 bg-white border border-border rounded-lg"
+              className="px-4 py-3 bg-card border border-border rounded-lg"
             >
               <ScheduleEntryForm
                 dayNames={dayNames}
@@ -208,7 +208,7 @@ export function GarbageAdminPanel({ schedule }: GarbageAdminPanelProps) {
 
           <form
             onSubmit={handleGenerate}
-            className="bg-white border border-border rounded-lg p-4 space-y-3"
+            className="bg-card border border-border rounded-lg p-4 space-y-3"
           >
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="flex-1">
@@ -220,7 +220,7 @@ export function GarbageAdminPanel({ schedule }: GarbageAdminPanelProps) {
                   value={rotationStartDate}
                   onChange={(e) => setRotationStartDate(e.target.value)}
                   required
-                  className="w-full h-10 px-3 bg-white border border-border rounded-md text-sm text-foreground focus:outline-none focus:border-foreground transition-colors"
+                  className="w-full h-10 px-3 bg-card border border-border rounded-md text-sm text-foreground focus:outline-none focus:border-foreground transition-colors"
                 />
               </div>
               <div className="w-32">
@@ -236,7 +236,7 @@ export function GarbageAdminPanel({ schedule }: GarbageAdminPanelProps) {
                   min={1}
                   max={52}
                   required
-                  className="w-full h-10 px-3 bg-white border border-border rounded-md text-sm text-foreground focus:outline-none focus:border-foreground transition-colors"
+                  className="w-full h-10 px-3 bg-card border border-border rounded-md text-sm text-foreground focus:outline-none focus:border-foreground transition-colors"
                 />
               </div>
             </div>
@@ -328,7 +328,7 @@ function ScheduleEntryForm({
                 day_of_week: parseInt(e.target.value, 10),
               }))
             }
-            className="w-full h-9 px-2 bg-white border border-border rounded-md text-sm text-foreground focus:outline-none focus:border-foreground transition-colors"
+            className="w-full h-9 px-2 bg-card border border-border rounded-md text-sm text-foreground focus:outline-none focus:border-foreground transition-colors"
           >
             {dayNames.map((name, index) => (
               <option key={index} value={index}>
@@ -352,7 +352,7 @@ function ScheduleEntryForm({
               }))
             }
             required
-            className="w-full h-9 px-2 bg-white border border-border rounded-md text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors"
+            className="w-full h-9 px-2 bg-card border border-border rounded-md text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors"
             placeholder={t("garbage.garbageTypePlaceholder")}
           />
         </div>
@@ -370,7 +370,7 @@ function ScheduleEntryForm({
                 notes: e.target.value || null,
               }))
             }
-            className="w-full h-9 px-2 bg-white border border-border rounded-md text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors"
+            className="w-full h-9 px-2 bg-card border border-border rounded-md text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors"
             placeholder={t("garbage.notesPlaceholder")}
           />
         </div>

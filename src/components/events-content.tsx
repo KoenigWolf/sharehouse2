@@ -154,7 +154,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder={t("events.titlePlaceholder")}
                   maxLength={EVENTS.maxTitleLength}
-                  className="w-full h-11 px-4 bg-white border border-border rounded-2xl text-foreground/90 text-sm font-medium placeholder:text-muted-foreground/70 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
+                  className="w-full h-11 px-4 bg-card border border-border rounded-2xl text-foreground/90 text-sm font-medium placeholder:text-muted-foreground/70 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
                 />
               </div>
 
@@ -168,7 +168,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                     value={eventDate}
                     onChange={(e) => setEventDate(e.target.value)}
                     min={new Date().toISOString().split("T")[0]}
-                    className="w-full h-11 px-4 bg-white border border-border rounded-2xl text-foreground/90 text-sm font-medium focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
+                    className="w-full h-11 px-4 bg-card border border-border rounded-2xl text-foreground/90 text-sm font-medium focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
                   />
                 </div>
                 <div className="space-y-2">
@@ -180,7 +180,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                     value={eventTime}
                     onChange={(e) => setEventTime(e.target.value)}
                     placeholder={t("events.timePlaceholder")}
-                    className="w-full h-11 px-4 bg-white border border-border rounded-2xl text-foreground/90 text-sm font-medium placeholder:text-muted-foreground/70 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
+                    className="w-full h-11 px-4 bg-card border border-border rounded-2xl text-foreground/90 text-sm font-medium placeholder:text-muted-foreground/70 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
                   />
                 </div>
               </div>
@@ -194,7 +194,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder={t("events.locationPlaceholder")}
-                  className="w-full h-11 px-4 bg-white border border-border rounded-2xl text-foreground/90 text-sm font-medium placeholder:text-muted-foreground/70 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
+                  className="w-full h-11 px-4 bg-card border border-border rounded-2xl text-foreground/90 text-sm font-medium placeholder:text-muted-foreground/70 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
                 />
               </div>
 
@@ -208,7 +208,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                   placeholder={t("events.descriptionPlaceholder")}
                   maxLength={EVENTS.maxDescriptionLength}
                   rows={2}
-                  className="w-full px-4 py-3 bg-white border border-border rounded-2xl text-foreground/90 text-sm font-medium placeholder:text-muted-foreground/70 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300 resize-none"
+                  className="w-full px-4 py-3 bg-card border border-border rounded-2xl text-foreground/90 text-sm font-medium placeholder:text-muted-foreground/70 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300 resize-none"
                 />
               </div>
 

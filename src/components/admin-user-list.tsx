@@ -126,7 +126,7 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t("admin.search")}
-          className="w-full h-12 pl-11 pr-4 bg-white border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all shadow-sm"
+          className="w-full h-12 pl-11 pr-4 bg-card border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all shadow-sm"
         />
       </div>
 
@@ -197,7 +197,7 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
                   delay: Math.min(index * 0.04, 0.4),
                   ease: EASE,
                 }}
-                className="flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3 sm:py-4 bg-white border border-border rounded-2xl transition-shadow duration-300 hover:shadow-md"
+                className="flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3 sm:py-4 bg-card border border-border rounded-2xl transition-shadow duration-300 hover:shadow-md"
               >
                 <Avatar className="h-9 w-9 shrink-0">
                   <OptimizedAvatarImage
@@ -513,7 +513,7 @@ function AdminCredentialsDialog({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 8 }}
             transition={{ duration: 0.3, ease: EASE }}
-            className="w-full max-w-md bg-white rounded-2xl premium-surface p-6 space-y-5 max-h-[90vh] overflow-y-auto"
+            className="w-full max-w-md bg-card rounded-2xl premium-surface p-6 space-y-5 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="space-y-1.5">
