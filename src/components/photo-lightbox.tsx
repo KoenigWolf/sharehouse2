@@ -290,9 +290,9 @@ const PhotoInfoPanel = memo(function PhotoInfoPanel({
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.25 }}
             role="alert"
-            className="mb-3 py-2 px-3 rounded-lg bg-red-500/20 border-l-2 border-red-500"
+            className="mb-3 py-2 px-3 rounded-lg bg-error/20 border-l-2 border-error"
           >
-            <p className="text-sm text-red-300">{actionError}</p>
+            <p className="text-sm text-error">{actionError}</p>
           </m.div>
         )}
       </AnimatePresence>
@@ -325,7 +325,7 @@ const PhotoInfoPanel = memo(function PhotoInfoPanel({
             onClick={onDelete}
             disabled={isDeleting}
             aria-label={t("roomPhotos.delete")}
-            className="text-white/30 hover:text-red-400 hover:bg-white/5 transition-colors"
+            className="text-white/30 hover:text-error hover:bg-white/5 transition-colors"
           >
             {isDeleting ? (
               <Spinner size="xs" variant="light" />

@@ -162,7 +162,7 @@ export function ResidentsGrid({
   if (totalCount === 0) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <p className="text-slate-500 text-sm">{t("residents.noResidents")}</p>
+        <p className="text-muted-foreground text-sm">{t("residents.noResidents")}</p>
       </div>
     );
   }
@@ -181,17 +181,17 @@ export function ResidentsGrid({
       <div className="flex flex-col gap-4">
         <div className="flex items-end justify-between">
           <div>
-            <h2 className="text-lg sm:text-xl text-slate-900 tracking-wide font-light">
+            <h2 className="text-lg sm:text-xl text-foreground tracking-wide font-light">
               {t("residents.title")}
             </h2>
-            <p className="text-[11px] sm:text-xs text-slate-400 mt-1">
+            <p className="text-[11px] sm:text-xs text-muted-foreground mt-1">
               {t("residents.countLabel", { count: displayCount })}
               {(searchQuery || floorFilter !== "all") &&
                 ` ${t("residents.countOf", { total: totalCount })}`}
             </p>
           </div>
 
-          <div className="flex gap-1 bg-slate-100 p-1 rounded-xl">
+          <div className="flex gap-1 bg-secondary p-1 rounded-xl">
             {viewModeOptions.map((option) => {
               const isActive = viewMode === option.value;
               const Icon = option.icon;
@@ -203,8 +203,8 @@ export function ResidentsGrid({
                   size="icon-sm"
                   onClick={() => setViewMode(option.value)}
                   className={`${isActive
-                    ? "bg-white text-brand-500 shadow-sm"
-                    : "text-slate-500 hover:text-slate-900"
+                    ? "bg-card text-brand-500 shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
                     } rounded-lg transition-all`}
                   title={option.label}
                   aria-label={option.label}
@@ -217,7 +217,7 @@ export function ResidentsGrid({
           </div>
         </div>
 
-        <div className="sticky top-[64px] z-30 bg-slate-50/95 backdrop-blur-sm -mx-4 px-4 py-3 sm:relative sm:top-0 sm:bg-transparent sm:backdrop-none sm:mx-0 sm:px-0 sm:py-0">
+        <div className="sticky top-[64px] z-30 bg-muted/95 backdrop-blur-sm -mx-4 px-4 py-3 sm:relative sm:top-0 sm:bg-transparent sm:backdrop-none sm:mx-0 sm:px-0 sm:py-0">
           <div className="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide -mx-1 px-1 pb-1 sm:pb-0">
             {floors.map((floor) => {
               const isAll = floor === "all";
@@ -235,14 +235,14 @@ export function ResidentsGrid({
                     ? isAll
                       ? "bg-brand-500 text-white shadow-lg shadow-brand-200 border-brand-500"
                       : `${colors?.bg} ${colors?.text} border-transparent shadow-sm`
-                    : "bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300"
+                    : "bg-card text-foreground/80 hover:bg-muted hover:border-border"
                     }`}
                 >
                   <span className="text-sm font-semibold tracking-tight">
                     {isAll ? t("residents.filterAll") : floor}
                   </span>
                   {floorStat && (
-                    <span className={`ml-2 text-xs font-medium ${isActive ? "opacity-70" : "text-slate-400"}`}>
+                    <span className={`ml-2 text-xs font-medium ${isActive ? "opacity-70" : "text-muted-foreground"}`}>
                       {floorStat.registered}/{floorStat.total}
                     </span>
                   )}
@@ -251,16 +251,16 @@ export function ResidentsGrid({
             })}
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mt-4 sm:pb-4 sm:border-b sm:border-slate-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mt-4 sm:pb-4 sm:border-b sm:border-border">
             {totalCount >= SEARCH_VISIBLE_THRESHOLD && (
               <div className="relative group">
-                <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10" />
+                <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground z-10" />
                 <input
                   type="search"
                   placeholder={t("residents.searchPlaceholder")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full sm:w-80 h-12 pl-11 pr-4 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all shadow-sm"
+                  className="w-full sm:w-80 h-12 pl-11 pr-4 bg-card border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all shadow-sm"
                 />
                 {searchQuery && (
                   <Button
@@ -290,8 +290,8 @@ export function ResidentsGrid({
                     >
                       <span
                         className={`text-sm ${isActive
-                          ? "text-slate-900 font-medium"
-                          : "text-slate-400 group-hover:text-slate-500"
+                          ? "text-foreground font-medium"
+                          : "text-muted-foreground group-hover:text-foreground/80"
                           }`}
                       >
                         {option.label}
@@ -299,7 +299,7 @@ export function ResidentsGrid({
                       {isActive && (
                         <motion.span
                           layoutId="sort-underline"
-                          className="absolute bottom-0 left-3 right-3 sm:left-4 sm:right-4 h-px bg-slate-900"
+                          className="absolute bottom-0 left-3 right-3 sm:left-4 sm:right-4 h-px bg-foreground"
                           transition={{ duration: 0.3, ease: "easeInOut" }}
                         />
                       )}
@@ -307,7 +307,7 @@ export function ResidentsGrid({
                   );
                 })}
               </div>
-              <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-white to-transparent pointer-events-none" />
+              <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-background to-transparent pointer-events-none" />
             </div>
           </div>
         </div>
@@ -321,10 +321,10 @@ export function ResidentsGrid({
               exit={{ opacity: 0 }}
               className="text-center py-12 sm:py-16"
             >
-              <div className="w-16 h-16 mx-auto mb-4 bg-slate-100 rounded-lg flex items-center justify-center">
-                <SearchIcon className="w-8 h-8 text-slate-300" />
+              <div className="w-16 h-16 mx-auto mb-4 bg-secondary rounded-lg flex items-center justify-center">
+                <SearchIcon className="w-8 h-8 text-muted-foreground/70" />
               </div>
-              <p className="text-slate-500 text-sm">{t("residents.noMatch")}</p>
+              <p className="text-muted-foreground text-sm">{t("residents.noMatch")}</p>
               <Button
                 type="button"
                 variant="outline"
@@ -445,21 +445,21 @@ function FloorView({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: floorIndex * 0.1, ease: "easeOut" }}
           >
-            <div className={`flex items-center gap-6 mb-8 pb-6 border-b border-slate-100`}>
+            <div className={`flex items-center gap-6 mb-8 pb-6 border-b border-border`}>
               <div
                 className={`w-14 h-14 flex items-center justify-center rounded-2xl shadow-sm border ${colors.border} ${colors.bg}`}
               >
                 <span className={`text-xl font-bold tracking-tight ${colors.text}`}>{floor}</span>
               </div>
               <div className="flex-1">
-                <h3 className={`text-lg font-semibold tracking-tight text-slate-900`}>
+                <h3 className={`text-lg font-semibold tracking-tight text-foreground`}>
                   {t("residents.floorLabel", { floor: floor.replace("F", "") })}
                 </h3>
                 <div className="flex items-center gap-6 mt-2">
-                  <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                     {floorStat.registered}/{floorStat.total} {t("residents.registeredShort")}
                   </span>
-                  <div className="flex-1 max-w-48 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="flex-1 max-w-48 h-1.5 bg-secondary rounded-full overflow-hidden">
                     <m.div
                       initial={{ width: 0 }}
                       animate={{ width: `${(floorStat.registered / floorStat.total) * 100}%` }}
@@ -557,18 +557,18 @@ function ResidentListItem({
       aria-label={t("a11y.viewProfile", { name: profile.name })}
     >
       <article
-        className={`flex items-center gap-5 p-4 sm:p-5 bg-white rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 border border-slate-100 ${isCurrentUser ? "ring-2 ring-brand-500/20 border-brand-500" : ""
+        className={`flex items-center gap-5 p-4 sm:p-5 bg-card rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 border border-border ${isCurrentUser ? "ring-2 ring-brand-500/20 border-brand-500" : ""
           }`}
       >
         <div className="relative shrink-0">
-          <Avatar className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl border border-slate-100 shadow-sm">
+          <Avatar className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl border border-border shadow-sm">
             <OptimizedAvatarImage
               src={profile.avatar_url}
               alt={profile.name}
               context="card"
               className="w-full h-full"
               fallback={getInitials(profile.name)}
-              fallbackClassName="bg-slate-50 text-slate-300 text-lg font-semibold rounded-xl w-full h-full flex items-center justify-center"
+              fallbackClassName="bg-muted text-muted-foreground/70 text-lg font-semibold rounded-xl w-full h-full flex items-center justify-center"
             />
           </Avatar>
           {isCurrentUser && (
@@ -580,7 +580,7 @@ function ResidentListItem({
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3 flex-wrap">
-            <h3 className="text-base sm:text-lg text-slate-900 font-semibold tracking-tight truncate">
+            <h3 className="text-base sm:text-lg text-foreground font-semibold tracking-tight truncate">
               {profile.nickname || profile.name}
             </h3>
             {profile.room_number && (
@@ -596,26 +596,26 @@ function ResidentListItem({
               </span>
             )}
             {isTeaTimeParticipant && !isMockProfile && (
-              <span className="text-[10px] px-2 py-0.5 bg-amber-100 text-amber-700 rounded-lg font-bold flex items-center gap-1 shadow-sm border border-amber-200/50">
+              <span className="text-[10px] px-2 py-0.5 bg-warning-bg text-warning rounded-lg font-bold flex items-center gap-1 shadow-sm border border-warning-border/50">
                 <TeaCupIcon />
               </span>
             )}
             {isMockProfile && (
-              <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wide truncate">
+              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide truncate">
                 {t("common.unregistered")}
               </span>
             )}
           </div>
 
-          <div className="flex items-center gap-3 mt-1.5 text-xs text-slate-500">
+          <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
             {profile.occupation && (
-              <span className="bg-slate-50 px-2 py-0.5 rounded-md">{t(`profileOptions.occupation.${profile.occupation}` as Parameters<typeof t>[0])}</span>
+              <span className="bg-muted px-2 py-0.5 rounded-md">{t(`profileOptions.occupation.${profile.occupation}` as Parameters<typeof t>[0])}</span>
             )}
             {profile.mbti && <span className="text-brand-500 font-semibold">{profile.mbti}</span>}
           </div>
         </div>
 
-        <div className="text-slate-300 group-hover:text-brand-500 transition-colors shrink-0">
+        <div className="text-muted-foreground/70 group-hover:text-brand-500 transition-colors shrink-0">
           <ChevronRightIcon />
         </div>
       </article>

@@ -120,13 +120,13 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
   return (
     <div className="space-y-4">
       <div className="relative">
-        <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+        <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
         <input
           type="search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t("admin.search")}
-          className="w-full h-12 pl-11 pr-4 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all shadow-sm"
+          className="w-full h-12 pl-11 pr-4 bg-card border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all shadow-sm"
         />
       </div>
 
@@ -164,11 +164,11 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
           transition={{ duration: 0.4, ease: EASE }}
           className="flex flex-col items-center justify-center py-16 text-center"
         >
-          <SearchIcon className="w-8 h-8 text-slate-300 mb-4" />
-          <p className="text-sm font-medium text-slate-500">
+          <SearchIcon className="w-8 h-8 text-muted-foreground/70 mb-4" />
+          <p className="text-sm font-medium text-muted-foreground">
             {t("admin.noUsers")}
           </p>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             {t("admin.noUsersDescription")}
           </p>
         </m.div>
@@ -197,35 +197,35 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
                   delay: Math.min(index * 0.04, 0.4),
                   ease: EASE,
                 }}
-                className="flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3 sm:py-4 bg-white border border-slate-100 rounded-2xl transition-shadow duration-300 hover:shadow-md"
+                className="flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3 sm:py-4 bg-card border border-border rounded-2xl transition-shadow duration-300 hover:shadow-md"
               >
                 <Avatar className="h-9 w-9 shrink-0">
                   <OptimizedAvatarImage
                     src={profile.avatar_url}
                     alt={profile.name}
                   />
-                  <span className="flex h-full w-full items-center justify-center bg-slate-100 text-[10px] text-slate-400">
+                  <span className="flex h-full w-full items-center justify-center bg-secondary text-[10px] text-muted-foreground">
                     {getInitials(profile.name)}
                   </span>
                 </Avatar>
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-slate-900 font-medium truncate">
+                    <span className="text-sm text-foreground font-medium truncate">
                       {profile.name}
                     </span>
                     {profile.is_admin && (
-                      <span className="text-[9px] font-bold tracking-wider text-brand-500 bg-brand-50 px-1.5 py-0.5 rounded uppercase">
+                      <span className="text-[9px] font-bold tracking-wider text-brand-500 bg-primary/10 px-1.5 py-0.5 rounded uppercase">
                         {t("admin.adminBadge")}
                       </span>
                     )}
                     {isSelf && (
-                      <span className="text-[9px] text-slate-400">
+                      <span className="text-[9px] text-muted-foreground">
                         ({t("common.you")})
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center gap-2 text-[11px] text-slate-400">
+                  <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
                     {profile.room_number && <span>{profile.room_number}</span>}
                     {profile.move_in_date && (
                       <span>{profile.move_in_date}</span>
@@ -305,22 +305,22 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
         isLoading={loadingId === adminToggleTarget?.id}
       >
         {adminToggleTarget && (
-          <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+          <div className="flex items-center gap-3 p-3 bg-muted rounded-xl">
             <Avatar className="h-10 w-10 shrink-0">
               <OptimizedAvatarImage
                 src={adminToggleTarget.avatar_url}
                 alt={adminToggleTarget.name}
               />
-              <span className="flex h-full w-full items-center justify-center bg-slate-100 text-xs text-slate-400">
+              <span className="flex h-full w-full items-center justify-center bg-secondary text-xs text-muted-foreground">
                 {getInitials(adminToggleTarget.name)}
               </span>
             </Avatar>
             <div className="min-w-0">
-              <p className="text-sm font-medium text-slate-900 truncate">
+              <p className="text-sm font-medium text-foreground truncate">
                 {adminToggleTarget.name}
               </p>
               {adminToggleTarget.room_number && (
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-muted-foreground">
                   {adminToggleTarget.room_number}
                 </p>
               )}
@@ -345,22 +345,22 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
         variant="destructive"
       >
         {deleteTarget && (
-          <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+          <div className="flex items-center gap-3 p-3 bg-muted rounded-xl">
             <Avatar className="h-10 w-10 shrink-0">
               <OptimizedAvatarImage
                 src={deleteTarget.avatar_url}
                 alt={deleteTarget.name}
               />
-              <span className="flex h-full w-full items-center justify-center bg-slate-100 text-xs text-slate-400">
+              <span className="flex h-full w-full items-center justify-center bg-secondary text-xs text-muted-foreground">
                 {getInitials(deleteTarget.name)}
               </span>
             </Avatar>
             <div className="min-w-0">
-              <p className="text-sm font-medium text-slate-900 truncate">
+              <p className="text-sm font-medium text-foreground truncate">
                 {deleteTarget.name}
               </p>
               {deleteTarget.room_number && (
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-muted-foreground">
                   {deleteTarget.room_number}
                 </p>
               )}
@@ -513,34 +513,34 @@ function AdminCredentialsDialog({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 8 }}
             transition={{ duration: 0.3, ease: EASE }}
-            className="w-full max-w-md bg-white rounded-2xl premium-surface p-6 space-y-5 max-h-[90vh] overflow-y-auto"
+            className="w-full max-w-md bg-card rounded-2xl premium-surface p-6 space-y-5 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="space-y-1.5">
-              <h2 className="text-sm font-bold tracking-tight text-slate-900">
+              <h2 className="text-sm font-bold tracking-tight text-foreground">
                 {t("admin.credentialsTitle")}
               </h2>
-              <p className="text-xs leading-relaxed text-slate-500">
+              <p className="text-xs leading-relaxed text-muted-foreground">
                 {t("admin.credentialsDescription", { name: target.name })}
               </p>
             </div>
 
-            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+            <div className="flex items-center gap-3 p-3 bg-muted rounded-xl">
               <Avatar className="h-10 w-10 shrink-0">
                 <OptimizedAvatarImage
                   src={target.avatar_url}
                   alt={target.name}
                 />
-                <span className="flex h-full w-full items-center justify-center bg-slate-100 text-xs text-slate-400">
+                <span className="flex h-full w-full items-center justify-center bg-secondary text-xs text-muted-foreground">
                   {getInitials(target.name)}
                 </span>
               </Avatar>
               <div className="min-w-0">
-                <p className="text-sm font-medium text-slate-900 truncate">
+                <p className="text-sm font-medium text-foreground truncate">
                   {target.name}
                 </p>
                 {target.room_number && (
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-muted-foreground">
                     {target.room_number}
                   </p>
                 )}
@@ -550,25 +550,25 @@ function AdminCredentialsDialog({
             <form onSubmit={handleEmailSubmit} className="space-y-3">
               <div className="flex items-center gap-2">
                 <MailIcon className="w-3.5 h-3.5 text-brand-500" />
-                <h3 className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
+                <h3 className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase">
                   {t("admin.newEmail")}
                 </h3>
               </div>
 
               {isLoadingEmail ? (
-                <div className="flex items-center gap-2 px-5 py-3 bg-slate-50/50 rounded-2xl border border-slate-100">
+                <div className="flex items-center gap-2 px-5 py-3 bg-muted/50 rounded-2xl border border-border">
                   <Spinner size="xs" />
-                  <span className="text-xs text-slate-400">
+                  <span className="text-xs text-muted-foreground">
                     {t("admin.loadingEmail")}
                   </span>
                 </div>
               ) : (
                 currentEmail && (
-                  <div className="px-5 py-3 bg-slate-50/50 rounded-2xl border border-slate-100">
-                    <p className="text-[10px] font-bold text-slate-400 tracking-wider uppercase mb-1">
+                  <div className="px-5 py-3 bg-muted/50 rounded-2xl border border-border">
+                    <p className="text-[10px] font-bold text-muted-foreground tracking-wider uppercase mb-1">
                       {t("admin.currentEmailLabel")}
                     </p>
-                    <p className="text-sm font-medium text-slate-600 break-all">
+                    <p className="text-sm font-medium text-foreground/80 break-all">
                       {currentEmail}
                     </p>
                   </div>
@@ -583,7 +583,7 @@ function AdminCredentialsDialog({
                   placeholder={t("admin.newEmail")}
                   disabled={isSubmittingEmail}
                   autoComplete="off"
-                  className="h-12 rounded-2xl border-slate-200 focus:ring-brand-500/5 focus:border-brand-500/50"
+                  className="h-12 rounded-2xl border-border focus:ring-brand-500/5 focus:border-brand-500/50"
                 />
               </div>
 
@@ -601,12 +601,12 @@ function AdminCredentialsDialog({
               </Button>
             </form>
 
-            <div className="border-t border-slate-100" />
+            <div className="border-t border-border" />
 
             <form onSubmit={handlePasswordSubmit} className="space-y-3">
               <div className="flex items-center gap-2">
                 <LockIcon className="w-3.5 h-3.5 text-brand-500" />
-                <h3 className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
+                <h3 className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase">
                   {t("admin.newPassword")}
                 </h3>
               </div>
@@ -619,7 +619,7 @@ function AdminCredentialsDialog({
                   placeholder={t("admin.newPassword")}
                   disabled={isSubmittingPassword}
                   autoComplete="new-password"
-                  className="h-12 rounded-2xl border-slate-200 focus:ring-brand-500/5 focus:border-brand-500/50"
+                  className="h-12 rounded-2xl border-border focus:ring-brand-500/5 focus:border-brand-500/50"
                 />
                 <Input
                   type="password"
@@ -628,9 +628,9 @@ function AdminCredentialsDialog({
                   placeholder={t("admin.confirmNewPassword")}
                   disabled={isSubmittingPassword}
                   autoComplete="new-password"
-                  className="h-12 rounded-2xl border-slate-200 focus:ring-brand-500/5 focus:border-brand-500/50"
+                  className="h-12 rounded-2xl border-border focus:ring-brand-500/5 focus:border-brand-500/50"
                 />
-                <p className="text-[10px] text-slate-400 ml-1">
+                <p className="text-[10px] text-muted-foreground ml-1">
                   {t("admin.passwordHint")}
                 </p>
               </div>
@@ -651,7 +651,7 @@ function AdminCredentialsDialog({
               </Button>
             </form>
 
-            <div className="border-t border-slate-100 pt-1">
+            <div className="border-t border-border pt-1">
               <Button
                 type="button"
                 variant="outline"

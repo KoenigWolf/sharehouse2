@@ -44,7 +44,7 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
   // 過去のマッチ（完了・スキップ済み）
   if (status !== "scheduled") {
     return (
-      <div className="bg-slate-50/80 p-3 border border-slate-100 rounded-xl">
+      <div className="bg-muted/80 p-3 border border-border rounded-xl">
         <div className="flex items-center gap-3">
           <Avatar className="w-8 h-8 rounded-full border border-white shadow-sm">
             <OptimizedAvatarImage
@@ -52,15 +52,15 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
               context="card"
               alt={t("a11y.profilePhotoAlt", { name: match.partner.name })}
               fallback={getInitials(match.partner.name)}
-              fallbackClassName="bg-white text-slate-300 text-[10px] font-bold"
+              fallbackClassName="bg-card text-muted-foreground/70 text-[10px] font-bold"
             />
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-bold text-slate-500 truncate">
+            <p className="text-xs font-bold text-muted-foreground truncate">
               {match.partner.name}
             </p>
           </div>
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight">
             {formatDate(match.matched_at)}
             <span className="mx-1.5 opacity-30">·</span>
             {status === "done" ? t("teaTime.done") : t("teaTime.skipped")}
@@ -76,29 +76,29 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-      className="premium-surface p-6 rounded-3xl border-slate-50 relative overflow-hidden ring-1 ring-slate-100/50"
+      className="premium-surface p-6 rounded-3xl border-border/50 relative overflow-hidden ring-1 ring-border/50"
     >
       <div className="flex items-center gap-5 mb-6">
         <Link href={`/profile/${match.partner.id}`}>
-          <Avatar className="w-16 h-16 rounded-2xl border-2 border-slate-50 shadow-md transition-transform hover:scale-105">
+          <Avatar className="w-16 h-16 rounded-2xl border-2 border-border/50 shadow-md transition-transform hover:scale-105">
             <OptimizedAvatarImage
               src={match.partner.avatar_url}
               context="card"
               alt={t("a11y.profilePhotoAlt", { name: match.partner.name })}
               fallback={getInitials(match.partner.name)}
-              fallbackClassName="bg-slate-100 text-slate-300 text-xl font-bold"
+              fallbackClassName="bg-secondary text-muted-foreground/70 text-xl font-bold"
             />
           </Avatar>
         </Link>
         <div className="flex-1 min-w-0">
           <Link
             href={`/profile/${match.partner.id}`}
-            className="text-lg font-bold text-slate-900 hover:text-brand-500 transition-colors tracking-tight"
+            className="text-lg font-bold text-foreground hover:text-brand-500 transition-colors tracking-tight"
           >
             {match.partner.name}
           </Link>
           <div className="flex items-center gap-1.5 mt-1">
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+            <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
               {match.partner.room_number &&
                 `${match.partner.room_number}${t("profile.room")}`}
               {match.partner.room_number && <span className="mx-1.5 opacity-30">·</span>}
@@ -122,7 +122,7 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
           size="xl"
           onClick={() => handleStatusUpdate("skipped")}
           disabled={isLoading}
-          className="flex-1 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold tracking-tight active:scale-[0.98] transition-transform"
+          className="flex-1 rounded-2xl bg-secondary hover:bg-secondary text-foreground/80 font-bold tracking-tight active:scale-[0.98] transition-transform"
         >
           {t("teaTime.skip")}
         </Button>

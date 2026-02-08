@@ -35,7 +35,7 @@ export default function GlobalError({
         <div
           style={{
             minHeight: "100vh",
-            backgroundColor: "#f8fafc", // slate-50
+            backgroundColor: "var(--background, #f8fafc)",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -56,7 +56,7 @@ export default function GlobalError({
               right: "-10%",
               width: "40%",
               height: "40%",
-              backgroundColor: "rgba(254, 242, 242, 0.5)", // error-bg
+              backgroundColor: "color-mix(in srgb, var(--error-bg, #fef2f2) 50%, transparent)",
               borderRadius: "50%",
               filter: "blur(120px)",
               pointerEvents: "none",
@@ -69,7 +69,7 @@ export default function GlobalError({
               left: "-10%",
               width: "40%",
               height: "40%",
-              backgroundColor: "rgba(236, 253, 245, 0.3)", // brand-50
+              backgroundColor: "color-mix(in srgb, var(--brand-50, #ecfdf5) 30%, transparent)",
               borderRadius: "50%",
               filter: "blur(120px)",
               pointerEvents: "none",
@@ -88,7 +88,7 @@ export default function GlobalError({
               style={{
                 fontSize: "min(20vw, 120px)",
                 fontWeight: 800,
-                color: "#f1f5f9", // slate-100
+                color: "var(--secondary, #f1f5f9)",
                 marginBottom: "-40px",
                 userSelect: "none",
                 letterSpacing: "-0.05em",
@@ -100,13 +100,13 @@ export default function GlobalError({
 
             <div
               style={{
-                backgroundColor: "rgba(255, 255, 255, 0.8)",
+                backgroundColor: "color-mix(in srgb, var(--card, #ffffff) 80%, transparent)",
                 backdropFilter: "blur(20px)",
                 WebkitBackdropFilter: "blur(20px)",
                 padding: "48px",
                 borderRadius: "40px",
                 boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.15)",
-                border: "1px solid rgba(255, 255, 255, 0.5)",
+                border: "1px solid color-mix(in srgb, var(--border, #e2e8f0) 50%, transparent)",
               }}
             >
               <div
@@ -114,8 +114,8 @@ export default function GlobalError({
                   width: "64px",
                   height: "64px",
                   borderRadius: "16px",
-                  backgroundColor: "#fee2e2", // error-bg
-                  color: "#8b4040", // error
+                  backgroundColor: "var(--error-bg, #fee2e2)",
+                  color: "var(--error, #dc2626)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -133,7 +133,7 @@ export default function GlobalError({
                 style={{
                   fontSize: "24px",
                   fontWeight: 700,
-                  color: "#0f172a", // slate-900
+                  color: "var(--foreground, #0f172a)",
                   marginBottom: "16px",
                   letterSpacing: "-0.02em",
                 }}
@@ -144,7 +144,7 @@ export default function GlobalError({
               <p
                 style={{
                   fontSize: "15px",
-                  color: "#64748b", // slate-500
+                  color: "var(--muted-foreground, #64748b)",
                   marginBottom: "32px",
                   lineHeight: 1.6,
                 }}
@@ -157,8 +157,8 @@ export default function GlobalError({
                 style={{
                   width: "100%",
                   padding: "16px 32px",
-                  backgroundColor: "#0f172a", // slate-900
-                  color: "white",
+                  backgroundColor: "var(--foreground, #0f172a)",
+                  color: "var(--background, #ffffff)",
                   fontSize: "14px",
                   fontWeight: 600,
                   borderRadius: "16px",
@@ -173,7 +173,7 @@ export default function GlobalError({
               </button>
             </div>
 
-            <div style={{ marginTop: "40px", color: "#94a3b8", fontSize: "10px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+            <div style={{ marginTop: "40px", color: "var(--muted-foreground, #94a3b8)", fontSize: "10px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>
               {t("pages.portalName")}
             </div>
           </div>

@@ -3,7 +3,7 @@ import { updateSession } from "@/lib/supabase/middleware";
 
 const isDev = process.env.NODE_ENV === "development";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const response = await updateSession(request);
 
   const nonce = generateNonce();

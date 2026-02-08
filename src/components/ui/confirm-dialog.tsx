@@ -85,19 +85,19 @@ export function ConfirmDialog({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 8 }}
             transition={{ duration: 0.3, ease: EASE }}
-            className="w-full max-w-sm bg-white rounded-2xl premium-surface p-6 space-y-4"
+            className="w-full max-w-sm bg-card rounded-2xl premium-surface p-6 space-y-4"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="space-y-1.5">
               <h2
                 id={titleId}
-                className={`text-sm font-bold tracking-tight ${isDestructive ? "text-rose-900" : "text-slate-900"}`}
+                className={`text-sm font-bold tracking-tight ${isDestructive ? "text-rose-900" : "text-foreground"}`}
               >
                 {title}
               </h2>
               <p
                 id={descId}
-                className={`text-xs leading-relaxed ${isDestructive ? "text-rose-600/70" : "text-slate-600"}`}
+                className={`text-xs leading-relaxed ${isDestructive ? "text-rose-600/70" : "text-foreground/80"}`}
               >
                 {description}
               </p>

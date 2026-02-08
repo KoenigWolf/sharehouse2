@@ -71,6 +71,7 @@ export const ja = {
     confirmationEmailSent: "確認メールを送信しました。メールのリンクをクリックしてから再度ログインしてください。",
     namePlaceholder: "山田 太郎",
     portalLead: "住民同士のつながりを大切にする",
+    shareHousePortal: "Share House Portal",
     portalSublead: "シェアハウスのためのポータルサイト",
     portalDescriptionLine1: "顔と名前を覚えて、",
     portalDescriptionLine2: "声をかけやすい関係をつくる。",
@@ -767,6 +768,27 @@ export const ja = {
     interestsList: "趣味・関心",
     goHome: "Share House ホームに戻る",
     openMyPage: "マイページを開く",
+  },
+
+  theme: {
+    sectionTitle: "外観設定",
+    styleLabel: "テーマスタイル",
+    colorModeLabel: "カラーモード",
+    cottage: "コテージ",
+    cottageDescription: "温かみのあるクリーム色とオリーブグリーン。親しみやすいファームハウススタイル。",
+    modern: "モダン",
+    modernDescription: "クールなスレートカラーとエメラルドグリーン。洗練されたミニマリストスタイル。",
+    light: "ライト",
+    dark: "ダーク",
+    system: "システム",
+  },
+
+  settings: {
+    title: "設定",
+    description: "アプリの外観、通知、アカウントなどを設定できます。",
+    language: "言語",
+    languageJapanese: "日本語",
+    languageEnglish: "英語",
   },
 } as const;
 

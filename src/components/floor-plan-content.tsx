@@ -85,7 +85,7 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
                 transition-all duration-500 rounded-2xl overflow-hidden shadow-sm
                 ${isActive
                   ? `${floorColors.bg} ${floorColors.text} shadow-xl shadow-brand-100 ring-4 ring-brand-500/10`
-                  : "bg-white text-slate-400 hover:bg-slate-50 hover:text-slate-600 border border-slate-100"
+                  : "bg-secondary text-foreground hover:bg-muted hover:text-foreground/80 border border-border"
                 }
                 active:scale-[0.96]
               `}
@@ -107,10 +107,10 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
             <span className="font-bold">{activeFloor}</span>
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider">
+            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">
               {t("floorPlan.floor", { floor: activeFloor[0] })}
             </h3>
-            <p className="text-xs text-slate-500">{t("floorPlan.residentLayout")}</p>
+            <p className="text-xs text-muted-foreground">{t("floorPlan.residentLayout")}</p>
           </div>
         </div>
 
@@ -137,8 +137,8 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
                   className={`
                     relative flex flex-col items-center p-3 sm:p-5 transition-all duration-500 rounded-2xl
                     ${isOccupied
-                      ? "bg-white border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-0.5 ring-1 ring-slate-100/50"
-                      : "bg-slate-50 border border-dashed border-slate-200 hover:border-slate-300 opacity-60 hover:opacity-100"
+                      ? "bg-card border border-border shadow-sm hover:shadow-xl hover:-translate-y-0.5 ring-1 ring-border/50"
+                      : "bg-muted border border-dashed border-border hover:border-border opacity-60 hover:opacity-100"
                     }
                   `}
                 >
@@ -150,34 +150,34 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
 
                   <div className="w-14 h-14 sm:w-16 sm:h-16 mb-4 relative">
                     {profile ? (
-                      <Avatar className="w-full h-full rounded-2xl border-2 border-slate-50 shadow-md">
+                      <Avatar className="w-full h-full rounded-2xl border-2 border-border/50 shadow-md">
                         <OptimizedAvatarImage
                           src={profile.avatar_url}
                           alt={profile.nickname || profile.name}
                           context="card"
                           fallback={
-                            <span className="text-sm font-bold text-slate-300">
+                            <span className="text-sm font-bold text-muted-foreground/70">
                               {getInitials(profile.nickname || profile.name)}
                             </span>
                           }
-                          fallbackClassName="bg-slate-100"
+                          fallbackClassName="bg-secondary"
                         />
                       </Avatar>
                     ) : (
-                      <div className="w-full h-full rounded-2xl bg-white/50 flex items-center justify-center border-2 border-dashed border-slate-200 shadow-inner">
-                        <span className="text-[10px] font-bold text-slate-300 tracking-wider">
+                      <div className="w-full h-full rounded-2xl bg-card/50 flex items-center justify-center border-2 border-dashed border-border shadow-inner">
+                        <span className="text-[10px] font-bold text-muted-foreground/70 tracking-wider">
                           {t("floorPlan.vacant")}
                         </span>
                       </div>
                     )}
                   </div>
 
-                  <span className={`text-[11px] font-black tracking-[0.1em] ${isOccupied ? "text-slate-900" : "text-slate-300"}`}>
+                  <span className={`text-[11px] font-black tracking-[0.1em] ${isOccupied ? "text-foreground" : "text-muted-foreground/70"}`}>
                     {roomNumber}
                   </span>
 
                   {profile && (
-                    <span className={`text-[10px] truncate max-w-full mt-1.5 font-bold ${isMock ? "text-slate-200" : "text-slate-500"}`}>
+                    <span className={`text-[10px] truncate max-w-full mt-1.5 font-bold ${isMock ? "text-muted-foreground/30" : "text-muted-foreground"}`}>
                       {profile.nickname || profile.name}
                     </span>
                   )}
@@ -196,7 +196,7 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-              className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm"
+              className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm"
               onClick={handleClosePopup}
             />
 
@@ -210,14 +210,14 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
               aria-modal="true"
               aria-label={selectedRoom}
             >
-              <div className="glass border border-white/20 shadow-2xl rounded-3xl p-6 relative overflow-hidden">
-                <div className="absolute inset-0 bg-white/40" />
+              <div className="glass border border-border/20 shadow-2xl rounded-3xl p-6 relative overflow-hidden">
+                <div className="absolute inset-0 bg-card/40" />
 
                 <div className="relative">
                   <button
                     type="button"
                     onClick={handleClosePopup}
-                    className="absolute -top-1 -right-1 p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100/50 rounded-full transition-all"
+                    className="absolute -top-1 -right-1 p-2 text-muted-foreground hover:text-foreground hover:bg-secondary/50 rounded-full transition-all"
                     aria-label={t("floorPlan.closeDetail")}
                   >
                     <X size={20} strokeWidth={2} />
@@ -228,7 +228,7 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
                       {selectedRoom}
                     </span>
                     {selectedProfile && isMockProfile(selectedProfile) && (
-                      <span className="text-[10px] text-slate-400 font-medium bg-slate-50 px-2 py-0.5 rounded-full border border-slate-100">
+                      <span className="text-[10px] text-muted-foreground font-medium bg-muted px-2 py-0.5 rounded-full border border-border">
                         {t("residents.sampleData")}
                       </span>
                     )}
@@ -274,16 +274,16 @@ function RoomDetailOccupied({
             alt={displayName}
             context="card"
             fallback={
-              <span className="text-lg text-slate-300 font-semibold">
+              <span className="text-lg text-muted-foreground/70 font-semibold">
                 {getInitials(displayName)}
               </span>
             }
-            fallbackClassName="bg-slate-50"
+            fallbackClassName="bg-muted"
           />
         </Avatar>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <p className="text-lg font-bold text-slate-900 tracking-tight truncate">
+            <p className="text-lg font-bold text-foreground tracking-tight truncate">
               {displayName}
             </p>
             {isCurrentUser && (
@@ -293,7 +293,7 @@ function RoomDetailOccupied({
             )}
           </div>
           {duration && (
-            <p className="text-sm text-slate-500 mt-0.5 font-medium">{duration}</p>
+            <p className="text-sm text-muted-foreground mt-0.5 font-medium">{duration}</p>
           )}
         </div>
       </div>
@@ -301,15 +301,15 @@ function RoomDetailOccupied({
       {(moveInFormatted || profile.occupation) && (
         <div className="grid grid-cols-2 gap-4 mb-6">
           {moveInFormatted && (
-            <div className="bg-slate-50/50 p-3 rounded-xl border border-slate-100">
-              <span className="block text-[9px] uppercase font-bold text-slate-400 tracking-wider mb-1">{t("floorPlan.moveInDate")}</span>
-              <span className="text-xs font-semibold text-slate-700">{moveInFormatted}</span>
+            <div className="bg-muted/50 p-3 rounded-xl border border-border">
+              <span className="block text-[9px] uppercase font-bold text-muted-foreground tracking-wider mb-1">{t("floorPlan.moveInDate")}</span>
+              <span className="text-xs font-semibold text-foreground/90">{moveInFormatted}</span>
             </div>
           )}
           {profile.occupation && (
-            <div className="bg-slate-50/50 p-3 rounded-xl border border-slate-100">
-              <span className="block text-[9px] uppercase font-bold text-slate-400 tracking-wider mb-1">{t("floorPlan.occupation")}</span>
-              <span className="text-xs font-semibold text-slate-700 truncate block">
+            <div className="bg-muted/50 p-3 rounded-xl border border-border">
+              <span className="block text-[9px] uppercase font-bold text-muted-foreground tracking-wider mb-1">{t("floorPlan.occupation")}</span>
+              <span className="text-xs font-semibold text-foreground/90 truncate block">
                 {t(`profileOptions.occupation.${profile.occupation}` as Parameters<typeof t>[0])}
               </span>
             </div>
@@ -318,7 +318,7 @@ function RoomDetailOccupied({
       )}
 
       {profile.bio && (
-        <p className="text-sm text-slate-500 leading-relaxed mb-6 line-clamp-3 font-medium italic italic">
+        <p className="text-sm text-muted-foreground leading-relaxed mb-6 line-clamp-3 font-medium italic">
           &ldquo;{profile.bio}&rdquo;
         </p>
       )}
@@ -339,11 +339,11 @@ function RoomDetailVacant() {
   const t = useI18n();
 
   return (
-    <div className="py-8 text-center bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
-      <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center">
-        <span className="text-sm text-slate-300 font-bold tracking-tight">{t("floorPlan.vacant")}</span>
+    <div className="py-8 text-center bg-muted/50 rounded-2xl border border-dashed border-border">
+      <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-card border border-border shadow-sm flex items-center justify-center">
+        <span className="text-sm text-muted-foreground/70 font-bold tracking-tight">{t("floorPlan.vacant")}</span>
       </div>
-      <p className="text-sm text-slate-400 max-w-[240px] mx-auto font-medium">
+      <p className="text-sm text-muted-foreground max-w-[240px] mx-auto font-medium">
         {t("floorPlan.vacantDescription")}
       </p>
     </div>

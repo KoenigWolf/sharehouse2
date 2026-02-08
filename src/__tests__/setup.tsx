@@ -1,6 +1,9 @@
 import "@testing-library/jest-dom";
 import { vi, beforeAll, afterAll } from "vitest";
 
+// Mock server-only (allows importing server modules in tests)
+vi.mock("server-only", () => ({}));
+
 // Mock next/navigation
 vi.mock("next/navigation", () => ({
   useRouter: () => ({

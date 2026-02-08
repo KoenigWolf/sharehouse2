@@ -12,10 +12,10 @@ export interface FloorColorConfig {
 
 export const FLOOR_COLORS: Record<FloorId | "?", FloorColorConfig> = {
   "5F": { bg: "bg-brand-50", border: "border-brand-100", text: "text-brand-900", accent: "bg-brand-500", fill: "var(--brand-500)" },
-  "4F": { bg: "bg-slate-50", border: "border-slate-100", text: "text-slate-900", accent: "bg-slate-600", fill: "#475569" },
-  "3F": { bg: "bg-violet-50", border: "border-violet-100", text: "text-violet-900", accent: "bg-violet-500", fill: "#8b5cf6" },
+  "4F": { bg: "floor-slate-bg", border: "floor-slate-border", text: "floor-slate-text", accent: "bg-secondary", fill: "var(--floor-slate)" },
+  "3F": { bg: "floor-violet-bg", border: "floor-violet-border", text: "floor-violet-text", accent: "bg-primary", fill: "var(--floor-violet)" },
   "2F": { bg: "bg-brand-50", border: "border-brand-100", text: "text-brand-900", accent: "bg-brand-500", fill: "var(--brand-500)" },
-  "?": { bg: "bg-slate-50", border: "border-slate-100", text: "text-slate-400", accent: "bg-slate-400", fill: "#94a3b8" },
+  "?": { bg: "floor-slate-bg", border: "floor-slate-border", text: "text-muted-foreground", accent: "bg-muted", fill: "var(--floor-slate)" },
 };
 
 export function getFloorFromRoom(roomNumber: string | null): string {

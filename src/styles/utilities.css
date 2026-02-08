@@ -1,0 +1,333 @@
+/**
+ * Semantic Utility Classes - Share House Portal
+ *
+ * 用途別のユーティリティクラス。
+ * tokens.css の変数を参照し、コンポーネントで使用する。
+ */
+
+@layer utilities {
+
+  /* ========================================
+   * カード系（Card）
+   * ======================================== */
+  .card-base {
+    @apply bg-card border border-border;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-interactive {
+    @apply bg-card border border-border;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+  }
+
+  .card-interactive:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .card-elevated {
+    @apply bg-card border border-border;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-elevated);
+  }
+
+  /* ========================================
+   * コンテナ系（Container）
+   * ======================================== */
+  .section-container {
+    @apply bg-secondary/50;
+    /* Slightly distinct from main bg */
+    border-radius: var(--radius-container);
+    padding: var(--spacing-section);
+  }
+
+  .page-container {
+    @apply max-w-4xl mx-auto;
+    padding-left: var(--spacing-page);
+    padding-right: var(--spacing-page);
+  }
+
+  .modal-container {
+    @apply bg-popover text-popover-foreground;
+    border-radius: var(--radius-modal);
+    box-shadow: var(--shadow-elevated);
+  }
+
+  /* ========================================
+   * 入力系（Input）
+   * ======================================== */
+  .input-base {
+    @apply w-full bg-input/10 border border-input text-foreground text-[15px] font-medium;
+    @apply placeholder:text-muted-foreground;
+    @apply focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:border-input;
+    height: var(--input-height);
+    border-radius: var(--radius-input);
+    padding: 0 1.25rem;
+    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+  }
+
+  .input-lg {
+    height: var(--input-height-lg);
+  }
+
+  .textarea-base {
+    @apply w-full bg-input/10 border border-input text-foreground text-[15px] font-medium;
+    @apply placeholder:text-muted-foreground leading-relaxed;
+    @apply focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:border-input;
+    border-radius: var(--radius-input);
+    padding: 1rem 1.25rem;
+    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+    resize: none;
+  }
+
+  .select-base {
+    @apply w-full bg-input/10 border border-input text-foreground text-[15px] font-medium;
+    @apply focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:border-input;
+    @apply cursor-pointer appearance-none;
+    height: var(--input-height);
+    border-radius: var(--radius-input);
+    padding: 0 2.5rem 0 1.25rem;
+    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+    /* Chevron - uses muted foreground color for visibility in light mode */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.75rem center;
+    background-repeat: no-repeat;
+    background-size: 1.25rem;
+  }
+
+  /*
+   * Select wrapper pattern for mask-image chevron (inherits text color).
+   * Usage: <div class="select-wrapper"><select class="select-base">...</select></div>
+   */
+  .select-wrapper {
+    @apply relative inline-block w-full;
+  }
+
+  .select-wrapper > .select-base {
+    background-image: none;
+  }
+
+  .select-wrapper::after {
+    content: "";
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.25rem;
+    height: 1.25rem;
+    pointer-events: none;
+    /* Mask-based chevron inherits currentColor for automatic dark mode support */
+    -webkit-mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 1.25rem;
+    mask-size: 1.25rem;
+    background-color: currentColor;
+    opacity: 0.5;
+  }
+
+  /* ========================================
+   * テキスト系（Typography）
+   * ======================================== */
+  .heading-page {
+    @apply text-2xl sm:text-3xl font-bold text-foreground tracking-tight;
+  }
+
+  .heading-section {
+    @apply text-lg font-bold text-foreground;
+  }
+
+  .heading-card {
+    @apply text-base font-bold text-foreground;
+  }
+
+  .text-body {
+    @apply text-sm text-foreground/80 leading-relaxed font-sans;
+  }
+
+  .text-muted {
+    @apply text-xs text-muted-foreground font-sans;
+  }
+
+  .label-uppercase {
+    @apply text-[10px] font-bold tracking-wider uppercase text-muted-foreground/80 font-sans;
+  }
+
+  .label-field {
+    @apply text-sm font-medium text-foreground/80 font-sans;
+  }
+
+  /* ========================================
+   * バッジ系（Badge）
+   * ======================================== */
+  .badge-base {
+    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium font-sans;
+    border-radius: var(--radius-badge);
+  }
+
+  .badge-default {
+    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium font-sans;
+    @apply bg-secondary text-secondary-foreground;
+    border-radius: var(--radius-badge);
+  }
+
+  .badge-primary {
+    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium font-sans;
+    @apply bg-primary text-primary-foreground;
+    border-radius: var(--radius-badge);
+  }
+
+  .badge-dark {
+    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium font-sans;
+    @apply bg-foreground text-background;
+    border-radius: var(--radius-badge);
+  }
+
+  .badge-success {
+    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium font-sans;
+    @apply bg-success-bg text-success;
+    border-radius: var(--radius-badge);
+  }
+
+  .badge-error {
+    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium font-sans;
+    @apply bg-error-bg text-error;
+    border-radius: var(--radius-badge);
+  }
+
+  .badge-outline {
+    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium font-sans;
+    @apply bg-transparent border border-border text-muted-foreground;
+    border-radius: var(--radius-badge);
+  }
+
+  .badge-warning {
+    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium font-sans;
+    background-color: var(--warning-bg);
+    color: var(--warning);
+    border: 1px solid var(--warning-border);
+    border-radius: var(--radius-badge);
+  }
+
+  /* ========================================
+   * フロア識別カラー（Floor Colors）
+   * ======================================== */
+  .floor-violet-bg { background-color: var(--floor-violet-bg); }
+  .floor-violet-border { border-color: var(--floor-violet-border); }
+  .floor-violet-text { color: var(--floor-violet); }
+  .floor-slate-bg { background-color: var(--floor-slate-bg); }
+  .floor-slate-border { border-color: var(--floor-slate-border); }
+  .floor-slate-text { color: var(--floor-slate); }
+
+  /* ========================================
+   * ゴミ種別カラー（Garbage Type Colors）
+   * ======================================== */
+  .garbage-combustible-bg { background-color: var(--garbage-combustible-bg); }
+  .garbage-combustible-text { color: var(--garbage-combustible); }
+  .garbage-plastic-bg { background-color: var(--garbage-plastic-bg); }
+  .garbage-plastic-text { color: var(--garbage-plastic); }
+
+  /* ========================================
+   * カレンダー曜日カラー（Calendar Day Colors）
+   * ======================================== */
+  .day-sunday-bg { background-color: var(--day-sunday-bg); }
+  .day-sunday-text { color: var(--day-sunday); }
+  .day-saturday-bg { background-color: var(--day-saturday-bg); }
+  .day-saturday-text { color: var(--day-saturday); }
+
+  /* ========================================
+   * アラート・フィードバック系（Alert）
+   * ======================================== */
+  .alert-base {
+    @apply p-4;
+    border-radius: var(--radius-card);
+  }
+
+  .alert-success {
+    @apply p-4 bg-success-bg/50 border-l-4 border-success text-success font-sans;
+    border-radius: var(--radius-card);
+  }
+
+  .alert-error {
+    @apply p-4 bg-error-bg/50 border-l-4 border-error text-error font-sans;
+    border-radius: var(--radius-card);
+  }
+
+  .alert-info {
+    @apply p-4 bg-secondary/80 border-l-4 border-muted-foreground/30 text-foreground font-sans;
+    border-radius: var(--radius-card);
+  }
+
+  /* ========================================
+   * ボタン系（Button Extensions）
+   * ======================================== */
+  .btn-icon {
+    @apply inline-flex items-center justify-center rounded-full transition-colors;
+    transition-duration: var(--transition-fast);
+  }
+
+  .btn-icon-sm {
+    @apply inline-flex items-center justify-center rounded-full transition-colors w-8 h-8;
+    transition-duration: var(--transition-fast);
+  }
+
+  .btn-icon-md {
+    @apply inline-flex items-center justify-center rounded-full transition-colors w-10 h-10;
+    transition-duration: var(--transition-fast);
+  }
+
+  .btn-icon-lg {
+    @apply inline-flex items-center justify-center rounded-full transition-colors w-12 h-12;
+    transition-duration: var(--transition-fast);
+  }
+
+  /* ========================================
+   * オーバーレイ系（Overlay）
+   * ======================================== */
+  .overlay-dark {
+    @apply bg-black/40 backdrop-blur-sm;
+  }
+
+  .overlay-light {
+    @apply bg-white/60 backdrop-blur-sm;
+    /* Slightly more transparent for rustic feel */
+  }
+
+  /* ========================================
+   * リスト・グリッド系（List/Grid）
+   * ======================================== */
+  .grid-cards {
+    @apply grid gap-4 sm:gap-6;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  .grid-photos {
+    @apply grid grid-cols-3 gap-0.5 sm:gap-1;
+  }
+
+  /* ========================================
+   * 後方互換エイリアス
+   * ======================================== */
+  /* premium-surface は globals.css で維持（既存コードとの互換性） */
+}
+
+/* ダークモード対応 - セマンティックカラーで自動対応されない差分のみ */
+@layer utilities {
+  /* 入力欄の背景を少し明るく（視認性向上） */
+  .dark .input-base,
+  .dark .textarea-base,
+  .dark .select-base {
+    @apply bg-input/20;
+  }
+
+  .dark .select-base {
+    /* ダークモード用の明るいシェブロン */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  }
+}

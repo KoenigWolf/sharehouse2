@@ -16,6 +16,7 @@ import {
   LayoutGrid,
   BarChart3,
   User,
+  Settings,
   LogOut,
   Shield,
   Home,
@@ -75,15 +76,15 @@ const NavLink = memo(function NavLink({ item, isActive }: NavLinkProps) {
           strokeWidth={isActive ? 2.5 : 2}
           className={
             isActive
-              ? "text-slate-900"
-              : "text-slate-400 group-hover:text-slate-600 transition-colors"
+              ? "text-primary"
+              : "text-muted-foreground group-hover:text-foreground transition-colors"
           }
         />
       </div>
       {isActive && (
         <m.span
           layoutId="nav-active-bar"
-          className="absolute bottom-0 left-0 right-0 h-0.5 bg-slate-900 rounded-full"
+          className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         />
       )}
@@ -113,7 +114,7 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
 
   if (!userId) {
     return (
-      <Button asChild variant="ghost" className="text-sm font-medium text-slate-600 hover:text-brand-500">
+      <Button asChild variant="ghost" className="text-sm font-medium text-muted-foreground hover:text-primary">
         <Link href="/login">{t("auth.login")}</Link>
       </Button>
     );
@@ -128,9 +129,9 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
           className="relative shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 rounded-full cursor-pointer group"
         >
           <div
-            className={`w-9 h-9 rounded-full overflow-hidden transition-all border ${isActive
-              ? "border-slate-900 shadow-sm"
-              : "border-slate-200 group-hover:border-slate-300"
+            className={`w-9 h-9 rounded-full overflow-hidden transition-all border-2 ${isActive
+              ? "border-primary shadow-sm"
+              : "border-border group-hover:border-primary/50"
               }`}
           >
             {optimizedSrc ? (
@@ -142,32 +143,38 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
                 className="object-cover w-full h-full"
               />
             ) : (
-              <div className="w-full h-full bg-slate-50 flex items-center justify-center">
-                <User size={18} className="text-slate-400" strokeWidth={2} />
+              <div className="w-full h-full bg-muted flex items-center justify-center">
+                <User size={18} className="text-muted-foreground" strokeWidth={2} />
               </div>
             )}
           </div>
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" sideOffset={10} className="w-48 p-1 rounded-xl shadow-xl border-slate-200">
-        <DropdownMenuItem asChild className="rounded-lg px-3 py-2.5 focus:bg-slate-50 cursor-pointer">
+      <DropdownMenuContent align="end" sideOffset={10} className="w-48 p-1.5 rounded-2xl shadow-xl border-border">
+        <DropdownMenuItem asChild className="rounded-xl px-3 py-2.5 focus:bg-secondary cursor-pointer">
           <Link href={profileHref} className="flex items-center">
-            <User size={16} strokeWidth={2} className="mr-3 text-slate-400" />
-            <span className="font-semibold text-sm text-slate-600">{t("nav.myPage")}</span>
+            <User size={16} strokeWidth={2} className="mr-3 text-muted-foreground" />
+            <span className="font-semibold text-sm text-foreground/80">{t("nav.myPage")}</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild className="rounded-xl px-3 py-2.5 focus:bg-secondary cursor-pointer">
+          <Link href="/settings" className="flex items-center">
+            <Settings size={16} strokeWidth={2} className="mr-3 text-muted-foreground" />
+            <span className="font-semibold text-sm text-foreground/80">{t("nav.settings")}</span>
           </Link>
         </DropdownMenuItem>
         {isAdmin && (
-          <DropdownMenuItem asChild className="rounded-lg px-3 py-2.5 focus:bg-slate-50 cursor-pointer">
+          <DropdownMenuItem asChild className="rounded-xl px-3 py-2.5 focus:bg-secondary cursor-pointer">
             <Link href="/admin" className="flex items-center">
-              <Shield size={16} strokeWidth={2} className="mr-3 text-slate-400" />
-              <span className="font-semibold text-sm text-slate-600">{t("nav.admin")}</span>
+              <Shield size={16} strokeWidth={2} className="mr-3 text-muted-foreground" />
+              <span className="font-semibold text-sm text-foreground/80">{t("nav.admin")}</span>
             </Link>
           </DropdownMenuItem>
         )}
-        <DropdownMenuSeparator className="my-1 bg-slate-100" />
-        <DropdownMenuItem onClick={handleLogout} className="rounded-lg px-3 py-2.5 focus:bg-slate-50 cursor-pointer group/logout">
-          <LogOut size={16} strokeWidth={2} className="mr-3 text-slate-400 group-hover/logout:text-slate-600 transition-colors" />
-          <span className="font-semibold text-sm text-slate-500 group-hover/logout:text-slate-600">{t("nav.logout")}</span>
+        <DropdownMenuSeparator className="my-1.5 bg-border" />
+        <DropdownMenuItem onClick={handleLogout} className="rounded-xl px-3 py-2.5 focus:bg-secondary cursor-pointer group/logout">
+          <LogOut size={16} strokeWidth={2} className="mr-3 text-muted-foreground group-hover/logout:text-foreground transition-colors" />
+          <span className="font-semibold text-sm text-muted-foreground group-hover/logout:text-foreground">{t("nav.logout")}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -188,20 +195,20 @@ export const Header = memo(function Header() {
 
   return (
     <header
-      className="sticky top-0 z-40 bg-slate-50 backdrop-blur-sm border-b border-slate-100"
+      className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border"
       role="banner"
     >
       <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between max-w-5xl">
         <div className="flex items-center gap-6 sm:gap-10">
           <Link
             href="/residents"
-            className="flex items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 group"
+            className="flex items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 group"
             aria-label={t("a11y.goHome")}
           >
-            <Home size={22} className="text-slate-900" strokeWidth={2.5} />
+            <Home size={22} className="text-primary" strokeWidth={2.5} />
             <div className="flex flex-col leading-none">
-              <span className="text-xl font-bold tracking-tight text-slate-900">
-                Share<span className="text-brand-500">House</span>
+              <span className="text-xl font-bold tracking-tight text-foreground">
+                Share<span className="text-primary">House</span>
               </span>
             </div>
           </Link>

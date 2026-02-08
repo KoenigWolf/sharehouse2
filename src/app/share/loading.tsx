@@ -2,8 +2,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ShareLoading() {
    return (
-      <div className="min-h-screen bg-slate-50 flex flex-col">
-         <header className="h-[73px] bg-white border-b border-slate-100" />
+      <div className="min-h-screen bg-background flex flex-col">
+         <header className="h-[73px] bg-card border-b border-border" />
 
          <main className="flex-1 pb-20 sm:pb-12">
             <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-10 max-w-4xl space-y-8">
@@ -14,7 +14,7 @@ export default function ShareLoading() {
 
                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {[...Array(6)].map((_, i) => (
-                     <div key={i} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden h-[320px]">
+                     <div key={i} className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden h-[320px]">
                         <Skeleton className="h-48 w-full" />
                         <div className="p-5 space-y-4">
                            <div className="flex items-center justify-between">

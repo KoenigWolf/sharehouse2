@@ -64,8 +64,8 @@ describe("ResidentsFilter", () => {
       render(<ResidentsFilter {...defaultProps} sortBy="name" />);
 
       const nameButton = screen.getByText("名前");
-      expect(nameButton).toHaveClass("bg-slate-900");
-      expect(nameButton).toHaveClass("text-white");
+      expect(nameButton).toHaveClass("bg-primary");
+      expect(nameButton).toHaveClass("text-primary-foreground");
     });
 
     it("calls onSortChange when clicking sort button", async () => {

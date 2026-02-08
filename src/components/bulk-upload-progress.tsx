@@ -12,9 +12,9 @@ interface BulkUploadProgressProps {
 }
 
 const statusColorMap: Record<UploadItemStatus, string> = {
-  pending: "text-slate-400",
-  compressing: "text-slate-500",
-  uploading: "text-slate-500",
+  pending: "text-muted-foreground",
+  compressing: "text-muted-foreground",
+  uploading: "text-muted-foreground",
   done: "text-success",
   error: "text-error",
 };
@@ -57,20 +57,20 @@ export const BulkUploadProgress = memo(function BulkUploadProgress({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.2 }}
-      className="mb-4 py-3 px-4 bg-white border border-slate-200 rounded-lg"
+      className="mb-4 py-3 px-4 bg-card border border-border rounded-lg"
     >
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs text-slate-500 font-mono">
+        <span className="text-xs text-muted-foreground font-mono">
           {completedCount} / {totalCount}
         </span>
-        <span className="text-xs text-slate-400">
+        <span className="text-xs text-muted-foreground">
           {Math.round(progress)}%
         </span>
       </div>
 
-      <div className="w-full h-1 bg-slate-200 rounded-full overflow-hidden mb-3">
+      <div className="w-full h-1 bg-secondary rounded-full overflow-hidden mb-3">
         <m.div
-          className="h-full bg-slate-900"
+          className="h-full bg-foreground"
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.3, ease: "easeOut" }}
@@ -83,7 +83,7 @@ export const BulkUploadProgress = memo(function BulkUploadProgress({
             key={item.id}
             className="flex items-center justify-between gap-2 py-0.5"
           >
-            <span className="text-[11px] text-slate-500 truncate min-w-0">
+            <span className="text-[11px] text-muted-foreground truncate min-w-0">
               {item.fileName}
             </span>
             <StatusLabel status={item.status} />

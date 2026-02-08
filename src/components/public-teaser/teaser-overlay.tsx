@@ -15,7 +15,7 @@ export function TeaserOverlay({ totalCount }: TeaserOverlayProps) {
    return (
       <div className="relative pt-20 pb-10">
          {/* Background Gradient */}
-         <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-t from-slate-50 to-transparent pointer-events-none" />
+         <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-t from-background to-transparent pointer-events-none" />
 
          <m.div
             initial={{ y: 20, opacity: 0 }}
@@ -24,15 +24,15 @@ export function TeaserOverlay({ totalCount }: TeaserOverlayProps) {
             transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
             className="relative premium-surface rounded-[40px] p-8 sm:p-12 text-center max-w-2xl mx-auto shadow-2xl shadow-brand-500/10"
          >
-            <div className="w-16 h-16 rounded-3xl bg-brand-50 flex items-center justify-center mx-auto mb-6 text-brand-500">
+            <div className="w-16 h-16 rounded-3xl bg-primary/10 flex items-center justify-center mx-auto mb-6 text-brand-500">
                <UserPlus className="w-8 h-8" />
             </div>
 
-            <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight mb-4">
+            <h3 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight mb-4">
                {totalCount ? t("teaser.headingWithCount", { count: totalCount }) : t("teaser.heading")}
             </h3>
 
-            <p className="text-slate-500 font-medium mb-8 leading-relaxed">
+            <p className="text-muted-foreground font-medium mb-8 leading-relaxed">
                {t("teaser.description")}
             </p>
 
@@ -46,13 +46,13 @@ export function TeaserOverlay({ totalCount }: TeaserOverlayProps) {
                </Link>
                <Link
                   href="/login"
-                  className="h-12 px-8 rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 font-bold tracking-wider uppercase transition-all duration-300 flex items-center justify-center"
+                  className="h-12 px-8 rounded-full bg-card border border-border text-foreground/80 hover:bg-muted font-bold tracking-wider uppercase transition-all duration-300 flex items-center justify-center"
                >
                   {t("teaser.ctaLogin")}
                </Link>
             </div>
 
-            <p className="mt-8 text-[11px] font-bold text-slate-400 tracking-widest uppercase">
+            <p className="mt-8 text-[11px] font-bold text-muted-foreground tracking-widest uppercase">
                {t("teaser.footer")}
             </p>
          </m.div>

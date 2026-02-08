@@ -119,10 +119,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col relative overflow-hidden">
+    <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
       {/* Decorative Background Elements */}
-      <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-brand-50/50 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-50/30 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/50 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-50/30 rounded-full blur-[120px] pointer-events-none" />
 
       <main className="flex-1 flex flex-col items-center justify-center p-6 relative z-10">
         <m.div
@@ -137,7 +137,7 @@ export default function LoginPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
-              className="text-3xl font-light text-slate-900 tracking-wide"
+              className="text-3xl font-light text-foreground tracking-wide"
             >
               Share<span className="text-brand-500">House</span>
             </m.h1>
@@ -145,19 +145,19 @@ export default function LoginPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
-              className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]"
+              className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em]"
             >
               {isForgotMode ? t("auth.forgotPassword") : t("auth.residentPortal")}
             </m.p>
           </div>
 
           {/* Form Card */}
-          <div className="bg-white/70 backdrop-blur-2xl rounded-[2.5rem] p-8 sm:p-10 shadow-2xl shadow-slate-200/50 border border-white/50">
+          <div className="bg-card/70 backdrop-blur-2xl rounded-[2.5rem] p-8 sm:p-10 shadow-2xl shadow-border/50 border border-border/50">
             {/* Mode Switcher */}
             {!isForgotMode && (
-              <div className="bg-slate-100/50 p-1.5 rounded-2xl flex relative mb-10">
+              <div className="bg-secondary/50 p-1.5 rounded-2xl flex relative mb-10">
                 <m.div
-                  className="absolute inset-y-1.5 bg-white rounded-xl shadow-sm z-0"
+                  className="absolute inset-y-1.5 bg-card rounded-xl shadow-sm z-0"
                   initial={false}
                   animate={{
                     left: mode === "login" ? "6px" : "calc(50% + 3px)",
@@ -167,14 +167,14 @@ export default function LoginPage() {
                 />
                 <button
                   onClick={() => switchMode("login")}
-                  className={`flex-1 py-2.5 text-xs font-black uppercase tracking-widest relative z-10 transition-colors duration-300 ${mode === "login" ? "text-slate-900" : "text-slate-400"
+                  className={`flex-1 py-2.5 text-xs font-black uppercase tracking-widest relative z-10 transition-colors duration-300 ${mode === "login" ? "text-foreground" : "text-muted-foreground"
                     }`}
                 >
                   {t("auth.login")}
                 </button>
                 <button
                   onClick={() => switchMode("signup")}
-                  className={`flex-1 py-2.5 text-xs font-black uppercase tracking-widest relative z-10 transition-colors duration-300 ${mode === "signup" ? "text-slate-900" : "text-slate-400"
+                  className={`flex-1 py-2.5 text-xs font-black uppercase tracking-widest relative z-10 transition-colors duration-300 ${mode === "signup" ? "text-foreground" : "text-muted-foreground"
                     }`}
                 >
                   {t("auth.signup")}
@@ -201,7 +201,7 @@ export default function LoginPage() {
                     exit={{ opacity: 0, height: 0 }}
                     className="space-y-2"
                   >
-                    <label htmlFor="name" className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                    <label htmlFor="name" className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
                       {t("auth.name")}
                     </label>
                     <input
@@ -211,14 +211,14 @@ export default function LoginPage() {
                       onChange={(e) => setName(e.target.value)}
                       placeholder={t("auth.namePlaceholder")}
                       required
-                      className="w-full h-14 px-5 bg-white border border-slate-100 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all"
+                      className="w-full h-14 px-5 bg-card border border-border rounded-2xl text-sm font-medium focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all"
                     />
                   </m.div>
                 )}
               </AnimatePresence>
 
               <div className="space-y-2">
-                <label htmlFor="email" className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                <label htmlFor="email" className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
                   {t("auth.email")}
                 </label>
                 <input
@@ -229,14 +229,14 @@ export default function LoginPage() {
                   placeholder="name@example.com"
                   required
                   autoComplete="email"
-                  className="w-full h-14 px-5 bg-white border border-slate-100 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all"
+                  className="w-full h-14 px-5 bg-card border border-border rounded-2xl text-sm font-medium focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all"
                 />
               </div>
 
               {!isForgotMode && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between ml-1">
-                    <label htmlFor="password" className="block text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                    <label htmlFor="password" className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest">
                       {t("auth.password")}
                     </label>
                     {mode === "login" && (
@@ -247,7 +247,7 @@ export default function LoginPage() {
                           setError(null);
                           setSuccess(null);
                         }}
-                        className="text-[10px] font-bold text-slate-400 hover:text-brand-500 transition-colors uppercase tracking-widest"
+                        className="text-[10px] font-bold text-muted-foreground hover:text-brand-500 transition-colors uppercase tracking-widest"
                       >
                         {t("auth.forgotPassword")}
                       </button>
@@ -260,7 +260,7 @@ export default function LoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     autoComplete={mode === "login" ? "current-password" : "new-password"}
-                    className="w-full h-14 px-5 bg-white border border-slate-100 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all"
+                    className="w-full h-14 px-5 bg-card border border-border rounded-2xl text-sm font-medium focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all"
                   />
                   <AnimatePresence>
                     {mode === "signup" && password.length > 0 && (
@@ -285,7 +285,7 @@ export default function LoginPage() {
                     setError(null);
                     setSuccess(null);
                   }}
-                  className="text-[10px] font-black text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-[0.2em] w-full text-center"
+                  className="text-[10px] font-black text-muted-foreground hover:text-foreground/80 transition-colors uppercase tracking-[0.2em] w-full text-center"
                 >
                   ← {t("auth.backToLogin")}
                 </button>
@@ -321,7 +321,7 @@ export default function LoginPage() {
                   type="submit"
                   size="xl"
                   disabled={isLoading}
-                  className="w-full rounded-2xl shadow-xl shadow-brand-100/50 h-14 text-sm font-black uppercase tracking-widest bg-slate-900 hover:bg-slate-800 transition-all active:scale-[0.98]"
+                  className="w-full rounded-2xl shadow-xl shadow-brand-100/50 h-14 text-sm font-black uppercase tracking-widest bg-brand-500 hover:bg-brand-700 text-white transition-all active:scale-[0.98]"
                 >
                   {isLoading ? (
                     <Spinner size="sm" variant="light" />
@@ -336,11 +336,11 @@ export default function LoginPage() {
               </div>
             </form>
 
-            <div className="mt-10 pt-8 border-t border-slate-50 flex flex-col items-center gap-6">
+            <div className="mt-10 pt-8 border-t border-border/50 flex flex-col items-center gap-6">
               {!isForgotMode && (
                 <Link
                   href="/residents"
-                  className="text-[10px] font-black text-slate-400 hover:text-brand-500 transition-all uppercase tracking-[0.2em] flex items-center gap-2 group"
+                  className="text-[10px] font-black text-muted-foreground hover:text-brand-500 transition-all uppercase tracking-[0.2em] flex items-center gap-2 group"
                 >
                   {t("auth.browseAsGuest")}
                   <span className="group-hover:translate-x-1 transition-transform">→</span>
@@ -356,20 +356,20 @@ export default function LoginPage() {
             transition={{ delay: 0.6 }}
             className="text-center space-y-4"
           >
-            <p className="text-xs text-slate-400 font-medium leading-relaxed max-w-[280px] mx-auto">
+            <p className="text-xs text-muted-foreground font-medium leading-relaxed max-w-[280px] mx-auto">
               {t("auth.portalLead")}
             </p>
             <div className="flex items-center justify-center gap-3">
-              <span className="h-px w-6 bg-slate-200" />
-              <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Share House Portal</span>
-              <span className="h-px w-6 bg-slate-200" />
+              <span className="h-px w-6 bg-secondary" />
+              <span className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-widest">{t("auth.shareHousePortal")}</span>
+              <span className="h-px w-6 bg-secondary" />
             </div>
           </m.div>
         </m.div>
       </main>
 
       <footer className="py-8 relative z-10">
-        <p className="text-[10px] font-bold text-slate-300 text-center uppercase tracking-[0.3em]">
+        <p className="text-[10px] font-bold text-muted-foreground/70 text-center uppercase tracking-[0.3em]">
           © {new Date().getFullYear()}
         </p>
       </footer>
@@ -388,15 +388,15 @@ function PasswordStrengthMeter({ password }: { password: string }) {
     t("auth.passwordStrength.strong"),
   ];
   const colors = [
-    "bg-slate-200",
-    "bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.4)]",
-    "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.4)]",
-    "bg-brand-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]"
+    "bg-secondary",
+    "bg-error shadow-[0_0_8px_var(--error-border)]",
+    "bg-warning shadow-[0_0_8px_var(--warning-border)]",
+    "bg-brand-500 shadow-[0_0_8px_var(--brand-200)]"
   ];
   const textColors = [
-    "text-slate-300",
-    "text-red-500",
-    "text-amber-500",
+    "text-muted-foreground/70",
+    "text-error",
+    "text-warning",
     "text-brand-500"
   ];
 
@@ -406,13 +406,13 @@ function PasswordStrengthMeter({ password }: { password: string }) {
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className={`flex-1 rounded-full transition-all duration-500 ${i <= strength ? colors[strength] : "bg-slate-100"
+            className={`flex-1 rounded-full transition-all duration-500 ${i <= strength ? colors[strength] : "bg-secondary"
               }`}
           />
         ))}
       </div>
       <div className="flex justify-between items-center h-3">
-        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
           {t("auth.passwordHint")}
         </p>
         <p className={`text-[10px] font-black uppercase tracking-widest ${textColors[strength]}`}>

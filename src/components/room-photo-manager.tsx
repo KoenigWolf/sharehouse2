@@ -111,15 +111,15 @@ export function RoomPhotoManager({
   return (
     <div className={compact ? "" : "premium-surface rounded-[2rem] overflow-hidden"}>
       {!compact && (
-        <div className="px-6 py-4 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
-          <p className="text-[10px] text-slate-400 font-bold tracking-widest uppercase flex items-center gap-2">
+        <div className="px-6 py-4 border-b border-border/50 flex items-center justify-between bg-muted/30">
+          <p className="text-[10px] text-muted-foreground font-bold tracking-widest uppercase flex items-center gap-2">
             <svg className="w-3.5 h-3.5 text-brand-500
 " fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
             </svg>
             {t("roomPhotos.roomPhotosSection")}
           </p>
-          <span className="text-[10px] text-brand-500 font-bold tracking-wider bg-brand-50 px-2.5 py-1 rounded-full">
+          <span className="text-[10px] text-brand-500 font-bold tracking-wider bg-primary/10 px-2.5 py-1 rounded-full">
             {currentPhotos.length} / {maxPhotos}
           </span>
         </div>
@@ -162,7 +162,7 @@ export function RoomPhotoManager({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="relative aspect-square bg-slate-50 rounded-2xl overflow-hidden ring-1 ring-slate-100 group shadow-sm"
+              className="relative aspect-square bg-muted rounded-2xl overflow-hidden ring-1 ring-border group shadow-sm"
             >
               <Image
                 src={photo.photo_url}
@@ -179,7 +179,7 @@ export function RoomPhotoManager({
                 onClick={() => handleDelete(photo.id)}
                 disabled={deletingId === photo.id}
                 aria-label={t("roomPhotos.delete")}
-                className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-slate-500 opacity-0 group-hover:opacity-100 focus:opacity-100 hover:bg-error-bg hover:text-error shadow-sm transition-all duration-300 rounded-lg scale-90 group-hover:scale-100"
+                className="absolute top-2 right-2 bg-card/90 backdrop-blur-sm text-muted-foreground opacity-0 group-hover:opacity-100 focus:opacity-100 hover:bg-error-bg hover:text-error shadow-sm transition-all duration-300 rounded-lg scale-90 group-hover:scale-100"
               >
                 {deletingId === photo.id ? (
                   <Spinner size="xs" variant="dark" />
@@ -197,17 +197,17 @@ export function RoomPhotoManager({
               whileTap={{ scale: 0.95 }}
               onClick={handleUploadClick}
               disabled={isUploading}
-              className="aspect-square rounded-2xl border-2 border-dashed border-slate-100 bg-slate-50/50 hover:bg-white hover:border-brand-200 hover:shadow-md transition-all duration-300 flex flex-col items-center justify-center gap-2 group"
+              className="aspect-square rounded-2xl border-2 border-dashed border-border bg-muted/50 hover:bg-card hover:border-brand-200 hover:shadow-md transition-all duration-300 flex flex-col items-center justify-center gap-2 group"
             >
               {isUploading ? (
                 <Spinner variant="dark" />
               ) : (
                 <>
-                  <div className="w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center group-hover:bg-brand-100
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-brand-100
  transition-colors">
                     <Plus className="w-5 h-5 text-brand-500" />
                   </div>
-                  <span className="text-[10px] text-slate-400 font-bold tracking-wider uppercase group-hover:text-brand-500 transition-colors">
+                  <span className="text-[10px] text-muted-foreground font-bold tracking-wider uppercase group-hover:text-brand-500 transition-colors">
                     {t("roomPhotos.upload")}
                   </span>
                 </>
@@ -221,7 +221,7 @@ export function RoomPhotoManager({
             <button
               type="button"
               onClick={() => setIsExpanded(true)}
-              className="h-9 px-6 rounded-full border border-slate-200 text-[11px] font-bold text-slate-500 hover:text-slate-700 hover:border-slate-300 tracking-wider uppercase transition-all duration-300"
+              className="h-9 px-6 rounded-full border border-border text-[11px] font-bold text-muted-foreground hover:text-foreground/90 hover:border-border tracking-wider uppercase transition-all duration-300"
             >
               {t("roomPhotos.showMore", { count: currentPhotos.length - (previewLimit ?? 0) })}
             </button>
@@ -230,7 +230,7 @@ export function RoomPhotoManager({
 
         {canUpload ? (
           <div className="pt-2">
-            <p className="text-[10px] text-slate-400 leading-relaxed font-medium">
+            <p className="text-[10px] text-muted-foreground leading-relaxed font-medium">
               <span className="text-brand-500 font-bold mr-1">INFO:</span>
               {t("roomPhotos.uploadLimit", { max: maxPhotos, bulk: effectiveBulkLimit })}
               <br />
@@ -238,14 +238,14 @@ export function RoomPhotoManager({
             </p>
           </div>
         ) : (
-          <p className="text-[10px] text-amber-500 font-bold tracking-wider uppercase bg-amber-50 px-3 py-1.5 rounded-full inline-block">
+          <p className="text-[10px] text-warning font-bold tracking-wider uppercase bg-warning-bg px-3 py-1.5 rounded-full inline-block">
             {t("errors.maxPhotosReached")}
           </p>
         )}
 
         {currentPhotos.length === 0 && !isUploading && (
-          <div className="py-8 text-center bg-slate-50/30 rounded-2xl border border-dashed border-slate-100">
-            <p className="text-sm text-slate-400 italic">
+          <div className="py-8 text-center bg-muted/30 rounded-2xl border border-dashed border-border">
+            <p className="text-sm text-muted-foreground italic">
               {t("roomPhotos.noPhotosHint")}
             </p>
           </div>

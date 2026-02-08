@@ -63,7 +63,7 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col relative overflow-hidden">
+    <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-200/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-brand-300/20 rounded-full blur-[120px] pointer-events-none" />
@@ -71,7 +71,7 @@ export default function ResetPasswordPage() {
       <main className="flex-1 flex items-center justify-center p-6 relative z-10">
         <div className="w-full max-w-sm">
           <div className="text-center mb-10">
-            <h1 className="text-xl font-light text-slate-900 tracking-wider">
+            <h1 className="text-xl font-light text-foreground tracking-wider">
               SHARE HOUSE
             </h1>
             <p className="text-[10px] font-bold tracking-widest uppercase text-brand-500 mt-2">
@@ -91,23 +91,23 @@ export default function ResetPasswordPage() {
                     <polyline points="20 6 9 17 4 12"></polyline>
                   </svg>
                 </div>
-                <p className="text-sm font-semibold text-slate-900">
+                <p className="text-sm font-semibold text-foreground">
                   {t("auth.passwordResetSuccess")}
                 </p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-muted-foreground">
                   {t("common.processing")}...
                 </p>
               </m.div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
-                <p className="text-xs text-slate-500 leading-relaxed text-center mb-2">
+                <p className="text-xs text-muted-foreground leading-relaxed text-center mb-2">
                   {t("auth.resetPasswordDescription")}
                 </p>
 
                 <div className="space-y-2">
                   <label
                     htmlFor="new-password"
-                    className="block text-[10px] font-bold text-slate-400 tracking-wider uppercase"
+                    className="block text-[10px] font-bold text-muted-foreground tracking-wider uppercase"
                   >
                     {t("auth.newPassword")}
                   </label>
@@ -118,14 +118,14 @@ export default function ResetPasswordPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     autoComplete="new-password"
-                    className="w-full h-12 px-4 bg-slate-50 border border-slate-100 rounded-xl text-slate-900 text-sm placeholder:text-slate-300 focus:outline-none focus:border-brand-500 focus:bg-white transition-all shadow-inner"
+                    className="w-full h-12 px-4 bg-background border border-border rounded-xl text-foreground text-sm placeholder:text-muted-foreground/70 focus:outline-none focus:border-brand-500 focus:bg-card transition-all shadow-inner"
                   />
                   {password.length > 0 && (
                     <div className="pt-1">
                       <PasswordStrengthMeter password={password} />
                     </div>
                   )}
-                  <p className="text-[10px] text-slate-400 mt-1">
+                  <p className="text-[10px] text-muted-foreground mt-1">
                     {t("auth.passwordHint")}
                   </p>
                 </div>
@@ -133,7 +133,7 @@ export default function ResetPasswordPage() {
                 <div className="space-y-2">
                   <label
                     htmlFor="confirm-password"
-                    className="block text-[10px] font-bold text-slate-400 tracking-wider uppercase"
+                    className="block text-[10px] font-bold text-muted-foreground tracking-wider uppercase"
                   >
                     {t("auth.confirmNewPassword")}
                   </label>
@@ -144,7 +144,7 @@ export default function ResetPasswordPage() {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                     autoComplete="new-password"
-                    className="w-full h-12 px-4 bg-slate-50 border border-slate-100 rounded-xl text-slate-900 text-sm placeholder:text-slate-300 focus:outline-none focus:border-brand-500 focus:bg-white transition-all shadow-inner"
+                    className="w-full h-12 px-4 bg-background border border-border rounded-xl text-foreground text-sm placeholder:text-muted-foreground/70 focus:outline-none focus:border-brand-500 focus:bg-card transition-all shadow-inner"
                   />
                 </div>
 
@@ -190,7 +190,7 @@ export default function ResetPasswordPage() {
                 <div className="text-center pt-2">
                   <a
                     href="/login"
-                    className="text-[11px] font-bold text-slate-400 hover:text-brand-500 transition-colors uppercase tracking-widest"
+                    className="text-[11px] font-bold text-muted-foreground hover:text-brand-500 transition-colors uppercase tracking-widest"
                   >
                     {t("auth.backToLogin")}
                   </a>
@@ -202,10 +202,10 @@ export default function ResetPasswordPage() {
       </main>
 
       <footer className="py-8 relative z-10">
-        <div className="flex items-center justify-center gap-2 text-slate-300">
-          <span className="w-8 h-px bg-slate-200" />
+        <div className="flex items-center justify-center gap-2 text-muted-foreground/70">
+          <span className="w-8 h-px bg-secondary" />
           <p className="text-[10px] font-bold tracking-[0.2em] uppercase">Share House Portal</p>
-          <span className="w-8 h-px bg-slate-200" />
+          <span className="w-8 h-px bg-secondary" />
         </div>
       </footer>
     </div>
