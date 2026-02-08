@@ -391,7 +391,7 @@ export function ProfileDetail({
   ].filter((f) => f.value);
 
   const lifestyleInfo = [
-    { label: t("profile.dailyRhythm"), value: translateOption(profile.daily_rhythm, "dailyRhythm", DAILY_RHYTHMS, t), icon: profile.daily_rhythm === "earlyBird" ? <Sun size={14} /> : <Moon size={14} /> },
+    { label: t("profile.dailyRhythm"), value: translateOption(profile.daily_rhythm, "dailyRhythm", DAILY_RHYTHMS, t), icon: profile.daily_rhythm === "morning" ? <Sun size={14} /> : <Moon size={14} /> },
     { label: t("profile.homeFrequency"), value: translateOption(profile.home_frequency, "homeFrequency", HOME_FREQUENCIES, t), icon: <Home size={14} /> },
     { label: t("profile.alcohol"), value: translateOption(profile.alcohol, "alcohol", ALCOHOL_OPTIONS, t), icon: <Wine size={14} /> },
     { label: t("profile.smoking"), value: translateOption(profile.smoking, "smoking", SMOKING_OPTIONS, t), icon: <Cigarette size={14} /> },
