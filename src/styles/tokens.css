@@ -34,6 +34,8 @@
   --spacing-card: 1.5rem;
   --spacing-section: 2rem;
   --spacing-page: 1rem;
+  --spacing-page-sm: 1.5rem;
+  --spacing-page-xl: 2rem;
 
   /* ========================================
    * トランジション（Transition）

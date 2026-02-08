@@ -263,9 +263,9 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
           )}
         </AnimatePresence>
 
-        {/* Photo grid */}
+        {/* Photo grid - responsive: 2 cols mobile, 3 cols tablet, 4 cols desktop */}
         <div
-          className="grid grid-cols-3 gap-[2px] sm:gap-1 bg-secondary/50 rounded-sm overflow-hidden"
+          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-[2px] sm:gap-1 bg-secondary/50 rounded-sm overflow-hidden"
           role="list"
           aria-label={t("roomPhotos.gallery")}
         >
