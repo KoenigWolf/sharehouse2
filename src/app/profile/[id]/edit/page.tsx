@@ -81,7 +81,7 @@ export default async function ProfileEditPage({ params }: ProfileEditPageProps) 
         <div className="container mx-auto px-4 sm:px-6 py-5 sm:py-8 max-w-2xl space-y-5">
           <Link
             href={`/profile/${validatedId}`}
-            className="text-[11px] tracking-wide text-muted-foreground hover:text-muted-foreground transition-colors"
+            className="text-[11px] tracking-wide text-muted-foreground hover:text-foreground transition-colors"
           >
             {isOwnProfile ? t("myPage.backToMyPage") : t("common.back")}
           </Link>

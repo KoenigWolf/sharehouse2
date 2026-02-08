@@ -177,7 +177,7 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
                   </span>
 
                   {profile && (
-                    <span className={`text-[10px] truncate max-w-full mt-1.5 font-bold ${isMock ? "text-slate-200" : "text-muted-foreground"}`}>
+                    <span className={`text-[10px] truncate max-w-full mt-1.5 font-bold ${isMock ? "text-muted-foreground/30" : "text-muted-foreground"}`}>
                       {profile.nickname || profile.name}
                     </span>
                   )}
@@ -318,7 +318,7 @@ function RoomDetailOccupied({
       )}
 
       {profile.bio && (
-        <p className="text-sm text-muted-foreground leading-relaxed mb-6 line-clamp-3 font-medium italic italic">
+        <p className="text-sm text-muted-foreground leading-relaxed mb-6 line-clamp-3 font-medium italic">
           &ldquo;{profile.bio}&rdquo;
         </p>
       )}

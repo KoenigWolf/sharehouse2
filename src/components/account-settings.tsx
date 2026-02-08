@@ -94,7 +94,7 @@ function PasswordSection() {
 
       <div className="space-y-5">
         <div className="space-y-2">
-          <label htmlFor="current-password" shaking-wide className="block text-[10px] font-bold text-muted-foreground uppercase ml-1">
+          <label htmlFor="current-password" className="block text-[10px] font-bold text-muted-foreground uppercase tracking-wide ml-1">
             {t("account.currentPassword")}
           </label>
           <Input
@@ -109,7 +109,7 @@ function PasswordSection() {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="new-password" shaking-wide className="block text-[10px] font-bold text-muted-foreground uppercase ml-1">
+          <label htmlFor="new-password" className="block text-[10px] font-bold text-muted-foreground uppercase tracking-wide ml-1">
             {t("account.newPassword")}
           </label>
           <Input
@@ -124,7 +124,7 @@ function PasswordSection() {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="confirm-password" shaking-wide className="block text-[10px] font-bold text-muted-foreground uppercase ml-1">
+          <label htmlFor="confirm-password" className="block text-[10px] font-bold text-muted-foreground uppercase tracking-wide ml-1">
             {t("account.confirmPassword")}
           </label>
           <Input

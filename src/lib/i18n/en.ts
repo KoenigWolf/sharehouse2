@@ -70,6 +70,7 @@ export const en: Translations = {
       "We sent a confirmation email. Please click the link and log in again.",
     namePlaceholder: "Taro Yamada",
     portalLead: "A portal that values resident connections",
+    shareHousePortal: "Share House Portal",
     portalSublead: "For a calm share house community",
     portalDescriptionLine1: "Remember faces and names,",
     portalDescriptionLine2: "make it easier to say hello.",

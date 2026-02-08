@@ -155,7 +155,7 @@ const WifiCard = memo(function WifiCard({ wifiInfos }: WifiCardProps) {
       </div>
 
       <div className="px-5 py-3 bg-muted/30 border-t border-border/50">
-        <p className="text-[11px] text-muted-foreground font-medium italic italic">
+        <p className="text-[11px] text-muted-foreground font-medium italic">
           {t("info.wifiNote")}
         </p>
       </div>

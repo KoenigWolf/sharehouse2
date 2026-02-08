@@ -321,7 +321,7 @@ export default function LoginPage() {
                   type="submit"
                   size="xl"
                   disabled={isLoading}
-                  className="w-full rounded-2xl shadow-xl shadow-brand-100/50 h-14 text-sm font-black uppercase tracking-widest bg-foreground hover:bg-foreground/90 transition-all active:scale-[0.98]"
+                  className="w-full rounded-2xl shadow-xl shadow-brand-100/50 h-14 text-sm font-black uppercase tracking-widest bg-brand-500 hover:bg-brand-700 text-white transition-all active:scale-[0.98]"
                 >
                   {isLoading ? (
                     <Spinner size="sm" variant="light" />
@@ -361,7 +361,7 @@ export default function LoginPage() {
             </p>
             <div className="flex items-center justify-center gap-3">
               <span className="h-px w-6 bg-secondary" />
-              <span className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-widest">Share House Portal</span>
+              <span className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-widest">{t("auth.shareHousePortal")}</span>
               <span className="h-px w-6 bg-secondary" />
             </div>
           </m.div>

@@ -71,6 +71,7 @@ export const ja = {
     confirmationEmailSent: "確認メールを送信しました。メールのリンクをクリックしてから再度ログインしてください。",
     namePlaceholder: "山田 太郎",
     portalLead: "住民同士のつながりを大切にする",
+    shareHousePortal: "Share House Portal",
     portalSublead: "シェアハウスのためのポータルサイト",
     portalDescriptionLine1: "顔と名前を覚えて、",
     portalDescriptionLine2: "声をかけやすい関係をつくる。",

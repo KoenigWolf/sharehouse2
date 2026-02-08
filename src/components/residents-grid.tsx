@@ -291,7 +291,7 @@ export function ResidentsGrid({
                       <span
                         className={`text-sm ${isActive
                           ? "text-foreground font-medium"
-                          : "text-muted-foreground group-hover:text-muted-foreground"
+                          : "text-muted-foreground group-hover:text-foreground/80"
                           }`}
                       >
                         {option.label}

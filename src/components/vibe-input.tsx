@@ -58,7 +58,7 @@ export function VibeInput({ currentVibe = "", isLoggedIn }: VibeInputProps) {
    return (
       <div className="w-full">
          <div
-            className={`premium-surface rounded-xl transition-all duration-300 bg-white border ${isFocused ? "ring-2 ring-brand-500/20 border-brand-500 shadow-lg" : "border-border hover:border-border"
+            className={`premium-surface rounded-xl transition-all duration-300 bg-white border ${isFocused ? "ring-2 ring-brand-500/20 border-brand-500 shadow-lg" : "border-border hover:border-brand-500/30"
                }`}
          >
             <div className="p-4 sm:p-5 flex flex-col gap-3">
@@ -89,7 +89,7 @@ export function VibeInput({ currentVibe = "", isLoggedIn }: VibeInputProps) {
                            <span className="text-[10px] font-bold text-muted-foreground/70 tracking-widest uppercase">
                               {message.length}/{BULLETIN.maxMessageLength}
                            </span>
-                           {error && <span className="text-[10px] text-rose-500 font-medium">{error}</span>}
+                           {error && <span className="text-[10px] text-error font-medium">{error}</span>}
                         </div>
                         <div className="flex gap-2">
                            <button
