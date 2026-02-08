@@ -207,6 +207,40 @@
     border-radius: var(--radius-badge);
   }
 
+  .badge-warning {
+    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium font-sans;
+    background-color: var(--warning-bg);
+    color: var(--warning);
+    border: 1px solid var(--warning-border);
+    border-radius: var(--radius-badge);
+  }
+
+  /* ========================================
+   * フロア識別カラー（Floor Colors）
+   * ======================================== */
+  .floor-violet-bg { background-color: var(--floor-violet-bg); }
+  .floor-violet-border { border-color: var(--floor-violet-border); }
+  .floor-violet-text { color: var(--floor-violet); }
+  .floor-slate-bg { background-color: var(--floor-slate-bg); }
+  .floor-slate-border { border-color: var(--floor-slate-border); }
+  .floor-slate-text { color: var(--floor-slate); }
+
+  /* ========================================
+   * ゴミ種別カラー（Garbage Type Colors）
+   * ======================================== */
+  .garbage-combustible-bg { background-color: var(--garbage-combustible-bg); }
+  .garbage-combustible-text { color: var(--garbage-combustible); }
+  .garbage-plastic-bg { background-color: var(--garbage-plastic-bg); }
+  .garbage-plastic-text { color: var(--garbage-plastic); }
+
+  /* ========================================
+   * カレンダー曜日カラー（Calendar Day Colors）
+   * ======================================== */
+  .day-sunday-bg { background-color: var(--day-sunday-bg); }
+  .day-sunday-text { color: var(--day-sunday); }
+  .day-saturday-bg { background-color: var(--day-saturday-bg); }
+  .day-saturday-text { color: var(--day-saturday); }
+
   /* ========================================
    * アラート・フィードバック系（Alert）
    * ======================================== */
