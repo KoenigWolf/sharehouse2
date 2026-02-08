@@ -6,17 +6,18 @@
  */
 
 @layer utilities {
+
   /* ========================================
    * カード系（Card）
    * ======================================== */
   .card-base {
-    @apply bg-white border border-slate-100;
+    @apply bg-card border border-border;
     border-radius: var(--radius-card);
     box-shadow: var(--shadow-card);
   }
 
   .card-interactive {
-    @apply bg-white border border-slate-100;
+    @apply bg-card border border-border;
     border-radius: var(--radius-card);
     box-shadow: var(--shadow-card);
     transition: transform var(--transition-base), box-shadow var(--transition-base);
@@ -28,7 +29,7 @@
   }
 
   .card-elevated {
-    @apply bg-white border border-slate-100;
+    @apply bg-card border border-border;
     border-radius: var(--radius-card);
     box-shadow: var(--shadow-elevated);
   }
@@ -37,7 +38,8 @@
    * コンテナ系（Container）
    * ======================================== */
   .section-container {
-    @apply bg-slate-50;
+    @apply bg-secondary/50;
+    /* Slightly distinct from main bg */
     border-radius: var(--radius-container);
     padding: var(--spacing-section);
   }
@@ -49,7 +51,7 @@
   }
 
   .modal-container {
-    @apply bg-white;
+    @apply bg-popover text-popover-foreground;
     border-radius: var(--radius-modal);
     box-shadow: var(--shadow-elevated);
   }
@@ -58,9 +60,9 @@
    * 入力系（Input）
    * ======================================== */
   .input-base {
-    @apply w-full bg-white border border-slate-200 text-slate-700 text-[15px] font-medium;
-    @apply placeholder:text-slate-300;
-    @apply focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50;
+    @apply w-full bg-input/10 border border-input text-foreground text-[15px] font-medium;
+    @apply placeholder:text-muted-foreground;
+    @apply focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:border-input;
     height: var(--input-height);
     border-radius: var(--radius-input);
     padding: 0 1.25rem;
@@ -72,9 +74,9 @@
   }
 
   .textarea-base {
-    @apply w-full bg-white border border-slate-200 text-slate-700 text-[15px] font-medium;
-    @apply placeholder:text-slate-300 leading-relaxed;
-    @apply focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50;
+    @apply w-full bg-input/10 border border-input text-foreground text-[15px] font-medium;
+    @apply placeholder:text-muted-foreground leading-relaxed;
+    @apply focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:border-input;
     border-radius: var(--radius-input);
     padding: 1rem 1.25rem;
     transition: border-color var(--transition-base), box-shadow var(--transition-base);
@@ -82,14 +84,15 @@
   }
 
   .select-base {
-    @apply w-full bg-white border border-slate-200 text-slate-700 text-[15px] font-medium;
-    @apply focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50;
+    @apply w-full bg-input/10 border border-input text-foreground text-[15px] font-medium;
+    @apply focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:border-input;
     @apply cursor-pointer appearance-none;
     height: var(--input-height);
     border-radius: var(--radius-input);
     padding: 0 2.5rem 0 1.25rem;
     transition: border-color var(--transition-base), box-shadow var(--transition-base);
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    /* Update SVG to match muted-foreground color roughly or keep generic gray */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%237d857a' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
     background-position: right 0.75rem center;
     background-repeat: no-repeat;
     background-size: 1.25rem;
@@ -99,75 +102,74 @@
    * テキスト系（Typography）
    * ======================================== */
   .heading-page {
-    @apply text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight;
+    @apply text-2xl sm:text-3xl font-bold text-foreground tracking-tight;
   }
 
   .heading-section {
-    @apply text-lg font-bold text-slate-900;
+    @apply text-lg font-bold text-foreground;
   }
 
   .heading-card {
-    @apply text-base font-bold text-slate-900;
+    @apply text-base font-bold text-foreground;
   }
 
   .text-body {
-    @apply text-sm text-slate-600 leading-relaxed;
+    @apply text-sm text-foreground/80 leading-relaxed font-sans;
   }
 
   .text-muted {
-    @apply text-xs text-slate-400;
+    @apply text-xs text-muted-foreground font-sans;
   }
 
   .label-uppercase {
-    @apply text-[10px] font-bold tracking-wider uppercase text-slate-400;
+    @apply text-[10px] font-bold tracking-wider uppercase text-muted-foreground/80 font-sans;
   }
 
   .label-field {
-    @apply text-sm font-medium text-slate-600;
+    @apply text-sm font-medium text-foreground/80 font-sans;
   }
 
   /* ========================================
    * バッジ系（Badge）
-   * 各クラスに直接スタイルを定義（Tailwind v4 では @apply で同一レイヤー内のクラス参照不可）
    * ======================================== */
   .badge-base {
-    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium;
+    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium font-sans;
     border-radius: var(--radius-badge);
   }
 
   .badge-default {
-    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium;
-    @apply bg-slate-100 text-slate-500;
+    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium font-sans;
+    @apply bg-secondary text-secondary-foreground;
     border-radius: var(--radius-badge);
   }
 
   .badge-primary {
-    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium;
-    @apply bg-brand-500 text-white;
+    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium font-sans;
+    @apply bg-primary text-primary-foreground;
     border-radius: var(--radius-badge);
   }
 
   .badge-dark {
-    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium;
-    @apply bg-slate-900 text-white;
+    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium font-sans;
+    @apply bg-foreground text-background;
     border-radius: var(--radius-badge);
   }
 
   .badge-success {
-    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium;
+    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium font-sans;
     @apply bg-success-bg text-success;
     border-radius: var(--radius-badge);
   }
 
   .badge-error {
-    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium;
+    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium font-sans;
     @apply bg-error-bg text-error;
     border-radius: var(--radius-badge);
   }
 
   .badge-outline {
-    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium;
-    @apply bg-transparent border border-slate-200 text-slate-500;
+    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium font-sans;
+    @apply bg-transparent border border-border text-muted-foreground;
     border-radius: var(--radius-badge);
   }
 
@@ -180,17 +182,17 @@
   }
 
   .alert-success {
-    @apply p-4 bg-success-bg/50 border-l-4 border-success-border text-success;
+    @apply p-4 bg-success-bg/80 border-l-4 border-success text-success font-sans;
     border-radius: var(--radius-card);
   }
 
   .alert-error {
-    @apply p-4 bg-error-bg/50 border-l-4 border-error-border text-error;
+    @apply p-4 bg-error-bg/80 border-l-4 border-error text-error font-sans;
     border-radius: var(--radius-card);
   }
 
   .alert-info {
-    @apply p-4 bg-slate-100 border-l-4 border-slate-300 text-slate-600;
+    @apply p-4 bg-secondary/80 border-l-4 border-muted-foreground/30 text-foreground font-sans;
     border-radius: var(--radius-card);
   }
 
@@ -225,7 +227,8 @@
   }
 
   .overlay-light {
-    @apply bg-white/80 backdrop-blur-sm;
+    @apply bg-white/60 backdrop-blur-sm;
+    /* Slightly more transparent for rustic feel */
   }
 
   /* ========================================
@@ -248,38 +251,39 @@
 
 /* ダークモード対応 */
 @layer utilities {
+
   .dark .card-base,
   .dark .card-interactive,
   .dark .card-elevated {
-    @apply bg-slate-900 border-slate-800;
+    @apply bg-card border-border;
   }
 
   .dark .input-base,
   .dark .textarea-base,
   .dark .select-base {
-    @apply bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-500;
+    @apply bg-input/20 border-input text-foreground placeholder:text-muted-foreground;
   }
 
   .dark .heading-page,
   .dark .heading-section,
   .dark .heading-card {
-    @apply text-slate-100;
+    @apply text-foreground;
   }
 
   .dark .text-body {
-    @apply text-slate-300;
+    @apply text-foreground/80;
   }
 
   .dark .text-muted,
   .dark .label-uppercase {
-    @apply text-slate-500;
+    @apply text-muted-foreground;
   }
 
   .dark .badge-default {
-    @apply bg-slate-800 text-slate-400;
+    @apply bg-secondary text-secondary-foreground;
   }
 
   .dark .alert-info {
-    @apply bg-slate-800 border-slate-600 text-slate-300;
+    @apply bg-secondary border-muted-foreground/30 text-foreground;
   }
 }
