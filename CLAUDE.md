@@ -22,10 +22,9 @@ Next.js 16 (App Router) / TypeScript / Tailwind CSS 4 / shadcn/ui / Supabase / F
 - null/undefined は「状態」か「前提違反」か判断し暗黙処理しない。nullable フィールドは `??` でフォールバック、前提違反はガード節か型で排除（`!` 禁止）
 - 詳細: @docs/coding-guidelines.md
 
+- スタイル値は `src/styles/tokens.css`、ユーティリティは `src/styles/utilities.css` で一元管理
+- 直接 Tailwind クラスを羅列せず用途別クラスを使う（`card-base`, `input-base`, `alert-success` 等）
 - 背景 `slate-50` / 見出し `slate-900` / ブランド `brand-500` (Emerald)
-- 大きな角丸（`2xl`/`3xl`）と繊細な影（`premium-shadow`）を使用。装飾は意味のあるものに限定
-- アニメーションは 0.4秒 (ease-out)、スタッガー効果を伴うフェードイン
-- フィードバックは左ボーダー（エラー `bg-error-bg/50` / 成功 `bg-success-bg/50`）
 - 詳細: @docs/design-guidelines.md
 
 ## プロジェクト構成

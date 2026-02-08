@@ -115,6 +115,20 @@ Tailwind **Slate** スケールをベースに、鮮やかな **Brand (Emerald)*
 
 ---
 
+## デザイントークン
+
+- スタイル値は `src/styles/tokens.css` で一元管理
+- セマンティックユーティリティは `src/styles/utilities.css` で定義
+- 直接 Tailwind クラスを羅列せず、用途別クラスを使う:
+  - カード: `card-base`, `card-interactive`, `premium-surface`
+  - 入力: `input-base`, `textarea-base`, `select-base`
+  - アラート: `alert-success`, `alert-error`
+  - テキスト: `heading-page`, `heading-section`, `text-body`, `text-muted`, `label-uppercase`
+  - バッジ: `badge-default`, `badge-primary`, `badge-success`, `badge-error`
+- デザイン変更時は `tokens.css` の CSS 変数を修正
+
+---
+
 ## 参考リンク
 
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
