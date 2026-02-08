@@ -9,8 +9,6 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-lato), sans-serif;
-  --font-serif: var(--font-playfair), serif;
-  --font-script: var(--font-dancing), cursive;
   --color-success: var(--success);
   --color-success-bg: var(--success-bg);
   --color-success-border: var(--success-border);
@@ -74,65 +72,49 @@
 }
 
 :root {
+  /* Base radius */
   --radius: 0.5rem;
-  /* Rustic feel: slightly sharper or softer? Guidelines said 2xl/3xl softness, but rustic often has hand-hewn feel. Let's keep it soft but maybe slightly less "tech" rounded. Actually, user asked for "re-design", assuming new radius is 0.5rem for base or keep 0.75rem? Let's go with 0.5rem for a slightly more traditional look, but use Card radius 1rem in tokens.css */
 
-  /* Brand: Olive Green Scale */
+  /* Brand: Olive Green scale */
   --brand-50: #f4f7f2;
   --brand-100: #e3ebe0;
   --brand-200: #c5d9be;
   --brand-300: #9cbd92;
   --brand-400: #749c66;
   --brand-500: #4a6741;
-  /* Deep Olive / Sage Green */
   --brand-600: #3a5233;
   --brand-700: #2f422a;
   --brand-800: #273623;
   --brand-900: #212d1e;
 
-  /* Accent: Warm Gold / Terracotta */
+  /* Accent: Muted Gold */
   --accent-base: #e0b06b;
-  /* Muted Gold */
 
+  /* Status colors */
   --success: #5d7556;
-  /* Muted Green */
   --success-bg: #f4f7f2;
   --success-border: #c5d9be;
-
   --error: #8c5e5e;
-  /* Muted Red/Brown */
   --error-bg: #fdf5f5;
   --error-border: #e6caca;
 
+  /* Core palette */
   --background: #fdfcf8;
-  /* Warm Cream / Off-white */
   --foreground: #2f3e33;
-  /* Dark Earth / Charcoal */
-
   --card: #ffffff;
-  /* Or slightly off-white? Let's stick to white for contrast against cream bg */
   --card-foreground: #2f3e33;
-
   --popover: #ffffff;
   --popover-foreground: #2f3e33;
-
   --primary: var(--brand-500);
   --primary-foreground: #ffffff;
-
   --secondary: #e8e6dc;
-  /* Warm grey/beige */
   --secondary-foreground: #2f3e33;
-
   --muted: #f0eee6;
   --muted-foreground: #7d857a;
-
   --accent: var(--brand-500);
-  /* Or Gold? Let's keep brand for now as primary accent, maybe use Gold for specific buttons */
   --accent-foreground: #ffffff;
-
   --destructive: #aa5d5d;
   --border: #e6e2d6;
-  /* Warm border */
   --input: #e6e2d6;
   --ring: var(--brand-500);
 
