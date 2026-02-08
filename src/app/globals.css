@@ -16,6 +16,9 @@
   --color-error: var(--error);
   --color-error-bg: var(--error-bg);
   --color-error-border: var(--error-border);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-warning-border: var(--warning-border);
   --color-brand-50: var(--brand-50);
   --color-brand-100: var(--brand-100);
   --color-brand-200: var(--brand-200);
@@ -98,6 +101,9 @@
   --error: #dc2626;
   --error-bg: #fef2f2;
   --error-border: #fecaca;
+  --warning: #d97706;
+  --warning-bg: #fffbeb;
+  --warning-border: #fde68a;
 
   /* Core palette - Slate based (Modern theme default) */
   --background: #f8fafc;
