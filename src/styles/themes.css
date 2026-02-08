@@ -71,10 +71,19 @@
   --mbti-sentinels-bg: #eff6ff;
   --mbti-sentinels-border: #bfdbfe;
   --mbti-sentinels-icon: #60a5fa;
-  --mbti-explorers: #d97706;
   --mbti-explorers-bg: #fffbeb;
   --mbti-explorers-border: #fde68a;
   --mbti-explorers-icon: #fbbf24;
+
+  /* MBTI Hero Header Colors (High contrast for white text) */
+  --mbti-analysts-hero-bg: #7c3aed;
+  --mbti-analysts-hero-text: #ffffff;
+  --mbti-diplomats-hero-bg: #059669;
+  --mbti-diplomats-hero-text: #ffffff;
+  --mbti-sentinels-hero-bg: #2563eb;
+  --mbti-sentinels-hero-text: #ffffff;
+  --mbti-explorers-hero-bg: #d97706;
+  --mbti-explorers-hero-text: #ffffff;
 
   /* Core palette - Slate based */
   --background: #f8fafc;
@@ -185,10 +194,18 @@
   --mbti-sentinels-bg: #172554;
   --mbti-sentinels-border: #1e40af;
   --mbti-sentinels-icon: #93c5fd;
-  --mbti-explorers: #fbbf24;
-  --mbti-explorers-bg: #422006;
   --mbti-explorers-border: #78350f;
   --mbti-explorers-icon: #fcd34d;
+
+  /* MBTI Hero Header Colors (Dark Mode - Saturated/Darker for white text contrast) */
+  --mbti-analysts-hero-bg: #6d28d9;
+  --mbti-analysts-hero-text: #ffffff;
+  --mbti-diplomats-hero-bg: #047857;
+  --mbti-diplomats-hero-text: #ffffff;
+  --mbti-sentinels-hero-bg: #1d4ed8;
+  --mbti-sentinels-hero-text: #ffffff;
+  --mbti-explorers-hero-bg: #b45309;
+  --mbti-explorers-hero-text: #ffffff;
 
   --background: #0f172a;
   --foreground: #f8fafc;
@@ -279,10 +296,19 @@
   --mbti-sentinels-bg: #eff6ff;
   --mbti-sentinels-border: #bfdbfe;
   --mbti-sentinels-icon: #60a5fa;
-  --mbti-explorers: #b45309;
   --mbti-explorers-bg: #fefce8;
   --mbti-explorers-border: #fde047;
   --mbti-explorers-icon: #facc15;
+
+  /* MBTI Hero Header Colors */
+  --mbti-analysts-hero-bg: #7c3aed;
+  --mbti-analysts-hero-text: #ffffff;
+  --mbti-diplomats-hero-bg: #047857;
+  --mbti-diplomats-hero-text: #ffffff;
+  --mbti-sentinels-hero-bg: #1d4ed8;
+  --mbti-sentinels-hero-text: #ffffff;
+  --mbti-explorers-hero-bg: #b45309;
+  --mbti-explorers-hero-text: #ffffff;
 
   /* Core palette - Warm cream based */
   --background: #fdfcf8;
@@ -393,10 +419,18 @@
   --mbti-sentinels-bg: #1e2a4a;
   --mbti-sentinels-border: #1e40af;
   --mbti-sentinels-icon: #93c5fd;
-  --mbti-explorers: #fbbf24;
-  --mbti-explorers-bg: #352a14;
   --mbti-explorers-border: #5c4a1e;
   --mbti-explorers-icon: #fcd34d;
+
+  /* MBTI Hero Header Colors (Dark Mode) */
+  --mbti-analysts-hero-bg: #5b21b6;
+  --mbti-analysts-hero-text: #ffffff;
+  --mbti-diplomats-hero-bg: #15803d;
+  --mbti-diplomats-hero-text: #ffffff;
+  --mbti-sentinels-hero-bg: #1e40af;
+  --mbti-sentinels-hero-text: #ffffff;
+  --mbti-explorers-hero-bg: #9a3412;
+  --mbti-explorers-hero-text: #ffffff;
 
   --background: #121210;
   --foreground: #f5f3ee;
