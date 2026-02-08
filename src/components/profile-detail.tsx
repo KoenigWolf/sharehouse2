@@ -103,8 +103,12 @@ function MBTIDetail({ mbti }: { mbti: string }) {
   const traits = traitsStr.split(/\s*,\s*/);
   const groupLabel = t(`mbtiGroups.${group}` as Parameters<typeof t>[0]);
 
-  // Extract first sentence for lead text
-  const periodIndex = summary.indexOf("。");
+  // Extract first sentence for lead text (supports both Japanese "。" and ASCII ".")
+  const jpPeriodIndex = summary.indexOf("。");
+  const enPeriodIndex = summary.indexOf(".");
+  const periodIndex = jpPeriodIndex !== -1 && enPeriodIndex !== -1
+    ? Math.min(jpPeriodIndex, enPeriodIndex)
+    : jpPeriodIndex !== -1 ? jpPeriodIndex : enPeriodIndex;
   const hasSplit = periodIndex !== -1;
   const leadText = hasSplit ? summary.substring(0, periodIndex + 1) : summary;
   const bodyText = hasSplit ? summary.substring(periodIndex + 1).trim() : "";
@@ -142,7 +146,7 @@ function MBTIDetail({ mbti }: { mbti: string }) {
         <div className="flex flex-col gap-6">
           {/* Summary */}
           <div className="space-y-4">
-            <p className="text-lg sm:text-x font-bold leading-relaxed text-foreground opacity-90">
+            <p className="text-lg sm:text-xl font-bold leading-relaxed text-foreground opacity-90">
               {leadText}
             </p>
             {bodyText && (
@@ -152,12 +156,12 @@ function MBTIDetail({ mbti }: { mbti: string }) {
             )}
           </div>
 
-          <div className={`h-px w-full ${colors.border} opacity-50`} />
+          <div className={`border-t w-full ${colors.border} opacity-50`} />
 
           {/* Traits */}
           <div className="space-y-2">
             <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
-              Traits
+              {t("mbti.traitsLabel")}
             </span>
             <div className="flex flex-wrap gap-2">
               {traits.map((trait) => (
