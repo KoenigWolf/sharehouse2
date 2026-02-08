@@ -261,7 +261,7 @@ function DeleteSection() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-error-bg/30 rounded-[2rem] p-8 border border-error-border/50 space-y-6"
+      className="bg-error-bg/50 rounded-[2rem] p-8 border border-error-border/50 space-y-6"
     >
       <div className="flex items-center gap-2 mb-2">
         <svg className="w-4 h-4 text-error" fill="none" viewBox="0 0 24 24" stroke="currentColor">

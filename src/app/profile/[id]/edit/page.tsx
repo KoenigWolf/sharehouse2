@@ -100,7 +100,7 @@ export default async function ProfileEditPage({ params }: ProfileEditPageProps) 
             <div className="pt-8 border-t border-border/50">
               <Link
                 href="/settings"
-                className="flex items-center justify-between p-5 rounded-2xl bg-card border border-border/50 hover:border-brand-300 hover:bg-muted/50 transition-all duration-300 group"
+                className="flex items-center justify-between p-5 rounded-2xl bg-card border border-border/50 hover:border-brand-300 hover:bg-muted/50 transition-all duration-400 ease-out group"
               >
                 <div className="flex items-center gap-4">
                   <div className="p-2.5 rounded-xl bg-secondary group-hover:bg-primary/10 transition-colors">

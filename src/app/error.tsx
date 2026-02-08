@@ -50,7 +50,7 @@ export default function Error({
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.5, duration: 0.5 }}
-              className="bg-card/80 backdrop-blur-xl p-8 sm:p-12 rounded-[2.5rem] shadow-2xl border border-border/50 premium-surface"
+              className="bg-card/80 backdrop-blur-xl p-8 sm:p-12 rounded-3xl shadow-sm border border-border/50 premium-surface"
             >
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-error-bg text-error mb-6">
                 <AlertCircle size={32} strokeWidth={1.5} />

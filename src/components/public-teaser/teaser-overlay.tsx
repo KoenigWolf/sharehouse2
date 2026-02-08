@@ -15,7 +15,7 @@ export function TeaserOverlay({ totalCount }: TeaserOverlayProps) {
    return (
       <div className="relative pt-20 pb-10">
          {/* Background Gradient */}
-         <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-t from-slate-50 to-transparent pointer-events-none" />
+         <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-t from-background to-transparent pointer-events-none" />
 
          <m.div
             initial={{ y: 20, opacity: 0 }}

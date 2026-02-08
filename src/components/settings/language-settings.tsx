@@ -1,31 +1,37 @@
 "use client";
 
-import { memo, useCallback, useState, useTransition } from "react";
+import { memo, useCallback, useState } from "react";
 import { m, motion } from "framer-motion";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
 import type { Locale } from "@/lib/i18n";
+import type { TranslationKey } from "@/lib/i18n";
 
-const LANGUAGES: { value: Locale; label: string; nativeLabel: string }[] = [
-  { value: "ja", label: "Japanese", nativeLabel: "日本語" },
-  { value: "en", label: "English", nativeLabel: "English" },
+interface LanguageOption {
+  value: Locale;
+  labelKey: TranslationKey;
+  nativeLabel: string;
+}
+
+const LANGUAGES: LanguageOption[] = [
+  { value: "ja", labelKey: "settings.languageJapanese", nativeLabel: "日本語" },
+  { value: "en", labelKey: "settings.languageEnglish", nativeLabel: "English" },
 ];
 
 export const LanguageSettings = memo(function LanguageSettings() {
   const t = useI18n();
   const currentLocale = useLocale();
   const [selectedLocale, setSelectedLocale] = useState<Locale>(currentLocale);
-  const [isPending, startTransition] = useTransition();
+  const [isChanging, setIsChanging] = useState(false);
 
   const handleLocaleChange = useCallback((locale: Locale) => {
     setSelectedLocale(locale);
-    startTransition(() => {
-      // Update document lang attribute
-      document.documentElement.lang = locale;
-      // Store in cookie for server-side locale detection
-      document.cookie = `locale=${locale}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
-      // Reload to apply new locale
-      window.location.reload();
-    });
+    setIsChanging(true);
+    // Update document lang attribute
+    document.documentElement.lang = locale;
+    // Store in cookie for server-side locale detection
+    document.cookie = `locale=${locale}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+    // Reload to apply new locale
+    window.location.reload();
   }, []);
 
   return (
@@ -44,7 +50,7 @@ export const LanguageSettings = memo(function LanguageSettings() {
             {t("settings.language")}
           </h2>
         </div>
-        {isPending && (
+        {isChanging && (
           <span className="text-[10px] text-muted-foreground animate-pulse">
             {t("common.saving")}
           </span>
@@ -58,7 +64,7 @@ export const LanguageSettings = memo(function LanguageSettings() {
             key={lang.value}
             type="button"
             onClick={() => handleLocaleChange(lang.value)}
-            disabled={isPending}
+            disabled={isChanging}
             className={`relative flex-1 p-4 rounded-2xl border-2 transition-all duration-300 text-left ${
               selectedLocale === lang.value
                 ? "border-primary bg-primary/10 shadow-md"
@@ -83,7 +89,7 @@ export const LanguageSettings = memo(function LanguageSettings() {
             )}
 
             <h4 className="text-sm font-bold text-foreground mb-1">{lang.nativeLabel}</h4>
-            <p className="text-[11px] text-muted-foreground">{lang.label}</p>
+            <p className="text-[11px] text-muted-foreground">{t(lang.labelKey)}</p>
           </button>
         ))}
       </div>

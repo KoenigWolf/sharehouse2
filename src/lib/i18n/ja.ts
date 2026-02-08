@@ -787,6 +787,8 @@ export const ja = {
     title: "設定",
     description: "アプリの外観、通知、アカウントなどを設定できます。",
     language: "言語",
+    languageJapanese: "日本語",
+    languageEnglish: "英語",
   },
 } as const;
 

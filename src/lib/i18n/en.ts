@@ -788,5 +788,7 @@ export const en: Translations = {
     title: "Settings",
     description: "Customize appearance, notifications, and account settings.",
     language: "Language",
+    languageJapanese: "Japanese",
+    languageEnglish: "English",
   },
 };
