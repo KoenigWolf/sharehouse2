@@ -5,7 +5,29 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { m, type Variants } from "framer-motion";
-import { Camera } from "lucide-react";
+import {
+  Camera,
+  MapPin,
+  Briefcase,
+  User,
+  Heart,
+  Wine,
+  Cigarette,
+  Home,
+  Users,
+  Sparkles,
+  Globe,
+  Clock,
+  Utensils,
+  Dog,
+  Moon,
+  Sun,
+  Laptop,
+  Building2,
+  MessageCircle,
+  Brain,
+  Palmtree
+} from "lucide-react";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { RoomPhotoManager } from "@/components/room-photo-manager";
@@ -79,67 +101,80 @@ function MBTIDetail({ mbti }: { mbti: string }) {
   const summary = t(`mbtiTypes.${mbti}.summary` as Parameters<typeof t>[0]);
   const traitsStr = t(`mbtiTypes.${mbti}.traits` as Parameters<typeof t>[0]);
   const traits = traitsStr.split(", ");
-
   const groupLabel = t(`mbtiGroups.${group}` as Parameters<typeof t>[0]);
 
+  // Extract first sentence for lead text
+  const periodIndex = summary.indexOf("。");
+  const hasSplit = periodIndex !== -1;
+  const leadText = hasSplit ? summary.substring(0, periodIndex + 1) : summary;
+  const bodyText = hasSplit ? summary.substring(periodIndex + 1).trim() : "";
+
   return (
-    <div className={`relative overflow-hidden rounded-3xl border ${colors.border} bg-gradient-to-br from-white/80 to-white/40 dark:from-black/40 dark:to-black/20 backdrop-blur-xl shadow-lg transition-all hover:shadow-xl group`}>
-      {/* Decorative Background Watermark */}
-      <div className={`absolute -right-6 -bottom-6 text-[120px] font-black opacity-[0.07] select-none pointer-events-none leading-none tracking-tighter transition-transform duration-700 ease-out group-hover:scale-110 group-hover:rotate-[-5deg] ${colors.text}`}>
-        {mbti}
+    <div className="relative overflow-hidden rounded-3xl border border-border bg-card shadow-lg transition-all hover:shadow-xl group">
+      {/* Hero Header */}
+      <div className={`relative px-6 py-8 sm:px-8 ${colors.hero} overflow-hidden`}>
+        {/* Decorative Watermark */}
+        <div className="absolute -right-4 -bottom-8 text-[100px] font-black opacity-10 select-none pointer-events-none leading-none tracking-tighter transition-transform duration-700 ease-out group-hover:scale-110 group-hover:rotate-[-5deg] text-current">
+          {mbti}
+        </div>
+
+        {/* Decorative Pattern/Blob */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-current opacity-10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+
+        <div className="relative z-10">
+          <div className="flex items-center gap-3 mb-3 text-current opacity-90">
+            <span className="text-[10px] font-bold uppercase tracking-widest border border-current opacity-80 px-2 py-0.5 rounded-full">
+              {groupLabel}
+            </span>
+            <span className="text-sm font-mono font-bold opacity-80 tracking-wider">
+              {mbti}
+            </span>
+          </div>
+
+          <h3 className="text-3xl sm:text-4xl font-bold tracking-tight text-current mb-1">
+            {label}
+          </h3>
+        </div>
       </div>
 
-      {/* Decorative Blob */}
-      <div className={`absolute top-0 right-0 w-64 h-64 ${colors.bg} rounded-full blur-3xl opacity-40 -mr-20 -mt-20 pointer-events-none`} />
-
-      <div className="relative p-6 sm:p-7">
+      {/* Content Body */}
+      <div className="p-6 sm:p-8 bg-card">
         <div className="flex flex-col gap-6">
-          {/* Header Section */}
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className={`w-14 h-14 rounded-2xl ${colors.bg} border ${colors.border} flex items-center justify-center shadow-inner`}>
-                <svg className={`w-7 h-7 ${colors.icon} drop-shadow-sm`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
-                </svg>
-              </div>
-              <div>
-                <div className="flex items-center gap-2 mb-0.5">
-                  <h3 className={`text-2xl font-bold tracking-tight ${colors.text} font-mono`}>{mbti}</h3>
-                  <span className={`px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest rounded-full border ${colors.border} ${colors.bg} ${colors.text} opacity-80`}>
-                    {groupLabel}
-                  </span>
-                </div>
-                <p className={`text-sm font-medium ${colors.text} opacity-90`}>{label}</p>
-              </div>
-            </div>
+          {/* Summary */}
+          <div className="space-y-4">
+            <p className="text-lg sm:text-x font-bold leading-relaxed text-foreground opacity-90">
+              {leadText}
+            </p>
+            {bodyText && (
+              <p className="text-sm leading-[1.8] text-muted-foreground whitespace-pre-line">
+                {bodyText}
+              </p>
+            )}
           </div>
 
-          {/* Traits */}
-          <div className="flex flex-wrap gap-2">
-            {traits.map((trait) => (
-              <span
-                key={trait}
-                className={`
-                  text-xs px-3 py-1.5 rounded-lg
-                  bg-white/50 dark:bg-black/20
-                  border border-black/5 dark:border-white/10
-                  ${colors.text} font-medium tracking-wide
-                  backdrop-blur-sm
-                  transition-all hover:scale-105 cursor-default
-                `}
-              >
-                {trait}
-              </span>
-            ))}
-          </div>
-
-          {/* Samesize separator line */}
           <div className={`h-px w-full ${colors.border} opacity-50`} />
 
-          {/* Summary */}
-          <p className={`text-sm leading-[1.8] ${colors.text} opacity-90 font-medium`}>
-            {summary}
-          </p>
+          {/* Traits */}
+          <div className="space-y-2">
+            <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
+              Traits
+            </span>
+            <div className="flex flex-wrap gap-2">
+              {traits.map((trait) => (
+                <span
+                  key={trait}
+                  className={`
+                    text-xs px-3 py-1.5 rounded-lg
+                    ${colors.bg} ${colors.text} border ${colors.border}
+                    font-medium tracking-wide
+                    transition-all hover:scale-105 cursor-default
+                  `}
+                >
+                  {trait}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -269,38 +304,58 @@ function ProfileSection({
 }) {
   const config = categoryConfig[category];
   return (
-    <m.section variants={itemVariants} className={`premium-surface rounded-2xl overflow-hidden ${className}`}>
-      <div className={`px-5 py-3 border-b border-border bg-muted/50`}>
-        <h2 className={`flex items-center gap-2 text-[10px] sm:text-[11px] font-bold tracking-widest uppercase ${config.color}`}>
-          <span className="p-1 rounded-lg bg-card shadow-sm ring-1 ring-border">
+    <m.section variants={itemVariants} className={`bg-card rounded-3xl border border-border shadow-sm overflow-hidden ${className} mb-8 last:mb-0`}>
+      <div className="px-6 py-4 border-b border-border bg-muted/20 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className={`p-2 rounded-xl bg-background shadow-sm text-primary`}>
             {config.icon}
-          </span>
-          {title}
-        </h2>
+          </div>
+          <h2 className="text-base font-bold tracking-tight text-foreground font-display">
+            {title}
+          </h2>
+        </div>
       </div>
-      <div className="p-5 sm:p-6">
+
+      <div className="p-6">
         {children}
       </div>
     </m.section>
   );
 }
 
-function FieldRow({ label, value }: { label: string; value: string | null | undefined }) {
-  if (!value) return null;
-  return (
-    <div className="py-3 border-b border-border last:border-0">
-      <dt className="text-[10px] text-muted-foreground tracking-wide mb-1.5">{label}</dt>
-      <dd className="text-sm text-foreground leading-relaxed">{value}</dd>
-    </div>
-  );
-}
 
-function CompactField({ label, value }: { label: string; value: string | null | undefined }) {
+
+function InfoTile({
+  label,
+  value,
+  icon,
+  className = "",
+  fullWidth = false
+}: {
+  label: string;
+  value: string | null | undefined;
+  icon?: React.ReactNode;
+  className?: string;
+  fullWidth?: boolean;
+}) {
   if (!value) return null;
   return (
-    <div className="space-y-1.5">
-      <dt className="text-[10px] text-muted-foreground tracking-wide">{label}</dt>
-      <dd className="text-sm text-foreground font-medium">{value}</dd>
+    <div className={`
+      flex flex-col gap-1.5
+      ${fullWidth ? "col-span-full pt-4 mt-2 border-t border-border/50" : ""}
+      ${className}
+    `}>
+      <dt className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/70">
+        {icon && (
+          <span className="text-primary/70">
+            {icon}
+          </span>
+        )}
+        <span>{label}</span>
+      </dt>
+      <dd className="text-[15px] font-medium text-foreground leading-relaxed pl-[22px]">
+        {value}
+      </dd>
     </div>
   );
 }
@@ -358,47 +413,43 @@ export function ProfileDetail({
   }, [t, router]);
 
   const basicInfo = [
-    { label: t("profile.nickname"), value: profile.nickname },
-    { label: t("profile.ageRange"), value: translateOption(profile.age_range, "ageRange", AGE_RANGES, t) },
-    { label: t("profile.gender"), value: translateOption(profile.gender, "gender", GENDERS, t) },
-    { label: t("profile.nationality"), value: profile.nationality },
-    { label: t("profile.languages"), value: translateLanguages(profile.languages, t).join(", ") || null },
-    { label: t("profile.hometown"), value: profile.hometown },
+    { label: t("profile.nickname"), value: profile.nickname, icon: <User size={14} /> },
+    { label: t("profile.ageRange"), value: translateOption(profile.age_range, "ageRange", AGE_RANGES, t), icon: <Clock size={14} /> },
+    { label: t("profile.gender"), value: translateOption(profile.gender, "gender", GENDERS, t), icon: <User size={14} /> },
+    { label: t("profile.nationality"), value: profile.nationality, icon: <Globe size={14} /> },
+    { label: t("profile.languages"), value: translateLanguages(profile.languages, t).join(", ") || null, icon: <MessageCircle size={14} /> },
+    { label: t("profile.hometown"), value: profile.hometown, icon: <MapPin size={14} /> },
   ].filter((f) => f.value);
 
   const workInfo = [
-    { label: t("profile.occupation"), value: translateOption(profile.occupation, "occupation", OCCUPATIONS, t) },
-    { label: t("profile.industry"), value: translateOption(profile.industry, "industry", INDUSTRIES, t) },
-    { label: t("profile.workLocation"), value: profile.work_location },
-    { label: t("profile.workStyle"), value: translateOption(profile.work_style, "workStyle", WORK_STYLES, t) },
+    { label: t("profile.occupation"), value: translateOption(profile.occupation, "occupation", OCCUPATIONS, t), icon: <Briefcase size={14} /> },
+    { label: t("profile.industry"), value: translateOption(profile.industry, "industry", INDUSTRIES, t), icon: <Building2 size={14} /> },
+    { label: t("profile.workLocation"), value: profile.work_location, icon: <MapPin size={14} /> },
+    { label: t("profile.workStyle"), value: translateOption(profile.work_style, "workStyle", WORK_STYLES, t), icon: <Laptop size={14} /> },
   ].filter((f) => f.value);
 
   const lifestyleInfo = [
-    { label: t("profile.dailyRhythm"), value: translateOption(profile.daily_rhythm, "dailyRhythm", DAILY_RHYTHMS, t) },
-    { label: t("profile.homeFrequency"), value: translateOption(profile.home_frequency, "homeFrequency", HOME_FREQUENCIES, t) },
-    { label: t("profile.alcohol"), value: translateOption(profile.alcohol, "alcohol", ALCOHOL_OPTIONS, t) },
-    { label: t("profile.smoking"), value: translateOption(profile.smoking, "smoking", SMOKING_OPTIONS, t) },
-    { label: t("profile.pets"), value: translateOption(profile.pets, "pets", PET_OPTIONS, t) },
-    { label: t("profile.guestFrequency"), value: translateOption(profile.guest_frequency, "guestFrequency", GUEST_FREQUENCIES, t) },
+    { label: t("profile.dailyRhythm"), value: translateOption(profile.daily_rhythm, "dailyRhythm", DAILY_RHYTHMS, t), icon: profile.daily_rhythm === "earlyBird" ? <Sun size={14} /> : <Moon size={14} /> },
+    { label: t("profile.homeFrequency"), value: translateOption(profile.home_frequency, "homeFrequency", HOME_FREQUENCIES, t), icon: <Home size={14} /> },
+    { label: t("profile.alcohol"), value: translateOption(profile.alcohol, "alcohol", ALCOHOL_OPTIONS, t), icon: <Wine size={14} /> },
+    { label: t("profile.smoking"), value: translateOption(profile.smoking, "smoking", SMOKING_OPTIONS, t), icon: <Cigarette size={14} /> },
+    { label: t("profile.pets"), value: translateOption(profile.pets, "pets", PET_OPTIONS, t), icon: <Dog size={14} /> },
+    { label: t("profile.guestFrequency"), value: translateOption(profile.guest_frequency, "guestFrequency", GUEST_FREQUENCIES, t), icon: <Users size={14} /> },
   ].filter((f) => f.value);
 
   const communalInfo = [
-    { label: t("profile.socialStance"), value: translateOption(profile.social_stance, "socialStance", SOCIAL_STANCES, t) },
-    { label: t("profile.cleaningAttitude"), value: translateOption(profile.cleaning_attitude, "cleaningAttitude", CLEANING_ATTITUDES, t) },
-    { label: t("profile.cookingFrequency"), value: translateOption(profile.cooking_frequency, "cookingFrequency", COOKING_FREQUENCIES, t) },
-    { label: t("profile.sharedMeals"), value: translateOption(profile.shared_meals, "sharedMeals", SHARED_MEAL_OPTIONS, t) },
-    { label: t("profile.allergies"), value: profile.allergies },
+    { label: t("profile.socialStance"), value: translateOption(profile.social_stance, "socialStance", SOCIAL_STANCES, t), icon: <Users size={14} /> },
+    { label: t("profile.cleaningAttitude"), value: translateOption(profile.cleaning_attitude, "cleaningAttitude", CLEANING_ATTITUDES, t), icon: <Sparkles size={14} /> },
+    { label: t("profile.cookingFrequency"), value: translateOption(profile.cooking_frequency, "cookingFrequency", COOKING_FREQUENCIES, t), icon: <Utensils size={14} /> },
+    { label: t("profile.sharedMeals"), value: translateOption(profile.shared_meals, "sharedMeals", SHARED_MEAL_OPTIONS, t), icon: <Utensils size={14} /> },
+    { label: t("profile.allergies"), value: profile.allergies, icon: <Heart size={14} /> },
   ].filter((f) => f.value);
 
   const sharedSpaceUsage = profile.shared_space_usage;
   const personalityInfo = [
-    {
-      label: t("profile.personalityType"),
-      value: profile.personality_type,
-      node: profile.mbti ? <MBTIDetail mbti={profile.mbti} /> : null
-    },
-    { label: t("profile.weekendActivities"), value: profile.weekend_activities },
-  ].filter((f) => f.value || f.node);
+    { label: t("profile.personalityType"), value: profile.personality_type, icon: <Brain size={14} /> },
+    { label: t("profile.weekendActivities"), value: profile.weekend_activities, icon: <Palmtree size={14} /> },
+  ].filter((f) => f.value);
 
   const snsLinks = [
     { platform: "x", username: profile.sns_x, url: `https://x.com/${profile.sns_x}`, label: t("profile.snsX") },
@@ -408,7 +459,7 @@ export function ProfileDetail({
     { platform: "github", username: profile.sns_github, url: `https://github.com/${profile.sns_github}`, label: t("profile.snsGithub") },
   ].filter((link) => link.username);
 
-  const hasExtendedInfo = basicInfo.length > 0 || workInfo.length > 0 || lifestyleInfo.length > 0 || communalInfo.length > 0 || personalityInfo.length > 0 || !!sharedSpaceUsage;
+  const hasExtendedInfo = basicInfo.length > 0 || workInfo.length > 0 || lifestyleInfo.length > 0 || communalInfo.length > 0 || personalityInfo.length > 0 || !!sharedSpaceUsage || !!profile.mbti;
 
   return (
     <m.article
@@ -455,7 +506,7 @@ export function ProfileDetail({
               className="object-cover"
             />
           ) : (
-            <div className="w-full h-full bg-linear-to-b from-slate-100 to-slate-200" />
+            <div className="w-full h-full bg-gradient-to-b from-muted/50 to-muted" />
           )}
           {isOwnProfile && (
             <Button
@@ -489,7 +540,7 @@ export function ProfileDetail({
         <div className="px-6 sm:px-10 pb-8">
           <div className="flex flex-col sm:flex-row gap-5 sm:gap-8">
             <div className="shrink-0 -mt-14 sm:-mt-[84px] mx-auto sm:mx-0">
-              <div className="w-28 h-28 sm:w-[168px] sm:h-[168px] rounded-full border-4 border-white bg-secondary overflow-hidden relative">
+              <div className="w-28 h-28 sm:w-[168px] sm:h-[168px] rounded-full border-4 border-background bg-secondary overflow-hidden relative">
                 <Avatar className="size-full rounded-full">
                   <OptimizedAvatarImage
                     src={profile.avatar_url}
@@ -707,48 +758,51 @@ export function ProfileDetail({
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 relative">
           {basicInfo.length > 0 && (
             <ProfileSection title={t("profile.sectionBasicInfo")} category="basic">
-              <dl className="grid grid-cols-2 gap-y-6 gap-x-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-4 sm:gap-x-8">
                 {basicInfo.map((field, i) => (
-                  <CompactField key={i} label={field.label} value={field.value} />
+                  <InfoTile key={i} label={field.label} value={field.value} icon={field.icon} />
                 ))}
-              </dl>
+              </div>
             </ProfileSection>
           )}
 
           {workInfo.length > 0 && (
             <ProfileSection title={t("profile.sectionWork")} category="work">
-              <dl className="grid grid-cols-2 gap-y-6 gap-x-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-4 sm:gap-x-8">
                 {workInfo.map((field, i) => (
-                  <CompactField key={i} label={field.label} value={field.value} />
+                  <InfoTile key={i} label={field.label} value={field.value} icon={field.icon} />
                 ))}
-              </dl>
+              </div>
             </ProfileSection>
           )}
 
           {lifestyleInfo.length > 0 && (
             <ProfileSection title={t("profile.sectionLifestyle")} category="lifestyle">
-              <dl className="grid grid-cols-2 gap-y-6 gap-x-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-4 sm:gap-x-8">
                 {lifestyleInfo.map((field, i) => (
-                  <CompactField key={i} label={field.label} value={field.value} />
+                  <InfoTile key={i} label={field.label} value={field.value} icon={field.icon} />
                 ))}
-              </dl>
+              </div>
             </ProfileSection>
           )}
 
           {(communalInfo.length > 0 || sharedSpaceUsage) && (
             <ProfileSection title={t("profile.sectionCommunal")} category="communal">
-              <dl className="space-y-6">
-                <div className="grid grid-cols-2 gap-y-6 gap-x-4">
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-4 sm:gap-x-8">
                   {communalInfo.map((field, i) => (
-                    <CompactField key={i} label={field.label} value={field.value} />
+                    <InfoTile key={i} label={field.label} value={field.value} icon={field.icon} />
                   ))}
                 </div>
                 {sharedSpaceUsage && (
-                  <div className="pt-4 border-t border-border/50">
-                    <FieldRow label={t("profile.sharedSpaceUsage")} value={sharedSpaceUsage} />
-                  </div>
+                  <InfoTile
+                    label={t("profile.sharedSpaceUsage")}
+                    value={sharedSpaceUsage}
+                    fullWidth
+                    className="bg-muted/10 p-4 rounded-xl"
+                  />
                 )}
-              </dl>
+              </div>
             </ProfileSection>
           )}
 
@@ -758,24 +812,18 @@ export function ProfileDetail({
               category="personality"
               className="sm:col-span-2 lg:col-span-3"
             >
-              <dl className="grid sm:grid-cols-2 gap-x-12">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-4 sm:gap-x-8">
                 {personalityInfo.map((field, i) => (
-                  <div key={i} className="py-3 border-b border-border last:border-0">
-                    <dt className="text-[10px] text-muted-foreground tracking-wide mb-1.5">{field.label}</dt>
-                    <dd className="text-sm text-foreground leading-relaxed">
-                      {("node" in field && field.node) ? (
-                        <div className="flex flex-col gap-2">
-                          {field.value && <span>{field.value}</span>}
-                          {field.node}
-                        </div>
-                      ) : (
-                        field.value
-                      )}
-                    </dd>
-                  </div>
+                  <InfoTile key={i} label={field.label} value={field.value} icon={field.icon} />
                 ))}
-              </dl>
+              </div>
             </ProfileSection>
+          )}
+
+          {profile.mbti && (
+            <m.div variants={itemVariants} className="sm:col-span-2 lg:col-span-3">
+              <MBTIDetail mbti={profile.mbti} />
+            </m.div>
           )}
         </div>
       )}
