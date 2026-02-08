@@ -377,6 +377,20 @@ img {
     transform: scale(0.995);
     transition: transform 0.1s ease-out;
   }
+
+  /* Disable hover effects on touch devices to prevent sticky states */
+  .card-interactive:hover {
+    transform: none;
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+/* Hover effects only for devices with fine pointers (mouse) */
+@media (hover: hover) and (pointer: fine) {
+  .card-interactive:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
 }
 
 /* Prevent text selection on interactive elements */

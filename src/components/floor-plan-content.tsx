@@ -81,7 +81,7 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
               type="button"
               onClick={() => { setActiveFloor(floor); setSelectedRoom(null); }}
               className={`
-                relative flex-1 min-w-[70px] py-4 text-sm font-bold tracking-tight
+                relative flex-1 min-w-[70px] min-h-[64px] py-4 text-sm font-bold tracking-tight
                 transition-all duration-500 rounded-2xl overflow-hidden shadow-sm
                 ${isActive
                   ? `${floorColors.bg} ${floorColors.text} shadow-xl shadow-brand-100 ring-4 ring-brand-500/10`
@@ -135,7 +135,7 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
                   type="button"
                   onClick={() => setSelectedRoom(roomNumber)}
                   className={`
-                    relative flex flex-col items-center p-3 sm:p-5 transition-all duration-500 rounded-2xl
+                    relative flex flex-col items-center p-3 sm:p-4 min-h-[88px] transition-all duration-500 rounded-2xl
                     ${isOccupied
                       ? "bg-card border border-border shadow-sm hover:shadow-xl hover:-translate-y-0.5 ring-1 ring-border/50"
                       : "bg-muted border border-dashed border-border hover:border-border opacity-60 hover:opacity-100"
@@ -217,7 +217,7 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
                   <button
                     type="button"
                     onClick={handleClosePopup}
-                    className="absolute -top-1 -right-1 p-2 text-muted-foreground hover:text-foreground hover:bg-secondary/50 rounded-full transition-all"
+                    className="absolute -top-1 -right-1 p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary/50 rounded-full transition-all"
                     aria-label={t("floorPlan.closeDetail")}
                   >
                     <X size={20} strokeWidth={2} />

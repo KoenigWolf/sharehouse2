@@ -79,7 +79,7 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
                 Share<span className="text-brand-500">House</span>
               </span>
             </Link>
-            <p className="text-sm font-medium text-muted-foreground mt-6 leading-relaxed max-w-xs">
+            <p className="text-sm font-medium text-muted-foreground mt-6 leading-relaxed max-w-sm">
               {t("footer.tagline")}
             </p>
 
