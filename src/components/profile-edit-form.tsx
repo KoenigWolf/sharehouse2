@@ -64,7 +64,7 @@ function InputField({
 }) {
   return (
     <div className="space-y-2.5">
-      <label htmlFor={id} className="block text-[10px] font-bold text-slate-400 tracking-wider uppercase ml-1">
+      <label htmlFor={id} className="label-uppercase ml-1">
         {label}
         {required && <span className="text-rose-400 ml-1">*</span>}
       </label>
@@ -75,9 +75,9 @@ function InputField({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         required={required}
-        className="w-full h-12 px-5 bg-white border border-slate-200 rounded-2xl text-slate-700 text-[15px] font-medium placeholder:text-slate-300 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
+        className="input-base"
       />
-      {hint && <p className="text-[10px] text-slate-400 font-medium ml-1">{hint}</p>}
+      {hint && <p className="text-muted font-medium ml-1">{hint}</p>}
     </div>
   );
 }
@@ -99,7 +99,7 @@ function SelectField({
 }) {
   return (
     <div className="space-y-2.5">
-      <label htmlFor={id} className="block text-[10px] font-bold text-slate-400 tracking-wider uppercase ml-1">
+      <label htmlFor={id} className="label-uppercase ml-1">
         {label}
       </label>
       <div className="relative group">
@@ -107,7 +107,7 @@ function SelectField({
           id={id}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full h-12 pl-5 pr-10 bg-white border border-slate-200 rounded-2xl text-slate-700 text-[15px] font-medium focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300 appearance-none"
+          className="select-base"
         >
           {placeholder && <option value="">{placeholder}</option>}
           {options.map((opt) => (
@@ -116,11 +116,6 @@ function SelectField({
             </option>
           ))}
         </select>
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-300 group-hover:text-slate-400 transition-colors">
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
       </div>
     </div>
   );
@@ -145,7 +140,7 @@ function TextareaField({
 }) {
   return (
     <div className="space-y-2.5">
-      <label htmlFor={id} className="block text-[10px] font-bold text-slate-400 tracking-wider uppercase ml-1">
+      <label htmlFor={id} className="label-uppercase ml-1">
         {label}
       </label>
       <textarea
@@ -154,9 +149,9 @@ function TextareaField({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         rows={rows}
-        className="w-full px-5 py-4 bg-white border border-slate-200 rounded-3xl text-slate-700 text-[15px] font-medium placeholder:text-slate-300 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300 resize-none leading-relaxed"
+        className="textarea-base"
       />
-      {hint && <p className="text-[10px] text-slate-400 font-medium ml-1">{hint}</p>}
+      {hint && <p className="text-muted font-medium ml-1">{hint}</p>}
     </div>
   );
 }
@@ -374,9 +369,9 @@ export function ProfileEditForm({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-            className="mb-6 py-3 px-4 bg-error-bg border-l-2 border-error-border"
+            className="alert-error mb-6"
           >
-            <p className="text-sm text-error">{error}</p>
+            <p className="text-sm">{error}</p>
           </m.div>
         )}
         {success && (
@@ -386,9 +381,9 @@ export function ProfileEditForm({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-            className="mb-6 py-3 px-4 bg-success-bg border-l-2 border-success-border"
+            className="alert-success mb-6"
           >
-            <p className="text-sm text-success">{t("profile.saved")}</p>
+            <p className="text-sm">{t("profile.saved")}</p>
           </m.div>
         )}
       </AnimatePresence>

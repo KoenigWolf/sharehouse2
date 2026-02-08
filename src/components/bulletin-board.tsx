@@ -111,10 +111,7 @@ export function BulletinBoard({ bulletins: initialBulletins, currentUserId, curr
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.2 }}
-            className={`text-xs font-medium px-4 py-3 rounded-xl border-l-4 shadow-sm ${feedback.type === "success"
-              ? "bg-success-bg/50 border-success-border text-success"
-              : "bg-error-bg/50 border-error-border text-error"
-              }`}
+            className={`text-xs font-medium shadow-sm ${feedback.type === "success" ? "alert-success" : "alert-error"}`}
           >
             {feedback.message}
           </m.div>
@@ -130,7 +127,7 @@ export function BulletinBoard({ bulletins: initialBulletins, currentUserId, curr
             transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
             className="overflow-hidden"
           >
-            <div className="premium-surface rounded p-5 sm:p-6 space-y-4">
+            <div className="card-base p-5 sm:p-6 space-y-4">
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
@@ -173,7 +170,7 @@ export function BulletinBoard({ bulletins: initialBulletins, currentUserId, curr
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: index * 0.05, ease: [0.23, 1, 0.32, 1] }}
-                className="premium-surface rounded-2xl p-5 sm:p-6 flex gap-4 group relative"
+                className="card-base p-5 sm:p-6 flex gap-4 group relative"
               >
                 <Avatar className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl border border-slate-100 shadow-sm shrink-0 overflow-hidden">
                   <OptimizedAvatarImage
