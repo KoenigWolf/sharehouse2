@@ -43,7 +43,6 @@ Share House Portal - Modern Homestead Design System
 Google Fonts を使用。
 
 - **全体**: "Lato" - 丸みがあり、読みやすく温かみのあるサンセリフ。見出し・本文共通。
-- **装飾（任意）**: "Dancing Script" - 手書きの温もり（ロゴや特別な装飾に限定使用）。
 
 ---
 
@@ -79,5 +78,4 @@ Google Fonts を使用。
 ## 参考リンク
 
 - [Lato (Google Fonts)](https://fonts.google.com/specimen/Lato)
-- [Dancing Script (Google Fonts)](https://fonts.google.com/specimen/Dancing+Script)
 
