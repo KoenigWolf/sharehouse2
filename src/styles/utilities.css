@@ -106,7 +106,7 @@
     @apply relative inline-block w-full;
   }
 
-  .select-wrapper > .select-base {
+  .select-wrapper>.select-base {
     background-image: none;
   }
 
@@ -218,28 +218,155 @@
   /* ========================================
    * フロア識別カラー（Floor Colors）
    * ======================================== */
-  .floor-violet-bg { background-color: var(--floor-violet-bg); }
-  .floor-violet-border { border-color: var(--floor-violet-border); }
-  .floor-violet-text { color: var(--floor-violet); }
-  .floor-slate-bg { background-color: var(--floor-slate-bg); }
-  .floor-slate-border { border-color: var(--floor-slate-border); }
-  .floor-slate-text { color: var(--floor-slate); }
+  .floor-violet-bg {
+    background-color: var(--floor-violet-bg);
+  }
+
+  .floor-violet-border {
+    border-color: var(--floor-violet-border);
+  }
+
+  .floor-violet-text {
+    color: var(--floor-violet);
+  }
+
+  .floor-slate-bg {
+    background-color: var(--floor-slate-bg);
+  }
+
+  .floor-slate-border {
+    border-color: var(--floor-slate-border);
+  }
+
+  .floor-slate-text {
+    color: var(--floor-slate);
+  }
 
   /* ========================================
    * ゴミ種別カラー（Garbage Type Colors）
    * ======================================== */
-  .garbage-combustible-bg { background-color: var(--garbage-combustible-bg); }
-  .garbage-combustible-text { color: var(--garbage-combustible); }
-  .garbage-plastic-bg { background-color: var(--garbage-plastic-bg); }
-  .garbage-plastic-text { color: var(--garbage-plastic); }
+  .garbage-combustible-bg {
+    background-color: var(--garbage-combustible-bg);
+  }
+
+  .garbage-combustible-text {
+    color: var(--garbage-combustible);
+  }
+
+  .garbage-plastic-bg {
+    background-color: var(--garbage-plastic-bg);
+  }
+
+  .garbage-plastic-text {
+    color: var(--garbage-plastic);
+  }
 
   /* ========================================
    * カレンダー曜日カラー（Calendar Day Colors）
    * ======================================== */
-  .day-sunday-bg { background-color: var(--day-sunday-bg); }
-  .day-sunday-text { color: var(--day-sunday); }
-  .day-saturday-bg { background-color: var(--day-saturday-bg); }
-  .day-saturday-text { color: var(--day-saturday); }
+  .day-sunday-bg {
+    background-color: var(--day-sunday-bg);
+  }
+
+  .day-sunday-text {
+    color: var(--day-sunday);
+  }
+
+  .day-saturday-bg {
+    background-color: var(--day-saturday-bg);
+  }
+
+  .day-saturday-text {
+    color: var(--day-saturday);
+  }
+
+  /* ========================================
+   * MBTI グループカラー（MBTI Group Colors）
+   * ======================================== */
+  .mbti-analysts-bg {
+    background-color: var(--mbti-analysts-bg);
+  }
+
+  .mbti-analysts-text {
+    color: var(--mbti-analysts);
+  }
+
+  .mbti-analysts-border {
+    border-color: var(--mbti-analysts-border);
+  }
+
+  .mbti-analysts-icon {
+    color: var(--mbti-analysts-icon);
+  }
+
+  .mbti-diplomats-bg {
+    background-color: var(--mbti-diplomats-bg);
+  }
+
+  .mbti-diplomats-text {
+    color: var(--mbti-diplomats);
+  }
+
+  .mbti-diplomats-border {
+    border-color: var(--mbti-diplomats-border);
+  }
+
+  .mbti-diplomats-icon {
+    color: var(--mbti-diplomats-icon);
+  }
+
+  .mbti-sentinels-bg {
+    background-color: var(--mbti-sentinels-bg);
+  }
+
+  .mbti-sentinels-text {
+    color: var(--mbti-sentinels);
+  }
+
+  .mbti-sentinels-border {
+    border-color: var(--mbti-sentinels-border);
+  }
+
+  .mbti-sentinels-icon {
+    color: var(--mbti-sentinels-icon);
+  }
+
+  .mbti-explorers-bg {
+    background-color: var(--mbti-explorers-bg);
+  }
+
+  .mbti-explorers-text {
+    color: var(--mbti-explorers);
+  }
+
+  .mbti-explorers-border {
+    border-color: var(--mbti-explorers-border);
+  }
+
+  .mbti-explorers-icon {
+    color: var(--mbti-explorers-icon);
+  }
+
+  /* Hero/Header variants (Strong background, white text) */
+  .mbti-analysts-hero {
+    background-color: var(--mbti-analysts-hero-bg);
+    color: var(--mbti-analysts-hero-text);
+  }
+
+  .mbti-diplomats-hero {
+    background-color: var(--mbti-diplomats-hero-bg);
+    color: var(--mbti-diplomats-hero-text);
+  }
+
+  .mbti-sentinels-hero {
+    background-color: var(--mbti-sentinels-hero-bg);
+    color: var(--mbti-sentinels-hero-text);
+  }
+
+  .mbti-explorers-hero {
+    background-color: var(--mbti-explorers-hero-bg);
+    color: var(--mbti-explorers-hero-text);
+  }
 
   /* ========================================
    * アラート・フィードバック系（Alert）
@@ -319,6 +446,7 @@
 
 /* ダークモード対応 - セマンティックカラーで自動対応されない差分のみ */
 @layer utilities {
+
   /* 入力欄の背景を少し明るく（視認性向上） */
   .dark .input-base,
   .dark .textarea-base,

@@ -16,7 +16,7 @@ const mockProfile: Profile = {
   avatar_url: "https://example.com/avatar.jpg",
   bio: "こんにちは、山田です。シェアハウスでの生活を楽しんでいます。",
   interests: ["料理", "映画", "ランニング"],
-  mbti: null,
+  mbti: "INTJ",
   is_admin: false,
   move_in_date: "2024-01-15",
   created_at: "2024-01-01T00:00:00Z",
@@ -105,19 +105,19 @@ describe("ProfileDetail", () => {
   describe("own profile handling", () => {
     it("shows edit button when isOwnProfile is true", () => {
       render(<ProfileDetail profile={mockProfile} isOwnProfile={true} />);
-      expect(screen.getByText("編集")).toBeInTheDocument();
+      expect(screen.getByText("プロフィールを編集")).toBeInTheDocument();
     });
 
     it("hides edit button when isOwnProfile is false", () => {
       render(
         <ProfileDetail profile={mockProfile} isOwnProfile={false} />
       );
-      expect(screen.queryByText("編集")).not.toBeInTheDocument();
+      expect(screen.queryByText("プロフィールを編集")).not.toBeInTheDocument();
     });
 
     it("edit button links to edit page", () => {
       render(<ProfileDetail profile={mockProfile} isOwnProfile={true} />);
-      const editLink = screen.getByText("編集").closest("a");
+      const editLink = screen.getByText("プロフィールを編集").closest("a");
       expect(editLink).toHaveAttribute("href", "/profile/user-123/edit");
     });
   });

@@ -6,7 +6,7 @@ import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
-import { Profile, MBTI_TYPES, MBTI_LABELS, MBTIType, ROOM_NUMBERS } from "@/domain/profile";
+import { Profile, MBTI_TYPES, ROOM_NUMBERS, type MBTIType } from "@/domain/profile";
 import { updateProfile, uploadAvatar } from "@/lib/profile/actions";
 import { updateTeaTimeSetting } from "@/lib/tea-time/actions";
 import { updateNotificationSetting } from "@/lib/notifications/actions";
@@ -14,7 +14,7 @@ import type { NotificationKey } from "@/domain/notification";
 import { getInitials } from "@/lib/utils";
 import { prepareImageForUpload } from "@/lib/utils/image-compression";
 import { FILE_UPLOAD } from "@/lib/constants/config";
-import { useI18n, useLocale } from "@/hooks/use-i18n";
+import { useI18n } from "@/hooks/use-i18n";
 
 interface NotificationSettingsData {
   notify_tea_time: boolean;
@@ -164,7 +164,6 @@ export function ProfileEditForm({
 }: ProfileEditFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const t = useI18n();
-  const locale = useLocale();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -518,7 +517,7 @@ export function ProfileEditForm({
             onChange={(v) => updateField("mbti", v)}
             options={MBTI_TYPES.map((type) => ({
               value: type,
-              label: `${type} - ${MBTI_LABELS[type][locale === "ja" ? "ja" : "en"]}`,
+              label: `${type} - ${t(`mbtiTypes.${type}.label` as Parameters<typeof t>[0])}`,
             }))}
             placeholder={t("profile.mbtiPlaceholder")}
           />
