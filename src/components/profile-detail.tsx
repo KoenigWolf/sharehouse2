@@ -99,8 +99,9 @@ function MBTIDetail({ mbti }: { mbti: string }) {
   const colors = MBTI_COLORS[group];
   const label = t(`mbtiTypes.${mbti}.label` as Parameters<typeof t>[0]);
   const summary = t(`mbtiTypes.${mbti}.summary` as Parameters<typeof t>[0]);
+  // TODO: Long-term fix is to store traits as an array in i18n files to avoid separator assumptions
   const traitsStr = t(`mbtiTypes.${mbti}.traits` as Parameters<typeof t>[0]);
-  const traits = traitsStr.split(", ");
+  const traits = traitsStr.split(/\s*,\s*/);
   const groupLabel = t(`mbtiGroups.${group}` as Parameters<typeof t>[0]);
 
   // Extract first sentence for lead text
