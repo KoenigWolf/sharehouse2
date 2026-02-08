@@ -391,7 +391,7 @@ export function ProfileEditForm({
       <form onSubmit={handleSubmit} className="space-y-12">
         {/* Hero: Avatar + Core Identity */}
         <div className="premium-surface rounded-[2.5rem] p-8 sm:p-10 shadow-sm border border-border/50 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-brand-50/30 rounded-full blur-3xl -mr-32 -mt-32" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/30 rounded-full blur-3xl -mr-32 -mt-32" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-muted/50 rounded-full blur-3xl -ml-24 -mb-24" />
 
           <div className="relative flex flex-col sm:flex-row gap-8 sm:gap-12 items-center sm:items-start">
@@ -504,7 +504,7 @@ export function ProfileEditForm({
             {interestsArray.length > 0 && (
               <div className="flex flex-wrap gap-2 px-1">
                 {interestsArray.map((interest, i) => (
-                  <span key={i} className="text-[10px] font-bold tracking-wider px-3 py-1 bg-brand-50 text-brand-500 rounded-full border border-brand-100/50 uppercase">
+                  <span key={i} className="text-[10px] font-bold tracking-wider px-3 py-1 bg-primary/10 text-brand-500 rounded-full border border-brand-100/50 uppercase">
                     {interest}
                   </span>
                 ))}

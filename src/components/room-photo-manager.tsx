@@ -119,7 +119,7 @@ export function RoomPhotoManager({
             </svg>
             {t("roomPhotos.roomPhotosSection")}
           </p>
-          <span className="text-[10px] text-brand-500 font-bold tracking-wider bg-brand-50 px-2.5 py-1 rounded-full">
+          <span className="text-[10px] text-brand-500 font-bold tracking-wider bg-primary/10 px-2.5 py-1 rounded-full">
             {currentPhotos.length} / {maxPhotos}
           </span>
         </div>
@@ -203,7 +203,7 @@ export function RoomPhotoManager({
                 <Spinner variant="dark" />
               ) : (
                 <>
-                  <div className="w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center group-hover:bg-brand-100
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-brand-100
  transition-colors">
                     <Plus className="w-5 h-5 text-brand-500" />
                   </div>

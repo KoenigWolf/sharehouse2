@@ -121,7 +121,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
       {/* Decorative Background Elements */}
-      <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-brand-50/50 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/50 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-50/30 rounded-full blur-[120px] pointer-events-none" />
 
       <main className="flex-1 flex flex-col items-center justify-center p-6 relative z-10">

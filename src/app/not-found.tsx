@@ -26,7 +26,7 @@ export default function NotFound() {
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.8, type: "spring" }}
-            className="text-[12rem] sm:text-[16rem] font-bold text-slate-100 select-none leading-none tracking-tighter"
+            className="text-[12rem] sm:text-[16rem] font-bold text-muted-foreground/10 select-none leading-none tracking-tighter"
           >
             404
           </m.div>
@@ -35,9 +35,9 @@ export default function NotFound() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.5, duration: 0.5 }}
-              className="bg-white/80 backdrop-blur-xl p-8 sm:p-12 rounded-[2.5rem] shadow-2xl border border-white/50 premium-surface"
+              className="bg-card/80 backdrop-blur-xl p-8 sm:p-12 rounded-[2.5rem] shadow-2xl border border-border/50 premium-surface"
             >
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-brand-50 text-brand-500 mb-6">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 text-brand-500 mb-6">
                 <MoveLeft size={32} strokeWidth={1.5} />
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-4 tracking-tight">
@@ -54,7 +54,7 @@ export default function NotFound() {
                     {t("pages.notFound.backHome")}
                   </Link>
                 </Button>
-                <Button variant="outline" size="xl" asChild className="rounded-2xl bg-white border-border hover:bg-background hover:border-primary/40 group">
+                <Button variant="outline" size="xl" asChild className="rounded-2xl bg-card border-border hover:bg-background hover:border-primary/40 group">
                   <Link href="/residents">
                     {t("nav.residents")}
                     <ArrowRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />

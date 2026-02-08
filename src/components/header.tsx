@@ -16,6 +16,7 @@ import {
   LayoutGrid,
   BarChart3,
   User,
+  Settings,
   LogOut,
   Shield,
   Home,
@@ -154,6 +155,12 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
           <Link href={profileHref} className="flex items-center">
             <User size={16} strokeWidth={2} className="mr-3 text-muted-foreground" />
             <span className="font-semibold text-sm text-foreground/80">{t("nav.myPage")}</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild className="rounded-xl px-3 py-2.5 focus:bg-secondary cursor-pointer">
+          <Link href="/settings" className="flex items-center">
+            <Settings size={16} strokeWidth={2} className="mr-3 text-muted-foreground" />
+            <span className="font-semibold text-sm text-foreground/80">{t("nav.settings")}</span>
           </Link>
         </DropdownMenuItem>
         {isAdmin && (

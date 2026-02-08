@@ -31,14 +31,14 @@ const ThemeOption = memo(function ThemeOption({
       onClick={onSelect}
       className={`relative flex-1 p-4 rounded-2xl border-2 transition-all duration-300 text-left ${
         isSelected
-          ? "border-brand-500 bg-brand-50 shadow-md"
-          : "border-border bg-card hover:border-brand-300 hover:bg-muted/50"
+          ? "border-primary bg-primary/10 shadow-md"
+          : "border-border bg-card hover:border-primary/50 hover:bg-muted/50"
       }`}
     >
       {isSelected && (
         <m.div
           layoutId="theme-check"
-          className="absolute top-3 right-3 w-5 h-5 rounded-full bg-brand-500 flex items-center justify-center"
+          className="absolute top-3 right-3 w-5 h-5 rounded-full bg-primary flex items-center justify-center"
         >
           <svg
             className="w-3 h-3 text-white"
@@ -55,15 +55,15 @@ const ThemeOption = memo(function ThemeOption({
       {/* Color preview */}
       <div className="flex gap-1.5 mb-3">
         <div
-          className="w-6 h-6 rounded-lg shadow-sm border border-border/50"
+          className="w-6 h-6 rounded-lg shadow-sm border border-foreground/20"
           style={{ backgroundColor: colors.primary }}
         />
         <div
-          className="w-6 h-6 rounded-lg shadow-sm border border-border/50"
+          className="w-6 h-6 rounded-lg shadow-sm border border-foreground/20"
           style={{ backgroundColor: colors.secondary }}
         />
         <div
-          className="w-6 h-6 rounded-lg shadow-sm border border-border/50"
+          className="w-6 h-6 rounded-lg shadow-sm border border-foreground/20"
           style={{ backgroundColor: colors.accent }}
         />
       </div>
@@ -96,11 +96,11 @@ const ColorModeOption = memo(function ColorModeOption({
       onClick={onSelect}
       className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all duration-300 ${
         isSelected
-          ? "border-brand-500 bg-brand-50 text-brand-700"
-          : "border-border bg-card hover:border-brand-300 hover:bg-muted/50 text-muted-foreground"
+          ? "border-primary bg-primary/10 text-foreground"
+          : "border-border bg-card hover:border-primary/50 hover:bg-muted/50 text-muted-foreground"
       }`}
     >
-      <span className={isSelected ? "text-brand-500" : "text-muted-foreground"}>
+      <span className={isSelected ? "text-primary" : "text-muted-foreground"}>
         {icon}
       </span>
       <span className="text-xs font-bold">{label}</span>

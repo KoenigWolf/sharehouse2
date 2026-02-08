@@ -41,7 +41,7 @@ export default function Error({
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.8, type: "spring" }}
-            className="text-[10rem] sm:text-[14rem] font-bold text-slate-100 select-none leading-none tracking-tighter uppercase"
+            className="text-[10rem] sm:text-[14rem] font-bold text-muted-foreground/10 select-none leading-none tracking-tighter uppercase"
           >
             {t("pages.error.label")}
           </m.div>
@@ -50,7 +50,7 @@ export default function Error({
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.5, duration: 0.5 }}
-              className="bg-white/80 backdrop-blur-xl p-8 sm:p-12 rounded-[2.5rem] shadow-2xl border border-white/50 premium-surface"
+              className="bg-card/80 backdrop-blur-xl p-8 sm:p-12 rounded-[2.5rem] shadow-2xl border border-border/50 premium-surface"
             >
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-error-bg text-error mb-6">
                 <AlertCircle size={32} strokeWidth={1.5} />
@@ -67,7 +67,7 @@ export default function Error({
                   <RefreshCcw size={18} className="mr-2 group-active:rotate-180 transition-transform duration-500" />
                   {t("pages.error.retry")}
                 </Button>
-                <Button variant="outline" size="xl" asChild className="rounded-2xl bg-white border-border hover:bg-background hover:border-primary/40">
+                <Button variant="outline" size="xl" asChild className="rounded-2xl bg-card border-border hover:bg-background hover:border-primary/40">
                   <Link href="/">
                     <Home size={18} className="mr-2" />
                     {t("pages.error.backHome")}

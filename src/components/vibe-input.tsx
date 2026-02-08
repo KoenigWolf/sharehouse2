@@ -63,7 +63,7 @@ export function VibeInput({ currentVibe = "", isLoggedIn }: VibeInputProps) {
          >
             <div className="p-4 sm:p-5 flex flex-col gap-3">
                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-brand-50 flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                      <MessageCircle className="w-4 h-4 text-brand-500" />
                   </div>
                   <textarea

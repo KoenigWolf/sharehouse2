@@ -221,7 +221,7 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                     </div>
                   </div>
                   {timeLeft && !isClaimed && (
-                    <span className="text-[10px] font-bold text-brand-500 bg-brand-50 px-2 py-0.5 rounded-full tracking-wider">
+                    <span className="text-[10px] font-bold text-brand-500 bg-primary/10 px-2 py-0.5 rounded-full tracking-wider">
                       {timeLeft}
                     </span>
                   )}

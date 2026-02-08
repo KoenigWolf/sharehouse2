@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function FloorPlanLoading() {
    return (
       <div className="min-h-screen bg-background flex flex-col">
-         <header className="h-[73px] bg-white border-b border-border" />
+         <header className="h-[73px] bg-card border-b border-border" />
 
          <main className="flex-1 pb-20 sm:pb-0">
             <div className="container mx-auto px-4 sm:px-6 py-5 sm:py-8 space-y-8">

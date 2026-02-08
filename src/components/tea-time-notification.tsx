@@ -38,7 +38,7 @@ export function TeaTimeNotification({ match }: TeaTimeNotificationProps) {
             </Avatar>
 
             <div className="flex-1 min-w-0">
-              <span className="text-[10px] text-brand-500 font-bold uppercase tracking-wider bg-brand-50 px-2 py-0.5 rounded-full">
+              <span className="text-[10px] text-brand-500 font-bold uppercase tracking-wider bg-primary/10 px-2 py-0.5 rounded-full">
                 {t("teaTime.matchNotificationTitle")}
               </span>
               <p className="text-lg sm:text-xl text-foreground mt-1 truncate font-semibold tracking-tight">
@@ -50,7 +50,7 @@ export function TeaTimeNotification({ match }: TeaTimeNotificationProps) {
               </p>
             </div>
 
-            <div className="w-10 h-10 rounded-full flex items-center justify-center text-muted-foreground/70 group-hover:text-brand-500 group-hover:bg-brand-50 transition-all shrink-0">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center text-muted-foreground/70 group-hover:text-brand-500 group-hover:bg-primary/10 transition-all shrink-0">
               <svg
                 className="w-5 h-5"
                 fill="none"

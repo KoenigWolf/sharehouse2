@@ -261,23 +261,23 @@ function DeleteSection() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-rose-50/30 rounded-[2rem] p-8 border border-rose-100 space-y-6"
+      className="bg-error-bg/30 rounded-[2rem] p-8 border border-error-border/50 space-y-6"
     >
       <div className="flex items-center gap-2 mb-2">
-        <svg className="w-4 h-4 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="w-4 h-4 text-error" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
         </svg>
-        <h3 className="text-[10px] font-bold tracking-widest text-rose-500 uppercase">
+        <h3 className="text-[10px] font-bold tracking-widest text-error uppercase">
           {t("account.deleteAccount")}
         </h3>
       </div>
 
-      <p className="text-xs font-medium text-rose-600/70 leading-relaxed max-w-sm">
+      <p className="text-xs font-medium text-error/80 leading-relaxed max-w-sm">
         {t("account.deleteWarning")}
       </p>
 
       <div className="space-y-3">
-        <label htmlFor="delete-confirm" className="block text-[10px] font-bold text-rose-400 uppercase ml-1">
+        <label htmlFor="delete-confirm" className="block text-[10px] font-bold text-error/70 uppercase ml-1">
           {t("account.deleteConfirmLabel")}
         </label>
         <Input
@@ -288,7 +288,7 @@ function DeleteSection() {
           placeholder={t("account.deleteConfirmPlaceholder")}
           disabled={isSubmitting}
           autoComplete="off"
-          className="h-12 rounded-2xl border-rose-100 bg-white/50 focus:ring-rose-500/5 focus:border-rose-300"
+          className="h-12 rounded-2xl border-error-border/50 bg-card/50 focus:ring-error/5 focus:border-error/50"
         />
       </div>
 
@@ -299,7 +299,7 @@ function DeleteSection() {
         variant="destructive"
         disabled={isSubmitting || !isConfirmed}
         size="lg"
-        className="w-full sm:w-auto h-11 px-8 rounded-full bg-rose-500 hover:bg-rose-600 text-white font-bold tracking-wider uppercase text-[11px] transition-all duration-300 shadow-lg shadow-rose-100"
+        className="w-full sm:w-auto h-11 px-8 rounded-full bg-error hover:bg-error/90 text-white font-bold tracking-wider uppercase text-[11px] transition-all duration-300 shadow-lg shadow-error/10"
       >
         {isSubmitting ? (
           <span className="flex items-center gap-2">

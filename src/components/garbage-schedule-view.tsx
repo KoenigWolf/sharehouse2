@@ -10,11 +10,11 @@ import { DAY_NAMES_JA, DAY_NAMES_EN } from "@/domain/garbage";
 import type { GarbageSchedule, GarbageDutyWithProfile } from "@/domain/garbage";
 
 const GARBAGE_TYPE_STYLES: Record<string, { bg: string; text: string; border: string }> = {
-  可燃ごみ: { bg: "bg-orange-50", text: "text-orange-700", border: "border-orange-200" },
+  可燃ごみ: { bg: "bg-orange-500/10", text: "text-orange-600 dark:text-orange-400", border: "border-orange-500/20" },
   不燃ごみ: { bg: "bg-muted", text: "text-foreground/80", border: "border-border" },
-  資源: { bg: "bg-brand-50", text: "text-brand-700", border: "border-brand-200" },
-  資源プラスチック: { bg: "bg-blue-50", text: "text-blue-700", border: "border-blue-200" },
-  資源ごみ: { bg: "bg-brand-50", text: "text-brand-700", border: "border-brand-200" },
+  資源: { bg: "bg-primary/10", text: "text-primary", border: "border-primary/20" },
+  資源プラスチック: { bg: "bg-blue-500/10", text: "text-blue-600 dark:text-blue-400", border: "border-blue-500/20" },
+  資源ごみ: { bg: "bg-primary/10", text: "text-primary", border: "border-primary/20" },
 };
 
 const DEFAULT_STYLE = { bg: "bg-secondary", text: "text-muted-foreground", border: "border-border" };
@@ -169,7 +169,7 @@ export function GarbageScheduleView({
                       aria-label={t("garbage.markComplete")}
                     >
                       {completingId === duty.id && (
-                        <span className="w-2 h-2 bg-slate-400 animate-pulse" />
+                        <span className="w-2 h-2 bg-muted-foreground animate-pulse" />
                       )}
                     </Button>
                   ) : (

@@ -211,7 +211,7 @@ export function BulletinBoard({ bulletins: initialBulletins, currentUserId, curr
                     type="button"
                     onClick={() => handleDelete(bulletin.id)}
                     disabled={isSubmitting}
-                    className="absolute top-4 right-4 text-[10px] font-bold text-slate-200 hover:text-error opacity-0 group-hover:opacity-100 transition-all uppercase tracking-widest p-2"
+                    className="absolute top-4 right-4 text-[10px] font-bold text-muted-foreground/40 hover:text-error opacity-0 group-hover:opacity-100 transition-all uppercase tracking-widest p-2"
                   >
                     {t("common.delete")}
                   </button>

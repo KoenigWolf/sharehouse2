@@ -24,7 +24,7 @@ export function TeaserOverlay({ totalCount }: TeaserOverlayProps) {
             transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
             className="relative premium-surface rounded-[40px] p-8 sm:p-12 text-center max-w-2xl mx-auto shadow-2xl shadow-brand-500/10"
          >
-            <div className="w-16 h-16 rounded-3xl bg-brand-50 flex items-center justify-center mx-auto mb-6 text-brand-500">
+            <div className="w-16 h-16 rounded-3xl bg-primary/10 flex items-center justify-center mx-auto mb-6 text-brand-500">
                <UserPlus className="w-8 h-8" />
             </div>
 
