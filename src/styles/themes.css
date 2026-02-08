@@ -58,6 +58,24 @@
   --day-saturday: #3b82f6;
   --day-saturday-bg: #eff6ff;
 
+  /* MBTI group colors */
+  --mbti-analysts: #7c3aed;
+  --mbti-analysts-bg: #faf5ff;
+  --mbti-analysts-border: #e9d5ff;
+  --mbti-analysts-icon: #a78bfa;
+  --mbti-diplomats: #059669;
+  --mbti-diplomats-bg: #ecfdf5;
+  --mbti-diplomats-border: #a7f3d0;
+  --mbti-diplomats-icon: #34d399;
+  --mbti-sentinels: #2563eb;
+  --mbti-sentinels-bg: #eff6ff;
+  --mbti-sentinels-border: #bfdbfe;
+  --mbti-sentinels-icon: #60a5fa;
+  --mbti-explorers: #d97706;
+  --mbti-explorers-bg: #fffbeb;
+  --mbti-explorers-border: #fde68a;
+  --mbti-explorers-icon: #fbbf24;
+
   /* Core palette - Slate based */
   --background: #f8fafc;
   --foreground: #0f172a;
@@ -154,6 +172,24 @@
   --day-saturday: #60a5fa;
   --day-saturday-bg: #1e3a5f;
 
+  /* MBTI group colors (dark mode) */
+  --mbti-analysts: #a78bfa;
+  --mbti-analysts-bg: #2e1065;
+  --mbti-analysts-border: #4c1d95;
+  --mbti-analysts-icon: #c4b5fd;
+  --mbti-diplomats: #34d399;
+  --mbti-diplomats-bg: #022c22;
+  --mbti-diplomats-border: #065f46;
+  --mbti-diplomats-icon: #6ee7b7;
+  --mbti-sentinels: #60a5fa;
+  --mbti-sentinels-bg: #172554;
+  --mbti-sentinels-border: #1e40af;
+  --mbti-sentinels-icon: #93c5fd;
+  --mbti-explorers: #fbbf24;
+  --mbti-explorers-bg: #422006;
+  --mbti-explorers-border: #78350f;
+  --mbti-explorers-icon: #fcd34d;
+
   --background: #0f172a;
   --foreground: #f8fafc;
   --card: #1e293b;
@@ -229,6 +265,24 @@
   --day-sunday-bg: #fef2f2;
   --day-saturday: #2563eb;
   --day-saturday-bg: #eff6ff;
+
+  /* MBTI group colors (warm-tinted) */
+  --mbti-analysts: #7c3aed;
+  --mbti-analysts-bg: #faf5ff;
+  --mbti-analysts-border: #e9d5ff;
+  --mbti-analysts-icon: #a78bfa;
+  --mbti-diplomats: #047857;
+  --mbti-diplomats-bg: #f0fdf4;
+  --mbti-diplomats-border: #bbf7d0;
+  --mbti-diplomats-icon: #4ade80;
+  --mbti-sentinels: #1d4ed8;
+  --mbti-sentinels-bg: #eff6ff;
+  --mbti-sentinels-border: #bfdbfe;
+  --mbti-sentinels-icon: #60a5fa;
+  --mbti-explorers: #b45309;
+  --mbti-explorers-bg: #fefce8;
+  --mbti-explorers-border: #fde047;
+  --mbti-explorers-icon: #facc15;
 
   /* Core palette - Warm cream based */
   --background: #fdfcf8;
@@ -325,6 +379,24 @@
   --day-sunday-bg: #3d1515;
   --day-saturday: #60a5fa;
   --day-saturday-bg: #1e2a4a;
+
+  /* MBTI group colors (dark mode) */
+  --mbti-analysts: #a78bfa;
+  --mbti-analysts-bg: #2e1a47;
+  --mbti-analysts-border: #4c2d6e;
+  --mbti-analysts-icon: #c4b5fd;
+  --mbti-diplomats: #4ade80;
+  --mbti-diplomats-bg: #14261a;
+  --mbti-diplomats-border: #166534;
+  --mbti-diplomats-icon: #86efac;
+  --mbti-sentinels: #60a5fa;
+  --mbti-sentinels-bg: #1e2a4a;
+  --mbti-sentinels-border: #1e40af;
+  --mbti-sentinels-icon: #93c5fd;
+  --mbti-explorers: #fbbf24;
+  --mbti-explorers-bg: #352a14;
+  --mbti-explorers-border: #5c4a1e;
+  --mbti-explorers-icon: #fcd34d;
 
   --background: #121210;
   --foreground: #f5f3ee;

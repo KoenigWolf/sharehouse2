@@ -242,6 +242,29 @@
   .day-saturday-text { color: var(--day-saturday); }
 
   /* ========================================
+   * MBTI グループカラー（MBTI Group Colors）
+   * ======================================== */
+  .mbti-analysts-bg { background-color: var(--mbti-analysts-bg); }
+  .mbti-analysts-text { color: var(--mbti-analysts); }
+  .mbti-analysts-border { border-color: var(--mbti-analysts-border); }
+  .mbti-analysts-icon { color: var(--mbti-analysts-icon); }
+
+  .mbti-diplomats-bg { background-color: var(--mbti-diplomats-bg); }
+  .mbti-diplomats-text { color: var(--mbti-diplomats); }
+  .mbti-diplomats-border { border-color: var(--mbti-diplomats-border); }
+  .mbti-diplomats-icon { color: var(--mbti-diplomats-icon); }
+
+  .mbti-sentinels-bg { background-color: var(--mbti-sentinels-bg); }
+  .mbti-sentinels-text { color: var(--mbti-sentinels); }
+  .mbti-sentinels-border { border-color: var(--mbti-sentinels-border); }
+  .mbti-sentinels-icon { color: var(--mbti-sentinels-icon); }
+
+  .mbti-explorers-bg { background-color: var(--mbti-explorers-bg); }
+  .mbti-explorers-text { color: var(--mbti-explorers); }
+  .mbti-explorers-border { border-color: var(--mbti-explorers-border); }
+  .mbti-explorers-icon { color: var(--mbti-explorers-icon); }
+
+  /* ========================================
    * アラート・フィードバック系（Alert）
    * ======================================== */
   .alert-base {
