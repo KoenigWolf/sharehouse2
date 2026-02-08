@@ -21,12 +21,8 @@ export const LanguageSettings = memo(function LanguageSettings() {
     startTransition(() => {
       // Update document lang attribute
       document.documentElement.lang = locale;
-      // Store in localStorage for persistence
-      try {
-        localStorage.setItem("sharehouse-locale", locale);
-      } catch {
-        // Ignore storage errors
-      }
+      // Store in cookie for server-side locale detection
+      document.cookie = `locale=${locale}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
       // Reload to apply new locale
       window.location.reload();
     });
@@ -65,14 +61,14 @@ export const LanguageSettings = memo(function LanguageSettings() {
             disabled={isPending}
             className={`relative flex-1 p-4 rounded-2xl border-2 transition-all duration-300 text-left ${
               selectedLocale === lang.value
-                ? "border-brand-500 bg-brand-50 shadow-md"
-                : "border-border bg-card hover:border-brand-300 hover:bg-muted/50"
+                ? "border-primary bg-primary/10 shadow-md"
+                : "border-border bg-card hover:border-primary/50 hover:bg-muted/50"
             }`}
           >
             {selectedLocale === lang.value && (
               <m.div
                 layoutId="language-check"
-                className="absolute top-3 right-3 w-5 h-5 rounded-full bg-brand-500 flex items-center justify-center"
+                className="absolute top-3 right-3 w-5 h-5 rounded-full bg-primary flex items-center justify-center"
               >
                 <svg
                   className="w-3 h-3 text-white"

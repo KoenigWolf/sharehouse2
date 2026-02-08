@@ -8,15 +8,28 @@ import {
 } from "@/lib/i18n";
 
 /**
+ * Cookie から指定キーの値を取得する
+ */
+function getCookie(name: string): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
+  return match ? match[2] : null;
+}
+
+/**
  * クライアント側のロケールを検出する
  *
- * document.documentElement.lang → navigator.language の順に確認し、
+ * Cookie → document.documentElement.lang → navigator.language の順に確認し、
  * サポート対象ロケールに正規化して返す。SSR時はデフォルトロケール(ja)を返す。
  *
  * @returns 検出されたロケール
  */
 function detectClientLocale(): Locale {
   if (typeof document !== "undefined") {
+    const cookieLocale = getCookie("locale");
+    if (cookieLocale) {
+      return normalizeLocale(cookieLocale);
+    }
     const lang = document.documentElement.lang || navigator.language;
     return normalizeLocale(lang);
   }
