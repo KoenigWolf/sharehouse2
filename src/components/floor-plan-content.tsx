@@ -137,7 +137,7 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
                   className={`
                     relative flex flex-col items-center p-3 sm:p-5 transition-all duration-500 rounded-2xl
                     ${isOccupied
-                      ? "bg-white border border-border shadow-sm hover:shadow-xl hover:-translate-y-0.5 ring-1 ring-border/50"
+                      ? "bg-card border border-border shadow-sm hover:shadow-xl hover:-translate-y-0.5 ring-1 ring-border/50"
                       : "bg-muted border border-dashed border-border hover:border-border opacity-60 hover:opacity-100"
                     }
                   `}
@@ -164,7 +164,7 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
                         />
                       </Avatar>
                     ) : (
-                      <div className="w-full h-full rounded-2xl bg-white/50 flex items-center justify-center border-2 border-dashed border-border shadow-inner">
+                      <div className="w-full h-full rounded-2xl bg-card/50 flex items-center justify-center border-2 border-dashed border-border shadow-inner">
                         <span className="text-[10px] font-bold text-muted-foreground/70 tracking-wider">
                           {t("floorPlan.vacant")}
                         </span>

@@ -143,7 +143,7 @@ const WifiCard = memo(function WifiCard({ wifiInfos }: WifiCardProps) {
         </div>
       </div>
 
-      <div className="divide-y divide-border/50 bg-white">
+      <div className="divide-y divide-border/50 bg-card">
         {wifiInfos.map((wifi) => (
           <div key={wifi.id} className="px-5 py-4 flex items-center justify-between">
             <div className="flex items-center gap-4">

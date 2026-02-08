@@ -203,7 +203,7 @@ export function ResidentsGrid({
                   size="icon-sm"
                   onClick={() => setViewMode(option.value)}
                   className={`${isActive
-                    ? "bg-white text-brand-500 shadow-sm"
+                    ? "bg-card text-brand-500 shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
                     } rounded-lg transition-all`}
                   title={option.label}
@@ -235,7 +235,7 @@ export function ResidentsGrid({
                     ? isAll
                       ? "bg-brand-500 text-white shadow-lg shadow-brand-200 border-brand-500"
                       : `${colors?.bg} ${colors?.text} border-transparent shadow-sm`
-                    : "bg-white text-foreground/80 hover:bg-muted hover:border-border"
+                    : "bg-card text-foreground/80 hover:bg-muted hover:border-border"
                     }`}
                 >
                   <span className="text-sm font-semibold tracking-tight">
@@ -260,7 +260,7 @@ export function ResidentsGrid({
                   placeholder={t("residents.searchPlaceholder")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full sm:w-80 h-12 pl-11 pr-4 bg-white border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all shadow-sm"
+                  className="w-full sm:w-80 h-12 pl-11 pr-4 bg-card border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all shadow-sm"
                 />
                 {searchQuery && (
                   <Button
@@ -307,7 +307,7 @@ export function ResidentsGrid({
                   );
                 })}
               </div>
-              <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-white to-transparent pointer-events-none" />
+              <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-background to-transparent pointer-events-none" />
             </div>
           </div>
         </div>
@@ -557,7 +557,7 @@ function ResidentListItem({
       aria-label={t("a11y.viewProfile", { name: profile.name })}
     >
       <article
-        className={`flex items-center gap-5 p-4 sm:p-5 bg-white rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 border border-border ${isCurrentUser ? "ring-2 ring-brand-500/20 border-brand-500" : ""
+        className={`flex items-center gap-5 p-4 sm:p-5 bg-card rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 border border-border ${isCurrentUser ? "ring-2 ring-brand-500/20 border-brand-500" : ""
           }`}
       >
         <div className="relative shrink-0">
