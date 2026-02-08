@@ -793,6 +793,10 @@ export const ja = {
     languageEnglish: "英語",
   },
 
+  mbti: {
+    traitsLabel: "特性",
+  },
+
   mbtiGroups: {
     Analysts: "分析家",
     Diplomats: "外交官",

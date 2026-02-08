@@ -794,6 +794,10 @@ export const en: Translations = {
     languageEnglish: "English",
   },
 
+  mbti: {
+    traitsLabel: "Traits",
+  },
+
   mbtiGroups: {
     Analysts: "Analysts",
     Diplomats: "Diplomats",
