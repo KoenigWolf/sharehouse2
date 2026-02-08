@@ -653,6 +653,25 @@ export function ProfileDetail({
               </FbCard>
             </m.div>
 
+            {/* Interests Card - placed here for quick personality insight */}
+            {profile.interests && profile.interests.length > 0 && (
+              <m.div variants={itemVariants}>
+                <FbCard>
+                  <FbCardHeader title={t("profile.interests")} />
+                  <div className="px-4 pb-4 flex flex-wrap gap-2">
+                    {profile.interests.map((interest, idx) => (
+                      <span
+                        key={idx}
+                        className="text-[13px] px-3 py-1.5 rounded-full bg-muted text-foreground"
+                      >
+                        {interest}
+                      </span>
+                    ))}
+                  </div>
+                </FbCard>
+              </m.div>
+            )}
+
             {/* Basic Info */}
             {basicInfo.length > 0 && (
               <m.div variants={itemVariants}>
@@ -715,7 +734,7 @@ export function ProfileDetail({
             )}
           </div>
 
-          {/* Right Column (MBTI, Photos, Interests) - 2/3 width */}
+          {/* Right Column (MBTI, Photos) - 2/3 width */}
           <div className="lg:col-span-2 space-y-4">
             {/* MBTI */}
             {profile.mbti && (
@@ -762,24 +781,6 @@ export function ProfileDetail({
               </m.div>
             )}
 
-            {/* Interests Card */}
-            {profile.interests && profile.interests.length > 0 && (
-              <m.div variants={itemVariants}>
-                <FbCard>
-                  <FbCardHeader title={t("profile.interests")} />
-                  <div className="px-4 pb-4 flex flex-wrap gap-2">
-                    {profile.interests.map((interest, idx) => (
-                      <span
-                        key={idx}
-                        className="text-[13px] px-3 py-1.5 rounded-full bg-muted text-foreground"
-                      >
-                        {interest}
-                      </span>
-                    ))}
-                  </div>
-                </FbCard>
-              </m.div>
-            )}
           </div>
         </div>
       )}
