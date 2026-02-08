@@ -1,0 +1,285 @@
+/**
+ * Semantic Utility Classes - Share House Portal
+ *
+ * 用途別のユーティリティクラス。
+ * tokens.css の変数を参照し、コンポーネントで使用する。
+ */
+
+@layer utilities {
+  /* ========================================
+   * カード系（Card）
+   * ======================================== */
+  .card-base {
+    @apply bg-white border border-slate-100;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-interactive {
+    @apply bg-white border border-slate-100;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+  }
+
+  .card-interactive:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .card-elevated {
+    @apply bg-white border border-slate-100;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-elevated);
+  }
+
+  /* ========================================
+   * コンテナ系（Container）
+   * ======================================== */
+  .section-container {
+    @apply bg-slate-50;
+    border-radius: var(--radius-container);
+    padding: var(--spacing-section);
+  }
+
+  .page-container {
+    @apply max-w-4xl mx-auto;
+    padding-left: var(--spacing-page);
+    padding-right: var(--spacing-page);
+  }
+
+  .modal-container {
+    @apply bg-white;
+    border-radius: var(--radius-modal);
+    box-shadow: var(--shadow-elevated);
+  }
+
+  /* ========================================
+   * 入力系（Input）
+   * ======================================== */
+  .input-base {
+    @apply w-full bg-white border border-slate-200 text-slate-700 text-[15px] font-medium;
+    @apply placeholder:text-slate-300;
+    @apply focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50;
+    height: var(--input-height);
+    border-radius: var(--radius-input);
+    padding: 0 1.25rem;
+    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+  }
+
+  .input-lg {
+    height: var(--input-height-lg);
+  }
+
+  .textarea-base {
+    @apply w-full bg-white border border-slate-200 text-slate-700 text-[15px] font-medium;
+    @apply placeholder:text-slate-300 leading-relaxed;
+    @apply focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50;
+    border-radius: var(--radius-input);
+    padding: 1rem 1.25rem;
+    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+    resize: none;
+  }
+
+  .select-base {
+    @apply w-full bg-white border border-slate-200 text-slate-700 text-[15px] font-medium;
+    @apply focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50;
+    @apply cursor-pointer appearance-none;
+    height: var(--input-height);
+    border-radius: var(--radius-input);
+    padding: 0 2.5rem 0 1.25rem;
+    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.75rem center;
+    background-repeat: no-repeat;
+    background-size: 1.25rem;
+  }
+
+  /* ========================================
+   * テキスト系（Typography）
+   * ======================================== */
+  .heading-page {
+    @apply text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight;
+  }
+
+  .heading-section {
+    @apply text-lg font-bold text-slate-900;
+  }
+
+  .heading-card {
+    @apply text-base font-bold text-slate-900;
+  }
+
+  .text-body {
+    @apply text-sm text-slate-600 leading-relaxed;
+  }
+
+  .text-muted {
+    @apply text-xs text-slate-400;
+  }
+
+  .label-uppercase {
+    @apply text-[10px] font-bold tracking-wider uppercase text-slate-400;
+  }
+
+  .label-field {
+    @apply text-sm font-medium text-slate-600;
+  }
+
+  /* ========================================
+   * バッジ系（Badge）
+   * 各クラスに直接スタイルを定義（Tailwind v4 では @apply で同一レイヤー内のクラス参照不可）
+   * ======================================== */
+  .badge-base {
+    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium;
+    border-radius: var(--radius-badge);
+  }
+
+  .badge-default {
+    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium;
+    @apply bg-slate-100 text-slate-500;
+    border-radius: var(--radius-badge);
+  }
+
+  .badge-primary {
+    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium;
+    @apply bg-brand-500 text-white;
+    border-radius: var(--radius-badge);
+  }
+
+  .badge-dark {
+    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium;
+    @apply bg-slate-900 text-white;
+    border-radius: var(--radius-badge);
+  }
+
+  .badge-success {
+    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium;
+    @apply bg-success-bg text-success;
+    border-radius: var(--radius-badge);
+  }
+
+  .badge-error {
+    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium;
+    @apply bg-error-bg text-error;
+    border-radius: var(--radius-badge);
+  }
+
+  .badge-outline {
+    @apply inline-flex items-center text-[10px] px-2 py-0.5 tracking-wide font-medium;
+    @apply bg-transparent border border-slate-200 text-slate-500;
+    border-radius: var(--radius-badge);
+  }
+
+  /* ========================================
+   * アラート・フィードバック系（Alert）
+   * ======================================== */
+  .alert-base {
+    @apply p-4;
+    border-radius: var(--radius-card);
+  }
+
+  .alert-success {
+    @apply p-4 bg-success-bg/50 border-l-4 border-success-border text-success;
+    border-radius: var(--radius-card);
+  }
+
+  .alert-error {
+    @apply p-4 bg-error-bg/50 border-l-4 border-error-border text-error;
+    border-radius: var(--radius-card);
+  }
+
+  .alert-info {
+    @apply p-4 bg-slate-100 border-l-4 border-slate-300 text-slate-600;
+    border-radius: var(--radius-card);
+  }
+
+  /* ========================================
+   * ボタン系（Button Extensions）
+   * ======================================== */
+  .btn-icon {
+    @apply inline-flex items-center justify-center rounded-full transition-colors;
+    transition-duration: var(--transition-fast);
+  }
+
+  .btn-icon-sm {
+    @apply inline-flex items-center justify-center rounded-full transition-colors w-8 h-8;
+    transition-duration: var(--transition-fast);
+  }
+
+  .btn-icon-md {
+    @apply inline-flex items-center justify-center rounded-full transition-colors w-10 h-10;
+    transition-duration: var(--transition-fast);
+  }
+
+  .btn-icon-lg {
+    @apply inline-flex items-center justify-center rounded-full transition-colors w-12 h-12;
+    transition-duration: var(--transition-fast);
+  }
+
+  /* ========================================
+   * オーバーレイ系（Overlay）
+   * ======================================== */
+  .overlay-dark {
+    @apply bg-black/40 backdrop-blur-sm;
+  }
+
+  .overlay-light {
+    @apply bg-white/80 backdrop-blur-sm;
+  }
+
+  /* ========================================
+   * リスト・グリッド系（List/Grid）
+   * ======================================== */
+  .grid-cards {
+    @apply grid gap-4 sm:gap-6;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  .grid-photos {
+    @apply grid grid-cols-3 gap-0.5 sm:gap-1;
+  }
+
+  /* ========================================
+   * 後方互換エイリアス
+   * ======================================== */
+  /* premium-surface は globals.css で維持（既存コードとの互換性） */
+}
+
+/* ダークモード対応 */
+@layer utilities {
+  .dark .card-base,
+  .dark .card-interactive,
+  .dark .card-elevated {
+    @apply bg-slate-900 border-slate-800;
+  }
+
+  .dark .input-base,
+  .dark .textarea-base,
+  .dark .select-base {
+    @apply bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-500;
+  }
+
+  .dark .heading-page,
+  .dark .heading-section,
+  .dark .heading-card {
+    @apply text-slate-100;
+  }
+
+  .dark .text-body {
+    @apply text-slate-300;
+  }
+
+  .dark .text-muted,
+  .dark .label-uppercase {
+    @apply text-slate-500;
+  }
+
+  .dark .badge-default {
+    @apply bg-slate-800 text-slate-400;
+  }
+
+  .dark .alert-info {
+    @apply bg-slate-800 border-slate-600 text-slate-300;
+  }
+}

@@ -1,0 +1,63 @@
+/**
+ * Design Tokens - Share House Portal
+ *
+ * デザイン変更はここで一括管理。
+ * 角丸、影、スペーシング、トランジションなどの値を変更すれば
+ * 全コンポーネントに反映される。
+ */
+
+:root {
+  /* ========================================
+   * 角丸（Border Radius）
+   * ======================================== */
+  --radius-card: 1rem;         /* カード、パネル */
+  --radius-container: 1.5rem;  /* セクションコンテナ */
+  --radius-button: 9999px;     /* ボタン（pill形状） */
+  --radius-input: 1rem;        /* 入力欄 */
+  --radius-badge: 0.375rem;    /* バッジ、タグ */
+  --radius-modal: 1.5rem;      /* モーダル、ダイアログ */
+
+  /* ========================================
+   * シャドウ（Box Shadow）
+   * ======================================== */
+  --shadow-card: var(--premium-shadow);
+  --shadow-card-hover: 0 25px 30px -10px rgb(0 0 0 / 0.1),
+                       0 10px 15px -5px rgb(0 0 0 / 0.05);
+  --shadow-elevated: 0 10px 40px -10px rgb(0 0 0 / 0.15);
+  --shadow-dropdown: 0 10px 25px -5px rgb(0 0 0 / 0.1),
+                     0 4px 6px -2px rgb(0 0 0 / 0.05);
+
+  /* ========================================
+   * スペーシング（Spacing）
+   * ======================================== */
+  --spacing-card: 1.5rem;      /* カード内パディング */
+  --spacing-section: 2rem;     /* セクション間マージン */
+  --spacing-page: 1rem;        /* ページ端からの余白 */
+
+  /* ========================================
+   * トランジション（Transition）
+   * ======================================== */
+  --transition-fast: 0.2s ease-out;
+  --transition-base: 0.3s ease-out;
+  --transition-slow: 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+
+  /* ========================================
+   * 入力欄（Input）
+   * ======================================== */
+  --input-height: 3rem;        /* 通常サイズ */
+  --input-height-lg: 3.5rem;   /* 大きいサイズ */
+
+  /* ========================================
+   * Z-Index
+   * ======================================== */
+  --z-dropdown: 50;
+  --z-modal: 100;
+  --z-toast: 150;
+}
+
+/* ダークモード用トークン（必要に応じて上書き） */
+.dark {
+  --shadow-card: 0 20px 25px -5px rgb(0 0 0 / 0.3),
+                 0 8px 10px -6px rgb(0 0 0 / 0.2);
+  --shadow-card-hover: 0 25px 30px -10px rgb(0 0 0 / 0.4);
+}
