@@ -152,7 +152,7 @@ export default function LoginPage() {
           </div>
 
           {/* Form Card */}
-          <div className="bg-white/70 backdrop-blur-2xl rounded-[2.5rem] p-8 sm:p-10 shadow-2xl shadow-border/50 border border-white/50">
+          <div className="bg-card/70 backdrop-blur-2xl rounded-[2.5rem] p-8 sm:p-10 shadow-2xl shadow-border/50 border border-border/50">
             {/* Mode Switcher */}
             {!isForgotMode && (
               <div className="bg-secondary/50 p-1.5 rounded-2xl flex relative mb-10">

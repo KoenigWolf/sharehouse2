@@ -85,7 +85,7 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
                 transition-all duration-500 rounded-2xl overflow-hidden shadow-sm
                 ${isActive
                   ? `${floorColors.bg} ${floorColors.text} shadow-xl shadow-brand-100 ring-4 ring-brand-500/10`
-                  : "bg-white text-muted-foreground hover:bg-muted hover:text-foreground/80 border border-border"
+                  : "bg-secondary text-foreground hover:bg-muted hover:text-foreground/80 border border-border"
                 }
                 active:scale-[0.96]
               `}

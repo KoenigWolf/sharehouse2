@@ -155,7 +155,7 @@ export function GarbageScheduleView({
                   initial={{ opacity: 0, y: 4 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.15, delay: index * 0.03 }}
-                  className={`flex items-center gap-3 px-4 py-3 bg-white border rounded-lg ${
+                  className={`flex items-center gap-3 px-4 py-3 bg-card border rounded-lg ${
                     isOwn ? "border-foreground" : "border-border"
                   } ${duty.is_completed ? "opacity-50" : ""}`}
                 >
