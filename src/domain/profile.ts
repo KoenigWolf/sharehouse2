@@ -115,6 +115,8 @@ export interface Profile {
     message: string;
     updated_at: string;
   } | null;
+  theme_style?: "modern" | "cottage" | null;
+  color_mode?: "light" | "dark" | "system" | null;
 }
 
 export const MBTI_GROUPS = {

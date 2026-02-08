@@ -1,0 +1,219 @@
+/**
+ * Theme Definitions - Share House Portal
+ *
+ * Two themes available:
+ * - Modern (Premium Modern Minimalism - Slate/Emerald)
+ * - Cottage (Warm Farmhouse - Cream/Olive)
+ */
+
+/* ============================================
+ * Theme: Modern (Premium Modern Minimalism)
+ * Slate color scale with Emerald accent
+ * ============================================ */
+.theme-modern,
+:root[data-theme="modern"] {
+  /* Brand: Emerald scale */
+  --brand-50: #ecfdf5;
+  --brand-100: #d1fae5;
+  --brand-200: #a7f3d0;
+  --brand-300: #6ee7b7;
+  --brand-400: #34d399;
+  --brand-500: #10b981;
+  --brand-600: #059669;
+  --brand-700: #047857;
+  --brand-800: #065f46;
+  --brand-900: #064e3b;
+
+  /* Accent */
+  --accent-base: #10b981;
+
+  /* Status colors */
+  --success: #059669;
+  --success-bg: #ecfdf5;
+  --success-border: #a7f3d0;
+  --error: #dc2626;
+  --error-bg: #fef2f2;
+  --error-border: #fecaca;
+
+  /* Core palette - Slate based */
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: var(--brand-500);
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: var(--brand-500);
+  --accent-foreground: #ffffff;
+  --destructive: #dc2626;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: var(--brand-500);
+
+  /* Sidebar */
+  --sidebar: #f8fafc;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: var(--brand-500);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #0f172a;
+  --sidebar-border: #e2e8f0;
+
+  /* Chart colors */
+  --chart-1: var(--brand-500);
+  --chart-2: #8b5cf6;
+  --chart-3: #f59e0b;
+  --chart-4: #64748b;
+  --chart-5: #ef4444;
+
+  /* Shadows - Cooler, more defined */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --premium-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+  /* Tokens override */
+  --radius-card: 1rem;
+  --radius-container: 1.25rem;
+  --radius-button: 9999px;
+  --radius-input: 0.75rem;
+  --radius-badge: 0.375rem;
+}
+
+/* Modern theme dark mode */
+.theme-modern.dark,
+:root[data-theme="modern"].dark {
+  --background: #0f172a;
+  --foreground: #f8fafc;
+  --card: #1e293b;
+  --card-foreground: #f8fafc;
+  --popover: #1e293b;
+  --popover-foreground: #f8fafc;
+  --primary: #34d399;
+  --primary-foreground: #0f172a;
+  --secondary: #334155;
+  --secondary-foreground: #f8fafc;
+  --muted: #334155;
+  --muted-foreground: #94a3b8;
+  --accent: #10b981;
+  --accent-foreground: #0f172a;
+  --destructive: #ef4444;
+  --border: #334155;
+  --input: #334155;
+  --ring: #34d399;
+
+  --sidebar: #1e293b;
+  --sidebar-foreground: #f8fafc;
+  --sidebar-border: #334155;
+}
+
+/* ============================================
+ * Theme: Cottage (Warm Farmhouse)
+ * Cream/Beige with Olive Green accent
+ * ============================================ */
+.theme-cottage,
+:root[data-theme="cottage"] {
+  /* Brand: Olive Green scale */
+  --brand-50: #f4f7f2;
+  --brand-100: #e3ebe0;
+  --brand-200: #c5d9be;
+  --brand-300: #9cbd92;
+  --brand-400: #749c66;
+  --brand-500: #4a6741;
+  --brand-600: #3a5233;
+  --brand-700: #2f422a;
+  --brand-800: #273623;
+  --brand-900: #212d1e;
+
+  /* Accent: Muted Gold */
+  --accent-base: #e0b06b;
+
+  /* Status colors */
+  --success: #5d7556;
+  --success-bg: #f4f7f2;
+  --success-border: #c5d9be;
+  --error: #8c5e5e;
+  --error-bg: #fdf5f5;
+  --error-border: #e6caca;
+
+  /* Core palette - Warm cream based */
+  --background: #fdfcf8;
+  --foreground: #2f3e33;
+  --card: #ffffff;
+  --card-foreground: #2f3e33;
+  --popover: #ffffff;
+  --popover-foreground: #2f3e33;
+  --primary: var(--brand-500);
+  --primary-foreground: #ffffff;
+  --secondary: #e8e6dc;
+  --secondary-foreground: #2f3e33;
+  --muted: #f0eee6;
+  --muted-foreground: #7d857a;
+  --accent: var(--brand-500);
+  --accent-foreground: #ffffff;
+  --destructive: #aa5d5d;
+  --border: #e6e2d6;
+  --input: #e6e2d6;
+  --ring: var(--brand-500);
+
+  /* Sidebar */
+  --sidebar: #fbf9f3;
+  --sidebar-foreground: #2f3e33;
+  --sidebar-primary: var(--brand-500);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f0eee6;
+  --sidebar-accent-foreground: #2f3e33;
+  --sidebar-border: #e6e2d6;
+
+  /* Chart colors */
+  --chart-1: var(--brand-500);
+  --chart-2: #e0b06b;
+  --chart-3: #a67c52;
+  --chart-4: #7d857a;
+  --chart-5: #aa5d5d;
+
+  /* Shadows - Warmer, softer */
+  --shadow-sm: 0 1px 2px 0 rgb(47 62 51 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(47 62 51 / 0.1), 0 2px 4px -2px rgb(47 62 51 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(47 62 51 / 0.1), 0 4px 6px -4px rgb(47 62 51 / 0.1);
+  --premium-shadow: 0 20px 25px -5px rgb(47 62 51 / 0.05), 0 8px 10px -6px rgb(47 62 51 / 0.05);
+
+  /* Tokens override */
+  --radius-card: 1.25rem;
+  --radius-container: 1.5rem;
+  --radius-button: 2rem;
+  --radius-input: 0.75rem;
+  --radius-badge: 1rem;
+}
+
+/* Cottage theme dark mode */
+.theme-cottage.dark,
+:root[data-theme="cottage"].dark {
+  --background: #0a0a0a;
+  --foreground: #fafafa;
+  --card: #171717;
+  --card-foreground: #fafafa;
+  --popover: #171717;
+  --popover-foreground: #fafafa;
+  --primary: #34d399;
+  --primary-foreground: #0a0a0a;
+  --secondary: #27272a;
+  --secondary-foreground: #fafafa;
+  --muted: #27272a;
+  --muted-foreground: #a1a1aa;
+  --accent: #10b981;
+  --accent-foreground: #0a0a0a;
+  --destructive: #ef4444;
+  --border: #3f3f46;
+  --input: #3f3f46;
+  --ring: #34d399;
+
+  --sidebar: #171717;
+  --sidebar-foreground: #fafafa;
+  --sidebar-border: #3f3f46;
+}
