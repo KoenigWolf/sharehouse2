@@ -146,13 +146,13 @@ describe("ResidentCard", () => {
         <ResidentCard profile={mockProfile} isCurrentUser={true} />
       );
       const article = container.querySelector("article");
-      expect(article).toHaveClass("border-slate-900");
+      expect(article).toHaveClass("border-primary");
     });
 
     it("applies normal border for regular profile", () => {
       const { container } = render(<ResidentCard profile={mockProfile} />);
       const article = container.querySelector("article");
-      expect(article).toHaveClass("border-slate-200");
+      expect(article).toHaveClass("border-border");
     });
   });
 });
