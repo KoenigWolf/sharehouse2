@@ -770,4 +770,23 @@ export const en: Translations = {
     goHome: "Back to Share House home",
     openMyPage: "Open My Page",
   },
+
+  theme: {
+    sectionTitle: "Appearance",
+    styleLabel: "Theme Style",
+    colorModeLabel: "Color Mode",
+    cottage: "Cottage",
+    cottageDescription: "Warm cream and olive green. A cozy farmhouse aesthetic.",
+    modern: "Modern",
+    modernDescription: "Cool slate and emerald green. Sleek minimalist design.",
+    light: "Light",
+    dark: "Dark",
+    system: "System",
+  },
+
+  settings: {
+    title: "Settings",
+    description: "Customize appearance, notifications, and account settings.",
+    language: "Language",
+  },
 };

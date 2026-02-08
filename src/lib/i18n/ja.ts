@@ -769,6 +769,25 @@ export const ja = {
     goHome: "Share House ホームに戻る",
     openMyPage: "マイページを開く",
   },
+
+  theme: {
+    sectionTitle: "外観設定",
+    styleLabel: "テーマスタイル",
+    colorModeLabel: "カラーモード",
+    cottage: "コテージ",
+    cottageDescription: "温かみのあるクリーム色とオリーブグリーン。親しみやすいファームハウススタイル。",
+    modern: "モダン",
+    modernDescription: "クールなスレートカラーとエメラルドグリーン。洗練されたミニマリストスタイル。",
+    light: "ライト",
+    dark: "ダーク",
+    system: "システム",
+  },
+
+  settings: {
+    title: "設定",
+    description: "アプリの外観、通知、アカウントなどを設定できます。",
+    language: "言語",
+  },
 } as const;
 
 export type Translations = TranslationTree<typeof ja>;

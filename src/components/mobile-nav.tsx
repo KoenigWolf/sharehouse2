@@ -17,6 +17,7 @@ import {
   Info,
   Coffee,
   LayoutGrid,
+  Settings,
   X,
   ChevronRight,
 } from "lucide-react";
@@ -48,6 +49,7 @@ const EXTRA_NAV_ITEMS: {
     { href: "/info", labelKey: "nav.info", icon: Info },
     { href: "/tea-time", labelKey: "nav.teaTime", icon: Coffee },
     { href: "/floor-plan", labelKey: "nav.floorPlan", icon: LayoutGrid },
+    { href: "/settings", labelKey: "nav.settings", icon: Settings },
   ];
 
 export const MobileNav = memo(function MobileNav() {

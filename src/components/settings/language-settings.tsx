@@ -1,0 +1,96 @@
+"use client";
+
+import { memo, useCallback, useState, useTransition } from "react";
+import { m } from "framer-motion";
+import { useI18n, useLocale } from "@/hooks/use-i18n";
+import type { Locale } from "@/lib/i18n";
+
+const LANGUAGES: { value: Locale; label: string; nativeLabel: string }[] = [
+  { value: "ja", label: "Japanese", nativeLabel: "日本語" },
+  { value: "en", label: "English", nativeLabel: "English" },
+];
+
+export const LanguageSettings = memo(function LanguageSettings() {
+  const t = useI18n();
+  const currentLocale = useLocale();
+  const [selectedLocale, setSelectedLocale] = useState<Locale>(currentLocale);
+  const [isPending, startTransition] = useTransition();
+
+  const handleLocaleChange = useCallback((locale: Locale) => {
+    setSelectedLocale(locale);
+    startTransition(() => {
+      // Update document lang attribute
+      document.documentElement.lang = locale;
+      // Store in localStorage for persistence
+      try {
+        localStorage.setItem("sharehouse-locale", locale);
+      } catch {
+        // Ignore storage errors
+      }
+      // Reload to apply new locale
+      window.location.reload();
+    });
+  }, []);
+
+  return (
+    <m.section
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="space-y-6"
+    >
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <svg className="w-4 h-4 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+          </svg>
+          <h2 className="text-[10px] font-bold tracking-[0.25em] text-muted-foreground uppercase whitespace-nowrap">
+            {t("settings.language")}
+          </h2>
+        </div>
+        {isPending && (
+          <span className="text-[10px] text-muted-foreground animate-pulse">
+            {t("common.saving")}
+          </span>
+        )}
+        <div className="flex-1 h-px bg-secondary" />
+      </div>
+
+      <div className="flex gap-4">
+        {LANGUAGES.map((lang) => (
+          <button
+            key={lang.value}
+            type="button"
+            onClick={() => handleLocaleChange(lang.value)}
+            disabled={isPending}
+            className={`relative flex-1 p-4 rounded-2xl border-2 transition-all duration-300 text-left ${
+              selectedLocale === lang.value
+                ? "border-brand-500 bg-brand-50 shadow-md"
+                : "border-border bg-card hover:border-brand-300 hover:bg-muted/50"
+            }`}
+          >
+            {selectedLocale === lang.value && (
+              <m.div
+                layoutId="language-check"
+                className="absolute top-3 right-3 w-5 h-5 rounded-full bg-brand-500 flex items-center justify-center"
+              >
+                <svg
+                  className="w-3 h-3 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={3}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </m.div>
+            )}
+
+            <h4 className="text-sm font-bold text-foreground mb-1">{lang.nativeLabel}</h4>
+            <p className="text-[11px] text-muted-foreground">{lang.label}</p>
+          </button>
+        ))}
+      </div>
+    </m.section>
+  );
+});
