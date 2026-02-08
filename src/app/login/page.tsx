@@ -122,7 +122,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/50 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-50/30 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-50/30 rounded-full blur-[120px] pointer-events-none" />
 
       <main className="flex-1 flex flex-col items-center justify-center p-6 relative z-10">
         <m.div
@@ -389,14 +389,14 @@ function PasswordStrengthMeter({ password }: { password: string }) {
   ];
   const colors = [
     "bg-secondary",
-    "bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.4)]",
-    "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.4)]",
-    "bg-brand-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]"
+    "bg-error shadow-[0_0_8px_var(--error-border)]",
+    "bg-warning shadow-[0_0_8px_var(--warning-border)]",
+    "bg-brand-500 shadow-[0_0_8px_var(--brand-200)]"
   ];
   const textColors = [
     "text-muted-foreground/70",
-    "text-red-500",
-    "text-amber-500",
+    "text-error",
+    "text-warning",
     "text-brand-500"
   ];
 
