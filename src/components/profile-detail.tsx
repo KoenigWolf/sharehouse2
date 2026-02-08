@@ -24,7 +24,6 @@ import {
   Sun,
   Laptop,
   Building2,
-  MessageCircle,
   Brain,
   Palmtree
 } from "lucide-react";
@@ -233,130 +232,91 @@ function translateLanguages(
   });
 }
 
-type CategoryType = "basic" | "work" | "lifestyle" | "communal" | "personality" | "photos";
-
-const categoryConfig: Record<CategoryType, { color: string; bgColor: string; icon: React.ReactNode }> = {
-  basic: {
-    color: "text-muted-foreground",
-    bgColor: "bg-secondary",
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-      </svg>
-    ),
-  },
-  work: {
-    color: "text-muted-foreground",
-    bgColor: "bg-secondary",
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" />
-      </svg>
-    ),
-  },
-  lifestyle: {
-    color: "text-muted-foreground",
-    bgColor: "bg-secondary",
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
-      </svg>
-    ),
-  },
-  communal: {
-    color: "text-muted-foreground",
-    bgColor: "bg-secondary",
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
-      </svg>
-    ),
-  },
-  personality: {
-    color: "text-muted-foreground",
-    bgColor: "bg-secondary",
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
-      </svg>
-    ),
-  },
-  photos: {
-    color: "text-muted-foreground",
-    bgColor: "bg-secondary",
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-      </svg>
-    ),
-  },
-};
-
-function ProfileSection({
-  title,
-  category,
-  children,
-  className = "",
-}: {
-  title: string;
-  category: CategoryType;
-  children: React.ReactNode;
-  className?: string;
-}) {
-  const config = categoryConfig[category];
+// Facebook-style card component
+function FbCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <m.section variants={itemVariants} className={`bg-card rounded-3xl border border-border shadow-sm overflow-hidden ${className} mb-8 last:mb-0`}>
-      <div className="px-6 py-4 border-b border-border bg-muted/20 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className={`p-2 rounded-xl bg-background shadow-sm text-primary`}>
-            {config.icon}
-          </div>
-          <h2 className="text-base font-bold tracking-tight text-foreground font-display">
-            {title}
-          </h2>
-        </div>
-      </div>
-
-      <div className="p-6">
-        {children}
-      </div>
-    </m.section>
+    <div className={`bg-card rounded-lg border border-border shadow-sm ${className}`}>
+      {children}
+    </div>
   );
 }
 
-
-
-function InfoTile({
-  label,
-  value,
-  icon,
-  className = "",
-  fullWidth = false
+function FbCardHeader({
+  title,
+  action
 }: {
+  title: string;
+  action?: { label: string; href?: string; onClick?: () => void }
+}) {
+  return (
+    <div className="flex items-center justify-between p-4 pb-2">
+      <h3 className="text-[17px] font-bold text-foreground">{title}</h3>
+      {action && (
+        action.href ? (
+          <Link href={action.href} className="text-sm text-primary hover:underline">
+            {action.label}
+          </Link>
+        ) : (
+          <button type="button" onClick={action.onClick} className="text-sm text-primary hover:underline">
+            {action.label}
+          </button>
+        )
+      )}
+    </div>
+  );
+}
+
+// Facebook-style intro row (icon + text)
+function IntroRow({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <div className="flex items-center gap-3 py-2">
+      <span className="text-muted-foreground shrink-0">{icon}</span>
+      <span className="text-[15px] text-foreground">{children}</span>
+    </div>
+  );
+}
+
+// Facebook-style detail section
+function DetailSection({
+  title,
+  icon,
+  children
+}: {
+  title: string;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <FbCard>
+      <div className="flex items-center gap-3 p-4 pb-3 border-b border-border">
+        <span className="text-muted-foreground">{icon}</span>
+        <h3 className="text-[17px] font-bold text-foreground">{title}</h3>
+      </div>
+      <div className="p-4">
+        {children}
+      </div>
+    </FbCard>
+  );
+}
+
+// Facebook-style info item (for detail sections)
+function DetailItem({
+  icon,
+  label,
+  value
+}: {
+  icon: React.ReactNode;
   label: string;
   value: string | null | undefined;
-  icon?: React.ReactNode;
-  className?: string;
-  fullWidth?: boolean;
 }) {
   if (!value) return null;
   return (
-    <div className={`
-      flex flex-col gap-1.5
-      ${fullWidth ? "col-span-full pt-4 mt-2 border-t border-border/50" : ""}
-      ${className}
-    `}>
-      <dt className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/70">
-        {icon && (
-          <span className="text-primary/70">
-            {icon}
-          </span>
-        )}
-        <span>{label}</span>
-      </dt>
-      <dd className="text-[15px] font-medium text-foreground leading-relaxed pl-[22px]">
-        {value}
-      </dd>
+    <div className="flex items-start gap-3 py-2.5">
+      <span className="text-muted-foreground mt-0.5 shrink-0">{icon}</span>
+      <div>
+        <div className="text-[15px] text-foreground">{value}</div>
+        <div className="text-[13px] text-muted-foreground">{label}</div>
+      </div>
     </div>
   );
 }
@@ -375,8 +335,6 @@ export function ProfileDetail({
   const [isUploadingCover, setIsUploadingCover] = useState(false);
   const [coverUrl, setCoverUrl] = useState<string | null>(profile.cover_photo_url ?? null);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
-  const [isPhotoExpanded, setIsPhotoExpanded] = useState(false);
-  const PHOTO_PREVIEW_LIMIT = 8;
 
   const handleCoverUploadClick = useCallback(() => {
     coverInputRef.current?.click();
@@ -413,13 +371,12 @@ export function ProfileDetail({
     }
   }, [t, router]);
 
+  // hometown, languages are shown in Intro, so excluded here to avoid duplication
   const basicInfo = [
     { label: t("profile.nickname"), value: profile.nickname, icon: <User size={14} /> },
     { label: t("profile.ageRange"), value: translateOption(profile.age_range, "ageRange", AGE_RANGES, t), icon: <Clock size={14} /> },
     { label: t("profile.gender"), value: translateOption(profile.gender, "gender", GENDERS, t), icon: <User size={14} /> },
     { label: t("profile.nationality"), value: profile.nationality, icon: <Globe size={14} /> },
-    { label: t("profile.languages"), value: translateLanguages(profile.languages, t).join(", ") || null, icon: <MessageCircle size={14} /> },
-    { label: t("profile.hometown"), value: profile.hometown, icon: <MapPin size={14} /> },
   ].filter((f) => f.value);
 
   const workInfo = [
@@ -538,10 +495,12 @@ export function ProfileDetail({
           )}
         </div>
 
-        <div className="px-6 sm:px-10 pb-8">
-          <div className="flex flex-col sm:flex-row gap-5 sm:gap-8">
-            <div className="shrink-0 -mt-14 sm:-mt-[84px] mx-auto sm:mx-0">
-              <div className="w-28 h-28 sm:w-[168px] sm:h-[168px] rounded-full border-4 border-background bg-secondary overflow-hidden relative">
+        {/* Facebook-style Profile Header */}
+        <div className="px-4 sm:px-8 pb-4">
+          <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4">
+            {/* Avatar - overlapping cover */}
+            <div className="shrink-0 -mt-[68px] sm:-mt-[84px]">
+              <div className="w-[136px] h-[136px] sm:w-[168px] sm:h-[168px] rounded-full border-4 border-card bg-secondary overflow-hidden shadow-lg">
                 <Avatar className="size-full rounded-full">
                   <OptimizedAvatarImage
                     src={profile.avatar_url}
@@ -555,277 +514,273 @@ export function ProfileDetail({
               </div>
             </div>
 
-            <div className="flex-1 text-center sm:text-left sm:pt-3">
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
-                <div>
-                  <h1 className="text-[28px] text-foreground tracking-wide font-light leading-tight">
-                    {isTeaser ? (
-                      <MaskedText text={profile.name} className="text-[28px]" />
-                    ) : (
-                      profile.name
-                    )}
-                  </h1>
-                  {(profile.room_number || snsLinks.length > 0) && (
-                    <div className="flex items-center justify-center sm:justify-start gap-2 mt-1.5 text-sm text-muted-foreground">
-                      {profile.room_number && (
-                        <span>{profile.room_number}{t("profile.room")}</span>
-                      )}
-                      {snsLinks.length > 0 && profile.room_number && (
-                        <span className="text-muted-foreground/70">·</span>
-                      )}
-                      {snsLinks.map((link) => {
-                        const icon = (
-                          <>
-                            {link.platform === "x" && (
-                              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                              </svg>
-                            )}
-                            {link.platform === "instagram" && (
-                              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                              </svg>
-                            )}
-                            {link.platform === "facebook" && (
-                              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                              </svg>
-                            )}
-                            {link.platform === "linkedin" && (
-                              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                              </svg>
-                            )}
-                            {link.platform === "github" && (
-                              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-                              </svg>
-                            )}
-                          </>
-                        );
+            {/* Name and Info */}
+            <div className="flex-1 text-center sm:text-left pb-2">
+              <h1 className="text-[32px] font-bold text-foreground leading-tight">
+                {isTeaser ? (
+                  <MaskedText text={profile.name} className="text-[32px]" />
+                ) : (
+                  profile.name
+                )}
+              </h1>
 
-                        if (link.url) {
-                          return (
-                            <a
-                              key={link.platform}
-                              href={link.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors"
-                              aria-label={`${link.label}: @${link.username}`}
-                            >
-                              {icon}
-                            </a>
-                          );
-                        }
-
-                        return (
-                          <span
-                            key={link.platform}
-                            className="inline-flex items-center text-muted-foreground cursor-default"
-                            title={`${link.label}: ${link.username}`}
-                          >
-                            {icon}
-                          </span>
-                        );
-                      })}
-                    </div>
-                  )}
+              {/* SNS Links Row */}
+              {snsLinks.length > 0 && (
+                <div className="flex items-center justify-center sm:justify-start gap-3 mt-2">
+                  {snsLinks.map((link) => (
+                    <a
+                      key={link.platform}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                      aria-label={`${link.label}: @${link.username}`}
+                    >
+                      {link.platform === "x" && (
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                        </svg>
+                      )}
+                      {link.platform === "instagram" && (
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                        </svg>
+                      )}
+                      {link.platform === "facebook" && (
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                        </svg>
+                      )}
+                      {link.platform === "linkedin" && (
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                        </svg>
+                      )}
+                      {link.platform === "github" && (
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+                        </svg>
+                      )}
+                    </a>
+                  ))}
                 </div>
-                {isOwnProfile && (
-                  <Button variant="outline" size="sm" asChild className="self-center sm:self-start">
-                    <Link href={`/profile/${profile.id}/edit`}>
-                      {t("common.edit")}
-                    </Link>
-                  </Button>
-                )}
-              </div>
-
-              <div className="flex flex-wrap justify-center sm:justify-start gap-2 mb-4">
-                {profile.move_in_date && (
-                  <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded bg-secondary text-muted-foreground">
-                    <svg className="w-3 h-3 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                    </svg>
-                    {calculateResidenceDuration(profile.move_in_date, t)}
-                  </span>
-                )}
-                {profile.mbti && (
-                  <MBTIBadge mbti={profile.mbti} />
-                )}
-                <span className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded ${teaTimeEnabled
-                  ? "bg-primary/10 text-primary"
-                  : "bg-secondary text-muted-foreground"
-                  }`}>
-                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z" />
-                  </svg>
-                  {t("teaTime.title")}: {teaTimeEnabled ? t("teaTime.participating") : t("teaTime.notParticipating")}
-                </span>
-              </div>
-
-              {profile.bio && (
-                <p className="text-sm text-foreground leading-relaxed">
-                  {isTeaser ? "●".repeat(Math.min(profile.bio.length, 20)) : profile.bio}
-                </p>
               )}
             </div>
+
+            {/* Action Button */}
+            {isOwnProfile && (
+              <div className="pb-2">
+                <Button asChild className="gap-2">
+                  <Link href={`/profile/${profile.id}/edit`}>
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                    </svg>
+                    {t("myPage.editProfile")}
+                  </Link>
+                </Button>
+              </div>
+            )}
           </div>
 
-          {profile.interests && profile.interests.length > 0 && (
-            <div className="mt-10 pt-10 border-t border-border/80">
-              <p className="text-[10px] text-muted-foreground font-bold tracking-widest uppercase mb-4 flex items-center gap-2">
-                <svg className="w-3.5 h-3.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-                </svg>
-                {t("profile.interests")}
-              </p>
-              <div className="flex flex-wrap gap-2.5">
-                {profile.interests.map((interest, index) => (
-                  <span
-                    key={index}
-                    className="text-[13px] px-4 py-2 rounded-xl bg-muted text-foreground/80 font-medium border border-border/50 hover:bg-card hover:shadow-sm hover:border-primary/20 transition-all cursor-default"
-                  >
-                    {interest}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {(isOwnProfile || roomPhotos.length > 0) && (
-            <div className="mt-10 pt-10 border-t border-border/80">
-              <div className="flex items-center justify-between mb-5">
-                <p className="text-[10px] text-muted-foreground font-bold tracking-widest uppercase flex items-center gap-2">
-                  <svg className="w-3.5 h-3.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-                  </svg>
-                  {t("roomPhotos.roomPhotosSection")}
-                  {isOwnProfile && (
-                    <span className="text-muted-foreground/70 ml-1 font-medium">
-                      {roomPhotos.length}/5
-                    </span>
-                  )}
-                </p>
-                <Link
-                  href="/room-photos"
-                  className="text-[10px] text-primary font-bold tracking-wider uppercase hover:text-primary/80 transition-colors bg-primary/10 px-3 py-1.5 rounded-full"
-                >
-                  {t("roomPhotos.viewGallery")}
-                </Link>
-              </div>
-
-              {isOwnProfile ? (
-                <RoomPhotoManager photos={roomPhotos} compact previewLimit={PHOTO_PREVIEW_LIMIT} />
-              ) : (
-                <>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    {(isPhotoExpanded ? roomPhotos : roomPhotos.slice(0, PHOTO_PREVIEW_LIMIT)).map((photo) => (
-                      <div key={photo.id} className="relative aspect-square bg-muted rounded-2xl overflow-hidden ring-1 ring-border group">
-                        <Image
-                          src={photo.photo_url}
-                          alt={photo.caption || t("roomPhotos.roomPhotosSection")}
-                          fill
-                          sizes="(max-width: 640px) 50vw, 25vw"
-                          className="object-cover transition-transform duration-500 group-hover:scale-110"
-                        />
-                      </div>
-                    ))}
-                    {roomPhotos.length === 0 && (
-                      <div className="col-span-full py-12 text-center bg-muted/50 rounded-[2rem] border-2 border-dashed border-border">
-                        <p className="text-sm text-muted-foreground font-medium">{t("roomPhotos.noPhotos")}</p>
-                      </div>
-                    )}
-                  </div>
-                  {!isPhotoExpanded && roomPhotos.length > PHOTO_PREVIEW_LIMIT && (
-                    <div className="flex justify-center mt-5">
-                      <button
-                        type="button"
-                        onClick={() => setIsPhotoExpanded(true)}
-                        className="h-9 px-6 rounded-full border border-border text-[11px] font-bold text-muted-foreground hover:text-foreground/90 hover:border-border tracking-wider uppercase transition-all duration-300"
-                      >
-                        {t("roomPhotos.showMore", { count: roomPhotos.length - PHOTO_PREVIEW_LIMIT })}
-                      </button>
-                    </div>
-                  )}
-                </>
+          {/* Divider */}
+          <div className="border-t border-border mt-4 pt-3">
+            {/* Badges Row */}
+            <div className="flex flex-wrap justify-center sm:justify-start gap-2">
+              {profile.mbti && (
+                <MBTIBadge mbti={profile.mbti} />
               )}
+              <span className={`inline-flex items-center gap-1.5 text-[13px] px-3 py-1 rounded-full ${teaTimeEnabled
+                ? "bg-primary/10 text-primary"
+                : "bg-muted text-muted-foreground"
+                }`}>
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z" />
+                </svg>
+                {t("teaTime.title")}: {teaTimeEnabled ? t("teaTime.participating") : t("teaTime.notParticipating")}
+              </span>
             </div>
-          )}
+          </div>
         </div>
       </m.div>
 
+      {/* Facebook-style Two-Column Layout */}
       {hasExtendedInfo && !isTeaser && (
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 relative">
-          {basicInfo.length > 0 && (
-            <ProfileSection title={t("profile.sectionBasicInfo")} category="basic">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-4 sm:gap-x-8">
-                {basicInfo.map((field, i) => (
-                  <InfoTile key={i} label={field.label} value={field.value} icon={field.icon} />
-                ))}
-              </div>
-            </ProfileSection>
-          )}
+        <div className="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-5">
+          {/* Left Column (Info Sections) - 1/3 width */}
+          <div className="lg:col-span-1 space-y-4">
+            {/* Intro Card */}
+            <m.div variants={itemVariants}>
+              <FbCard>
+                <FbCardHeader title={t("profile.sectionIntro")} />
+                <div className="px-4 pb-4">
+                  {/* Bio */}
+                  {profile.bio && (
+                    <p className="text-[15px] text-foreground mb-4 pb-4 border-b border-border">
+                      {profile.bio}
+                    </p>
+                  )}
 
-          {workInfo.length > 0 && (
-            <ProfileSection title={t("profile.sectionWork")} category="work">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-4 sm:gap-x-8">
-                {workInfo.map((field, i) => (
-                  <InfoTile key={i} label={field.label} value={field.value} icon={field.icon} />
-                ))}
-              </div>
-            </ProfileSection>
-          )}
-
-          {lifestyleInfo.length > 0 && (
-            <ProfileSection title={t("profile.sectionLifestyle")} category="lifestyle">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-4 sm:gap-x-8">
-                {lifestyleInfo.map((field, i) => (
-                  <InfoTile key={i} label={field.label} value={field.value} icon={field.icon} />
-                ))}
-              </div>
-            </ProfileSection>
-          )}
-
-          {(communalInfo.length > 0 || sharedSpaceUsage) && (
-            <ProfileSection title={t("profile.sectionCommunal")} category="communal">
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-4 sm:gap-x-8">
-                  {communalInfo.map((field, i) => (
-                    <InfoTile key={i} label={field.label} value={field.value} icon={field.icon} />
-                  ))}
+                  {/* Quick Facts */}
+                  <div className="space-y-1">
+                    {workInfo.length > 0 && workInfo[0].value && (
+                      <IntroRow icon={<Briefcase size={20} />}>
+                        {workInfo[0].value}
+                        {workInfo[1]?.value && <span className="text-muted-foreground"> · {workInfo[1].value}</span>}
+                      </IntroRow>
+                    )}
+                    {profile.hometown && (
+                      <IntroRow icon={<Home size={20} />}>
+                        {profile.hometown}{t("profile.fromSuffix")}
+                      </IntroRow>
+                    )}
+                    {profile.room_number && (
+                      <IntroRow icon={<MapPin size={20} />}>
+                        {profile.room_number}{t("profile.room")}
+                      </IntroRow>
+                    )}
+                    {profile.move_in_date && (
+                      <IntroRow icon={<Clock size={20} />}>
+                        {calculateResidenceDuration(profile.move_in_date, t)}
+                      </IntroRow>
+                    )}
+                    {translateLanguages(profile.languages, t).length > 0 && (
+                      <IntroRow icon={<Globe size={20} />}>
+                        {translateLanguages(profile.languages, t).join(", ")}
+                      </IntroRow>
+                    )}
+                  </div>
                 </div>
-                {sharedSpaceUsage && (
-                  <InfoTile
-                    label={t("profile.sharedSpaceUsage")}
-                    value={sharedSpaceUsage}
-                    fullWidth
-                    className="bg-muted/10 p-4 rounded-xl"
-                  />
-                )}
-              </div>
-            </ProfileSection>
-          )}
-
-          {personalityInfo.length > 0 && (
-            <ProfileSection
-              title={t("profile.sectionPersonality")}
-              category="personality"
-              className="sm:col-span-2 lg:col-span-3"
-            >
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-4 sm:gap-x-8">
-                {personalityInfo.map((field, i) => (
-                  <InfoTile key={i} label={field.label} value={field.value} icon={field.icon} />
-                ))}
-              </div>
-            </ProfileSection>
-          )}
-
-          {profile.mbti && (
-            <m.div variants={itemVariants} className="sm:col-span-2 lg:col-span-3">
-              <MBTIDetail mbti={profile.mbti} />
+              </FbCard>
             </m.div>
-          )}
+
+            {/* Basic Info */}
+            {basicInfo.length > 0 && (
+              <m.div variants={itemVariants}>
+                <DetailSection title={t("profile.sectionBasicInfo")} icon={<User size={20} />}>
+                  {basicInfo.map((field, i) => (
+                    <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} />
+                  ))}
+                </DetailSection>
+              </m.div>
+            )}
+
+            {/* Work */}
+            {workInfo.length > 0 && (
+              <m.div variants={itemVariants}>
+                <DetailSection title={t("profile.sectionWork")} icon={<Briefcase size={20} />}>
+                  {workInfo.map((field, i) => (
+                    <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} />
+                  ))}
+                </DetailSection>
+              </m.div>
+            )}
+
+            {/* Lifestyle */}
+            {lifestyleInfo.length > 0 && (
+              <m.div variants={itemVariants}>
+                <DetailSection title={t("profile.sectionLifestyle")} icon={<Sun size={20} />}>
+                  {lifestyleInfo.map((field, i) => (
+                    <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} />
+                  ))}
+                </DetailSection>
+              </m.div>
+            )}
+
+            {/* Communal */}
+            {(communalInfo.length > 0 || sharedSpaceUsage) && (
+              <m.div variants={itemVariants}>
+                <DetailSection title={t("profile.sectionCommunal")} icon={<Users size={20} />}>
+                  {communalInfo.map((field, i) => (
+                    <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} />
+                  ))}
+                  {sharedSpaceUsage && (
+                    <div className="pt-3 mt-3 border-t border-border">
+                      <div className="text-[15px] text-foreground">{sharedSpaceUsage}</div>
+                      <div className="text-[13px] text-muted-foreground">{t("profile.sharedSpaceUsage")}</div>
+                    </div>
+                  )}
+                </DetailSection>
+              </m.div>
+            )}
+
+            {/* Personality */}
+            {personalityInfo.length > 0 && (
+              <m.div variants={itemVariants}>
+                <DetailSection title={t("profile.sectionPersonality")} icon={<Sparkles size={20} />}>
+                  {personalityInfo.map((field, i) => (
+                    <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} />
+                  ))}
+                </DetailSection>
+              </m.div>
+            )}
+          </div>
+
+          {/* Right Column (MBTI, Photos, Interests) - 2/3 width */}
+          <div className="lg:col-span-2 space-y-4">
+            {/* MBTI */}
+            {profile.mbti && (
+              <m.div variants={itemVariants}>
+                <MBTIDetail mbti={profile.mbti} />
+              </m.div>
+            )}
+
+            {/* Photos Card */}
+            {(isOwnProfile || roomPhotos.length > 0) && (
+              <m.div variants={itemVariants}>
+                <FbCard>
+                  <FbCardHeader
+                    title={t("roomPhotos.roomPhotosSection")}
+                    action={{ label: t("roomPhotos.viewGallery"), href: "/room-photos" }}
+                  />
+                  <div className="px-4 pb-4">
+                    {isOwnProfile ? (
+                      <RoomPhotoManager photos={roomPhotos} compact previewLimit={6} />
+                    ) : (
+                      <>
+                        <div className="grid grid-cols-3 gap-1 rounded-lg overflow-hidden">
+                          {roomPhotos.slice(0, 9).map((photo) => (
+                            <div key={photo.id} className="relative aspect-square bg-muted">
+                              <Image
+                                src={photo.photo_url}
+                                alt={photo.caption || ""}
+                                fill
+                                sizes="130px"
+                                className="object-cover"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                        {roomPhotos.length === 0 && (
+                          <div className="py-8 text-center text-sm text-muted-foreground">
+                            {t("roomPhotos.noPhotos")}
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </FbCard>
+              </m.div>
+            )}
+
+            {/* Interests Card */}
+            {profile.interests && profile.interests.length > 0 && (
+              <m.div variants={itemVariants}>
+                <FbCard>
+                  <FbCardHeader title={t("profile.interests")} />
+                  <div className="px-4 pb-4 flex flex-wrap gap-2">
+                    {profile.interests.map((interest, idx) => (
+                      <span
+                        key={idx}
+                        className="text-[13px] px-3 py-1.5 rounded-full bg-muted text-foreground"
+                      >
+                        {interest}
+                      </span>
+                    ))}
+                  </div>
+                </FbCard>
+              </m.div>
+            )}
+          </div>
         </div>
       )}
 
