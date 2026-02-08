@@ -596,7 +596,7 @@ function ResidentListItem({
               </span>
             )}
             {isTeaTimeParticipant && !isMockProfile && (
-              <span className="text-[10px] px-2 py-0.5 bg-amber-100 text-amber-700 rounded-lg font-bold flex items-center gap-1 shadow-sm border border-amber-200/50">
+              <span className="text-[10px] px-2 py-0.5 bg-warning-bg text-warning rounded-lg font-bold flex items-center gap-1 shadow-sm border border-warning-border/50">
                 <TeaCupIcon />
               </span>
             )}

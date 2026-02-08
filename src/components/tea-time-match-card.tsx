@@ -52,7 +52,7 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
               context="card"
               alt={t("a11y.profilePhotoAlt", { name: match.partner.name })}
               fallback={getInitials(match.partner.name)}
-              fallbackClassName="bg-white text-muted-foreground/70 text-[10px] font-bold"
+              fallbackClassName="bg-card text-muted-foreground/70 text-[10px] font-bold"
             />
           </Avatar>
           <div className="flex-1 min-w-0">

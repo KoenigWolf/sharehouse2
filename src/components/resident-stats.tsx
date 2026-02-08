@@ -62,7 +62,7 @@ export function ResidentStats({ profiles, teaTimeParticipants }: ResidentStatsPr
           label={t("residents.statsTeaTime")}
           value={stats.teaTimeCount}
           subValue={t("residents.statsParticipants")}
-          color="#8b5cf6"
+          color="var(--floor-violet)"
         />
         <StatCard
           label={t("residents.statsUnregistered")}

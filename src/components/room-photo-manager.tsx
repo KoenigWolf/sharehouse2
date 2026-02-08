@@ -179,7 +179,7 @@ export function RoomPhotoManager({
                 onClick={() => handleDelete(photo.id)}
                 disabled={deletingId === photo.id}
                 aria-label={t("roomPhotos.delete")}
-                className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-muted-foreground opacity-0 group-hover:opacity-100 focus:opacity-100 hover:bg-error-bg hover:text-error shadow-sm transition-all duration-300 rounded-lg scale-90 group-hover:scale-100"
+                className="absolute top-2 right-2 bg-card/90 backdrop-blur-sm text-muted-foreground opacity-0 group-hover:opacity-100 focus:opacity-100 hover:bg-error-bg hover:text-error shadow-sm transition-all duration-300 rounded-lg scale-90 group-hover:scale-100"
               >
                 {deletingId === photo.id ? (
                   <Spinner size="xs" variant="dark" />
@@ -197,7 +197,7 @@ export function RoomPhotoManager({
               whileTap={{ scale: 0.95 }}
               onClick={handleUploadClick}
               disabled={isUploading}
-              className="aspect-square rounded-2xl border-2 border-dashed border-border bg-muted/50 hover:bg-white hover:border-brand-200 hover:shadow-md transition-all duration-300 flex flex-col items-center justify-center gap-2 group"
+              className="aspect-square rounded-2xl border-2 border-dashed border-border bg-muted/50 hover:bg-card hover:border-brand-200 hover:shadow-md transition-all duration-300 flex flex-col items-center justify-center gap-2 group"
             >
               {isUploading ? (
                 <Spinner variant="dark" />
@@ -238,7 +238,7 @@ export function RoomPhotoManager({
             </p>
           </div>
         ) : (
-          <p className="text-[10px] text-amber-500 font-bold tracking-wider uppercase bg-amber-50 px-3 py-1.5 rounded-full inline-block">
+          <p className="text-[10px] text-warning font-bold tracking-wider uppercase bg-warning-bg px-3 py-1.5 rounded-full inline-block">
             {t("errors.maxPhotosReached")}
           </p>
         )}

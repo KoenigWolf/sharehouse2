@@ -10,10 +10,10 @@ import { DAY_NAMES_JA, DAY_NAMES_EN } from "@/domain/garbage";
 import type { GarbageSchedule, GarbageDutyWithProfile } from "@/domain/garbage";
 
 const GARBAGE_TYPE_STYLES: Record<string, { bg: string; text: string; border: string }> = {
-  可燃ごみ: { bg: "bg-orange-500/10", text: "text-orange-600 dark:text-orange-400", border: "border-orange-500/20" },
+  可燃ごみ: { bg: "garbage-combustible-bg", text: "garbage-combustible-text", border: "border-[var(--garbage-combustible)]/20" },
   不燃ごみ: { bg: "bg-muted", text: "text-foreground/80", border: "border-border" },
   資源: { bg: "bg-primary/10", text: "text-primary", border: "border-primary/20" },
-  資源プラスチック: { bg: "bg-blue-500/10", text: "text-blue-600 dark:text-blue-400", border: "border-blue-500/20" },
+  資源プラスチック: { bg: "garbage-plastic-bg", text: "garbage-plastic-text", border: "border-[var(--garbage-plastic)]/20" },
   資源ごみ: { bg: "bg-primary/10", text: "text-primary", border: "border-primary/20" },
 };
 
@@ -91,9 +91,9 @@ export function GarbageScheduleView({
                     <div
                       className={`w-10 h-10 flex items-center justify-center flex-shrink-0 ${
                         dayIndex === 0
-                          ? "bg-red-50 text-red-500"
+                          ? "day-sunday-bg day-sunday-text"
                           : dayIndex === 6
-                            ? "bg-blue-50 text-blue-500"
+                            ? "day-saturday-bg day-saturday-text"
                             : "bg-secondary text-foreground"
                       }`}
                     >

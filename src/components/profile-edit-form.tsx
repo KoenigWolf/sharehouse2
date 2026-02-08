@@ -403,7 +403,7 @@ export function ProfileEditForm({
                   variant="ghost"
                   onClick={handleAvatarClick}
                   disabled={isUploading}
-                  className="relative w-full h-full p-1 bg-white border-2 border-border/50 rounded-full overflow-hidden shadow-md group-hover:shadow-xl group-hover:border-brand-100 transition-all duration-500"
+                  className="relative w-full h-full p-1 bg-card border-2 border-border/50 rounded-full overflow-hidden shadow-md group-hover:shadow-xl group-hover:border-brand-100 transition-all duration-500"
                 >
                   <Avatar className="size-full rounded-full">
                     <OptimizedAvatarImage
@@ -426,7 +426,7 @@ export function ProfileEditForm({
                   </div>
 
                   {isUploading && (
-                    <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center">
+                    <div className="absolute inset-0 bg-card/90 backdrop-blur-sm flex items-center justify-center">
                       <Spinner size="lg" variant="dark" />
                     </div>
                   )}

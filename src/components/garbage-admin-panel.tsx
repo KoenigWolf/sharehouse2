@@ -133,9 +133,9 @@ export function GarbageAdminPanel({ schedule }: GarbageAdminPanelProps) {
                       <span
                         className={`text-sm font-medium w-8 ${
                           entry.day_of_week === 0
-                            ? "text-red-400"
+                            ? "day-sunday-text"
                             : entry.day_of_week === 6
-                              ? "text-blue-400"
+                              ? "day-saturday-text"
                               : "text-foreground"
                         }`}
                       >

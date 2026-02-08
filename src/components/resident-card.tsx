@@ -320,7 +320,7 @@ export const ResidentCard = memo(function ResidentCard({
 
           <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
             {isMock && !isCurrentUser && (
-              <Badge variant="muted" className="bg-white/80 backdrop-blur-sm border-none text-[10px] font-medium uppercase tracking-wider">{t("common.unregistered")}</Badge>
+              <Badge variant="muted" className="bg-card/80 backdrop-blur-sm border-none text-[10px] font-medium uppercase tracking-wider">{t("common.unregistered")}</Badge>
             )}
             {isNewResident && !isMock && (
               <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-brand-500 text-white text-[10px] font-bold tracking-wider">{t("residents.badgeNew")}</span>
@@ -341,7 +341,7 @@ export const ResidentCard = memo(function ResidentCard({
               <Badge variant="dark" className="bg-brand-500 text-white border-none text-[10px] font-bold tracking-wider uppercase">{t("residents.badgeYou")}</Badge>
             )}
             {showTeaTime && teaTimeEnabled && !isMock && (
-              <span className="bg-amber-100/90 backdrop-blur-sm text-amber-700 border-none text-[10px] px-2 py-1 font-bold rounded-lg flex items-center gap-1 shadow-sm">
+              <span className="bg-warning-bg/90 backdrop-blur-sm text-warning border-none text-[10px] px-2 py-1 font-bold rounded-lg flex items-center gap-1 shadow-sm">
                 <OverlayIcons.TeaCup />
               </span>
             )}

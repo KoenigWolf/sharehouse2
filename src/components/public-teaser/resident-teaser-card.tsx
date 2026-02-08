@@ -42,7 +42,7 @@ export const ResidentTeaserCard = memo(function ResidentTeaserCard({
           </div>
         </div>
 
-        <div className="p-5 bg-white flex flex-col h-[140px] sm:h-[160px]">
+        <div className="p-5 bg-card flex flex-col h-[140px] sm:h-[160px]">
           <div className="flex items-center justify-between mb-2">
             <MaskedText
               text={profile.masked_nickname || profile.masked_name}

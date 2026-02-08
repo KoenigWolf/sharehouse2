@@ -58,7 +58,7 @@ export function VibeInput({ currentVibe = "", isLoggedIn }: VibeInputProps) {
    return (
       <div className="w-full">
          <div
-            className={`premium-surface rounded-xl transition-all duration-300 bg-white border ${isFocused ? "ring-2 ring-brand-500/20 border-brand-500 shadow-lg" : "border-border hover:border-brand-500/30"
+            className={`premium-surface rounded-xl transition-all duration-300 bg-card border ${isFocused ? "ring-2 ring-brand-500/20 border-brand-500 shadow-lg" : "border-border hover:border-brand-500/30"
                }`}
          >
             <div className="p-4 sm:p-5 flex flex-col gap-3">

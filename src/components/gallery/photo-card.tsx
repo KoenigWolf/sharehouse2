@@ -91,7 +91,7 @@ export const PhotoCard = memo(function PhotoCard({
                 alt=""
                 context="card"
                 fallback={getInitials(photo.profile?.name ?? "?")}
-                fallbackClassName="bg-white text-foreground/80 text-[10px] font-bold"
+                fallbackClassName="bg-card text-foreground/80 text-[10px] font-bold"
               />
             </Avatar>
             <span className="text-[13px] text-white font-semibold drop-shadow-lg max-w-[120px] truncate">

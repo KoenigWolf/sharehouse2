@@ -191,7 +191,7 @@ function ProfileSection({
     <m.section variants={itemVariants} className={`premium-surface rounded-2xl overflow-hidden ${className}`}>
       <div className={`px-5 py-3 border-b border-border bg-muted/50`}>
         <h2 className={`flex items-center gap-2 text-[10px] sm:text-[11px] font-bold tracking-widest uppercase ${config.color}`}>
-          <span className="p-1 rounded-lg bg-white shadow-sm ring-1 ring-border">
+          <span className="p-1 rounded-lg bg-card shadow-sm ring-1 ring-border">
             {config.icon}
           </span>
           {title}
@@ -384,7 +384,7 @@ export function ProfileDetail({
               size="sm"
               onClick={handleCoverUploadClick}
               disabled={isUploadingCover}
-              className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm border-border text-muted-foreground hover:text-foreground hover:border-border"
+              className="absolute bottom-3 right-3 bg-card/90 backdrop-blur-sm border-border text-muted-foreground hover:text-foreground hover:border-border"
             >
               <Camera size={14} strokeWidth={1.5} />
               {isUploadingCover

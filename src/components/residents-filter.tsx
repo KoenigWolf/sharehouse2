@@ -70,7 +70,7 @@ export const ResidentsFilter = memo(function ResidentsFilter({
               aria-label={t(option.ariaKey)}
               aria-pressed={isSelected}
               className={`h-auto text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-1 ${
-                !isSelected ? "bg-white text-muted-foreground hover:bg-secondary" : ""
+                !isSelected ? "bg-card text-muted-foreground hover:bg-secondary" : ""
               }`}
             >
               {t(option.labelKey)}
