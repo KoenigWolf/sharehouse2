@@ -33,7 +33,7 @@ export function TeaTimeNotification({ match }: TeaTimeNotificationProps) {
                 context="card"
                 alt={t("a11y.profilePhotoAlt", { name: match.partner.name })}
                 fallback={getInitials(match.partner.name)}
-                fallbackClassName="text-lg bg-slate-50 text-slate-300 rounded-2xl font-semibold"
+                fallbackClassName="text-lg bg-muted text-muted-foreground/70 rounded-2xl font-semibold"
               />
             </Avatar>
 
@@ -41,16 +41,16 @@ export function TeaTimeNotification({ match }: TeaTimeNotificationProps) {
               <span className="text-[10px] text-brand-500 font-bold uppercase tracking-wider bg-brand-50 px-2 py-0.5 rounded-full">
                 {t("teaTime.matchNotificationTitle")}
               </span>
-              <p className="text-lg sm:text-xl text-slate-900 mt-1 truncate font-semibold tracking-tight">
+              <p className="text-lg sm:text-xl text-foreground mt-1 truncate font-semibold tracking-tight">
                 {match.partner.name}
-                <span className="text-slate-400 ml-1 font-normal">{t("teaTime.nameSuffix")}</span>
+                <span className="text-muted-foreground ml-1 font-normal">{t("teaTime.nameSuffix")}</span>
               </p>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {t("teaTime.matchPrompt")}
               </p>
             </div>
 
-            <div className="w-10 h-10 rounded-full flex items-center justify-center text-slate-300 group-hover:text-brand-500 group-hover:bg-brand-50 transition-all shrink-0">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center text-muted-foreground/70 group-hover:text-brand-500 group-hover:bg-brand-50 transition-all shrink-0">
               <svg
                 className="w-5 h-5"
                 fill="none"

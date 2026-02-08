@@ -22,16 +22,16 @@ export default async function FloorPlanPage() {
   const { profiles } = await getProfilesWithMock(supabase, "room_number");
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
 
       <main className="flex-1 pb-20 sm:pb-12">
         <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-10 max-w-4xl">
           <div className="mb-8">
-            <h1 className="text-2xl font-light text-slate-900 tracking-wide">
+            <h1 className="text-2xl font-light text-foreground tracking-wide">
               {t("floorPlan.title")}
             </h1>
-            <p className="text-sm text-slate-500 mt-1.5">
+            <p className="text-sm text-muted-foreground mt-1.5">
               {t("floorPlan.subtitle")}
             </p>
           </div>

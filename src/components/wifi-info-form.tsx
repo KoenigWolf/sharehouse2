@@ -84,7 +84,7 @@ export function WifiInfoForm({ initialData, onSave, onCancel }: WifiInfoFormProp
       )}
 
       <div>
-        <label className="block text-[10px] text-slate-400 tracking-wide mb-1">
+        <label className="block text-[10px] text-muted-foreground tracking-wide mb-1">
           {t("wifi.areaName")}
         </label>
         <input
@@ -92,13 +92,13 @@ export function WifiInfoForm({ initialData, onSave, onCancel }: WifiInfoFormProp
           value={formData.area_name}
           onChange={(e) => handleChange("area_name", e.target.value)}
           required
-          className="w-full h-10 px-3 bg-white border border-slate-200 rounded-md text-sm text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-slate-900 transition-colors"
+          className="w-full h-10 px-3 bg-white border border-border rounded-md text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors"
           placeholder={t("wifi.areaNamePlaceholder")}
         />
       </div>
 
       <div>
-        <label className="block text-[10px] text-slate-400 tracking-wide mb-1">
+        <label className="block text-[10px] text-muted-foreground tracking-wide mb-1">
           SSID
         </label>
         <input
@@ -106,13 +106,13 @@ export function WifiInfoForm({ initialData, onSave, onCancel }: WifiInfoFormProp
           value={formData.ssid}
           onChange={(e) => handleChange("ssid", e.target.value)}
           required
-          className="w-full h-10 px-3 bg-white border border-slate-200 rounded-md text-sm text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-slate-900 transition-colors"
+          className="w-full h-10 px-3 bg-white border border-border rounded-md text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors"
           placeholder={t("wifi.ssidPlaceholder")}
         />
       </div>
 
       <div>
-        <label className="block text-[10px] text-slate-400 tracking-wide mb-1">
+        <label className="block text-[10px] text-muted-foreground tracking-wide mb-1">
           {t("wifi.password")}
         </label>
         <input
@@ -120,13 +120,13 @@ export function WifiInfoForm({ initialData, onSave, onCancel }: WifiInfoFormProp
           value={formData.password}
           onChange={(e) => handleChange("password", e.target.value)}
           required
-          className="w-full h-10 px-3 bg-white border border-slate-200 rounded-md text-sm text-slate-900 font-mono placeholder:text-slate-300 focus:outline-none focus:border-slate-900 transition-colors"
+          className="w-full h-10 px-3 bg-white border border-border rounded-md text-sm text-foreground font-mono placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors"
           placeholder={t("wifi.passwordPlaceholder")}
         />
       </div>
 
       <div>
-        <label className="block text-[10px] text-slate-400 tracking-wide mb-1">
+        <label className="block text-[10px] text-muted-foreground tracking-wide mb-1">
           {t("wifi.displayOrder")}
         </label>
         <input
@@ -136,7 +136,7 @@ export function WifiInfoForm({ initialData, onSave, onCancel }: WifiInfoFormProp
             handleChange("display_order", parseInt(e.target.value, 10) || 0)
           }
           min={0}
-          className="w-24 h-10 px-3 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:border-slate-900 transition-colors"
+          className="w-24 h-10 px-3 bg-white border border-border rounded-md text-sm text-foreground focus:outline-none focus:border-foreground transition-colors"
         />
       </div>
 

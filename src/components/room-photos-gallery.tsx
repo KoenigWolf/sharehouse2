@@ -62,12 +62,12 @@ const SectionHeader = memo(function SectionHeader({
 }: SectionHeaderProps) {
   return (
     <header className="flex items-center gap-2 mb-5">
-      <span className="text-slate-400">{icon}</span>
-      <h2 className="text-xs text-slate-900 tracking-wide uppercase font-medium">
+      <span className="text-muted-foreground">{icon}</span>
+      <h2 className="text-xs text-foreground tracking-wide uppercase font-medium">
         {title}
       </h2>
       {count !== undefined && (
-        <span className="text-[11px] text-slate-400 ml-1" aria-label={`${count} photos`}>
+        <span className="text-[11px] text-muted-foreground ml-1" aria-label={`${count} photos`}>
           {count}
         </span>
       )}
@@ -127,7 +127,7 @@ const ShowMoreButton = memo(function ShowMoreButton({
       <button
         type="button"
         onClick={onClick}
-        className="h-11 px-8 rounded-full border border-slate-200 text-sm font-medium text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:bg-slate-50 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+        className="h-11 px-8 rounded-full border border-border text-sm font-medium text-foreground/80 hover:text-foreground hover:border-border hover:bg-muted transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
         aria-label={t("roomPhotos.showMore", { count: remainingCount })}
       >
         {t("roomPhotos.showMore", { count: remainingCount })}
@@ -150,13 +150,13 @@ const GalleryFooter = memo(function GalleryFooter({
   const t = useI18n();
 
   return (
-    <footer className="mt-10 pt-6 border-t border-slate-100">
-      <p className="text-[11px] text-slate-400 leading-relaxed">
+    <footer className="mt-10 pt-6 border-t border-border">
+      <p className="text-[11px] text-muted-foreground leading-relaxed">
         <span className="text-brand-500 font-semibold mr-1">
           {t("roomPhotos.infoLabel")}
         </span>
         {t("roomPhotos.uploadLimit", { max: maxPhotos, bulk: maxBulkUpload })}
-        <span className="mx-1.5 text-slate-300" aria-hidden="true">·</span>
+        <span className="mx-1.5 text-muted-foreground/70" aria-hidden="true">·</span>
         {t("roomPhotos.supportedFormats")}
       </p>
     </footer>
@@ -265,7 +265,7 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
 
         {/* Photo grid */}
         <div
-          className="grid grid-cols-3 gap-[2px] sm:gap-1 bg-slate-200/50 rounded-sm overflow-hidden"
+          className="grid grid-cols-3 gap-[2px] sm:gap-1 bg-secondary/50 rounded-sm overflow-hidden"
           role="list"
           aria-label={t("roomPhotos.gallery")}
         >
@@ -298,7 +298,7 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
 
         {/* Empty state */}
         {!hasPhotos && (
-          <p className="text-sm text-slate-400 mt-6 text-center py-12">
+          <p className="text-sm text-muted-foreground mt-6 text-center py-12">
             {t("roomPhotos.noPhotosHint")}
           </p>
         )}

@@ -32,31 +32,31 @@ export default async function AdminPage() {
   const adminCount = profiles.filter((p) => p.is_admin).length;
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
 
       <main className="flex-1 pb-20 sm:pb-0">
         <div className="container mx-auto px-4 sm:px-6 py-5 sm:py-8 max-w-4xl">
           <div className="mb-6 sm:mb-8">
-            <h1 className="text-xl text-slate-900 tracking-wide font-light">
+            <h1 className="text-xl text-foreground tracking-wide font-light">
               {t("admin.title")}
             </h1>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               {t("admin.subtitle")}
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
             <div className="premium-surface rounded-2xl p-5">
-              <p className="text-[10px] font-bold tracking-wider uppercase text-slate-400">
+              <p className="text-[10px] font-bold tracking-wider uppercase text-muted-foreground">
                 {t("admin.totalUsers")}
               </p>
-              <p className="text-2xl font-bold text-slate-900 tracking-tight mt-1">
+              <p className="text-2xl font-bold text-foreground tracking-tight mt-1">
                 {profiles.length}
               </p>
             </div>
             <div className="premium-surface rounded-2xl p-5">
-              <p className="text-[10px] font-bold tracking-wider uppercase text-slate-400">
+              <p className="text-[10px] font-bold tracking-wider uppercase text-muted-foreground">
                 {t("admin.adminUsers")}
               </p>
               <p className="text-2xl font-bold text-brand-500 tracking-tight mt-1">
@@ -66,7 +66,7 @@ export default async function AdminPage() {
           </div>
 
           <div className="premium-surface rounded-2xl p-5 sm:p-6">
-            <h2 className="text-[10px] font-bold tracking-wider uppercase text-slate-400 mb-4">
+            <h2 className="text-[10px] font-bold tracking-wider uppercase text-muted-foreground mb-4">
               {t("admin.userList")}
             </h2>
             <AdminUserList profiles={profiles} currentUserId={user.id} />

@@ -91,13 +91,13 @@ export function ConfirmDialog({
             <div className="space-y-1.5">
               <h2
                 id={titleId}
-                className={`text-sm font-bold tracking-tight ${isDestructive ? "text-rose-900" : "text-slate-900"}`}
+                className={`text-sm font-bold tracking-tight ${isDestructive ? "text-rose-900" : "text-foreground"}`}
               >
                 {title}
               </h2>
               <p
                 id={descId}
-                className={`text-xs leading-relaxed ${isDestructive ? "text-rose-600/70" : "text-slate-600"}`}
+                className={`text-xs leading-relaxed ${isDestructive ? "text-rose-600/70" : "text-foreground/80"}`}
               >
                 {description}
               </p>

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Lato, Playfair_Display, Dancing_Script } from "next/font/google";
 import { getServerLocale } from "@/lib/i18n/server";
 import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
@@ -15,6 +15,22 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+const lato = Lato({
+  variable: "--font-lato",
+  subsets: ["latin"],
+  weight: ["100", "300", "400", "700", "900"],
+});
+
+const playfairDisplay = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin"],
+});
+
+const dancingScript = Dancing_Script({
+  variable: "--font-dancing",
   subsets: ["latin"],
 });
 
@@ -65,7 +81,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} nonce={nonce}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${lato.variable} ${playfairDisplay.variable} ${dancingScript.variable} antialiased`}
         nonce={nonce}
       >
         <UserProvider userId={userId} avatarUrl={avatarUrl} isAdmin={isAdmin}>

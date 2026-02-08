@@ -2,8 +2,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProfileEditLoading() {
    return (
-      <div className="min-h-screen bg-slate-50 flex flex-col">
-         <header className="h-[73px] bg-white border-b border-slate-100" />
+      <div className="min-h-screen bg-background flex flex-col">
+         <header className="h-[73px] bg-white border-b border-border" />
 
          <main className="flex-1 pb-20 sm:pb-0">
             <div className="container mx-auto px-4 sm:px-6 py-5 sm:py-8 max-w-4xl space-y-8">
@@ -14,7 +14,7 @@ export default function ProfileEditLoading() {
                   </div>
                </div>
 
-               <div className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
+               <div className="bg-white border border-border rounded-2xl overflow-hidden shadow-sm">
                   <div className="p-6 sm:p-8 space-y-8">
                      {/* Profile Photo Edit Skeleton */}
                      <div className="flex items-center gap-6">

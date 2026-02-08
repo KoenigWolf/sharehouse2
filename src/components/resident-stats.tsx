@@ -74,7 +74,7 @@ export function ResidentStats({ profiles, teaTimeParticipants }: ResidentStatsPr
 
       <div className="premium-surface rounded-2xl p-6 sm:p-8 space-y-6">
         <div>
-          <h2 className="text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-4">
+          <h2 className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground mb-4">
             {t("residents.floorOccupancy")}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
@@ -86,11 +86,11 @@ export function ResidentStats({ profiles, teaTimeParticipants }: ResidentStatsPr
                 <div key={floor} className="flex-1">
                   <div className="flex items-center justify-between mb-2">
                     <span className={`text-sm font-bold tracking-tight ${colors.text}`}>{floor}</span>
-                    <span className="text-xs font-semibold text-slate-400">
+                    <span className="text-xs font-semibold text-muted-foreground">
                       {floorStat.registered} <span className="opacity-50">/</span> {floorStat.total}
                     </span>
                   </div>
-                  <div className="h-2 bg-slate-50 rounded-full overflow-hidden p-0.5 border border-slate-100/50 shadow-inner">
+                  <div className="h-2 bg-muted rounded-full overflow-hidden p-0.5 border border-border/50 shadow-inner">
                     <m.div
                       initial={{ width: 0 }}
                       animate={{ width: `${percentage}%` }}
@@ -121,15 +121,15 @@ function StatCard({
   color: string;
 }) {
   return (
-    <div className="premium-surface rounded-2xl p-5 sm:p-6 transition-all hover:shadow-xl hover:-translate-y-0.5 border-slate-50">
-      <p className="text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-1.5">
+    <div className="premium-surface rounded-2xl p-5 sm:p-6 transition-all hover:shadow-xl hover:-translate-y-0.5 border-border/50">
+      <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground mb-1.5">
         {label}
       </p>
       <div className="flex items-baseline gap-1">
         <p className="text-2xl sm:text-3xl font-bold tracking-tight" style={{ color }}>
           {value}
         </p>
-        <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-tight">
+        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-tight">
           {subValue}
         </p>
       </div>

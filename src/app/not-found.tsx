@@ -10,7 +10,7 @@ export default function NotFound() {
   const t = useI18n();
 
   return (
-    <div className="min-h-[100dvh] bg-slate-50 flex flex-col items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-[100dvh] bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-200/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-brand-300/20 rounded-full blur-[120px] pointer-events-none" />
@@ -40,10 +40,10 @@ export default function NotFound() {
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-brand-50 text-brand-500 mb-6">
                 <MoveLeft size={32} strokeWidth={1.5} />
               </div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4 tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-4 tracking-tight">
                 {t("pages.notFound.title")}
               </h1>
-              <p className="text-slate-500 text-sm sm:text-base leading-relaxed mb-8 max-w-xs mx-auto">
+              <p className="text-muted-foreground text-sm sm:text-base leading-relaxed mb-8 max-w-xs mx-auto">
                 {t("pages.notFound.description")}
               </p>
 
@@ -54,7 +54,7 @@ export default function NotFound() {
                     {t("pages.notFound.backHome")}
                   </Link>
                 </Button>
-                <Button variant="outline" size="xl" asChild className="rounded-2xl bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-300 group">
+                <Button variant="outline" size="xl" asChild className="rounded-2xl bg-white border-border hover:bg-background hover:border-primary/40 group">
                   <Link href="/residents">
                     {t("nav.residents")}
                     <ArrowRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
@@ -71,10 +71,10 @@ export default function NotFound() {
           transition={{ delay: 1, duration: 1 }}
           className="mt-12"
         >
-          <div className="flex items-center justify-center gap-2 text-slate-400 text-sm font-medium">
-            <span className="w-8 h-px bg-slate-200" />
+          <div className="flex items-center justify-center gap-2 text-muted-foreground text-sm font-medium">
+            <span className="w-8 h-px bg-secondary" />
             <span className="tracking-widest uppercase text-[10px]">{t("pages.brandName")}</span>
-            <span className="w-8 h-px bg-slate-200" />
+            <span className="w-8 h-px bg-secondary" />
           </div>
         </m.div>
       </m.div>

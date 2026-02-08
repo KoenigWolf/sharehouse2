@@ -34,11 +34,11 @@ function SectionLabel({ label, icon }: { label: string; icon?: React.ReactNode }
     <div className="flex items-center gap-4 pt-12 pb-6">
       <div className="flex items-center gap-2">
         {icon && <span className="text-brand-500">{icon}</span>}
-        <h3 className="text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase whitespace-nowrap">
+        <h3 className="text-[10px] font-bold tracking-[0.2em] text-muted-foreground uppercase whitespace-nowrap">
           {label}
         </h3>
       </div>
-      <div className="flex-1 h-px bg-slate-100" />
+      <div className="flex-1 h-px bg-secondary" />
     </div>
   );
 }
@@ -390,9 +390,9 @@ export function ProfileEditForm({
 
       <form onSubmit={handleSubmit} className="space-y-12">
         {/* Hero: Avatar + Core Identity */}
-        <div className="premium-surface rounded-[2.5rem] p-8 sm:p-10 shadow-sm border border-slate-50 relative overflow-hidden">
+        <div className="premium-surface rounded-[2.5rem] p-8 sm:p-10 shadow-sm border border-border/50 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-brand-50/30 rounded-full blur-3xl -mr-32 -mt-32" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-slate-50/50 rounded-full blur-3xl -ml-24 -mb-24" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-muted/50 rounded-full blur-3xl -ml-24 -mb-24" />
 
           <div className="relative flex flex-col sm:flex-row gap-8 sm:gap-12 items-center sm:items-start">
             <div className="shrink-0 group">
@@ -403,7 +403,7 @@ export function ProfileEditForm({
                   variant="ghost"
                   onClick={handleAvatarClick}
                   disabled={isUploading}
-                  className="relative w-full h-full p-1 bg-white border-2 border-slate-50 rounded-full overflow-hidden shadow-md group-hover:shadow-xl group-hover:border-brand-100 transition-all duration-500"
+                  className="relative w-full h-full p-1 bg-white border-2 border-border/50 rounded-full overflow-hidden shadow-md group-hover:shadow-xl group-hover:border-brand-100 transition-all duration-500"
                 >
                   <Avatar className="size-full rounded-full">
                     <OptimizedAvatarImage
@@ -411,7 +411,7 @@ export function ProfileEditForm({
                       context="edit"
                       alt={t("a11y.profilePhotoAlt", { name: formData.name || "?" })}
                       fallback={getInitials(formData.name || "?")}
-                      fallbackClassName="bg-slate-50 text-slate-300 text-5xl rounded-full"
+                      fallbackClassName="bg-muted text-muted-foreground/70 text-5xl rounded-full"
                     />
                   </Avatar>
 
@@ -440,7 +440,7 @@ export function ProfileEditForm({
                 className="hidden"
                 aria-label={t("profile.changePhoto")}
               />
-              <p className="text-[10px] text-slate-300 font-bold tracking-widest uppercase text-center mt-4">
+              <p className="text-[10px] text-muted-foreground/70 font-bold tracking-widest uppercase text-center mt-4">
                 {t("profile.photoFormat")}
               </p>
             </div>
@@ -479,7 +479,7 @@ export function ProfileEditForm({
         </div>
 
         {/* Bio, Interests, MBTI */}
-        <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-slate-50 space-y-8">
+        <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-border/50 space-y-8">
           <SectionLabel
             label={t("profile.bio")}
             icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>}
@@ -525,7 +525,7 @@ export function ProfileEditForm({
         </div>
 
         {/* About You */}
-        <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-slate-50 space-y-8">
+        <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-border/50 space-y-8">
           <SectionLabel
             label={t("profile.sectionBasicInfo")}
             icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>}
@@ -585,7 +585,7 @@ export function ProfileEditForm({
         </div>
 
         {/* Work */}
-        <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-slate-50 space-y-8">
+        <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-border/50 space-y-8">
           <SectionLabel
             label={t("profile.sectionWork")}
             icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>}
@@ -635,7 +635,7 @@ export function ProfileEditForm({
         </div>
 
         {/* Lifestyle */}
-        <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-slate-50 space-y-8">
+        <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-border/50 space-y-8">
           <SectionLabel
             label={t("profile.sectionLifestyle")}
             icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>}
@@ -721,7 +721,7 @@ export function ProfileEditForm({
         </div>
 
         {/* Communal */}
-        <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-slate-50 space-y-8">
+        <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-border/50 space-y-8">
           <SectionLabel
             label={t("profile.sectionCommunal")}
             icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>}
@@ -797,7 +797,7 @@ export function ProfileEditForm({
         </div>
 
         {/* Personality */}
-        <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-slate-50 space-y-8">
+        <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-border/50 space-y-8">
           <SectionLabel
             label={t("profile.sectionPersonality")}
             icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
@@ -821,13 +821,13 @@ export function ProfileEditForm({
         </div>
 
         {/* SNS */}
-        <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-slate-50 space-y-8">
+        <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-border/50 space-y-8">
           <SectionLabel
             label={t("profile.sectionSns")}
             icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>}
           />
           <div className="space-y-6">
-            <p className="text-[10px] text-slate-400 font-bold tracking-widest uppercase ml-1 opacity-70">
+            <p className="text-[10px] text-muted-foreground font-bold tracking-widest uppercase ml-1 opacity-70">
               {t("profile.snsHint")}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -871,16 +871,16 @@ export function ProfileEditForm({
         </div>
 
         {/* Tea Time & Notifications */}
-        <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-slate-50 space-y-8">
+        <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-border/50 space-y-8">
           <SectionLabel
             label={`${t("teaTime.title")} & ${t("notifications.sectionTitle")}`}
             icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>}
           />
-          <div className="divide-y divide-slate-50">
+          <div className="divide-y divide-border/50">
             <div className="flex items-center justify-between py-5 group first:pt-0">
               <div className="space-y-1">
-                <p className="text-[13px] font-bold text-slate-600 tracking-wide">{t("teaTime.title")}</p>
-                <p className={`text-[11px] font-medium ${teaTimeEnabled ? "text-brand-500" : "text-slate-400"}`}>
+                <p className="text-[13px] font-bold text-foreground/80 tracking-wide">{t("teaTime.title")}</p>
+                <p className={`text-[11px] font-medium ${teaTimeEnabled ? "text-brand-500" : "text-muted-foreground"}`}>
                   {teaTimeEnabled ? t("teaTime.participating") : t("teaTime.notParticipating")}
                 </p>
               </div>
@@ -902,8 +902,8 @@ export function ProfileEditForm({
             ]).map((item) => (
               <div key={item.key} className="flex items-center justify-between py-5 group">
                 <div className="space-y-1">
-                  <p className="text-[13px] font-bold text-slate-600 tracking-wide">{item.label}</p>
-                  <p className="text-[11px] font-medium text-slate-400">{item.description}</p>
+                  <p className="text-[13px] font-bold text-foreground/80 tracking-wide">{item.label}</p>
+                  <p className="text-[11px] font-medium text-muted-foreground">{item.description}</p>
                 </div>
                 {notificationLoading === item.key ? (
                   <Spinner size="sm" variant="dark" />
@@ -928,7 +928,7 @@ export function ProfileEditForm({
         >
           <div className="premium-surface glass rounded-full p-2 shadow-2xl border border-white/50 flex items-center justify-between max-w-md mx-auto">
             <div className="px-6 hidden sm:block">
-              <p className="text-[10px] font-bold text-slate-400 tracking-widest uppercase">
+              <p className="text-[10px] font-bold text-muted-foreground tracking-widest uppercase">
                 {t("profile.saveChanges")}
               </p>
             </div>

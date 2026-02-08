@@ -25,7 +25,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="min-h-[100dvh] bg-slate-50 flex flex-col items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-[100dvh] bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-error-bg/30 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-200/20 rounded-full blur-[120px] pointer-events-none" />
@@ -55,19 +55,19 @@ export default function Error({
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-error-bg text-error mb-6">
                 <AlertCircle size={32} strokeWidth={1.5} />
               </div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4 tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-4 tracking-tight">
                 {t("pages.error.title")}
               </h1>
-              <p className="text-slate-500 text-sm sm:text-base leading-relaxed mb-8 max-w-xs mx-auto">
+              <p className="text-muted-foreground text-sm sm:text-base leading-relaxed mb-8 max-w-xs mx-auto">
                 {t("pages.error.description")}
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <Button size="xl" onClick={reset} className="rounded-2xl shadow-lg shadow-slate-200/50 group bg-slate-900 hover:bg-slate-800">
+                <Button size="xl" onClick={reset} className="rounded-2xl shadow-lg shadow-border/50 group bg-foreground hover:bg-foreground/90">
                   <RefreshCcw size={18} className="mr-2 group-active:rotate-180 transition-transform duration-500" />
                   {t("pages.error.retry")}
                 </Button>
-                <Button variant="outline" size="xl" asChild className="rounded-2xl bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-300">
+                <Button variant="outline" size="xl" asChild className="rounded-2xl bg-white border-border hover:bg-background hover:border-primary/40">
                   <Link href="/">
                     <Home size={18} className="mr-2" />
                     {t("pages.error.backHome")}
@@ -84,10 +84,10 @@ export default function Error({
           transition={{ delay: 1, duration: 1 }}
           className="mt-12"
         >
-          <div className="flex items-center justify-center gap-2 text-slate-400 text-sm font-medium">
-            <span className="w-8 h-px bg-slate-200" />
+          <div className="flex items-center justify-center gap-2 text-muted-foreground text-sm font-medium">
+            <span className="w-8 h-px bg-secondary" />
             <span className="tracking-widest uppercase text-[10px]">{t("pages.brandName")}</span>
-            <span className="w-8 h-px bg-slate-200" />
+            <span className="w-8 h-px bg-secondary" />
           </div>
         </m.div>
       </m.div>

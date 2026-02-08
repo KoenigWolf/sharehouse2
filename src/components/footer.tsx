@@ -51,13 +51,13 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
 
   if (variant === "minimal") {
     return (
-      <footer className="py-12 mt-auto bg-slate-50 backdrop-blur-sm border-t border-slate-100">
+      <footer className="py-12 mt-auto bg-muted backdrop-blur-sm border-t border-border">
         <div className="container mx-auto px-6 max-w-5xl flex flex-col items-center gap-6">
           <div className="flex items-center gap-2">
-            <HomeIcon size={18} className="text-slate-900" strokeWidth={2.5} />
-            <span className="text-lg font-bold tracking-tight text-slate-900">Share<span className="text-brand-500">House</span></span>
+            <HomeIcon size={18} className="text-foreground" strokeWidth={2.5} />
+            <span className="text-lg font-bold tracking-tight text-foreground">Share<span className="text-brand-500">House</span></span>
           </div>
-          <p className="text-xs font-medium text-slate-400 tracking-tight text-center">
+          <p className="text-xs font-medium text-muted-foreground tracking-tight text-center">
             {t("footer.copyright", { year: new Date().getFullYear() })}
           </p>
         </div>
@@ -66,7 +66,7 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
   }
 
   return (
-    <footer className="mt-auto bg-slate-50 border-t border-slate-100 relative overflow-hidden">
+    <footer className="mt-auto bg-muted border-t border-border relative overflow-hidden">
 
       <div className="container mx-auto px-6 pt-16 pb-24 sm:pb-16 max-w-6xl relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8 lg:gap-16">
@@ -74,12 +74,12 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
           {/* Brand Section */}
           <div className="md:col-span-4 lg:col-span-5 flex flex-col items-start">
             <Link href="/" className="flex items-center gap-2 group">
-              <HomeIcon size={22} className="text-slate-900 transition-transform group-hover:scale-105" strokeWidth={2.5} />
-              <span className="text-2xl font-black tracking-tight text-slate-900">
+              <HomeIcon size={22} className="text-foreground transition-transform group-hover:scale-105" strokeWidth={2.5} />
+              <span className="text-2xl font-black tracking-tight text-foreground">
                 Share<span className="text-brand-500">House</span>
               </span>
             </Link>
-            <p className="text-sm font-medium text-slate-500 mt-6 leading-relaxed max-w-xs">
+            <p className="text-sm font-medium text-muted-foreground mt-6 leading-relaxed max-w-xs">
               {t("footer.tagline")}
             </p>
 
@@ -99,9 +99,9 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-16 pt-8 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div className="mt-16 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+            <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
               {t("footer.copyrightFull", { year: new Date().getFullYear() })}
             </p>
           </div>
@@ -109,7 +109,7 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
           <div className="flex items-center gap-4">
             <button
               onClick={scrollToTop}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-all duration-400 ease-out delay-150 text-xs font-bold ring-1 ring-slate-200/50"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-muted hover:bg-secondary text-muted-foreground hover:text-foreground transition-all duration-400 ease-out delay-150 text-xs font-bold ring-1 ring-slate-200/50"
             >
               <ArrowUpIcon size={14} />
               {t("footer.backToTop")}
@@ -125,7 +125,7 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
 function SNSPlaceholder({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
     <span
-      className="w-10 h-10 rounded-lg bg-slate-50 flex items-center justify-center text-slate-300 border border-slate-100 cursor-default"
+      className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center text-muted-foreground/70 border border-border cursor-default"
       aria-label={label}
     >
       {icon}
@@ -136,7 +136,7 @@ function SNSPlaceholder({ icon, label }: { icon: React.ReactNode; label: string 
 function FooterNavSection({ title, links, t }: { title: string; links: typeof NAV_LINKS; t: Translator }) {
   return (
     <div className="flex flex-col">
-      <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6">
+      <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-6">
         {title}
       </h3>
       <ul className="flex flex-col gap-4">
@@ -144,9 +144,9 @@ function FooterNavSection({ title, links, t }: { title: string; links: typeof NA
           <li key={href}>
             <Link
               href={href}
-              className="flex items-center gap-3 text-sm text-slate-500 hover:text-slate-900 transition-colors font-semibold group"
+              className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors font-semibold group"
             >
-              <Icon size={16} strokeWidth={2} className="text-slate-400 group-hover:text-slate-600" />
+              <Icon size={16} strokeWidth={2} className="text-muted-foreground group-hover:text-foreground/80" />
               {t(labelKey)}
             </Link>
           </li>
@@ -159,7 +159,7 @@ function FooterNavSection({ title, links, t }: { title: string; links: typeof NA
 function FooterLinkSection({ title, links, t }: { title: string; links: typeof COMMUNITY_LINKS | typeof LEGAL_LINKS; t: Translator }) {
   return (
     <div className="flex flex-col">
-      <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6">
+      <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-6">
         {title}
       </h3>
       <ul className="flex flex-col gap-4">
@@ -168,12 +168,12 @@ function FooterLinkSection({ title, links, t }: { title: string; links: typeof C
             {href ? (
               <Link
                 href={href}
-                className="text-sm text-slate-500 hover:text-slate-900 transition-colors font-semibold"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors font-semibold"
               >
                 {t(labelKey)}
               </Link>
             ) : (
-              <span className="text-sm text-slate-300 font-semibold cursor-default">
+              <span className="text-sm text-muted-foreground/70 font-semibold cursor-default">
                 {t(labelKey)}
               </span>
             )}

@@ -56,7 +56,7 @@ export const UploadCard = memo(function UploadCard({
         type="button"
         variant="ghost"
         disabled={isDisabled}
-        className="w-full h-auto p-0 flex-col aspect-square bg-slate-100 border-0 rounded-none disabled:opacity-50 pointer-events-none"
+        className="w-full h-auto p-0 flex-col aspect-square bg-secondary border-0 rounded-none disabled:opacity-50 pointer-events-none"
         aria-label={t("roomPhotos.uploadButton")}
         aria-busy={isUploading}
       >
@@ -65,11 +65,11 @@ export const UploadCard = memo(function UploadCard({
         ) : (
           <>
             <Plus
-              className="w-6 h-6 text-slate-400"
+              className="w-6 h-6 text-muted-foreground"
               strokeWidth={1.5}
               aria-hidden="true"
             />
-            <span className="text-[11px] text-slate-400 mt-1.5 font-medium">
+            <span className="text-[11px] text-muted-foreground mt-1.5 font-medium">
               {t("roomPhotos.uploadButton")}
             </span>
           </>

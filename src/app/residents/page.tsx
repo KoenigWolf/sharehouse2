@@ -28,7 +28,7 @@ export default async function ResidentsPage() {
     const mockCount = profiles.length - dbProfiles.length;
 
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col">
         <Header />
 
         <main className="flex-1 pb-20 sm:pb-0">
@@ -40,7 +40,7 @@ export default async function ResidentsPage() {
             )}
 
             {mockCount > 0 && (
-              <p className="text-xs text-slate-400 mb-5 sm:mb-6">
+              <p className="text-xs text-muted-foreground mb-5 sm:mb-6">
                 {t("residents.registeredLabel", { count: dbProfiles.length })} /{" "}
                 {t("residents.unregisteredLabel", { count: mockCount })}
               </p>
@@ -60,7 +60,7 @@ export default async function ResidentsPage() {
   const { profiles } = await getPublicProfilesWithMock(supabase);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
 
       <main className="flex-1 pb-20 sm:pb-0">

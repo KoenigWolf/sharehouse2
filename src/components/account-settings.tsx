@@ -81,20 +81,20 @@ function PasswordSection() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="premium-surface rounded-[2rem] p-8 border border-slate-50 space-y-6 shadow-sm"
+      className="premium-surface rounded-[2rem] p-8 border border-border/50 space-y-6 shadow-sm"
     >
       <div className="flex items-center gap-2 mb-2">
         <svg className="w-4 h-4 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 00-2 2zm10-10V7a4 4 0 00-8 0v4h8z" />
         </svg>
-        <h3 className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
+        <h3 className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase">
           {t("account.password")}
         </h3>
       </div>
 
       <div className="space-y-5">
         <div className="space-y-2">
-          <label htmlFor="current-password" shaking-wide className="block text-[10px] font-bold text-slate-400 uppercase ml-1">
+          <label htmlFor="current-password" shaking-wide className="block text-[10px] font-bold text-muted-foreground uppercase ml-1">
             {t("account.currentPassword")}
           </label>
           <Input
@@ -104,12 +104,12 @@ function PasswordSection() {
             onChange={(e) => setCurrentPassword(e.target.value)}
             disabled={isSubmitting}
             autoComplete="current-password"
-            className="h-12 rounded-2xl border-slate-200 focus:ring-brand-500/5 focus:border-brand-500/50"
+            className="h-12 rounded-2xl border-border focus:ring-brand-500/5 focus:border-brand-500/50"
           />
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="new-password" shaking-wide className="block text-[10px] font-bold text-slate-400 uppercase ml-1">
+          <label htmlFor="new-password" shaking-wide className="block text-[10px] font-bold text-muted-foreground uppercase ml-1">
             {t("account.newPassword")}
           </label>
           <Input
@@ -119,12 +119,12 @@ function PasswordSection() {
             onChange={(e) => setNewPassword(e.target.value)}
             disabled={isSubmitting}
             autoComplete="new-password"
-            className="h-12 rounded-2xl border-slate-200 focus:ring-brand-500/5 focus:border-brand-500/50"
+            className="h-12 rounded-2xl border-border focus:ring-brand-500/5 focus:border-brand-500/50"
           />
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="confirm-password" shaking-wide className="block text-[10px] font-bold text-slate-400 uppercase ml-1">
+          <label htmlFor="confirm-password" shaking-wide className="block text-[10px] font-bold text-muted-foreground uppercase ml-1">
             {t("account.confirmPassword")}
           </label>
           <Input
@@ -134,7 +134,7 @@ function PasswordSection() {
             onChange={(e) => setConfirmPassword(e.target.value)}
             disabled={isSubmitting}
             autoComplete="new-password"
-            className="h-12 rounded-2xl border-slate-200 focus:ring-brand-500/5 focus:border-brand-500/50"
+            className="h-12 rounded-2xl border-border focus:ring-brand-500/5 focus:border-brand-500/50"
           />
         </div>
       </div>
@@ -180,31 +180,31 @@ function EmailSection({ userEmail }: { userEmail: string | undefined }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="premium-surface rounded-[2rem] p-8 border border-slate-50 space-y-6 shadow-sm"
+      className="premium-surface rounded-[2rem] p-8 border border-border/50 space-y-6 shadow-sm"
     >
       <div className="flex items-center gap-2 mb-2">
         <svg className="w-4 h-4 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
         </svg>
-        <h3 className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
+        <h3 className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase">
           {t("account.email")}
         </h3>
       </div>
 
       <div className="space-y-5">
         {userEmail && (
-          <div className="px-5 py-3 bg-slate-50/50 rounded-2xl border border-slate-100">
-            <p className="text-[11px] font-bold text-slate-400 tracking-wider uppercase mb-1">
+          <div className="px-5 py-3 bg-muted/50 rounded-2xl border border-border">
+            <p className="text-[11px] font-bold text-muted-foreground tracking-wider uppercase mb-1">
               {t("account.currentEmail")}
             </p>
-            <p className="text-sm font-medium text-slate-600">
+            <p className="text-sm font-medium text-foreground/80">
               {userEmail}
             </p>
           </div>
         )}
 
         <div className="space-y-2">
-          <label htmlFor="new-email" className="block text-[10px] font-bold text-slate-400 uppercase ml-1">
+          <label htmlFor="new-email" className="block text-[10px] font-bold text-muted-foreground uppercase ml-1">
             {t("account.newEmail")}
           </label>
           <Input
@@ -214,7 +214,7 @@ function EmailSection({ userEmail }: { userEmail: string | undefined }) {
             onChange={(e) => setNewEmail(e.target.value)}
             disabled={isSubmitting}
             autoComplete="email"
-            className="h-12 rounded-2xl border-slate-200 focus:ring-brand-500/5 focus:border-brand-500/50"
+            className="h-12 rounded-2xl border-border focus:ring-brand-500/5 focus:border-brand-500/50"
           />
         </div>
       </div>
@@ -325,10 +325,10 @@ export function AccountSettings({ userEmail, hasPassword }: AccountSettingsProps
       className="space-y-12 py-8"
     >
       <div className="flex items-center gap-4">
-        <h2 className="text-[10px] font-bold tracking-[0.25em] text-slate-400 uppercase whitespace-nowrap">
+        <h2 className="text-[10px] font-bold tracking-[0.25em] text-muted-foreground uppercase whitespace-nowrap">
           {t("account.sectionTitle")}
         </h2>
-        <div className="flex-1 h-px bg-slate-100" />
+        <div className="flex-1 h-px bg-secondary" />
       </div>
 
       <div className="space-y-8">
@@ -337,11 +337,11 @@ export function AccountSettings({ userEmail, hasPassword }: AccountSettingsProps
         {hasPassword ? (
           <PasswordSection />
         ) : (
-          <div className="premium-surface rounded-[2rem] p-8 border border-slate-50 shadow-sm">
-            <h3 className="text-[10px] font-bold tracking-widest text-slate-400 uppercase mb-4">
+          <div className="premium-surface rounded-[2rem] p-8 border border-border/50 shadow-sm">
+            <h3 className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase mb-4">
               {t("account.password")}
             </h3>
-            <p className="text-sm font-medium text-slate-400">
+            <p className="text-sm font-medium text-muted-foreground">
               {t("account.noPasswordProvider")}
             </p>
           </div>

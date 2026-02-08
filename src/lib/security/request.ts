@@ -1,3 +1,4 @@
+import "server-only";
 import { headers } from "next/headers";
 import { validateOrigin } from "./validation";
 import { getAllowedOrigins } from "./origin";

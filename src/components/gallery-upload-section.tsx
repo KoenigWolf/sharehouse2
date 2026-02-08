@@ -79,7 +79,7 @@ export function GalleryUploadSection() {
           onChange={(e) => setCaption(e.target.value)}
           placeholder={t("roomPhotos.captionPlaceholder")}
           maxLength={200}
-          className="flex-1 h-10 px-3 bg-white border border-slate-200 text-slate-900 text-sm placeholder:text-slate-300 focus:outline-none focus:border-slate-900 transition-colors"
+          className="flex-1 h-10 px-3 bg-white border border-border text-foreground text-sm placeholder:text-muted-foreground/70 focus:outline-none focus:border-foreground transition-colors"
         />
         <Button
           type="button"
@@ -95,7 +95,7 @@ export function GalleryUploadSection() {
         </Button>
       </div>
 
-      <p className="text-[10px] text-slate-400">
+      <p className="text-[10px] text-muted-foreground">
         {t("profile.photoFormat")}
       </p>
 

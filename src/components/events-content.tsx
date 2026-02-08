@@ -145,7 +145,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
           >
             <div className="premium-surface rounded-3xl p-6 sm:p-8 space-y-5">
               <div className="space-y-2">
-                <label className="block text-[10px] font-bold text-slate-400 tracking-wider uppercase ml-1">
+                <label className="block text-[10px] font-bold text-muted-foreground tracking-wider uppercase ml-1">
                   {t("events.titleLabel")}
                 </label>
                 <input
@@ -154,13 +154,13 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder={t("events.titlePlaceholder")}
                   maxLength={EVENTS.maxTitleLength}
-                  className="w-full h-11 px-4 bg-white border border-slate-200 rounded-2xl text-slate-700 text-sm font-medium placeholder:text-slate-300 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
+                  className="w-full h-11 px-4 bg-white border border-border rounded-2xl text-foreground/90 text-sm font-medium placeholder:text-muted-foreground/70 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="block text-[10px] font-bold text-slate-400 tracking-wider uppercase ml-1">
+                  <label className="block text-[10px] font-bold text-muted-foreground tracking-wider uppercase ml-1">
                     {t("events.dateLabel")}
                   </label>
                   <input
@@ -168,11 +168,11 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                     value={eventDate}
                     onChange={(e) => setEventDate(e.target.value)}
                     min={new Date().toISOString().split("T")[0]}
-                    className="w-full h-11 px-4 bg-white border border-slate-200 rounded-2xl text-slate-700 text-sm font-medium focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
+                    className="w-full h-11 px-4 bg-white border border-border rounded-2xl text-foreground/90 text-sm font-medium focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-[10px] font-bold text-slate-400 tracking-wider uppercase ml-1">
+                  <label className="block text-[10px] font-bold text-muted-foreground tracking-wider uppercase ml-1">
                     {t("events.timeLabel")}
                   </label>
                   <input
@@ -180,13 +180,13 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                     value={eventTime}
                     onChange={(e) => setEventTime(e.target.value)}
                     placeholder={t("events.timePlaceholder")}
-                    className="w-full h-11 px-4 bg-white border border-slate-200 rounded-2xl text-slate-700 text-sm font-medium placeholder:text-slate-300 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
+                    className="w-full h-11 px-4 bg-white border border-border rounded-2xl text-foreground/90 text-sm font-medium placeholder:text-muted-foreground/70 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="block text-[10px] font-bold text-slate-400 tracking-wider uppercase ml-1">
+                <label className="block text-[10px] font-bold text-muted-foreground tracking-wider uppercase ml-1">
                   {t("events.locationLabel")}
                 </label>
                 <input
@@ -194,12 +194,12 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder={t("events.locationPlaceholder")}
-                  className="w-full h-11 px-4 bg-white border border-slate-200 rounded-2xl text-slate-700 text-sm font-medium placeholder:text-slate-300 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
+                  className="w-full h-11 px-4 bg-white border border-border rounded-2xl text-foreground/90 text-sm font-medium placeholder:text-muted-foreground/70 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="block text-[10px] font-bold text-slate-400 tracking-wider uppercase ml-1">
+                <label className="block text-[10px] font-bold text-muted-foreground tracking-wider uppercase ml-1">
                   {t("events.descriptionLabel")}
                 </label>
                 <textarea
@@ -208,7 +208,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                   placeholder={t("events.descriptionPlaceholder")}
                   maxLength={EVENTS.maxDescriptionLength}
                   rows={2}
-                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-700 text-sm font-medium placeholder:text-slate-300 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300 resize-none"
+                  className="w-full px-4 py-3 bg-white border border-border rounded-2xl text-foreground/90 text-sm font-medium placeholder:text-muted-foreground/70 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300 resize-none"
                 />
               </div>
 
@@ -220,7 +220,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                     setTitle(""); setEventDate(""); setEventTime("");
                     setLocation(""); setDescription("");
                   }}
-                  className="h-10 px-6 rounded-full text-[11px] font-bold text-slate-400 hover:text-slate-600 tracking-wider uppercase transition-all duration-300"
+                  className="h-10 px-6 rounded-full text-[11px] font-bold text-muted-foreground hover:text-foreground/80 tracking-wider uppercase transition-all duration-300"
                 >
                   {t("common.cancel")}
                 </button>
@@ -228,7 +228,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                   type="button"
                   onClick={handleCreate}
                   disabled={!title.trim() || !eventDate || isSubmitting}
-                  className="h-10 px-8 rounded-full bg-brand-500 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
+                  className="h-10 px-8 rounded-full bg-brand-500 hover:bg-brand-700 disabled:bg-secondary disabled:text-muted-foreground text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
                 >
                   {isSubmitting ? t("events.creating") : t("events.create")}
                 </button>
@@ -240,17 +240,17 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
 
       {events.length === 0 ? (
         <div className="py-20 text-center">
-          <p className="text-sm text-slate-400 font-medium">{t("events.empty")}</p>
+          <p className="text-sm text-muted-foreground font-medium">{t("events.empty")}</p>
         </div>
       ) : (
         <div className="space-y-10">
           {Array.from(grouped.entries()).map(([date, dateEvents], groupIndex) => (
             <div key={date} className="space-y-5">
               <div className="flex items-center gap-4">
-                <h3 className="text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase whitespace-nowrap">
+                <h3 className="text-[10px] font-bold tracking-[0.2em] text-muted-foreground uppercase whitespace-nowrap">
                   {formatEventDate(date, t)}
                 </h3>
-                <div className="flex-1 h-px bg-slate-100" />
+                <div className="flex-1 h-px bg-secondary" />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {dateEvents.map((event, eventIndex) => {
@@ -270,29 +270,29 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                       className="premium-surface rounded-3xl p-6 relative group"
                     >
                       <div className="flex items-start justify-between mb-3">
-                        <h4 className={`text-base font-bold text-slate-900 tracking-tight ${isTeaser ? "blur-[2.5px] select-none" : ""}`}>
+                        <h4 className={`text-base font-bold text-foreground tracking-tight ${isTeaser ? "blur-[2.5px] select-none" : ""}`}>
                           {event.title}
                         </h4>
                         {isMine && (
                           <button
                             type="button"
                             onClick={() => handleDelete(event.id)}
-                            className="text-[10px] font-bold text-slate-300 hover:text-rose-500 tracking-widest uppercase transition-all"
+                            className="text-[10px] font-bold text-muted-foreground/70 hover:text-rose-500 tracking-widest uppercase transition-all"
                           >
                             {t("common.delete")}
                           </button>
                         )}
                       </div>
 
-                      <div className="flex flex-wrap gap-4 text-[11px] font-semibold text-slate-500 mb-4">
+                      <div className="flex flex-wrap gap-4 text-[11px] font-semibold text-muted-foreground mb-4">
                         {event.event_time && (
-                          <span className={`flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg ${isTeaser ? "blur-[2px] select-none" : ""}`}>
+                          <span className={`flex items-center gap-1.5 px-2.5 py-1 bg-muted rounded-lg ${isTeaser ? "blur-[2px] select-none" : ""}`}>
                             <Clock size={12} className="text-brand-500" />
                             {event.event_time}
                           </span>
                         )}
                         {event.location && (
-                          <span className={`flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg ${isTeaser ? "blur-[2px] select-none" : ""}`}>
+                          <span className={`flex items-center gap-1.5 px-2.5 py-1 bg-muted rounded-lg ${isTeaser ? "blur-[2px] select-none" : ""}`}>
                             <MapPin size={12} className="text-brand-500" />
                             {event.location}
                           </span>
@@ -300,34 +300,34 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                       </div>
 
                       {event.description && (
-                        <p className={`text-sm text-slate-600 mb-5 leading-relaxed font-medium ${isTeaser ? "blur-[3px] select-none" : ""}`}>
+                        <p className={`text-sm text-foreground/80 mb-5 leading-relaxed font-medium ${isTeaser ? "blur-[3px] select-none" : ""}`}>
                           {event.description}
                         </p>
                       )}
 
                       <div className="flex items-center justify-between mt-auto">
                         <div className="flex items-center gap-2.5">
-                          <Avatar className="w-6 h-6 rounded-lg border border-slate-100 shadow-sm overflow-hidden">
+                          <Avatar className="w-6 h-6 rounded-lg border border-border shadow-sm overflow-hidden">
                             <OptimizedAvatarImage
                               src={event.profiles?.avatar_url}
                               alt={creatorName}
                               context="card"
                               isBlurred={isTeaser}
                               fallback={
-                                <span className="text-[9px] font-bold text-slate-400">
+                                <span className="text-[9px] font-bold text-muted-foreground">
                                   {getInitials(creatorName)}
                                 </span>
                               }
-                              fallbackClassName="bg-slate-50"
+                              fallbackClassName="bg-muted"
                             />
                           </Avatar>
-                          <span className="text-[11px] font-bold text-slate-400 tracking-wide">
+                          <span className="text-[11px] font-bold text-muted-foreground tracking-wide">
                             {creatorName}
                           </span>
                         </div>
 
                         <div className="flex items-center gap-4">
-                          <span className="text-[10px] font-bold text-slate-400 tracking-wider">
+                          <span className="text-[10px] font-bold text-muted-foreground tracking-wider">
                             {attendeeCount > 0
                               ? t("events.attendees", { count: attendeeCount })
                               : t("events.noAttendees")}
@@ -337,7 +337,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                             onClick={() => !isTeaser && handleToggleAttendance(event.id)}
                             disabled={isTeaser}
                             className={`h-8 px-4 rounded-full text-[10px] font-bold tracking-wider uppercase transition-all duration-300 ${isAttending
-                              ? "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                              ? "bg-secondary text-foreground/80 hover:bg-secondary"
                               : "bg-brand-500 text-white hover:bg-brand-700 shadow-sm shadow-brand-100"
                               } ${isTeaser ? "opacity-50 cursor-not-allowed" : ""}`}
                           >

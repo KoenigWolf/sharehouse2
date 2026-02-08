@@ -5,23 +5,23 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm tracking-wide transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm tracking-wide transition-all duration-300 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
   {
     variants: {
       variant: {
         default:
-          "bg-slate-900 text-white hover:bg-slate-800 disabled:bg-slate-400 disabled:opacity-100",
+          "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md disabled:bg-muted disabled:text-muted-foreground disabled:opacity-100",
         destructive:
-          "border border-error-border text-error bg-transparent hover:border-error",
+          "border border-error-border text-error bg-error-bg/30 hover:bg-error-bg/50 hover:border-error",
         outline:
-          "border border-slate-200 text-slate-500 bg-transparent hover:border-slate-900 hover:text-slate-900",
+          "border border-border text-foreground/70 bg-transparent hover:border-primary hover:text-primary hover:bg-primary/5",
         secondary:
-          "bg-slate-100 text-slate-900 hover:bg-slate-200",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost:
-          "text-slate-400 hover:text-slate-500",
-        link: "text-slate-900 underline-offset-4 hover:underline",
+          "text-muted-foreground hover:text-foreground hover:bg-secondary/50",
+        link: "text-primary underline-offset-4 hover:underline",
         dashed:
-          "border border-dashed border-slate-300 text-slate-400 bg-transparent hover:border-slate-400 hover:text-slate-500",
+          "border border-dashed border-border text-muted-foreground bg-transparent hover:border-primary/50 hover:text-foreground",
       },
       size: {
         default: "h-9 px-4 py-2 text-xs has-[>svg]:px-3",

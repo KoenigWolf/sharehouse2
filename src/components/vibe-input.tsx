@@ -58,7 +58,7 @@ export function VibeInput({ currentVibe = "", isLoggedIn }: VibeInputProps) {
    return (
       <div className="w-full">
          <div
-            className={`premium-surface rounded-xl transition-all duration-300 bg-white border ${isFocused ? "ring-2 ring-brand-500/20 border-brand-500 shadow-lg" : "border-slate-100 hover:border-slate-200"
+            className={`premium-surface rounded-xl transition-all duration-300 bg-white border ${isFocused ? "ring-2 ring-brand-500/20 border-brand-500 shadow-lg" : "border-border hover:border-border"
                }`}
          >
             <div className="p-4 sm:p-5 flex flex-col gap-3">
@@ -73,7 +73,7 @@ export function VibeInput({ currentVibe = "", isLoggedIn }: VibeInputProps) {
                      placeholder={t("bulletin.placeholder")}
                      maxLength={BULLETIN.maxMessageLength}
                      rows={isFocused ? 3 : 1}
-                     className="flex-1 text-sm font-medium text-slate-700 placeholder:text-slate-400 bg-transparent resize-none focus:outline-none py-1.5"
+                     className="flex-1 text-sm font-medium text-foreground/90 placeholder:text-muted-foreground bg-transparent resize-none focus:outline-none py-1.5"
                   />
                </div>
 
@@ -83,10 +83,10 @@ export function VibeInput({ currentVibe = "", isLoggedIn }: VibeInputProps) {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="flex items-center justify-between pt-2 border-t border-slate-50 overflow-hidden"
+                        className="flex items-center justify-between pt-2 border-t border-border/50 overflow-hidden"
                      >
                         <div className="flex flex-col gap-1">
-                           <span className="text-[10px] font-bold text-slate-300 tracking-widest uppercase">
+                           <span className="text-[10px] font-bold text-muted-foreground/70 tracking-widest uppercase">
                               {message.length}/{BULLETIN.maxMessageLength}
                            </span>
                            {error && <span className="text-[10px] text-rose-500 font-medium">{error}</span>}
@@ -99,7 +99,7 @@ export function VibeInput({ currentVibe = "", isLoggedIn }: VibeInputProps) {
                                  setMessage(currentVibe);
                                  setError(null);
                               }}
-                              className="h-8 px-4 rounded-full text-[10px] font-bold text-slate-400 hover:text-slate-600 uppercase tracking-wider transition-colors"
+                              className="h-8 px-4 rounded-full text-[10px] font-bold text-muted-foreground hover:text-foreground/80 uppercase tracking-wider transition-colors"
                            >
                               {t("common.cancel")}
                            </button>
@@ -107,7 +107,7 @@ export function VibeInput({ currentVibe = "", isLoggedIn }: VibeInputProps) {
                               type="button"
                               onClick={handlePost}
                               disabled={isSubmitting || (message.trim() === (currentVibe || ""))}
-                              className="h-8 px-5 rounded-full bg-brand-500 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[10px] font-bold uppercase tracking-wider transition-all shadow-sm shadow-brand-100 flex items-center gap-2"
+                              className="h-8 px-5 rounded-full bg-brand-500 hover:bg-brand-700 disabled:bg-secondary disabled:text-muted-foreground text-white text-[10px] font-bold uppercase tracking-wider transition-all shadow-sm shadow-brand-100 flex items-center gap-2"
                            >
                               {isSubmitting && <Spinner size="xs" variant="light" />}
                               {t("bulletin.post")}

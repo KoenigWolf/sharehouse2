@@ -2,12 +2,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProfileLoading() {
    return (
-      <div className="min-h-screen bg-slate-50 flex flex-col">
-         <header className="h-[73px] bg-white border-b border-slate-100" />
+      <div className="min-h-screen bg-background flex flex-col">
+         <header className="h-[73px] bg-white border-b border-border" />
 
          <main className="flex-1 pb-20 sm:pb-0">
             <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-10 max-w-5xl">
-               <div className="bg-white border border-slate-100 rounded-[2rem] overflow-hidden shadow-sm">
+               <div className="bg-white border border-border rounded-[2rem] overflow-hidden shadow-sm">
                   {/* Cover Photo Skeleton */}
                   <Skeleton className="aspect-2/1 sm:aspect-21/8 w-full" />
 
@@ -28,7 +28,7 @@ export default function ProfileLoading() {
                      </div>
 
                      {/* Stats Bar Skeleton */}
-                     <div className="mt-10 pt-8 border-t border-slate-50 grid grid-cols-2 sm:grid-cols-4 gap-6">
+                     <div className="mt-10 pt-8 border-t border-border/50 grid grid-cols-2 sm:grid-cols-4 gap-6">
                         {[...Array(4)].map((_, i) => (
                            <div key={i} className="space-y-1">
                               <Skeleton className="h-3 w-16" />
@@ -42,7 +42,7 @@ export default function ProfileLoading() {
                <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
                   <div className="lg:col-span-2 space-y-8">
                      {[...Array(3)].map((_, i) => (
-                        <div key={i} className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm p-6 space-y-4">
+                        <div key={i} className="bg-white border border-border rounded-2xl overflow-hidden shadow-sm p-6 space-y-4">
                            <Skeleton className="h-6 w-32" />
                            <div className="space-y-2">
                               <Skeleton className="h-4 w-full" />
@@ -53,7 +53,7 @@ export default function ProfileLoading() {
                      ))}
                   </div>
                   <div className="space-y-8">
-                     <div className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm p-6 space-y-4">
+                     <div className="bg-white border border-border rounded-2xl overflow-hidden shadow-sm p-6 space-y-4">
                         <Skeleton className="h-6 w-24" />
                         <div className="grid grid-cols-3 gap-2">
                            {[...Array(6)].map((_, i) => (

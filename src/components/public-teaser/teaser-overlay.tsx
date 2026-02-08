@@ -28,11 +28,11 @@ export function TeaserOverlay({ totalCount }: TeaserOverlayProps) {
                <UserPlus className="w-8 h-8" />
             </div>
 
-            <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight mb-4">
+            <h3 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight mb-4">
                {totalCount ? t("teaser.headingWithCount", { count: totalCount }) : t("teaser.heading")}
             </h3>
 
-            <p className="text-slate-500 font-medium mb-8 leading-relaxed">
+            <p className="text-muted-foreground font-medium mb-8 leading-relaxed">
                {t("teaser.description")}
             </p>
 
@@ -46,13 +46,13 @@ export function TeaserOverlay({ totalCount }: TeaserOverlayProps) {
                </Link>
                <Link
                   href="/login"
-                  className="h-12 px-8 rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 font-bold tracking-wider uppercase transition-all duration-300 flex items-center justify-center"
+                  className="h-12 px-8 rounded-full bg-white border border-border text-foreground/80 hover:bg-muted font-bold tracking-wider uppercase transition-all duration-300 flex items-center justify-center"
                >
                   {t("teaser.ctaLogin")}
                </Link>
             </div>
 
-            <p className="mt-8 text-[11px] font-bold text-slate-400 tracking-widest uppercase">
+            <p className="mt-8 text-[11px] font-bold text-muted-foreground tracking-widest uppercase">
                {t("teaser.footer")}
             </p>
          </m.div>

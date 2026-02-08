@@ -2,8 +2,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function EventsLoading() {
    return (
-      <div className="min-h-screen bg-slate-50 flex flex-col">
-         <header className="h-[73px] bg-white border-b border-slate-100" />
+      <div className="min-h-screen bg-background flex flex-col">
+         <header className="h-[73px] bg-white border-b border-border" />
 
          <main className="flex-1 pb-20 sm:pb-0">
             <div className="container mx-auto px-4 sm:px-6 py-5 sm:py-8 max-w-4xl space-y-8">
@@ -13,14 +13,14 @@ export default function EventsLoading() {
                </div>
 
                <div className="space-y-6">
-                  <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
+                  <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-border shadow-sm">
                      <Skeleton className="h-10 w-24 rounded-full" />
                      <Skeleton className="h-10 w-32 rounded-xl" />
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                      {[...Array(4)].map((_, i) => (
-                        <div key={i} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col">
+                        <div key={i} className="bg-white rounded-2xl border border-border shadow-sm overflow-hidden flex flex-col">
                            <Skeleton className="h-40 w-full" />
                            <div className="p-6 space-y-4 flex-1">
                               <div className="flex items-center justify-between">

@@ -66,7 +66,7 @@ export const PhotoCard = memo(function PhotoCard({
         tabIndex={0}
         onClick={onClick}
         onKeyDown={handleKeyDown}
-        className="group relative w-full aspect-square overflow-hidden cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-inset bg-slate-200"
+        className="group relative w-full aspect-square overflow-hidden cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-inset bg-secondary"
         aria-label={`${t("roomPhotos.photoAlt")} - ${userName}`}
       >
         <Image
@@ -91,7 +91,7 @@ export const PhotoCard = memo(function PhotoCard({
                 alt=""
                 context="card"
                 fallback={getInitials(photo.profile?.name ?? "?")}
-                fallbackClassName="bg-white text-slate-600 text-[10px] font-bold"
+                fallbackClassName="bg-white text-foreground/80 text-[10px] font-bold"
               />
             </Avatar>
             <span className="text-[13px] text-white font-semibold drop-shadow-lg max-w-[120px] truncate">

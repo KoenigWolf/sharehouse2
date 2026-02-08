@@ -125,7 +125,7 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
           >
             <div className="premium-surface rounded-3xl p-6 sm:p-8 space-y-5">
               <div className="space-y-2">
-                <label className="block text-[10px] font-bold text-slate-400 tracking-wider uppercase ml-1">
+                <label className="block text-[10px] font-bold text-muted-foreground tracking-wider uppercase ml-1">
                   {t("share.titleLabel")}
                 </label>
                 <input
@@ -134,11 +134,11 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder={t("share.titlePlaceholder")}
                   maxLength={SHARE_ITEMS.maxTitleLength}
-                  className="w-full h-11 px-4 bg-white border border-slate-200 rounded-2xl text-slate-700 text-sm font-medium placeholder:text-slate-300 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
+                  className="w-full h-11 px-4 bg-white border border-border rounded-2xl text-foreground/90 text-sm font-medium placeholder:text-muted-foreground/70 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
                 />
               </div>
               <div className="space-y-2">
-                <label className="block text-[10px] font-bold text-slate-400 tracking-wider uppercase ml-1">
+                <label className="block text-[10px] font-bold text-muted-foreground tracking-wider uppercase ml-1">
                   {t("share.descriptionLabel")}
                 </label>
                 <textarea
@@ -147,14 +147,14 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                   placeholder={t("share.descriptionPlaceholder")}
                   maxLength={SHARE_ITEMS.maxDescriptionLength}
                   rows={2}
-                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-700 text-sm font-medium placeholder:text-slate-300 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300 resize-none"
+                  className="w-full px-4 py-3 bg-white border border-border rounded-2xl text-foreground/90 text-sm font-medium placeholder:text-muted-foreground/70 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300 resize-none"
                 />
               </div>
               <div className="flex justify-end gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => { setIsFormOpen(false); setTitle(""); setDescription(""); }}
-                  className="h-10 px-6 rounded-full text-[11px] font-bold text-slate-400 hover:text-slate-600 tracking-wider uppercase transition-all duration-300"
+                  className="h-10 px-6 rounded-full text-[11px] font-bold text-muted-foreground hover:text-foreground/80 tracking-wider uppercase transition-all duration-300"
                 >
                   {t("common.cancel")}
                 </button>
@@ -162,7 +162,7 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                   type="button"
                   onClick={handlePost}
                   disabled={!title.trim() || isSubmitting}
-                  className="h-10 px-8 rounded-full bg-brand-500 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
+                  className="h-10 px-8 rounded-full bg-brand-500 hover:bg-brand-700 disabled:bg-secondary disabled:text-muted-foreground text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
                 >
                   {isSubmitting ? t("share.posting") : t("share.post")}
                 </button>
@@ -174,7 +174,7 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
 
       {items.length === 0 ? (
         <div className="py-20 text-center">
-          <p className="text-sm text-slate-400 font-medium">{t("share.empty")}</p>
+          <p className="text-sm text-muted-foreground font-medium">{t("share.empty")}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -195,26 +195,26 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
               >
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2.5">
-                    <Avatar className="w-6 h-6 rounded-lg border border-slate-100 shadow-sm overflow-hidden">
+                    <Avatar className="w-6 h-6 rounded-lg border border-border shadow-sm overflow-hidden">
                       <OptimizedAvatarImage
                         src={item.profiles?.avatar_url}
                         alt={displayName}
                         context="card"
                         isBlurred={isTeaser}
                         fallback={
-                          <span className="text-[9px] font-bold text-slate-400">
+                          <span className="text-[9px] font-bold text-muted-foreground">
                             {getInitials(displayName)}
                           </span>
                         }
-                        fallbackClassName="bg-slate-50"
+                        fallbackClassName="bg-muted"
                       />
                     </Avatar>
                     <div className="flex flex-col">
-                      <span className="text-[11px] font-bold text-slate-900 tracking-tight leading-none mb-0.5">
+                      <span className="text-[11px] font-bold text-foreground tracking-tight leading-none mb-0.5">
                         {displayName}
                       </span>
                       {item.profiles?.room_number && (
-                        <span className="text-[9px] font-bold text-slate-400 tracking-wider">
+                        <span className="text-[9px] font-bold text-muted-foreground tracking-wider">
                           #{item.profiles.room_number}
                         </span>
                       )}
@@ -228,11 +228,11 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                 </div>
 
                 <div className="space-y-2 mb-6 flex-1">
-                  <h4 className={`text-base font-bold tracking-tight ${isTeaser ? "blur-[2.5px] select-none" : isClaimed ? "text-slate-400 line-through" : "text-slate-900"}`}>
+                  <h4 className={`text-base font-bold tracking-tight ${isTeaser ? "blur-[2.5px] select-none" : isClaimed ? "text-muted-foreground line-through" : "text-foreground"}`}>
                     {item.title}
                   </h4>
                   {item.description && (
-                    <p className={`text-sm font-medium leading-relaxed ${isTeaser ? "blur-[3px] select-none" : isClaimed ? "text-slate-300" : "text-slate-500"}`}>
+                    <p className={`text-sm font-medium leading-relaxed ${isTeaser ? "blur-[3px] select-none" : isClaimed ? "text-muted-foreground/70" : "text-muted-foreground"}`}>
                       {item.description}
                     </p>
                   )}
@@ -240,7 +240,7 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
 
                 <div className="flex items-center justify-between mt-auto">
                   {isClaimed ? (
-                    <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-full uppercase tracking-widest">
+                    <span className="text-[10px] font-bold text-muted-foreground bg-secondary px-3 py-1 rounded-full uppercase tracking-widest">
                       {t("share.claimed")}
                     </span>
                   ) : !isMine ? (
@@ -248,7 +248,7 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                       type="button"
                       onClick={() => !isTeaser && handleClaim(item.id)}
                       disabled={isSubmitting || isTeaser}
-                      className={`h-8 px-6 rounded-full bg-brand-500 hover:bg-brand-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[10px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100 ${isTeaser ? "opacity-50 cursor-not-allowed" : ""}`}
+                      className={`h-8 px-6 rounded-full bg-brand-500 hover:bg-brand-700 disabled:bg-secondary disabled:text-muted-foreground text-white text-[10px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100 ${isTeaser ? "opacity-50 cursor-not-allowed" : ""}`}
                     >
                       {t("share.claim")}
                     </button>
@@ -261,7 +261,7 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                       type="button"
                       onClick={() => handleDelete(item.id)}
                       disabled={isSubmitting}
-                      className="text-[10px] font-bold text-slate-300 hover:text-rose-500 uppercase tracking-widest transition-all p-2"
+                      className="text-[10px] font-bold text-muted-foreground/70 hover:text-rose-500 uppercase tracking-widest transition-all p-2"
                     >
                       {t("common.delete")}
                     </button>

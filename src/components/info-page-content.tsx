@@ -46,14 +46,14 @@ const QuickAccessCard = memo(function QuickAccessCard({
   }, [value, onCopy]);
 
   return (
-    <div className="premium-surface rounded-2xl p-5 flex items-center gap-4 transition-all hover:shadow-xl hover:-translate-y-0.5 border-slate-50">
-      <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center flex-shrink-0 text-slate-400 border border-slate-100 shadow-inner">
+    <div className="premium-surface rounded-2xl p-5 flex items-center gap-4 transition-all hover:shadow-xl hover:-translate-y-0.5 border-border/50">
+      <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center flex-shrink-0 text-muted-foreground border border-border shadow-inner">
         {icon}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-0.5">{label}</p>
-        <p className="text-[15px] text-slate-900 font-bold font-mono tracking-tight truncate">{value}</p>
-        {subtext && <p className="text-[10px] text-slate-400 mt-0.5 font-medium">{subtext}</p>}
+        <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground mb-0.5">{label}</p>
+        <p className="text-[15px] text-foreground font-bold font-mono tracking-tight truncate">{value}</p>
+        {subtext && <p className="text-[10px] text-muted-foreground mt-0.5 font-medium">{subtext}</p>}
       </div>
       {copyLabel && (
         <Button
@@ -61,7 +61,7 @@ const QuickAccessCard = memo(function QuickAccessCard({
           variant="secondary"
           size="sm"
           onClick={handleCopy}
-          className="flex-shrink-0 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-[11px] h-9"
+          className="flex-shrink-0 rounded-xl bg-secondary hover:bg-secondary text-foreground/80 font-bold text-[11px] h-9"
         >
           {copied ? "✓" : copyLabel}
         </Button>
@@ -80,8 +80,8 @@ interface SectionHeaderProps {
 const SectionHeader = memo(function SectionHeader({ icon, title }: SectionHeaderProps) {
   return (
     <div className="flex items-center gap-2 mb-4 mt-2">
-      <span className="text-slate-300">{icon}</span>
-      <h2 className="text-[11px] font-bold tracking-widest uppercase text-slate-400">{title}</h2>
+      <span className="text-muted-foreground/70">{icon}</span>
+      <h2 className="text-[11px] font-bold tracking-widest uppercase text-muted-foreground">{title}</h2>
     </div>
   );
 });
@@ -108,14 +108,14 @@ const WifiCard = memo(function WifiCard({ wifiInfos }: WifiCardProps) {
   if (wifiInfos.length === 0) return null;
 
   return (
-    <div className="premium-surface rounded-2xl overflow-hidden border-slate-50">
-      <div className="px-5 py-4 border-b border-slate-50 bg-slate-50/50">
+    <div className="premium-surface rounded-2xl overflow-hidden border-border/50">
+      <div className="px-5 py-4 border-b border-border/50 bg-muted/50">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold tracking-widest uppercase text-slate-400">
+            <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">
               {t("wifi.password")}
             </p>
-            <p className="text-lg font-bold text-slate-900 font-mono tracking-tight mt-0.5">
+            <p className="text-lg font-bold text-foreground font-mono tracking-tight mt-0.5">
               {showPassword ? password : "••••••••••••"}
             </p>
           </div>
@@ -125,7 +125,7 @@ const WifiCard = memo(function WifiCard({ wifiInfos }: WifiCardProps) {
               variant="ghost"
               size="icon-sm"
               onClick={() => setShowPassword(!showPassword)}
-              className="text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-xl w-10 h-10"
+              className="text-muted-foreground hover:text-foreground hover:bg-secondary rounded-xl w-10 h-10"
               aria-label={showPassword ? t("wifi.hidePassword") : t("wifi.showPassword")}
             >
               {showPassword ? <EyeOffIcon /> : <EyeIcon />}
@@ -135,7 +135,7 @@ const WifiCard = memo(function WifiCard({ wifiInfos }: WifiCardProps) {
               variant="secondary"
               size="sm"
               onClick={handleCopyPassword}
-              className="rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-[11px] h-10 px-4"
+              className="rounded-xl bg-secondary hover:bg-secondary text-foreground/80 font-bold text-[11px] h-10 px-4"
             >
               {copied ? "✓" : t("common.copy")}
             </Button>
@@ -143,19 +143,19 @@ const WifiCard = memo(function WifiCard({ wifiInfos }: WifiCardProps) {
         </div>
       </div>
 
-      <div className="divide-y divide-slate-50 bg-white">
+      <div className="divide-y divide-border/50 bg-white">
         {wifiInfos.map((wifi) => (
           <div key={wifi.id} className="px-5 py-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest w-16">{wifi.area_name}</span>
-              <span className="text-[15px] text-slate-900 font-mono font-bold tracking-tight">{wifi.ssid}</span>
+              <span className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-widest w-16">{wifi.area_name}</span>
+              <span className="text-[15px] text-foreground font-mono font-bold tracking-tight">{wifi.ssid}</span>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="px-5 py-3 bg-slate-50/30 border-t border-slate-50">
-        <p className="text-[11px] text-slate-400 font-medium italic italic">
+      <div className="px-5 py-3 bg-muted/30 border-t border-border/50">
+        <p className="text-[11px] text-muted-foreground font-medium italic italic">
           {t("info.wifiNote")}
         </p>
       </div>
@@ -257,10 +257,10 @@ export function InfoPageContent({
   return (
     <div className="space-y-8">
       <div className="mb-2">
-        <h1 className="text-2xl font-light text-slate-900 tracking-wide">
+        <h1 className="text-2xl font-light text-foreground tracking-wide">
           {t("info.title")}
         </h1>
-        <p className="text-sm text-slate-500 mt-1.5 font-medium">
+        <p className="text-sm text-muted-foreground mt-1.5 font-medium">
           {t("info.subtitle")}
         </p>
       </div>
@@ -322,26 +322,26 @@ export function InfoPageContent({
           <SectionHeader icon={<BuildingIcon />} title={t("info.tabBuilding")} />
           <div className="space-y-4">
             {addressInfo && (
-              <div className="premium-surface rounded-2xl p-5 border-slate-50">
-                <p className="text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-2">
+              <div className="premium-surface rounded-2xl p-5 border-border/50">
+                <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground mb-2">
                   {addressInfo.title}
                 </p>
-                <p className="text-[15px] font-bold text-slate-900 leading-snug">{addressInfo.content}</p>
+                <p className="text-[15px] font-bold text-foreground leading-snug">{addressInfo.content}</p>
                 {addressInfo.notes && (
-                  <p className="text-xs text-slate-500 mt-2 font-medium italic">{addressInfo.notes}</p>
+                  <p className="text-xs text-muted-foreground mt-2 font-medium italic">{addressInfo.notes}</p>
                 )}
               </div>
             )}
             {sharedInfos
               .filter((info) => info.info_key !== "mailbox_code" && info.info_key !== "address")
               .map((info) => (
-                <div key={info.id} className="premium-surface rounded-2xl p-5 border-slate-50">
-                  <p className="text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-2">
+                <div key={info.id} className="premium-surface rounded-2xl p-5 border-border/50">
+                  <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground mb-2">
                     {info.title}
                   </p>
-                  <p className="text-[15px] font-bold text-slate-900 leading-snug">{info.content}</p>
+                  <p className="text-[15px] font-bold text-foreground leading-snug">{info.content}</p>
                   {info.notes && (
-                    <p className="text-xs text-slate-500 mt-2 font-medium italic">{info.notes}</p>
+                    <p className="text-xs text-muted-foreground mt-2 font-medium italic">{info.notes}</p>
                   )}
                 </div>
               ))}

@@ -97,9 +97,9 @@ function isMockProfile(profileId: string): boolean {
 }
 
 function getCardBorderClass(isCurrentUser: boolean, isMock: boolean): string {
-  if (isCurrentUser) return "border-slate-900";
-  if (isMock) return "border-dashed border-slate-300 hover:border-slate-400";
-  return "border-slate-200 hover:border-slate-900";
+  if (isCurrentUser) return "border-primary";
+  if (isMock) return "border-dashed border-border hover:border-primary/50";
+  return "border-border hover:border-primary";
 }
 
 function Badge({
@@ -112,15 +112,15 @@ function Badge({
   className?: string;
 }) {
   const variantStyles: Record<BadgeVariant, string> = {
-    default: "bg-slate-100 text-slate-400",
-    dark: "bg-slate-900 text-white",
+    default: "bg-secondary text-muted-foreground",
+    dark: "bg-primary text-primary-foreground",
     success: "bg-success-bg text-success border border-success-border",
-    muted: "bg-white/90 backdrop-blur-sm text-slate-500",
+    muted: "bg-card/90 backdrop-blur-sm text-muted-foreground",
   };
 
   return (
     <span
-      className={`text-[10px] sm:text-[11px] px-2 py-0.5 rounded tracking-wide ${variantStyles[variant]} ${className}`}
+      className={`text-[10px] sm:text-[11px] px-2.5 py-1 rounded-full tracking-wide font-medium ${variantStyles[variant]} ${className}`}
     >
       {children}
     </span>
@@ -213,7 +213,7 @@ function InterestTagList({
       {interests.map((interest, index) => (
         <li
           key={`${interest}-${index}`}
-          className="text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded bg-slate-100 text-slate-500"
+          className="text-[10px] sm:text-[11px] px-2 sm:px-2.5 py-0.5 rounded-full bg-secondary text-muted-foreground"
         >
           {interest}
         </li>
@@ -302,18 +302,18 @@ export const ResidentCard = memo(function ResidentCard({
       prefetch={false}
     >
       <article
-        className={`h-full premium-surface rounded-xl transition-all duration-300 relative overflow-hidden group-hover:-translate-y-1 hover:shadow-xl flex flex-col ${borderClass}`}
+        className={`h-full bg-card border rounded-2xl transition-all duration-300 relative overflow-hidden group-hover:-translate-y-0.5 group-hover:shadow-lg flex flex-col shadow-sm ${borderClass}`}
         style={floorAccentStyle}
       >
-        <div className="aspect-square bg-slate-50 relative overflow-hidden">
+        <div className="aspect-square bg-muted relative overflow-hidden">
           <Avatar className="w-full h-full rounded-none">
             <OptimizedAvatarImage
               src={profile.avatar_url}
               alt={t("a11y.profilePhotoAlt", { name: profile.name })}
               context="card"
-              className="w-full h-full group-hover:scale-110 transition-transform duration-700 ease-out"
+              className="w-full h-full group-hover:scale-105 transition-transform duration-500 ease-out"
               fallback={getInitials(profile.name)}
-              fallbackClassName="bg-slate-50 text-slate-300 text-3xl sm:text-4xl font-semibold rounded-none w-full h-full flex items-center justify-center"
+              fallbackClassName="bg-muted text-muted-foreground/40 text-3xl sm:text-4xl font-semibold rounded-none w-full h-full flex items-center justify-center"
               fallbackAriaLabel={t("a11y.profileInitials", { name: profile.name })}
             />
           </Avatar>
@@ -353,11 +353,11 @@ export const ResidentCard = memo(function ResidentCard({
               <m.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white/90 backdrop-blur-md rounded-xl p-2.5 shadow-sm border border-white/50"
+                className="bg-card/95 backdrop-blur-md rounded-2xl p-3 shadow-md border border-border/30"
               >
                 <div className="relative">
-                  <div className="absolute -top-4 left-2 w-0 h-0 border-8 border-transparent border-b-white/90" />
-                  <p className="text-[10px] sm:text-[11px] font-medium text-slate-800 line-clamp-2 leading-snug">
+                  <div className="absolute -top-5 left-3 w-0 h-0 border-8 border-transparent border-b-card/95" />
+                  <p className="text-[10px] sm:text-[11px] font-medium text-foreground line-clamp-2 leading-snug">
                     {profile.vibe.message}
                   </p>
                 </div>
@@ -371,7 +371,7 @@ export const ResidentCard = memo(function ResidentCard({
                 variants={ANIMATION_VARIANTS}
                 initial="hidden"
                 whileHover="visible"
-                className="absolute inset-0 bg-brand-900/60 backdrop-blur-[3px] hidden sm:flex flex-col justify-center items-center p-6 opacity-0 hover:opacity-100 transition-opacity duration-300 z-20"
+                className="absolute inset-0 bg-primary/70 backdrop-blur-[3px] hidden sm:flex flex-col justify-center items-center p-6 opacity-0 hover:opacity-100 transition-opacity duration-300 z-20"
               >
                 <div className="space-y-4 w-full">
                   {residenceDuration && (
@@ -407,20 +407,20 @@ export const ResidentCard = memo(function ResidentCard({
           </AnimatePresence>
         </div>
 
-        <div className={`p-4 sm:p-5 ${CARD_HEIGHTS.mobile} ${CARD_HEIGHTS.desktop} flex-1 flex flex-col overflow-hidden bg-white`}>
+        <div className={`p-4 sm:p-5 ${CARD_HEIGHTS.mobile} ${CARD_HEIGHTS.desktop} flex-1 flex flex-col overflow-hidden bg-card`}>
           <div className="flex items-center justify-between gap-2 shrink-0">
-            <h3 className="text-base sm:text-lg text-slate-900 tracking-tight truncate font-semibold">
+            <h3 className="text-base sm:text-lg text-foreground tracking-tight truncate font-semibold">
               {displayName}
             </h3>
             {profile.room_number && (
-              <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium bg-slate-100 px-2 py-0.5 rounded-full">
+              <span className="text-[10px] sm:text-[11px] text-muted-foreground font-medium bg-secondary px-2.5 py-0.5 rounded-full">
                 {profile.room_number}
               </span>
             )}
           </div>
 
           {occupationLabel && !isMock && (
-            <p className="text-xs text-slate-400 mt-1 truncate shrink-0">
+            <p className="text-xs text-muted-foreground mt-1 truncate shrink-0">
               {occupationLabel}
             </p>
           )}

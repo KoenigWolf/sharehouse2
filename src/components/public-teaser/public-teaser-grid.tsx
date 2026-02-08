@@ -16,7 +16,7 @@ export function PublicTeaserGrid({ profiles }: PublicTeaserGridProps) {
   if (profiles.length === 0) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <p className="text-slate-500 text-sm">{t("residents.noResidents")}</p>
+        <p className="text-muted-foreground text-sm">{t("residents.noResidents")}</p>
       </div>
     );
   }
@@ -24,10 +24,10 @@ export function PublicTeaserGrid({ profiles }: PublicTeaserGridProps) {
   return (
     <div className="space-y-8 sm:space-y-12">
       <div>
-        <h2 className="text-lg sm:text-xl text-slate-900 tracking-wide font-light">
+        <h2 className="text-lg sm:text-xl text-foreground tracking-wide font-light">
           {t("residents.title")}
         </h2>
-        <p className="text-[11px] sm:text-xs text-slate-400 mt-1">
+        <p className="text-[11px] sm:text-xs text-muted-foreground mt-1">
           {t("residents.countLabel", { count: profiles.length })}
         </p>
       </div>
