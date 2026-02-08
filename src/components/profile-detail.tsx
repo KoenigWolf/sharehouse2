@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { RoomPhotoManager } from "@/components/room-photo-manager";
 import {
   Profile,
-  MBTI_LABELS,
   AGE_RANGES,
   GENDERS,
   OCCUPATIONS,
@@ -28,7 +27,6 @@ import {
   COOKING_FREQUENCIES,
   SHARED_MEAL_OPTIONS,
   LANGUAGES,
-  MBTI_GROUPS,
   getMBTIGroup,
 } from "@/domain/profile";
 import { MBTI_COLORS } from "@/lib/constants/mbti";
@@ -40,15 +38,14 @@ import { uploadCoverPhoto } from "@/lib/profile/cover-photo-actions";
 import { prepareImageForUpload } from "@/lib/utils/image-compression";
 import { FILE_UPLOAD } from "@/lib/constants/config";
 import type { Translator } from "@/lib/i18n";
-import { useI18n, useLocale } from "@/hooks/use-i18n";
+import { useI18n } from "@/hooks/use-i18n";
 import { logError } from "@/lib/errors";
 
 function MBTIBadge({ mbti, className = "" }: { mbti: string; className?: string }) {
-  const locale = useLocale();
+  const t = useI18n();
   const group = getMBTIGroup(mbti);
   const colors = MBTI_COLORS[group];
-  const labelEntry = MBTI_LABELS[mbti as keyof typeof MBTI_LABELS];
-  const label = labelEntry ? labelEntry[locale === "ja" ? "ja" : "en"] : mbti;
+  const label = t(`mbtiTypes.${mbti}.label` as Parameters<typeof t>[0]);
 
   return (
     <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all hover:shadow-sm ${colors.bg} ${colors.text} ${colors.border} ${className}`}>
@@ -62,6 +59,43 @@ function MBTIBadge({ mbti, className = "" }: { mbti: string; className?: string 
         </span>
       </div>
     </span>
+  );
+}
+
+function MBTIDetail({ mbti }: { mbti: string }) {
+  const t = useI18n();
+  const group = getMBTIGroup(mbti);
+  const colors = MBTI_COLORS[group];
+  const label = t(`mbtiTypes.${mbti}.label` as Parameters<typeof t>[0]);
+  const summary = t(`mbtiTypes.${mbti}.summary` as Parameters<typeof t>[0]);
+  const traitsStr = t(`mbtiTypes.${mbti}.traits` as Parameters<typeof t>[0]);
+  const traits = traitsStr.split(", ");
+
+  return (
+    <div className={`p-4 rounded-xl border ${colors.bg} ${colors.border}`}>
+      <div className="flex items-center gap-2 mb-3">
+        <svg className={`w-4 h-4 ${colors.icon}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
+        </svg>
+        <span className={`font-bold text-[15px] ${colors.text}`}>{mbti}</span>
+        <span className={`text-sm opacity-70 ${colors.text}`}>{label}</span>
+      </div>
+
+      <p className={`text-sm leading-relaxed mb-3 ${colors.text} opacity-90`}>
+        {summary}
+      </p>
+
+      <div className="flex flex-wrap gap-2">
+        {traits.map((trait) => (
+          <span
+            key={trait}
+            className={`text-xs px-2.5 py-1 rounded-full ${colors.bg} ${colors.text} border ${colors.border} font-medium`}
+          >
+            {trait}
+          </span>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -233,7 +267,6 @@ export function ProfileDetail({
 }: ProfileDetailProps) {
   const isMockProfile = profile.id.startsWith("mock-");
   const t = useI18n();
-  const locale = useLocale();
   const router = useRouter();
   const coverInputRef = useRef<HTMLInputElement>(null);
   const [isUploadingCover, setIsUploadingCover] = useState(false);
@@ -315,7 +348,7 @@ export function ProfileDetail({
     {
       label: t("profile.personalityType"),
       value: profile.personality_type,
-      node: profile.mbti ? <MBTIBadge mbti={profile.mbti} className="mt-2" /> : null
+      node: profile.mbti ? <MBTIDetail mbti={profile.mbti} /> : null
     },
     { label: t("profile.weekendActivities"), value: profile.weekend_activities },
   ].filter((f) => f.value || f.node);
