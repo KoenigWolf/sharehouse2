@@ -7,11 +7,13 @@ import {
   useState,
   useCallback,
   useMemo,
+  useRef,
   useSyncExternalStore,
   useTransition,
   type ReactNode,
 } from "react";
 import { updateThemePreferences } from "@/lib/theme/actions";
+import { logError } from "@/lib/errors";
 
 export type ThemeStyle = "modern" | "cottage";
 export type ColorMode = "light" | "dark" | "system";
@@ -29,6 +31,17 @@ const THEME_STORAGE_KEY = "sharehouse-theme";
 const COLOR_MODE_STORAGE_KEY = "sharehouse-color-mode";
 const DEFAULT_THEME: ThemeStyle = "cottage";
 const DEFAULT_COLOR_MODE: ColorMode = "light";
+
+const VALID_THEMES: readonly ThemeStyle[] = ["modern", "cottage"];
+const VALID_COLOR_MODES: readonly ColorMode[] = ["light", "dark", "system"];
+
+function isValidThemeStyle(value: unknown): value is ThemeStyle {
+  return typeof value === "string" && VALID_THEMES.includes(value as ThemeStyle);
+}
+
+function isValidColorMode(value: unknown): value is ColorMode {
+  return typeof value === "string" && VALID_COLOR_MODES.includes(value as ColorMode);
+}
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
@@ -58,19 +71,19 @@ function safeSetItem(key: string, value: string): void {
   try {
     localStorage.setItem(key, value);
   } catch {
-    // Ignore storage errors (e.g., private browsing)
+    // Private browsing mode may block localStorage
   }
 }
 
 function getStoredTheme(): ThemeStyle {
   const stored = safeGetItem(THEME_STORAGE_KEY);
-  if (stored === "modern" || stored === "cottage") return stored;
+  if (isValidThemeStyle(stored)) return stored;
   return DEFAULT_THEME;
 }
 
 function getStoredColorMode(): ColorMode {
   const stored = safeGetItem(COLOR_MODE_STORAGE_KEY);
-  if (stored === "light" || stored === "dark" || stored === "system") return stored;
+  if (isValidColorMode(stored)) return stored;
   return DEFAULT_COLOR_MODE;
 }
 
@@ -89,18 +102,30 @@ export function ThemeProvider({
 }: ThemeProviderProps) {
   const [isPending, startTransition] = useTransition();
 
-  // Use server initial values if available, otherwise fall back to localStorage
+  // Server values take priority to preserve user settings across devices and prevent hydration flicker
   const [theme, setThemeState] = useState<ThemeStyle>(() => {
-    if (initialTheme) return initialTheme;
+    if (initialTheme && isValidThemeStyle(initialTheme)) return initialTheme;
     if (typeof window === "undefined") return DEFAULT_THEME;
     return getStoredTheme();
   });
 
   const [colorMode, setColorModeState] = useState<ColorMode>(() => {
-    if (initialColorMode) return initialColorMode;
+    if (initialColorMode && isValidColorMode(initialColorMode)) return initialColorMode;
     if (typeof window === "undefined") return DEFAULT_COLOR_MODE;
     return getStoredColorMode();
   });
+
+  // Refs to access current state values in callbacks without re-creating them
+  const themeRef = useRef(theme);
+  const colorModeRef = useRef(colorMode);
+
+  useEffect(() => {
+    themeRef.current = theme;
+  }, [theme]);
+
+  useEffect(() => {
+    colorModeRef.current = colorMode;
+  }, [colorMode]);
 
   const systemPreference = useSyncExternalStore(
     subscribeToSystemPreference,
@@ -113,7 +138,7 @@ export function ThemeProvider({
     return colorMode;
   }, [colorMode, systemPreference]);
 
-  // Apply theme to document
+  // Mutate document classes to ensure CSS renders correctly and matches server-side rendering
   useEffect(() => {
     const root = document.documentElement;
 
@@ -133,11 +158,13 @@ export function ThemeProvider({
     setThemeState(newTheme);
     safeSetItem(THEME_STORAGE_KEY, newTheme);
 
-    // Save to server if logged in
+    // Defer server save to avoid blocking UI; uses startTransition for non-urgent update batching
     if (isLoggedIn) {
-      startTransition(() => {
-        const currentColorMode = safeGetItem(COLOR_MODE_STORAGE_KEY) as ColorMode ?? DEFAULT_COLOR_MODE;
-        updateThemePreferences(newTheme, currentColorMode);
+      startTransition(async () => {
+        const result = await updateThemePreferences(newTheme, colorModeRef.current);
+        if ("error" in result) {
+          logError(new Error(result.error), { action: "setTheme", metadata: { theme: newTheme } });
+        }
       });
     }
   }, [isLoggedIn]);
@@ -146,11 +173,13 @@ export function ThemeProvider({
     setColorModeState(mode);
     safeSetItem(COLOR_MODE_STORAGE_KEY, mode);
 
-    // Save to server if logged in
+    // Defer server save to avoid blocking UI; uses startTransition for non-urgent update batching
     if (isLoggedIn) {
-      startTransition(() => {
-        const currentTheme = safeGetItem(THEME_STORAGE_KEY) as ThemeStyle ?? DEFAULT_THEME;
-        updateThemePreferences(currentTheme, mode);
+      startTransition(async () => {
+        const result = await updateThemePreferences(themeRef.current, mode);
+        if ("error" in result) {
+          logError(new Error(result.error), { action: "setColorMode", metadata: { colorMode: mode } });
+        }
       });
     }
   }, [isLoggedIn]);
@@ -180,8 +209,8 @@ export function useTheme(): ThemeContextValue {
 }
 
 /**
- * Script to prevent flash of unstyled content.
- * Inject this in the <head> before any content.
+ * Inline script prevents flash of unstyled content (FOUC).
+ * Runs before React hydration to apply correct theme classes immediately.
  */
 export function ThemeScript({
   initialTheme,
@@ -190,16 +219,30 @@ export function ThemeScript({
   initialTheme?: ThemeStyle | null;
   initialColorMode?: ColorMode | null;
 } = {}) {
-  const themeDefault = initialTheme ?? DEFAULT_THEME;
-  const colorModeDefault = initialColorMode ?? DEFAULT_COLOR_MODE;
+  // Validate and sanitize inputs to prevent XSS from potentially poisoned DB values
+  const safeTheme = isValidThemeStyle(initialTheme) ? initialTheme : null;
+  const safeColorMode = isValidColorMode(initialColorMode) ? initialColorMode : null;
 
+  const themeDefault = safeTheme ?? DEFAULT_THEME;
+  const colorModeDefault = safeColorMode ?? DEFAULT_COLOR_MODE;
+
+  // Use JSON.stringify for safe embedding in script context
   const script = `
     (function() {
       try {
-        var serverTheme = ${initialTheme ? `'${initialTheme}'` : 'null'};
-        var serverColorMode = ${initialColorMode ? `'${initialColorMode}'` : 'null'};
-        var theme = serverTheme || localStorage.getItem('${THEME_STORAGE_KEY}') || '${themeDefault}';
-        var colorMode = serverColorMode || localStorage.getItem('${COLOR_MODE_STORAGE_KEY}') || '${colorModeDefault}';
+        var serverTheme = ${JSON.stringify(safeTheme)};
+        var serverColorMode = ${JSON.stringify(safeColorMode)};
+        var THEME_KEY = ${JSON.stringify(THEME_STORAGE_KEY)};
+        var COLOR_KEY = ${JSON.stringify(COLOR_MODE_STORAGE_KEY)};
+        var VALID_THEMES = ${JSON.stringify(VALID_THEMES)};
+        var VALID_MODES = ${JSON.stringify(VALID_COLOR_MODES)};
+
+        var storedTheme = localStorage.getItem(THEME_KEY);
+        var storedMode = localStorage.getItem(COLOR_KEY);
+
+        var theme = serverTheme || (VALID_THEMES.indexOf(storedTheme) >= 0 ? storedTheme : ${JSON.stringify(themeDefault)});
+        var colorMode = serverColorMode || (VALID_MODES.indexOf(storedMode) >= 0 ? storedMode : ${JSON.stringify(colorModeDefault)});
+
         var resolved = colorMode;
         if (colorMode === 'system') {
           resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -209,9 +252,8 @@ export function ThemeScript({
         if (resolved === 'dark') {
           document.documentElement.classList.add('dark');
         }
-        // Sync server values to localStorage for consistency
-        if (serverTheme) localStorage.setItem('${THEME_STORAGE_KEY}', serverTheme);
-        if (serverColorMode) localStorage.setItem('${COLOR_MODE_STORAGE_KEY}', serverColorMode);
+        if (serverTheme) localStorage.setItem(THEME_KEY, serverTheme);
+        if (serverColorMode) localStorage.setItem(COLOR_KEY, serverColorMode);
       } catch (e) {}
     })();
   `.trim();

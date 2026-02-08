@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { logError } from "@/lib/errors";
 import { getServerTranslator } from "@/lib/i18n/server";
 import { enforceAllowedOrigin } from "@/lib/security/request";
+import { checkRateLimitAsync } from "@/lib/security/rate-limit";
 
 export type ThemeStyle = "modern" | "cottage";
 export type ColorMode = "light" | "dark" | "system";
@@ -15,17 +16,14 @@ interface ThemePreferences {
   color_mode: ColorMode | null;
 }
 
-function isValidThemeStyle(value: string): value is ThemeStyle {
+function isValidThemeStyle(value: unknown): value is ThemeStyle {
   return value === "modern" || value === "cottage";
 }
 
-function isValidColorMode(value: string): value is ColorMode {
+function isValidColorMode(value: unknown): value is ColorMode {
   return value === "light" || value === "dark" || value === "system";
 }
 
-/**
- * ユーザーのテーマ設定を取得する
- */
 export async function getThemePreferences(): Promise<ThemePreferences | null> {
   try {
     const supabase = await createClient();
@@ -48,9 +46,10 @@ export async function getThemePreferences(): Promise<ThemePreferences | null> {
       return null;
     }
 
+    // Validate DB values before returning to prevent invalid data from propagating
     return {
-      theme_style: data?.theme_style as ThemeStyle | null,
-      color_mode: data?.color_mode as ColorMode | null,
+      theme_style: isValidThemeStyle(data?.theme_style) ? data.theme_style : null,
+      color_mode: isValidColorMode(data?.color_mode) ? data.color_mode : null,
     };
   } catch (error) {
     logError(error, { action: "getThemePreferences" });
@@ -58,9 +57,6 @@ export async function getThemePreferences(): Promise<ThemePreferences | null> {
   }
 }
 
-/**
- * ユーザーのテーマ設定を更新する
- */
 export async function updateThemePreferences(
   themeStyle: ThemeStyle,
   colorMode: ColorMode
@@ -84,6 +80,21 @@ export async function updateThemePreferences(
 
     if (!user) {
       return { error: t("errors.unauthorized") };
+    }
+
+    // Rate limit to prevent abuse
+    const rateLimitResult = await checkRateLimitAsync(
+      `updateThemePreferences:${user.id}`,
+      { limit: 30, windowMs: 60_000 }
+    );
+
+    if (!rateLimitResult.success) {
+      logError(new Error("Rate limit exceeded"), {
+        action: "updateThemePreferences",
+        userId: user.id,
+        metadata: { remaining: rateLimitResult.remaining },
+      });
+      return { error: t("errors.rateLimitSeconds", { seconds: rateLimitResult.retryAfter }) };
     }
 
     const { error } = await supabase

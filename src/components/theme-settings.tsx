@@ -1,7 +1,7 @@
 "use client";
 
 import { memo } from "react";
-import { m } from "framer-motion";
+import { m, motion } from "framer-motion";
 import { useTheme, type ThemeStyle, type ColorMode } from "@/hooks/use-theme";
 import { useI18n } from "@/hooks/use-i18n";
 
@@ -36,7 +36,7 @@ const ThemeOption = memo(function ThemeOption({
       }`}
     >
       {isSelected && (
-        <m.div
+        <motion.div
           layoutId="theme-check"
           className="absolute top-3 right-3 w-5 h-5 rounded-full bg-primary flex items-center justify-center"
         >
@@ -49,7 +49,7 @@ const ThemeOption = memo(function ThemeOption({
           >
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
-        </m.div>
+        </motion.div>
       )}
 
       {/* Color preview */}

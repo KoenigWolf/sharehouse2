@@ -1,7 +1,7 @@
 "use client";
 
 import { memo, useCallback, useState, useTransition } from "react";
-import { m } from "framer-motion";
+import { m, motion } from "framer-motion";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
 import type { Locale } from "@/lib/i18n";
 
@@ -66,7 +66,7 @@ export const LanguageSettings = memo(function LanguageSettings() {
             }`}
           >
             {selectedLocale === lang.value && (
-              <m.div
+              <motion.div
                 layoutId="language-check"
                 className="absolute top-3 right-3 w-5 h-5 rounded-full bg-primary flex items-center justify-center"
               >
@@ -79,7 +79,7 @@ export const LanguageSettings = memo(function LanguageSettings() {
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
-              </m.div>
+              </motion.div>
             )}
 
             <h4 className="text-sm font-bold text-foreground mb-1">{lang.nativeLabel}</h4>
