@@ -16,7 +16,7 @@ export async function getShareItems(): Promise<ShareItemWithProfile[]> {
     const supabase = await createClient();
     const { data, error } = await supabase
       .from("share_items")
-      .select("*, profiles(name, nickname, avatar_url, room_number)")
+      .select("*, profiles!share_items_user_id_profiles_fk(name, nickname, avatar_url, room_number)")
       .gte("expires_at", new Date().toISOString())
       .order("created_at", { ascending: false });
 

@@ -18,7 +18,7 @@ export async function getUpcomingEvents(): Promise<EventWithDetails[]> {
 
     const { data, error } = await supabase
       .from("events")
-      .select("*, profiles(name, nickname, avatar_url), event_attendees(user_id)")
+      .select("*, profiles!events_user_id_profiles_fk(name, nickname, avatar_url), event_attendees(user_id)")
       .gte("event_date", today)
       .order("event_date", { ascending: true });
 
