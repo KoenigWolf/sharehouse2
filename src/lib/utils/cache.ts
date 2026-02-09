@@ -95,6 +95,7 @@ export const CacheStrategy = {
    */
   afterShareUpdate: () => {
     revalidatePath("/");
+    revalidatePath("/share");
   },
 
   /**
@@ -102,6 +103,7 @@ export const CacheStrategy = {
    */
   afterEventUpdate: () => {
     revalidatePath("/");
+    revalidatePath("/events");
   },
 
   /**
