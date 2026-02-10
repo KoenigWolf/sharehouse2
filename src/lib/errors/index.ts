@@ -167,6 +167,13 @@ async function sendToSentry(
  * Sentry DSNが設定されている場合はSentryにもエラーを送信する。
  * 設定されていない場合はコンソールログのみ出力する。
  */
+
+/**
+ * Log error with context (for server-side use)
+ *
+ * Sentry DSNが設定されている場合はSentryにもエラーを送信する。
+ * 設定されていない場合はコンソールログのみ出力する。
+ */
 export function logError(
   error: unknown,
   context?: {
@@ -199,6 +206,36 @@ export function logError(
   console.error("[AppError]", JSON.stringify(errorInfo, null, 2));
 
   sendToSentry(error, errorData, context).catch(() => {
+    // Sentry not available, skip silently
+  });
+}
+
+/**
+ * Log warning with context (for server-side use)
+ *
+ * Sentry DSNが設定されている場合はSentryにも警告を送信する。
+ * 設定されていない場合はコンソールログのみ出力する。
+ */
+export function logWarning(
+  message: string,
+  context?: {
+    action?: string;
+    userId?: string;
+    metadata?: Record<string, unknown>;
+  }
+): void {
+  const timestamp = new Date().toISOString();
+
+  const warningInfo = {
+    timestamp,
+    level: "warning",
+    message,
+    ...context,
+  };
+
+  console.warn("[AppWarning]", JSON.stringify(warningInfo, null, 2));
+
+  sendToSentry(message, { message }, context).catch(() => {
     // Sentry not available, skip silently
   });
 }

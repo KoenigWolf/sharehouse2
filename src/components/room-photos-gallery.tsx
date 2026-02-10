@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback } from "react";
+import { memo, useCallback, useEffect } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { Camera } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -9,8 +9,10 @@ import { useUser } from "@/hooks/use-user";
 import { useBulkUpload } from "@/hooks/use-bulk-upload";
 import { usePhotoGallery } from "@/hooks/use-photo-gallery";
 import { useLightbox } from "@/hooks/use-lightbox";
+import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 import { BulkUploadProgress } from "@/components/bulk-upload-progress";
 import { PhotoCard, UploadCard } from "@/components/gallery";
+import { Spinner } from "@/components/ui/spinner";
 import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
 import type { PhotoWithProfile } from "@/domain/room-photo";
 
@@ -79,11 +81,10 @@ const FeedbackMessage = memo(function FeedbackMessage({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-      className={`mb-5 py-3 px-4 rounded-lg ${
-        isError
-          ? "bg-error-bg/50 border-l-2 border-error-border"
-          : "bg-success-bg/50 border-l-2 border-success-border"
-      }`}
+      className={`mb-5 py-3 px-4 rounded-lg ${isError
+        ? "bg-error-bg/50 border-l-2 border-error-border"
+        : "bg-success-bg/50 border-l-2 border-success-border"
+        }`}
     >
       <p className={`text-sm ${isError ? "text-error" : "text-success"}`}>
         {message}
@@ -94,32 +95,8 @@ const FeedbackMessage = memo(function FeedbackMessage({
 
 FeedbackMessage.displayName = "FeedbackMessage";
 
-interface ShowMoreButtonProps {
-  onClick: () => void;
-  remainingCount: number;
-}
-
-const ShowMoreButton = memo(function ShowMoreButton({
-  onClick,
-  remainingCount,
-}: ShowMoreButtonProps) {
-  const t = useI18n();
-
-  return (
-    <div className="flex justify-center mt-8">
-      <button
-        type="button"
-        onClick={onClick}
-        className="h-11 px-8 rounded-full border border-border text-sm font-medium text-foreground/80 hover:text-foreground hover:border-border hover:bg-muted transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
-        aria-label={t("roomPhotos.showMore", { count: remainingCount })}
-      >
-        {t("roomPhotos.showMore", { count: remainingCount })}
-      </button>
-    </div>
-  );
-});
-
-ShowMoreButton.displayName = "ShowMoreButton";
+// ShowMoreButton removed as we use Infinite Scroll now (kept implicit or removed entirely?)
+// I'll remove it since I replaced usages.
 
 interface GalleryFooterProps {
   maxBulkUpload: number;
@@ -154,8 +131,8 @@ GalleryFooter.displayName = "GalleryFooter";
  * Room photos gallery component
  *
  * Features:
- * - Instagram-style 3-column grid layout
- * - Lazy loading for performance
+ * - Masonry layout
+ * - Infinite Scroll
  * - Lightbox for fullscreen viewing
  * - Bulk photo upload with progress
  * - Delete and caption editing
@@ -171,13 +148,25 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
     visiblePhotos,
     hasPhotos,
     hasMore,
-    remainingCount,
     maxBulkUpload,
     showMore,
     actionHandlers,
+    addPhotos,
   } = usePhotoGallery({
     initialPhotos,
   });
+
+  // Infinite Scroll
+  const [loadMoreRef, isIntersecting] = useIntersectionObserver({
+    threshold: 0.1,
+    rootMargin: "100px",
+  });
+
+  useEffect(() => {
+    if (isIntersecting && hasMore) {
+      showMore();
+    }
+  }, [isIntersecting, hasMore, showMore]);
 
   // Lightbox state management
   const lightbox = useLightbox({ photos });
@@ -195,9 +184,16 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
   // Handlers
   const handleSelectFiles = useCallback(
     (files: File[]) => {
-      startUpload(files);
+      startUpload(files, (newPhotos) => {
+        // Optimistic update: convert RoomPhoto[] to PhotoWithProfile[]
+        const photosWithProfile: PhotoWithProfile[] = newPhotos.map((photo) => ({
+          ...photo,
+          profile: null,
+        }));
+        addPhotos(photosWithProfile);
+      });
     },
-    [startUpload]
+    [startUpload, addPhotos]
   );
 
   const handlePhotoClick = useCallback(
@@ -242,33 +238,46 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
         </AnimatePresence>
 
         <div
-          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-[2px] sm:gap-1 bg-secondary/50 rounded-sm overflow-hidden"
+          className="columns-2 md:columns-3 lg:columns-4 gap-2 md:gap-4 space-y-2 md:space-y-4 mx-auto"
           role="list"
           aria-label={t("roomPhotos.gallery")}
         >
           {canUpload && (
-            <UploadCard
-              onSelectFiles={handleSelectFiles}
-              isUploading={isUploading}
-            />
+            <div className="break-inside-avoid mb-2 md:mb-4">
+              <UploadCard
+                onSelectFiles={handleSelectFiles}
+                isUploading={isUploading}
+              />
+            </div>
           )}
           {visiblePhotos.map((photo, index) => (
-            <PhotoCard
-              key={photo.id}
-              photo={photo}
-              index={index}
-              onClick={() => handlePhotoClick(index)}
-            />
+            <div key={photo.id} className="break-inside-avoid mb-2 md:mb-4">
+              <PhotoCard
+                photo={photo}
+                index={index}
+                onClick={() => handlePhotoClick(index)}
+              />
+            </div>
           ))}
         </div>
 
+        {isUploading && (
+          <div className="flex justify-center py-8">
+            <Spinner />
+          </div>
+        )}
+
+        <div ref={loadMoreRef} className="h-4 w-full" />
+
         {hasMore && (
-          <ShowMoreButton onClick={showMore} remainingCount={remainingCount} />
+          <div className="flex justify-center py-8">
+            <Spinner className="text-brand-500/50" />
+          </div>
         )}
 
         <GalleryFooter maxBulkUpload={maxBulkUpload} />
 
-        {!hasPhotos && (
+        {!hasPhotos && !hasMore && (
           <p className="text-sm text-muted-foreground mt-6 text-center py-12">
             {t("roomPhotos.noPhotosHint")}
           </p>

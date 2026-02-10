@@ -377,6 +377,11 @@ export async function registerBulkPhotos(
 
     if (!user) return { error: t("errors.unauthorized") };
 
+    const uploadRateLimit = RateLimiters.upload(user.id);
+    if (!uploadRateLimit.success) {
+      return { error: formatRateLimitError(uploadRateLimit.retryAfter, t) };
+    }
+
     if (
       !Array.isArray(items) ||
       items.length === 0 ||

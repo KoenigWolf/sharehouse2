@@ -52,13 +52,15 @@ export const PhotoCard = memo(function PhotoCard({
 
   return (
     <m.article
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileTap={{ scale: 0.98 }}
       transition={{
-        duration: 0.4,
+        duration: 0.5,
         ease: [0.23, 1, 0.32, 1],
         delay: animationDelay,
       }}
+      className="group relative touch-manipulation"
       aria-label={t("roomPhotos.photoAlt")}
     >
       <div
@@ -66,36 +68,45 @@ export const PhotoCard = memo(function PhotoCard({
         tabIndex={0}
         onClick={onClick}
         onKeyDown={handleKeyDown}
-        className="group relative w-full aspect-square overflow-hidden cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-inset bg-secondary"
+        className="relative w-full overflow-hidden rounded-xl cursor-pointer bg-secondary shadow-sm transition-all duration-300 ease-out outline-none ring-offset-2 ring-offset-background focus-visible:ring-2 focus-visible:ring-brand-500 select-none"
         aria-label={`${t("roomPhotos.photoAlt")} - ${userName}`}
       >
         <Image
           src={photo.photo_url}
           alt=""
-          fill
-          sizes="(max-width: 640px) 33vw, (max-width: 1024px) 25vw, 20vw"
-          className="object-cover object-center"
+          width={500}
+          height={500}
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          className="w-full h-auto object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
           loading={isEagerLoad ? "eager" : "lazy"}
           priority={isEagerLoad}
         />
 
+        {/* Overlay - Desktop Hover Only */}
         <div
-          className="absolute inset-0 bg-black/0 group-hover:bg-black/40 group-focus-visible:bg-black/40 transition-colors duration-200 flex items-center justify-center"
+          className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 pointer-events-none"
           aria-hidden="true"
         >
-          <div className="opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200 flex items-center gap-2">
-            <Avatar className="w-7 h-7 rounded-full ring-2 ring-white/80 shadow-lg">
+          <div className="transform translate-y-4 md:group-hover:translate-y-0 transition-transform duration-300 flex items-center gap-3">
+            <Avatar className="w-8 h-8 ring-2 ring-white/20 shadow-lg" aria-hidden="true">
               <OptimizedAvatarImage
                 src={photo.profile?.avatar_url}
                 alt=""
                 context="card"
                 fallback={getInitials(photo.profile?.name ?? "?")}
-                fallbackClassName="bg-card text-foreground/80 text-[10px] font-bold"
+                fallbackClassName="bg-white/10 text-white text-[10px] font-bold backdrop-blur-md"
               />
             </Avatar>
-            <span className="text-[13px] text-white font-semibold drop-shadow-lg max-w-[120px] truncate">
-              {userName}
-            </span>
+            <div className="flex flex-col">
+              <span className="text-sm text-white font-medium line-clamp-1 text-shadow-sm">
+                {userName}
+              </span>
+              {photo.caption && (
+                <span className="text-[11px] text-white/80 line-clamp-1 font-light">
+                  {photo.caption}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>

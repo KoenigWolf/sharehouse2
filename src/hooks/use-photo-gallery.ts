@@ -20,6 +20,7 @@ interface UsePhotoGalleryReturn {
   maxBulkUpload: number;
   showMore: () => void;
   actionHandlers: PhotoActionHandlers;
+  addPhotos: (newPhotos: PhotoWithProfile[]) => void;
 }
 
 const DEFAULT_VISIBLE_COUNT = 24;
@@ -94,6 +95,11 @@ export function usePhotoGallery({
     [handleDelete, handleUpdateCaption]
   );
 
+  const addPhotos = useCallback((newPhotos: PhotoWithProfile[]) => {
+    setPhotos((prev) => [...newPhotos, ...prev]);
+    setVisibleCount((prev) => prev + newPhotos.length);
+  }, []);
+
   return {
     photos,
     visiblePhotos,
@@ -103,5 +109,6 @@ export function usePhotoGallery({
     maxBulkUpload: ROOM_PHOTOS.maxBulkUpload,
     showMore,
     actionHandlers,
+    addPhotos,
   };
 }

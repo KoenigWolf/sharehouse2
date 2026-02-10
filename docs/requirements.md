@@ -13,15 +13,19 @@
 - `residents-grid.tsx` (635行) → グリッド、フィルター、検索分離
 - `photo-lightbox.tsx` (557行) → ライトボックス、ナビ、アクション分離
 
-### 1.2 console.warn → logWarning 統一
+### 1.2 ロギングユーティリティ
 
-コーディング規約では `logError` 使用を要求しているが、以下で直接 `console` を使用:
+`src/lib/errors` に統一されたロギングユーティリティを提供:
 
-- `src/lib/i18n/index.ts:89,95`
-- `src/lib/utils/web-vitals.ts`
-- `src/lib/security/audit.ts`
+- `logError(error, context?)`: エラー（例外、予期せぬ状態）→ Sentry送信対応
+- `logWarning(message, context?)`: 警告（非推奨機能、パフォーマンス低下など）→ Sentry送信対応
 
-`logWarning` ユーティリティを作成し、全 `console.warn` を置換する。
+**例外ケース（循環依存回避）:**
+- `src/lib/i18n/index.ts`: errors → i18n のインポートがあるため、直接 `console.warn` を使用
+- `src/lib/security/audit.ts`: 監査ログは `logWarning` 使用済み、CRITICAL/ERROR は監査専用出力
+- `src/lib/utils/web-vitals.ts`: クライアント側デバッグ用スタイル付きログ
+
+開発時のデバッグログ (`console.log`) は許容されるが、コミット前には削除を推奨。
 
 ### 1.3 非null アサーション (!) 削除
 
@@ -125,5 +129,5 @@ SNS URL 正規表現が脆弱。DOMPurify 導入またはURL パース強化を�
 
 - セキュリティ: rate limit, UUID検証, オリジン検証 ✓
 - i18n: ほぼ完全に国際化対応 ✓
-- エラーハンドリング: `logError` 統一 ✓
+- エラーハンドリング: `logError` / `logWarning` 統一 ✓
 - キャッシュ戦略: `CacheStrategy` で一元管理 ✓
