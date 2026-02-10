@@ -27,10 +27,9 @@ export function TimeSelect({ value, onChange, placeholder, className }: TimeSele
   });
 
   useEffect(() => {
-    if (value !== "" && !isHourlyTime(value)) {
-      // Defer setState to avoid cascading renders warning
-      setTimeout(() => setIsCustom(true), 0);
-    }
+    const shouldBeCustom = value !== "" && !isHourlyTime(value);
+    // Defer setState to avoid cascading renders warning
+    setTimeout(() => setIsCustom(shouldBeCustom), 0);
   }, [value]);
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
