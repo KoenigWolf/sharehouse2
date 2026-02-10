@@ -2,7 +2,7 @@ export type ShareItemStatus = "available" | "claimed";
 
 export interface ShareItem {
   id: string;
-  user_id: string;
+  user_id: string | null;
   title: string;
   description: string | null;
   status: ShareItemStatus;

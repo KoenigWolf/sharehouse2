@@ -52,7 +52,7 @@ import {
 } from "@/domain/profile";
 import { MBTI_COLORS } from "@/lib/constants/mbti";
 import type { RoomPhoto } from "@/domain/room-photo";
-import { getInitials, calculateResidenceDuration } from "@/lib/utils";
+import { getInitials } from "@/lib/utils";
 import { TeaserOverlay } from "./public-teaser/teaser-overlay";
 import { MaskedText } from "./public-teaser/masked-text";
 import { uploadCoverPhoto } from "@/lib/profile/cover-photo-actions";
@@ -270,16 +270,6 @@ function FbCardHeader({
   );
 }
 
-// Facebook-style intro row (icon + text)
-function IntroRow({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
-  return (
-    <div className="flex items-center gap-3 py-2">
-      <span className="text-muted-foreground shrink-0">{icon}</span>
-      <span className="text-[15px] text-foreground">{children}</span>
-    </div>
-  );
-}
-
 // Facebook-style detail section
 function DetailSection({
   title,
@@ -306,21 +296,16 @@ function DetailSection({
 // Facebook-style info item (for detail sections)
 function DetailItem({
   icon,
-  label,
   value
 }: {
   icon: React.ReactNode;
-  label: string;
   value: string | null | undefined;
 }) {
   if (!value) return null;
   return (
-    <div className="flex items-start gap-3 py-2.5">
-      <span className="text-muted-foreground mt-0.5 shrink-0">{icon}</span>
-      <div>
-        <div className="text-[15px] text-foreground">{value}</div>
-        <div className="text-[13px] text-muted-foreground">{label}</div>
-      </div>
+    <div className="flex items-center gap-3 py-2">
+      <span className="text-muted-foreground shrink-0">{icon}</span>
+      <span className="text-[15px] text-foreground">{value}</span>
     </div>
   );
 }
@@ -375,12 +360,13 @@ export function ProfileDetail({
     }
   }, [t, router]);
 
-  // hometown, languages are shown in Intro, so excluded here to avoid duplication
   const basicInfo = [
     { label: t("profile.nickname"), value: profile.nickname, icon: <User size={14} /> },
     { label: t("profile.ageRange"), value: translateOption(profile.age_range, "ageRange", AGE_RANGES, t), icon: <Clock size={14} /> },
     { label: t("profile.gender"), value: translateOption(profile.gender, "gender", GENDERS, t), icon: <User size={14} /> },
     { label: t("profile.nationality"), value: profile.nationality, icon: <Globe size={14} /> },
+    { label: t("profile.hometown"), value: profile.hometown, icon: <Home size={14} /> },
+    { label: t("profile.languages"), value: translateLanguages(profile.languages, t).join(", ") || null, icon: <Globe size={14} /> },
   ].filter((f) => f.value);
 
   const workInfo = [
@@ -603,6 +589,34 @@ export function ProfileDetail({
                 {t("teaTime.title")}: {teaTimeEnabled ? t("teaTime.participating") : t("teaTime.notParticipating")}
               </span>
             </div>
+
+            {/* Interests Tags */}
+            {profile.interests && profile.interests.length > 0 && (
+              <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-3">
+                {profile.interests.map((interest, idx) => (
+                  <span
+                    key={idx}
+                    className="text-[13px] px-3 py-1.5 rounded-full bg-muted text-foreground"
+                  >
+                    {interest}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Personality Info */}
+            {personalityInfo.length > 0 && (
+              <div className="border-t border-border mt-3 pt-3">
+                <div className="flex flex-wrap justify-center sm:justify-start gap-x-4 gap-y-1 text-[14px] text-muted-foreground">
+                  {personalityInfo.map((field, i) => (
+                    <span key={i} className="flex items-center gap-1.5">
+                      {field.icon}
+                      <span>{field.value}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </m.div>
@@ -612,76 +626,12 @@ export function ProfileDetail({
         <div className="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-5">
           {/* Left Column (Info Sections) - 1/3 width */}
           <div className="lg:col-span-1 space-y-4">
-            {/* Intro Card */}
-            <m.div variants={itemVariants}>
-              <FbCard>
-                <FbCardHeader title={t("profile.sectionIntro")} />
-                <div className="px-4 pb-4">
-                  {/* Bio */}
-                  {profile.bio && (
-                    <p className="text-[15px] text-foreground mb-4 pb-4 border-b border-border">
-                      {profile.bio}
-                    </p>
-                  )}
-
-                  {/* Quick Facts */}
-                  <div className="space-y-1">
-                    {workInfo.length > 0 && workInfo[0].value && (
-                      <IntroRow icon={<Briefcase size={20} />}>
-                        {workInfo[0].value}
-                        {workInfo[1]?.value && <span className="text-muted-foreground"> · {workInfo[1].value}</span>}
-                      </IntroRow>
-                    )}
-                    {profile.hometown && (
-                      <IntroRow icon={<Home size={20} />}>
-                        {profile.hometown}{t("profile.fromSuffix")}
-                      </IntroRow>
-                    )}
-                    {profile.room_number && (
-                      <IntroRow icon={<MapPin size={20} />}>
-                        {profile.room_number}{t("profile.room")}
-                      </IntroRow>
-                    )}
-                    {profile.move_in_date && (
-                      <IntroRow icon={<Clock size={20} />}>
-                        {calculateResidenceDuration(profile.move_in_date, t)}
-                      </IntroRow>
-                    )}
-                    {translateLanguages(profile.languages, t).length > 0 && (
-                      <IntroRow icon={<Globe size={20} />}>
-                        {translateLanguages(profile.languages, t).join(", ")}
-                      </IntroRow>
-                    )}
-                  </div>
-                </div>
-              </FbCard>
-            </m.div>
-
-            {/* Interests Card - placed here for quick personality insight */}
-            {profile.interests && profile.interests.length > 0 && (
-              <m.div variants={itemVariants}>
-                <FbCard>
-                  <FbCardHeader title={t("profile.interests")} />
-                  <div className="px-4 pb-4 flex flex-wrap gap-2">
-                    {profile.interests.map((interest, idx) => (
-                      <span
-                        key={idx}
-                        className="text-[13px] px-3 py-1.5 rounded-full bg-muted text-foreground"
-                      >
-                        {interest}
-                      </span>
-                    ))}
-                  </div>
-                </FbCard>
-              </m.div>
-            )}
-
             {/* Basic Info */}
             {basicInfo.length > 0 && (
               <m.div variants={itemVariants}>
                 <DetailSection title={t("profile.sectionBasicInfo")} icon={<User size={20} />}>
                   {basicInfo.map((field, i) => (
-                    <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} />
+                    <DetailItem key={i} icon={field.icon} value={field.value} />
                   ))}
                 </DetailSection>
               </m.div>
@@ -692,7 +642,7 @@ export function ProfileDetail({
               <m.div variants={itemVariants}>
                 <DetailSection title={t("profile.sectionWork")} icon={<Briefcase size={20} />}>
                   {workInfo.map((field, i) => (
-                    <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} />
+                    <DetailItem key={i} icon={field.icon} value={field.value} />
                   ))}
                 </DetailSection>
               </m.div>
@@ -703,7 +653,7 @@ export function ProfileDetail({
               <m.div variants={itemVariants}>
                 <DetailSection title={t("profile.sectionLifestyle")} icon={<Sun size={20} />}>
                   {lifestyleInfo.map((field, i) => (
-                    <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} />
+                    <DetailItem key={i} icon={field.icon} value={field.value} />
                   ))}
                 </DetailSection>
               </m.div>
@@ -714,7 +664,7 @@ export function ProfileDetail({
               <m.div variants={itemVariants}>
                 <DetailSection title={t("profile.sectionCommunal")} icon={<Users size={20} />}>
                   {communalInfo.map((field, i) => (
-                    <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} />
+                    <DetailItem key={i} icon={field.icon} value={field.value} />
                   ))}
                   {sharedSpaceUsage && (
                     <div className="pt-3 mt-3 border-t border-border">
@@ -726,16 +676,6 @@ export function ProfileDetail({
               </m.div>
             )}
 
-            {/* Personality */}
-            {personalityInfo.length > 0 && (
-              <m.div variants={itemVariants}>
-                <DetailSection title={t("profile.sectionPersonality")} icon={<Sparkles size={20} />}>
-                  {personalityInfo.map((field, i) => (
-                    <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} />
-                  ))}
-                </DetailSection>
-              </m.div>
-            )}
           </div>
 
           {/* Right Column (MBTI, Photos) - 2/3 width */}

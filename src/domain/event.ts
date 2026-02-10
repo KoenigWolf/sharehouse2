@@ -1,6 +1,6 @@
 export interface Event {
   id: string;
-  user_id: string;
+  user_id: string | null;
   title: string;
   description: string | null;
   event_date: string;
