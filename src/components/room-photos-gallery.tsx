@@ -79,11 +79,10 @@ const FeedbackMessage = memo(function FeedbackMessage({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-      className={`mb-5 py-3 px-4 rounded-lg ${
-        isError
+      className={`mb-5 py-3 px-4 rounded-lg ${isError
           ? "bg-error-bg/50 border-l-2 border-error-border"
           : "bg-success-bg/50 border-l-2 border-success-border"
-      }`}
+        }`}
     >
       <p className={`text-sm ${isError ? "text-error" : "text-success"}`}>
         {message}
@@ -175,6 +174,7 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
     maxBulkUpload,
     showMore,
     actionHandlers,
+    addPhotos,
   } = usePhotoGallery({
     initialPhotos,
   });
@@ -195,9 +195,28 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
   // Handlers
   const handleSelectFiles = useCallback(
     (files: File[]) => {
-      startUpload(files);
+      startUpload(files, undefined, (newPhotos) => {
+        // Optimistic update: Add new photos to the gallery immediately
+        // Note: The server action returns RoomPhoto[], but we need PhotoWithProfile[]
+        // For optimistically added photos, profile might be missing or minimal,
+        // but since it's the current user, we could potentially enrich it if needed via useUser
+        // For now, casting or simple mapping if profile structure matches
+
+        // Actually, startUpload callback receives `any[]` in useBulkUpload signature currently
+        // But registerBulkPhotos returns RoomPhoto[].
+        // We need to match PhotoWithProfile.
+        // Let's enrich it with basic profile info from useUser if available, or just pass as is (profile: null)
+
+        const photosWithProfile = newPhotos.map(p => ({
+          ...p,
+          profile: null // Or fetch current user profile? We can't synchronously here easily without user object.
+          // But wait, useUser hook provides user.
+        }));
+
+        addPhotos(photosWithProfile as PhotoWithProfile[]);
+      });
     },
-    [startUpload]
+    [startUpload, addPhotos]
   );
 
   const handlePhotoClick = useCallback(

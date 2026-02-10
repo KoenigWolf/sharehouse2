@@ -4,6 +4,7 @@
  */
 
 import { maskSensitiveData } from "./validation";
+import { logWarning } from "@/lib/errors";
 
 /**
  * Audit event types
@@ -130,11 +131,11 @@ function formatAuditLog(entry: AuditLogEntry): string {
   const severity = getSeverity(entry.eventType);
   const maskedMetadata = entry.metadata
     ? maskSensitiveData(entry.metadata as Record<string, unknown>, [
-        "password",
-        "token",
-        "secret",
-        "apiKey",
-      ])
+      "password",
+      "token",
+      "secret",
+      "apiKey",
+    ])
     : undefined;
 
   const logData = {
@@ -166,7 +167,7 @@ export function auditLog(entry: AuditLogEntry): void {
       console.error(`[AUDIT:ERROR] ${formattedLog}`);
       break;
     case AuditSeverity.WARNING:
-      console.warn(`[AUDIT:WARNING] ${formattedLog}`);
+      logWarning(`[AUDIT:WARNING] ${formattedLog}`, { action: "auditLog" });
       break;
     default:
       console.info(`[AUDIT:INFO] ${formattedLog}`);

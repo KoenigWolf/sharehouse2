@@ -457,7 +457,6 @@ export const ja = {
     unknownUser: "不明なユーザー",
     upload: "写真をアップロード",
     delete: "写真を削除",
-    bulkUploadLimit: "一度にアップロードできるのは{{count}}枚までです。",
     deleteConfirm: "この写真を削除しますか？",
     caption: "キャプション",
     captionPlaceholder: "写真の説明...",

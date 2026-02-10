@@ -15,13 +15,13 @@
 
 ### 1.2 console.warn → logWarning 統一
 
-コーディング規約では `logError` 使用を要求しているが、以下で直接 `console` を使用:
+コーディング規約では `logError` および `logWarning` の使用を要求している。
 
-- `src/lib/i18n/index.ts:89,95`
-- `src/lib/utils/web-vitals.ts`
-- `src/lib/security/audit.ts`
+- `logError`: エラー（例外、予期せぬ状態）
+- `logWarning`: 警告（非推奨機能の使用、パフォーマンス低下、不審な操作など）
 
-`logWarning` ユーティリティを作成し、全 `console.warn` を置換する。
+直接の `console.error` や `console.warn` は使用せず、`src/lib/errors` からインポートしたユーティリティを使用すること。
+開発時のデバッグログ (`console.log`) は許容されるが、コミット前には削除または適切なログレベルへの置き換えを推奨。
 
 ### 1.3 非null アサーション (!) 削除
 
