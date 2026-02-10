@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { m } from "framer-motion";
 import { AlertCircle, RefreshCcw, Home } from "lucide-react";
+import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/use-i18n";
 import { logError } from "@/lib/errors";
@@ -52,7 +53,7 @@ export default function Error({
               className="bg-card/80 backdrop-blur-xl p-8 sm:p-12 rounded-3xl shadow-sm border border-border/50 premium-surface"
             >
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-error-bg text-error mb-6">
-                <AlertCircle size={32} strokeWidth={1.5} />
+                <AlertCircle size={ICON_SIZE["2xl"]} strokeWidth={ICON_STROKE.thin} />
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-4 tracking-tight">
                 {t("pages.error.title")}
@@ -63,12 +64,12 @@ export default function Error({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <Button size="xl" onClick={reset} className="rounded-2xl shadow-lg shadow-border/50 group bg-foreground hover:bg-foreground/90">
-                  <RefreshCcw size={18} className="mr-2 group-active:rotate-180 transition-transform duration-500" />
+                  <RefreshCcw size={ICON_SIZE.md} className="mr-2 group-active:rotate-180 transition-transform duration-500" />
                   {t("pages.error.retry")}
                 </Button>
                 <Button variant="outline" size="xl" asChild className="rounded-2xl bg-card border-border hover:bg-background hover:border-primary/40">
                   <Link href="/">
-                    <Home size={18} className="mr-2" />
+                    <Home size={ICON_SIZE.md} className="mr-2" />
                     {t("pages.error.backHome")}
                   </Link>
                 </Button>

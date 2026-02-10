@@ -32,7 +32,7 @@ export function BulletinBoard({ bulletins: initialBulletins, currentUserId, curr
   const locale = useLocale();
   const router = useRouter();
   const [bulletins, setBulletins] = useState(initialBulletins);
-  const [isEditing, setIsEditing] = useState(!isTeaser);
+  const [isEditing] = useState(!isTeaser);
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);

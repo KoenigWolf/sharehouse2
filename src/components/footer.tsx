@@ -16,6 +16,7 @@ import {
   MapIcon,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
 
 type FooterVariant = "default" | "minimal";
 
@@ -54,7 +55,7 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
       <footer className="py-12 mt-auto bg-muted backdrop-blur-sm border-t border-border">
         <div className="container mx-auto px-6 max-w-5xl flex flex-col items-center gap-6">
           <div className="flex items-center gap-2">
-            <HomeIcon size={18} className="text-foreground" strokeWidth={2.5} />
+            <HomeIcon size={ICON_SIZE.md} className="text-foreground" strokeWidth={ICON_STROKE.medium} />
             <span className="text-lg font-bold tracking-tight text-foreground">Share<span className="text-brand-500">House</span></span>
           </div>
           <p className="text-xs font-medium text-muted-foreground tracking-tight text-center">
@@ -72,7 +73,7 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8 lg:gap-16">
           <div className="md:col-span-4 lg:col-span-5 flex flex-col items-start">
             <Link href="/" className="flex items-center gap-2 group">
-              <HomeIcon size={22} className="text-foreground transition-transform group-hover:scale-105" strokeWidth={2.5} />
+              <HomeIcon size={ICON_SIZE.lg} className="text-foreground transition-transform group-hover:scale-105" strokeWidth={ICON_STROKE.medium} />
               <span className="text-2xl font-black tracking-tight text-foreground">
                 Share<span className="text-brand-500">House</span>
               </span>
@@ -82,9 +83,9 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
             </p>
 
             <div className="flex items-center gap-3 mt-8">
-              <SNSPlaceholder icon={<TwitterIcon size={18} />} label="Twitter" />
-              <SNSPlaceholder icon={<InstagramIcon size={18} />} label="Instagram" />
-              <SNSPlaceholder icon={<GithubIcon size={18} />} label="GitHub" />
+              <SNSPlaceholder icon={<TwitterIcon size={ICON_SIZE.md} />} label="Twitter" />
+              <SNSPlaceholder icon={<InstagramIcon size={ICON_SIZE.md} />} label="Instagram" />
+              <SNSPlaceholder icon={<GithubIcon size={ICON_SIZE.md} />} label="GitHub" />
             </div>
           </div>
 
@@ -107,7 +108,7 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
               onClick={scrollToTop}
               className="flex items-center gap-2 px-4 py-2 rounded-xl bg-muted hover:bg-secondary text-muted-foreground hover:text-foreground transition-all duration-400 ease-out delay-150 text-xs font-bold ring-1 ring-border/50"
             >
-              <ArrowUpIcon size={14} />
+              <ArrowUpIcon size={ICON_SIZE.sm} />
               {t("footer.backToTop")}
             </button>
           </div>
@@ -142,7 +143,7 @@ function FooterNavSection({ title, links, t }: { title: string; links: typeof NA
               href={href}
               className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors font-semibold group"
             >
-              <Icon size={16} strokeWidth={2} className="text-muted-foreground group-hover:text-foreground/80" />
+              <Icon size={ICON_SIZE.md} strokeWidth={ICON_STROKE.normal} className="text-muted-foreground group-hover:text-foreground/80" />
               {t(labelKey)}
             </Link>
           </li>

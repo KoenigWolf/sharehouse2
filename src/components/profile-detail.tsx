@@ -358,42 +358,42 @@ export function ProfileDetail({
   }, [t, router]);
 
   const basicInfo = [
-    { label: t("profile.nickname"), value: profile.nickname, icon: <User size={14} />, suffix: t("profile.suffixNickname") },
-    { label: t("profile.ageRange"), value: translateOption(profile.age_range, "ageRange", AGE_RANGES, t), icon: <Clock size={14} /> },
-    { label: t("profile.gender"), value: translateOption(profile.gender, "gender", GENDERS, t), icon: <User size={14} /> },
-    { label: t("profile.nationality"), value: profile.nationality, icon: <Globe size={14} /> },
-    { label: t("profile.hometown"), value: profile.hometown, icon: <Home size={14} />, suffix: t("profile.suffixHometown") },
-    { label: t("profile.languages"), value: translateLanguages(profile.languages, t).join(", ") || null, icon: <Globe size={14} /> },
+    { label: t("profile.nickname"), value: profile.nickname, icon: <User size={ICON_SIZE.sm} />, suffix: t("profile.suffixNickname") },
+    { label: t("profile.ageRange"), value: translateOption(profile.age_range, "ageRange", AGE_RANGES, t), icon: <Clock size={ICON_SIZE.sm} /> },
+    { label: t("profile.gender"), value: translateOption(profile.gender, "gender", GENDERS, t), icon: <User size={ICON_SIZE.sm} /> },
+    { label: t("profile.nationality"), value: profile.nationality, icon: <Globe size={ICON_SIZE.sm} /> },
+    { label: t("profile.hometown"), value: profile.hometown, icon: <Home size={ICON_SIZE.sm} />, suffix: t("profile.suffixHometown") },
+    { label: t("profile.languages"), value: translateLanguages(profile.languages, t).join(", ") || null, icon: <Globe size={ICON_SIZE.sm} /> },
   ].filter((f) => f.value);
 
   const workInfo = [
-    { label: t("profile.occupation"), value: translateOption(profile.occupation, "occupation", OCCUPATIONS, t), icon: <Briefcase size={14} /> },
-    { label: t("profile.industry"), value: translateOption(profile.industry, "industry", INDUSTRIES, t), icon: <Building2 size={14} />, suffix: t("profile.suffixIndustry") },
-    { label: t("profile.workLocation"), value: profile.work_location, icon: <MapPin size={14} />, suffix: t("profile.suffixWorkLocation") },
-    { label: t("profile.workStyle"), value: translateOption(profile.work_style, "workStyle", WORK_STYLES, t), icon: <Laptop size={14} /> },
+    { label: t("profile.occupation"), value: translateOption(profile.occupation, "occupation", OCCUPATIONS, t), icon: <Briefcase size={ICON_SIZE.sm} /> },
+    { label: t("profile.industry"), value: translateOption(profile.industry, "industry", INDUSTRIES, t), icon: <Building2 size={ICON_SIZE.sm} />, suffix: t("profile.suffixIndustry") },
+    { label: t("profile.workLocation"), value: profile.work_location, icon: <MapPin size={ICON_SIZE.sm} />, suffix: t("profile.suffixWorkLocation") },
+    { label: t("profile.workStyle"), value: translateOption(profile.work_style, "workStyle", WORK_STYLES, t), icon: <Laptop size={ICON_SIZE.sm} /> },
   ].filter((f) => f.value);
 
   const lifestyleInfo = [
-    { label: t("profile.dailyRhythm"), value: translateOption(profile.daily_rhythm, "dailyRhythm", DAILY_RHYTHMS, t), icon: profile.daily_rhythm === "morning" ? <Sun size={14} /> : <Moon size={14} /> },
-    { label: t("profile.homeFrequency"), value: translateOption(profile.home_frequency, "homeFrequency", HOME_FREQUENCIES, t), icon: <Home size={14} /> },
-    { label: t("profile.alcohol"), value: translateOption(profile.alcohol, "alcohol", ALCOHOL_OPTIONS, t), icon: <Wine size={14} /> },
-    { label: t("profile.smoking"), value: translateOption(profile.smoking, "smoking", SMOKING_OPTIONS, t), icon: <Cigarette size={14} /> },
-    { label: t("profile.pets"), value: translateOption(profile.pets, "pets", PET_OPTIONS, t), icon: <Dog size={14} /> },
-    { label: t("profile.guestFrequency"), value: translateOption(profile.guest_frequency, "guestFrequency", GUEST_FREQUENCIES, t), icon: <Users size={14} /> },
+    { label: t("profile.dailyRhythm"), value: translateOption(profile.daily_rhythm, "dailyRhythm", DAILY_RHYTHMS, t), icon: profile.daily_rhythm === "morning" ? <Sun size={ICON_SIZE.sm} /> : <Moon size={ICON_SIZE.sm} /> },
+    { label: t("profile.homeFrequency"), value: translateOption(profile.home_frequency, "homeFrequency", HOME_FREQUENCIES, t), icon: <Home size={ICON_SIZE.sm} /> },
+    { label: t("profile.alcohol"), value: translateOption(profile.alcohol, "alcohol", ALCOHOL_OPTIONS, t), icon: <Wine size={ICON_SIZE.sm} /> },
+    { label: t("profile.smoking"), value: translateOption(profile.smoking, "smoking", SMOKING_OPTIONS, t), icon: <Cigarette size={ICON_SIZE.sm} /> },
+    { label: t("profile.pets"), value: translateOption(profile.pets, "pets", PET_OPTIONS, t), icon: <Dog size={ICON_SIZE.sm} /> },
+    { label: t("profile.guestFrequency"), value: translateOption(profile.guest_frequency, "guestFrequency", GUEST_FREQUENCIES, t), icon: <Users size={ICON_SIZE.sm} /> },
   ].filter((f) => f.value);
 
   const communalInfo = [
-    { label: t("profile.socialStance"), value: translateOption(profile.social_stance, "socialStance", SOCIAL_STANCES, t), icon: <Users size={14} /> },
-    { label: t("profile.cleaningAttitude"), value: translateOption(profile.cleaning_attitude, "cleaningAttitude", CLEANING_ATTITUDES, t), icon: <Sparkles size={14} /> },
-    { label: t("profile.cookingFrequency"), value: translateOption(profile.cooking_frequency, "cookingFrequency", COOKING_FREQUENCIES, t), icon: <Utensils size={14} /> },
-    { label: t("profile.sharedMeals"), value: translateOption(profile.shared_meals, "sharedMeals", SHARED_MEAL_OPTIONS, t), icon: <Utensils size={14} /> },
-    { label: t("profile.allergies"), value: profile.allergies, icon: <Heart size={14} /> },
+    { label: t("profile.socialStance"), value: translateOption(profile.social_stance, "socialStance", SOCIAL_STANCES, t), icon: <Users size={ICON_SIZE.sm} /> },
+    { label: t("profile.cleaningAttitude"), value: translateOption(profile.cleaning_attitude, "cleaningAttitude", CLEANING_ATTITUDES, t), icon: <Sparkles size={ICON_SIZE.sm} /> },
+    { label: t("profile.cookingFrequency"), value: translateOption(profile.cooking_frequency, "cookingFrequency", COOKING_FREQUENCIES, t), icon: <Utensils size={ICON_SIZE.sm} /> },
+    { label: t("profile.sharedMeals"), value: translateOption(profile.shared_meals, "sharedMeals", SHARED_MEAL_OPTIONS, t), icon: <Utensils size={ICON_SIZE.sm} /> },
+    { label: t("profile.allergies"), value: profile.allergies, icon: <Heart size={ICON_SIZE.sm} /> },
   ].filter((f) => f.value);
 
   const sharedSpaceUsage = profile.shared_space_usage;
   const personalityInfo = [
-    { label: t("profile.personalityType"), value: profile.personality_type, icon: <Brain size={14} /> },
-    { label: t("profile.weekendActivities"), value: profile.weekend_activities, icon: <Palmtree size={14} /> },
+    { label: t("profile.personalityType"), value: profile.personality_type, icon: <Brain size={ICON_SIZE.sm} /> },
+    { label: t("profile.weekendActivities"), value: profile.weekend_activities, icon: <Palmtree size={ICON_SIZE.sm} /> },
   ].filter((f) => f.value);
 
   const snsLinks = [
@@ -461,7 +461,7 @@ export function ProfileDetail({
               disabled={isUploadingCover}
               className="absolute bottom-3 right-3 bg-card/90 backdrop-blur-sm border-border text-muted-foreground hover:text-foreground hover:border-border"
             >
-              <Camera size={14} strokeWidth={1.5} />
+              <Camera size={ICON_SIZE.sm} strokeWidth={ICON_STROKE.thin} />
               {isUploadingCover
                 ? t("myPage.coverPhotoUploading")
                 : coverUrl
@@ -609,7 +609,7 @@ export function ProfileDetail({
           <div className="lg:col-span-1 space-y-4">
             {basicInfo.length > 0 && (
               <m.div variants={itemVariants}>
-                <DetailSection title={t("profile.sectionBasicInfo")} icon={<User size={20} />}>
+                <DetailSection title={t("profile.sectionBasicInfo")} icon={<User size={ICON_SIZE.lg} />}>
                   {basicInfo.map((field, i) => (
                     <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} suffix={field.suffix} />
                   ))}
@@ -619,7 +619,7 @@ export function ProfileDetail({
 
             {workInfo.length > 0 && (
               <m.div variants={itemVariants}>
-                <DetailSection title={t("profile.sectionWork")} icon={<Briefcase size={20} />}>
+                <DetailSection title={t("profile.sectionWork")} icon={<Briefcase size={ICON_SIZE.lg} />}>
                   {workInfo.map((field, i) => (
                     <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} suffix={field.suffix} />
                   ))}
@@ -629,7 +629,7 @@ export function ProfileDetail({
 
             {lifestyleInfo.length > 0 && (
               <m.div variants={itemVariants}>
-                <DetailSection title={t("profile.sectionLifestyle")} icon={<Sun size={20} />}>
+                <DetailSection title={t("profile.sectionLifestyle")} icon={<Sun size={ICON_SIZE.lg} />}>
                   {lifestyleInfo.map((field, i) => (
                     <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} />
                   ))}
@@ -639,7 +639,7 @@ export function ProfileDetail({
 
             {(communalInfo.length > 0 || sharedSpaceUsage) && (
               <m.div variants={itemVariants}>
-                <DetailSection title={t("profile.sectionCommunal")} icon={<Users size={20} />}>
+                <DetailSection title={t("profile.sectionCommunal")} icon={<Users size={ICON_SIZE.lg} />}>
                   {communalInfo.map((field, i) => (
                     <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} />
                   ))}

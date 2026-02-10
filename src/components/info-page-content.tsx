@@ -235,7 +235,7 @@ export function InfoPageContent({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1], delay: 0.1 }}
       >
-        <SectionHeader icon={<Wifi size={ICON_SIZE.md} strokeWidth={ICON_STROKE.thin} />} title="Wi-Fi" />
+        <SectionHeader icon={<Wifi size={ICON_SIZE.md} strokeWidth={ICON_STROKE.thin} />} title={t("info.tabWifi")} />
         <WifiCard wifiInfos={wifiInfos} />
       </m.section>
 

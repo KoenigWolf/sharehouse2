@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { X } from "lucide-react";
+import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
 import { Profile, ROOM_NUMBERS } from "@/domain/profile";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { useI18n } from "@/hooks/use-i18n";
@@ -220,7 +221,7 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
                     className="absolute -top-1 -right-1 p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary/50 rounded-full transition-all"
                     aria-label={t("floorPlan.closeDetail")}
                   >
-                    <X size={20} strokeWidth={2} />
+                    <X size={ICON_SIZE.lg} strokeWidth={ICON_STROKE.normal} />
                   </button>
 
                   <div className="flex items-center gap-3 mb-6">
