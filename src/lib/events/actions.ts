@@ -18,7 +18,7 @@ export async function getUpcomingEvents(): Promise<EventWithDetails[]> {
 
     const { data, error } = await supabase
       .from("events")
-      .select("*, profiles!events_user_id_profiles_fk(name, nickname, avatar_url), event_attendees(user_id)")
+      .select("*, profiles!events_user_id_profiles_fk(name, nickname, avatar_url), event_attendees(user_id, profiles!event_attendees_user_id_profiles_fk(name, nickname, avatar_url))")
       .gte("event_date", today)
       .order("event_date", { ascending: true });
 
@@ -168,7 +168,7 @@ export async function updateEvent(
       return { error: t("errors.invalidInput") };
     }
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("events")
       .update({
         title: trimmedTitle,
@@ -178,10 +178,12 @@ export async function updateEvent(
         location: input.location?.trim() || null,
       })
       .eq("id", eventId)
-      .eq("user_id", user.id);
+      .eq("user_id", user.id)
+      .select("id")
+      .single();
 
-    if (error) {
-      logError(error, { action: "updateEvent", userId: user.id });
+    if (error || !data) {
+      if (error) logError(error, { action: "updateEvent", userId: user.id });
       return { error: t("errors.saveFailed") };
     }
 
@@ -205,14 +207,16 @@ export async function deleteEvent(eventId: string): Promise<ActionResponse> {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { error: t("errors.unauthorized") };
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("events")
       .delete()
       .eq("id", eventId)
-      .eq("user_id", user.id);
+      .eq("user_id", user.id)
+      .select("id")
+      .single();
 
-    if (error) {
-      logError(error, { action: "deleteEvent", userId: user.id });
+    if (error || !data) {
+      if (error) logError(error, { action: "deleteEvent", userId: user.id });
       return { error: t("errors.deleteFailed") };
     }
 
