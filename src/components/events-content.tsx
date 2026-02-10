@@ -86,53 +86,6 @@ function generateCalendarDates(): { date: string; day: number; weekday: number; 
   return dates;
 }
 
-interface AttendeeAvatarsProps {
-  attendees: { user_id: string; profiles?: { name: string; nickname: string | null; avatar_url: string | null } | null }[];
-  maxDisplay?: number;
-  isBlurred?: boolean;
-}
-
-function AttendeeAvatars({ attendees, maxDisplay = 4, isBlurred = false }: AttendeeAvatarsProps) {
-  const displayedAttendees = attendees.slice(0, maxDisplay);
-  const remaining = attendees.length - maxDisplay;
-
-  if (attendees.length === 0) return null;
-
-  return (
-    <div className="flex items-center -space-x-2">
-      {displayedAttendees.map((attendee, i) => {
-        const name = attendee.profiles?.nickname ?? attendee.profiles?.name ?? "?";
-        return (
-          <Avatar
-            key={attendee.user_id}
-            className="w-7 h-7 border-2 border-card ring-0 shadow-sm"
-            style={{ zIndex: maxDisplay - i }}
-          >
-            <OptimizedAvatarImage
-              src={attendee.profiles?.avatar_url}
-              alt={name}
-              context="card"
-              isBlurred={isBlurred}
-              fallback={
-                <AvatarFallback className="text-[9px] font-bold bg-secondary text-muted-foreground">
-                  {getInitials(name)}
-                </AvatarFallback>
-              }
-            />
-          </Avatar>
-        );
-      })}
-      {remaining > 0 && (
-        <div
-          className="w-7 h-7 rounded-full bg-secondary border-2 border-card flex items-center justify-center"
-          style={{ zIndex: 0 }}
-        >
-          <span className="text-[9px] font-bold text-muted-foreground">+{remaining}</span>
-        </div>
-      )}
-    </div>
-  );
-}
 
 export function EventsContent({ events, currentUserId, isTeaser = false }: EventsContentProps) {
   const t = useI18n();
@@ -660,17 +613,10 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
 
                             <div className="flex items-center gap-3">
                               {attendeeCount > 0 && (
-                                <div className="flex items-center gap-2">
-                                  <AttendeeAvatars
-                                    attendees={event.event_attendees}
-                                    maxDisplay={3}
-                                    isBlurred={isTeaser}
-                                  />
-                                  <span className="text-[11px] font-bold text-muted-foreground flex items-center gap-1">
-                                    <Users size={ICON_SIZE.xs} />
-                                    {attendeeCount}
-                                  </span>
-                                </div>
+                                <span className="text-[11px] font-bold text-muted-foreground flex items-center gap-1.5 bg-secondary/50 px-2.5 py-1 rounded-full">
+                                  <Users size={ICON_SIZE.sm} />
+                                  {attendeeCount}
+                                </span>
                               )}
                               <m.button
                                 type="button"
