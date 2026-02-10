@@ -7,6 +7,7 @@ import Link from "next/link";
 import { m, AnimatePresence } from "framer-motion";
 import { MapPin, Clock, Calendar, Plus, X, CalendarDays, Users, Sparkles, Pencil, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback, OptimizedAvatarImage } from "@/components/ui/avatar";
+import { TimeSelect } from "@/components/ui/time-select";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
 import { createEvent, updateEvent, toggleAttendance, deleteEvent } from "@/lib/events/actions";
 import { EVENTS } from "@/lib/constants/config";
@@ -409,12 +410,9 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
                     <label className="block text-[11px] font-bold text-muted-foreground tracking-wider uppercase ml-1">
                       {t("events.timeLabel")}
                     </label>
-                    <input
-                      type="text"
+                    <TimeSelect
                       value={eventTime}
-                      onChange={(e) => setEventTime(e.target.value)}
-                      placeholder={t("events.timePlaceholder")}
-                      className="w-full h-12 px-4 bg-secondary/50 border border-border rounded-2xl text-foreground text-[15px] font-medium placeholder:text-muted-foreground/60 focus:outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500/50 focus:bg-card transition-all duration-300"
+                      onChange={setEventTime}
                     />
                   </div>
                 </div>
