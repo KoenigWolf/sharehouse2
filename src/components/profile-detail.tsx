@@ -296,15 +296,17 @@ function DetailSection({
 // Facebook-style info item (for detail sections)
 function DetailItem({
   icon,
+  label,
   value
 }: {
   icon: React.ReactNode;
+  label: string;
   value: string | null | undefined;
 }) {
   if (!value) return null;
   return (
-    <div className="flex items-center gap-3 py-2">
-      <span className="text-muted-foreground shrink-0">{icon}</span>
+    <div className="flex items-center gap-3 py-2" aria-label={label}>
+      <span className="text-muted-foreground shrink-0" aria-hidden="true">{icon}</span>
       <span className="text-[15px] text-foreground">{value}</span>
     </div>
   );
@@ -631,7 +633,7 @@ export function ProfileDetail({
               <m.div variants={itemVariants}>
                 <DetailSection title={t("profile.sectionBasicInfo")} icon={<User size={20} />}>
                   {basicInfo.map((field, i) => (
-                    <DetailItem key={i} icon={field.icon} value={field.value} />
+                    <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} />
                   ))}
                 </DetailSection>
               </m.div>
@@ -642,7 +644,7 @@ export function ProfileDetail({
               <m.div variants={itemVariants}>
                 <DetailSection title={t("profile.sectionWork")} icon={<Briefcase size={20} />}>
                   {workInfo.map((field, i) => (
-                    <DetailItem key={i} icon={field.icon} value={field.value} />
+                    <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} />
                   ))}
                 </DetailSection>
               </m.div>
@@ -653,7 +655,7 @@ export function ProfileDetail({
               <m.div variants={itemVariants}>
                 <DetailSection title={t("profile.sectionLifestyle")} icon={<Sun size={20} />}>
                   {lifestyleInfo.map((field, i) => (
-                    <DetailItem key={i} icon={field.icon} value={field.value} />
+                    <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} />
                   ))}
                 </DetailSection>
               </m.div>
@@ -664,7 +666,7 @@ export function ProfileDetail({
               <m.div variants={itemVariants}>
                 <DetailSection title={t("profile.sectionCommunal")} icon={<Users size={20} />}>
                   {communalInfo.map((field, i) => (
-                    <DetailItem key={i} icon={field.icon} value={field.value} />
+                    <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} />
                   ))}
                   {sharedSpaceUsage && (
                     <div className="pt-3 mt-3 border-t border-border">
