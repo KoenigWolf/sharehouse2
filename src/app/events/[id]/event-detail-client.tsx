@@ -14,6 +14,7 @@ import {
   Trash2,
   ImagePlus,
   Clock,
+  X,
 } from "lucide-react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -33,7 +34,6 @@ import {
   updateEvent,
 } from "@/lib/events/actions";
 import { FILE_UPLOAD, EVENTS } from "@/lib/constants/config";
-import { X } from "lucide-react";
 import { prepareImageForUpload } from "@/lib/utils/image-compression";
 import { logError } from "@/lib/errors";
 import type { EventWithDetails } from "@/domain/event";
@@ -239,6 +239,7 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
                     src={event.cover_image_url}
                     alt={event.title}
                     fill
+                    sizes="(min-width: 896px) 896px, 100vw"
                     className="object-cover"
                     priority
                   />
