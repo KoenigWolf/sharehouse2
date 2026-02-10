@@ -239,12 +239,12 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
         </AnimatePresence>
 
         <div
-          className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4 mx-auto"
+          className="columns-2 md:columns-3 lg:columns-4 gap-2 md:gap-4 space-y-2 md:space-y-4 mx-auto"
           role="list"
           aria-label={t("roomPhotos.gallery")}
         >
           {canUpload && (
-            <div className="break-inside-avoid mb-4">
+            <div className="break-inside-avoid mb-2 md:mb-4">
               <UploadCard
                 onSelectFiles={handleSelectFiles}
                 isUploading={isUploading}
@@ -252,7 +252,7 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
             </div>
           )}
           {visiblePhotos.map((photo, index) => (
-            <div key={photo.id} className="break-inside-avoid mb-4">
+            <div key={photo.id} className="break-inside-avoid mb-2 md:mb-4">
               <PhotoCard
                 photo={photo}
                 index={index}

@@ -54,12 +54,13 @@ export const PhotoCard = memo(function PhotoCard({
     <m.article
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
+      whileTap={{ scale: 0.98 }}
       transition={{
         duration: 0.5,
         ease: [0.23, 1, 0.32, 1],
         delay: animationDelay,
       }}
-      className="group relative"
+      className="group relative touch-manipulation"
       aria-label={t("roomPhotos.photoAlt")}
     >
       <div
@@ -67,7 +68,7 @@ export const PhotoCard = memo(function PhotoCard({
         tabIndex={0}
         onClick={onClick}
         onKeyDown={handleKeyDown}
-        className="relative w-full overflow-hidden rounded-xl cursor-pointer bg-secondary shadow-sm hover:shadow-xl transition-all duration-500 ease-out outline-none ring-offset-2 ring-offset-background focus-visible:ring-2 focus-visible:ring-brand-500"
+        className="relative w-full overflow-hidden rounded-xl cursor-pointer bg-secondary shadow-sm transition-all duration-300 ease-out outline-none ring-offset-2 ring-offset-background focus-visible:ring-2 focus-visible:ring-brand-500 select-none"
         aria-label={`${t("roomPhotos.photoAlt")} - ${userName}`}
       >
         <Image
@@ -81,12 +82,13 @@ export const PhotoCard = memo(function PhotoCard({
           priority={isEagerLoad}
         />
 
+        {/* Overlay - Desktop Hover Only */}
         <div
-          className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4"
+          className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 pointer-events-none"
           aria-hidden="true"
         >
-          <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 flex items-center gap-3">
-            <Avatar className="w-8 h-8 ring-2 ring-white/20 shadow-lg">
+          <div className="transform translate-y-4 md:group-hover:translate-y-0 transition-transform duration-300 flex items-center gap-3">
+            <Avatar className="w-8 h-8 ring-2 ring-white/20 shadow-lg" aria-hidden="true">
               <OptimizedAvatarImage
                 src={photo.profile?.avatar_url}
                 alt=""

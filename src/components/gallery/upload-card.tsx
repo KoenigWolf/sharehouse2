@@ -50,8 +50,9 @@ export const UploadCard = memo(function UploadCard({
     <m.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
+      whileTap={{ scale: 0.95 }}
       transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-      className="relative w-full aspect-[4/3] group"
+      className="relative w-full aspect-[4/3] group touch-manipulation"
     >
       <Button
         type="button"
