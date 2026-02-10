@@ -44,9 +44,9 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { href: "/residents", labelKey: "nav.residents", icon: Users },
+  { href: "/events", labelKey: "nav.events", icon: Calendar },
   { href: "/bulletin", labelKey: "bulletin.title", icon: MessageCircle },
   { href: "/share", labelKey: "nav.share", icon: Gift },
-  { href: "/events", labelKey: "nav.events", icon: Calendar },
   { href: "/room-photos", labelKey: "nav.gallery", icon: ImageIcon },
   { href: "/stats", labelKey: "nav.stats", icon: BarChart3 },
   { href: "/info", labelKey: "nav.info", icon: Info },

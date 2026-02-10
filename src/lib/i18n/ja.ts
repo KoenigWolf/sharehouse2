@@ -661,6 +661,9 @@ export const ja = {
     dateLabel: "日付",
     timeLabel: "時間（任意）",
     timePlaceholder: "19:00",
+    timeNotSet: "未設定",
+    timeCustom: "その他（自由入力）",
+    timeSelectMode: "選択に戻る",
     locationLabel: "場所（任意）",
     locationPlaceholder: "リビング",
     descriptionLabel: "詳細（任意）",
@@ -685,6 +688,10 @@ export const ja = {
     noEventsOnDay: "この日のイベントはありません",
     createAndInvite: "イベントを作成して、みんなを誘ってみましょう",
     countLabel: "{{count}}件",
+    backToList: "イベント一覧に戻る",
+    unknownCreator: "不明な作成者",
+    unknownAttendee: "不明な参加者",
+    createdByLabel: "作成者",
   },
 
   digest: {

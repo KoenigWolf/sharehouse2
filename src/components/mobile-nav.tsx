@@ -35,9 +35,9 @@ const NAV_ITEMS: {
   matchPaths?: string[];
 }[] = [
     { href: "/residents", labelKey: "nav.residents", icon: Users },
+    { href: "/events", labelKey: "nav.events", icon: Calendar },
     { href: "/bulletin", labelKey: "bulletin.title", icon: MessageCircle },
     { href: "/room-photos", labelKey: "nav.gallery", icon: ImageIcon },
-    { href: "/events", labelKey: "nav.events", icon: Calendar },
   ];
 
 const EXTRA_NAV_ITEMS: {

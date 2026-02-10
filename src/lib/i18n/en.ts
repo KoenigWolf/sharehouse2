@@ -662,6 +662,9 @@ export const en: Translations = {
     dateLabel: "Date",
     timeLabel: "Time (optional)",
     timePlaceholder: "19:00",
+    timeNotSet: "Not set",
+    timeCustom: "Other (custom)",
+    timeSelectMode: "Back to select",
     locationLabel: "Location (optional)",
     locationPlaceholder: "Living room",
     descriptionLabel: "Details (optional)",
@@ -686,6 +689,10 @@ export const en: Translations = {
     noEventsOnDay: "No events on this day",
     createAndInvite: "Create an event and invite everyone",
     countLabel: "{{count}} event(s)",
+    backToList: "Back to events",
+    unknownCreator: "Unknown creator",
+    unknownAttendee: "Unknown attendee",
+    createdByLabel: "Created by",
   },
 
   digest: {

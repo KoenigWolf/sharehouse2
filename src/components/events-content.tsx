@@ -2,9 +2,12 @@
 
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
 import { m, AnimatePresence } from "framer-motion";
-import { MapPin, Clock, Calendar, Plus, X, CalendarDays, Users, Sparkles, Pencil } from "lucide-react";
+import { MapPin, Clock, Calendar, Plus, X, CalendarDays, Users, Sparkles, Pencil, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback, OptimizedAvatarImage } from "@/components/ui/avatar";
+import { TimeSelect } from "@/components/ui/time-select";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
 import { createEvent, updateEvent, toggleAttendance, deleteEvent } from "@/lib/events/actions";
 import { EVENTS } from "@/lib/constants/config";
@@ -16,6 +19,7 @@ interface EventsContentProps {
   events: EventWithDetails[];
   currentUserId: string;
   isTeaser?: boolean;
+  initialEditEventId?: string;
 }
 
 const WEEKDAYS_JA = ["日", "月", "火", "水", "木", "金", "土"];
@@ -87,7 +91,7 @@ function generateCalendarDates(): { date: string; day: number; weekday: number; 
 }
 
 
-export function EventsContent({ events, currentUserId, isTeaser = false }: EventsContentProps) {
+export function EventsContent({ events, currentUserId, isTeaser = false, initialEditEventId }: EventsContentProps) {
   const t = useI18n();
   const router = useRouter();
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -140,6 +144,19 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
     setIsFormOpen(true);
     setFeedback(null);
   }, []);
+
+  // Open edit form when navigated with ?edit=eventId (runs once on mount)
+  const hasInitializedRef = useRef(false);
+  useEffect(() => {
+    if (hasInitializedRef.current || !initialEditEventId) return;
+    hasInitializedRef.current = true;
+
+    const eventToEdit = events.find((e) => e.id === initialEditEventId);
+    if (eventToEdit) {
+      // Use setTimeout to avoid setState in effect body warning
+      setTimeout(() => handleEdit(eventToEdit), 0);
+    }
+  }, [initialEditEventId, events, handleEdit]);
 
   const handleSubmit = useCallback(async () => {
     if (!title.trim() || !eventDate || isSubmitting) return;
@@ -393,12 +410,9 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                     <label className="block text-[11px] font-bold text-muted-foreground tracking-wider uppercase ml-1">
                       {t("events.timeLabel")}
                     </label>
-                    <input
-                      type="text"
+                    <TimeSelect
                       value={eventTime}
-                      onChange={(e) => setEventTime(e.target.value)}
-                      placeholder={t("events.timePlaceholder")}
-                      className="w-full h-12 px-4 bg-secondary/50 border border-border rounded-2xl text-foreground text-[15px] font-medium placeholder:text-muted-foreground/60 focus:outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500/50 focus:bg-card transition-all duration-300"
+                      onChange={setEventTime}
                     />
                   </div>
                 </div>
@@ -550,29 +564,66 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                           delay: (groupIndex * 0.1) + (eventIndex * 0.08),
                         }}
                         whileHover={{ y: -2, transition: { duration: 0.2 } }}
-                        className="premium-surface rounded-3xl p-5 sm:p-6 relative group"
+                        className="premium-surface rounded-3xl overflow-hidden relative group"
                       >
-                        <div className="space-y-4">
+                        {/* Cover Image */}
+                        {event.cover_image_url && (
+                          isTeaser ? (
+                            <div className="relative aspect-[16/9] bg-muted">
+                              <Image
+                                src={event.cover_image_url}
+                                alt={event.title}
+                                fill
+                                sizes="(min-width: 1024px) 448px, 100vw"
+                                className="object-cover blur-[3px]"
+                              />
+                            </div>
+                          ) : (
+                            <Link href={`/events/${event.id}`}>
+                              <div className="relative aspect-[16/9] bg-muted">
+                                <Image
+                                  src={event.cover_image_url}
+                                  alt={event.title}
+                                  fill
+                                  sizes="(min-width: 1024px) 448px, 100vw"
+                                  className="object-cover"
+                                />
+                              </div>
+                            </Link>
+                          )
+                        )}
+
+                        <div className="p-5 sm:p-6 space-y-4">
                           <div className="flex items-start justify-between gap-3">
-                            <h4 className={`text-[17px] font-bold text-foreground leading-snug ${isTeaser ? "blur-[2.5px] select-none" : ""}`}>
-                              {event.title}
-                            </h4>
+                            {isTeaser ? (
+                              <span className="text-[17px] font-bold text-foreground leading-snug blur-[2.5px] select-none">
+                                {event.title}
+                              </span>
+                            ) : (
+                              <Link
+                                href={`/events/${event.id}`}
+                                className="text-[17px] font-bold text-foreground leading-snug hover:text-brand-600 transition-colors"
+                              >
+                                {event.title}
+                              </Link>
+                            )}
                             {isMine && (
-                              <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-all duration-300 shrink-0">
+                              <div className="flex items-center gap-1 shrink-0">
                                 <button
                                   type="button"
                                   onClick={() => handleEdit(event)}
-                                  className="text-[10px] font-bold text-muted-foreground/60 hover:text-amber-500 tracking-widest uppercase transition-colors"
+                                  className="w-8 h-8 flex items-center justify-center rounded-full text-muted-foreground/60 hover:text-amber-500 hover:bg-amber-500/10 transition-colors"
+                                  aria-label={t("common.edit")}
                                 >
-                                  {t("common.edit")}
+                                  <Pencil size={ICON_SIZE.md} />
                                 </button>
-                                <span className="text-muted-foreground/30">|</span>
                                 <button
                                   type="button"
                                   onClick={() => handleDelete(event.id)}
-                                  className="text-[10px] font-bold text-muted-foreground/60 hover:text-rose-500 tracking-widest uppercase transition-colors"
+                                  className="w-8 h-8 flex items-center justify-center rounded-full text-muted-foreground/60 hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
+                                  aria-label={t("common.delete")}
                                 >
-                                  {t("common.delete")}
+                                  <Trash2 size={ICON_SIZE.md} />
                                 </button>
                               </div>
                             )}
