@@ -675,6 +675,9 @@ export const ja = {
     tomorrow: "明日",
     createdBy: "{{name}}さんが作成",
     creating: "作成中...",
+    edit: "イベントを編集",
+    update: "更新",
+    updating: "更新中...",
   },
 
   digest: {

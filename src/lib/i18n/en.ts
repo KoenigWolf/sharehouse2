@@ -676,6 +676,9 @@ export const en: Translations = {
     tomorrow: "Tomorrow",
     createdBy: "Created by {{name}}",
     creating: "Creating...",
+    edit: "Edit Event",
+    update: "Update",
+    updating: "Updating...",
   },
 
   digest: {
