@@ -574,6 +574,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
                                 src={event.cover_image_url}
                                 alt={event.title}
                                 fill
+                                sizes="(min-width: 1024px) 448px, 100vw"
                                 className="object-cover blur-[3px]"
                               />
                             </div>
@@ -584,6 +585,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
                                   src={event.cover_image_url}
                                   alt={event.title}
                                   fill
+                                  sizes="(min-width: 1024px) 448px, 100vw"
                                   className="object-cover"
                                 />
                               </div>
