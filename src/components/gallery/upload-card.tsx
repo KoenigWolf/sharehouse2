@@ -48,29 +48,31 @@ export const UploadCard = memo(function UploadCard({
 
   return (
     <m.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-      className="relative"
+      className="relative w-full aspect-[4/3] group"
     >
       <Button
         type="button"
         variant="ghost"
         disabled={isDisabled}
-        className="w-full h-auto p-0 flex-col aspect-square bg-secondary border-0 rounded-none disabled:opacity-50 pointer-events-none"
+        className="w-full h-full flex flex-col items-center justify-center gap-3 bg-secondary/30 hover:bg-secondary/60 border-2 border-dashed border-muted-foreground/20 hover:border-brand-500/50 rounded-xl transition-all duration-300 disabled:opacity-50"
         aria-label={t("roomPhotos.uploadButton")}
         aria-busy={isUploading}
       >
         {isUploading ? (
-          <Spinner aria-label={t("common.loading")} />
+          <Spinner className="w-8 h-8 text-brand-500" />
         ) : (
           <>
-            <Plus
-              className="w-6 h-6 text-muted-foreground"
-              strokeWidth={ICON_STROKE.thin}
-              aria-hidden="true"
-            />
-            <span className="text-[11px] text-muted-foreground mt-1.5 font-medium">
+            <div className="p-3 rounded-full bg-background shadow-sm ring-1 ring-border group-hover:scale-110 group-hover:ring-brand-500/20 transition-all duration-300">
+              <Plus
+                className="w-6 h-6 text-muted-foreground group-hover:text-brand-500 transition-colors"
+                strokeWidth={ICON_STROKE.normal}
+                aria-hidden="true"
+              />
+            </div>
+            <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">
               {t("roomPhotos.uploadButton")}
             </span>
           </>
