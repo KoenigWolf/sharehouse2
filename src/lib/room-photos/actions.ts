@@ -24,13 +24,11 @@ export interface BulkPhotoItem {
   takenAt: string | null;
 }
 
-const MAX_PHOTOS_PER_USER = ROOM_PHOTOS.maxPhotosPerUser;
-
 /**
  * 部屋の写真をアップロードする
  *
  * オリジン検証 → 認証確認 → レート制限 → ファイルバリデーション →
- * 枚数チェック → Storage アップロード → DB挿入 → キャッシュ再検証の順に処理。
+ * Storage アップロード → DB挿入 → キャッシュ再検証の順に処理。
  *
  * @param formData - "photo" キーにFileを、"caption" キーにキャプション文字列を含むFormData
  * @returns 成功時 `{ success: true, url }`、失敗時 `{ error }`
@@ -72,20 +70,6 @@ export async function uploadRoomPhoto(formData: FormData): Promise<UploadRespons
     );
     if (!fileValidation.success) {
       return { error: fileValidation.error || t("errors.invalidFileType") };
-    }
-
-    const { count, error: countError } = await supabase
-      .from("room_photos")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", user.id);
-
-    if (countError) {
-      logError(countError, { action: "uploadRoomPhoto.countCheck", userId: user.id });
-      return { error: t("errors.serverError") };
-    }
-
-    if ((count ?? 0) >= MAX_PHOTOS_PER_USER) {
-      return { error: t("errors.maxPhotosReached") };
     }
 
     const fileExt = file.name.split(".").pop()?.toLowerCase() || "jpg";
@@ -409,24 +393,6 @@ export async function registerBulkPhotos(
     if (hasInvalidPath) return { error: t("errors.invalidInput") };
 
     const storagePaths = items.map((item) => item.storagePath);
-
-    const { count, error: countError } = await supabase
-      .from("room_photos")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", user.id);
-
-    if (countError) {
-      logError(countError, {
-        action: "registerBulkPhotos.countCheck",
-        userId: user.id,
-      });
-      return { error: t("errors.serverError") };
-    }
-
-    if ((count ?? 0) + items.length > MAX_PHOTOS_PER_USER) {
-      await supabase.storage.from("room-photos").remove(storagePaths);
-      return { error: t("errors.maxPhotosReached") };
-    }
 
     const records = items.map((item) => {
       const { data } = supabase.storage

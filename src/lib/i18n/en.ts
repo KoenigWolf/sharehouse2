@@ -458,6 +458,8 @@ export const en: Translations = {
     unknownUser: "Unknown user",
     upload: "Upload photo",
     delete: "Delete photo",
+    maxPhotos: "max",
+    bulkUploadLimit: "You can upload up to {{count}} photos at once.",
     deleteConfirm: "Delete this photo?",
     caption: "Caption",
     captionPlaceholder: "Describe this photo...",
