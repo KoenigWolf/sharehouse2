@@ -114,7 +114,7 @@ function MBTIDetail({ mbti }: { mbti: string }) {
   const bodyText = hasSplit ? summary.substring(periodIndex + 1).trim() : "";
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-border bg-card shadow-lg transition-all hover:shadow-xl group">
+    <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-lg transition-all hover:shadow-xl group">
       {/* Hero Header */}
       <div className={`relative px-6 py-8 sm:px-8 ${colors.hero} overflow-hidden`}>
         {/* Decorative Watermark */}
@@ -239,7 +239,7 @@ function translateLanguages(
 // Facebook-style card component
 function FbCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`bg-card rounded-lg border border-border shadow-sm ${className}`}>
+    <div className={`bg-card rounded-xl border border-border shadow-sm ${className}`}>
       {children}
     </div>
   );
@@ -419,7 +419,7 @@ export function ProfileDetail({
       {isMockProfile && (
         <m.div
           variants={itemVariants}
-          className="mb-6 py-3 px-4 border border-dashed border-border bg-secondary rounded-lg"
+          className="mb-6 py-3 px-4 border border-dashed border-border bg-secondary rounded-xl"
           role="alert"
         >
           <p className="text-sm text-muted-foreground">{t("profile.mockProfileBanner")}</p>
@@ -440,7 +440,7 @@ export function ProfileDetail({
 
       <m.div
         variants={itemVariants}
-        className={`premium-surface rounded-[2rem] overflow-hidden ${isMockProfile ? "border-dashed border-border" : ""}`}
+        className={`premium-surface rounded-2xl overflow-hidden ${isMockProfile ? "border-dashed border-border" : ""}`}
       >
         {/* Cover Photo */}
         <div className="relative aspect-2/1 sm:aspect-21/8 bg-secondary overflow-hidden">
@@ -700,7 +700,7 @@ export function ProfileDetail({
                       <RoomPhotoManager photos={roomPhotos} compact previewLimit={6} />
                     ) : (
                       <>
-                        <div className="grid grid-cols-3 gap-1 rounded-lg overflow-hidden">
+                        <div className="grid grid-cols-3 gap-1 rounded-xl overflow-hidden">
                           {roomPhotos.slice(0, 9).map((photo) => (
                             <div key={photo.id} className="relative aspect-square bg-muted">
                               <Image
