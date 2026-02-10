@@ -51,23 +51,28 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
   const isAttending = event.event_attendees.some((a) => a.user_id === userId);
 
   const handleToggleAttendance = async () => {
+    if (!userId) return;
     setIsToggling(true);
+    setError(null);
+
     const result = await toggleAttendance(event.id);
     if ("error" in result) {
       setError(result.error);
     } else {
-      router.refresh();
-      if (!isAttending && userId) {
-        setEvent(prev => ({
-          ...prev,
-          event_attendees: [...prev.event_attendees, { user_id: userId, profiles: null }]
-        }));
-      } else if (isAttending) {
+      // Update local state immediately for responsive UI
+      if (isAttending) {
         setEvent(prev => ({
           ...prev,
           event_attendees: prev.event_attendees.filter(a => a.user_id !== userId)
         }));
+      } else {
+        setEvent(prev => ({
+          ...prev,
+          event_attendees: [...prev.event_attendees, { user_id: userId, profiles: null }]
+        }));
       }
+      // Sync with server in background
+      router.refresh();
     }
     setIsToggling(false);
   };
@@ -116,7 +121,9 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
   };
 
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
+    // Append time component to force local-time interpretation
+    // Without this, date-only strings are parsed as UTC and may shift the day
+    const date = new Date(`${dateStr}T00:00:00`);
     return date.toLocaleDateString(undefined, {
       weekday: "long",
       year: "numeric",

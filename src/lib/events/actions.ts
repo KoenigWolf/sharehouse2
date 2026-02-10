@@ -9,9 +9,133 @@ import { enforceAllowedOrigin } from "@/lib/security/request";
 import { isValidUUID, RateLimiters, formatRateLimitError } from "@/lib/security";
 import { validateFileUpload, sanitizeFileName } from "@/domain/validation/profile";
 import type { EventWithDetails } from "@/domain/event";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Translator } from "@/lib/i18n";
 
 type ActionResponse = { success: true } | { error: string };
 type UploadResponse = { success: true; url: string } | { error: string };
+
+type FileValidationResult =
+  | { success: true; uint8Array: Uint8Array; fileName: string; contentType: string }
+  | { success: false; error: string };
+
+/**
+ * Extract storage path from a cover image URL
+ * Uses URL constructor to properly parse and exclude query strings
+ */
+function extractStoragePath(coverImageUrl: string): string | null {
+  try {
+    const url = new URL(coverImageUrl);
+    const pathname = url.pathname;
+    const marker = "/event-covers/";
+    const markerIndex = pathname.indexOf(marker);
+    if (markerIndex === -1) return null;
+    const path = pathname.slice(markerIndex + marker.length);
+    // Trim leading/trailing slashes
+    return path.replace(/^\/+|\/+$/g, "") || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Delete a cover image from storage
+ */
+async function deleteStorageCover(
+  supabase: SupabaseClient,
+  coverImageUrl: string
+): Promise<void> {
+  const storagePath = extractStoragePath(coverImageUrl);
+  if (storagePath) {
+    await supabase.storage.from("event-covers").remove([storagePath]);
+  }
+}
+
+/**
+ * Validate file from FormData and read its contents
+ */
+async function validateAndReadFile(
+  formData: FormData,
+  userId: string,
+  eventId: string,
+  t: Translator
+): Promise<FileValidationResult> {
+  const fileEntry = formData.get("cover");
+
+  if (!fileEntry || !(fileEntry instanceof File)) {
+    return { success: false, error: t("errors.fileRequired") };
+  }
+
+  if (fileEntry.size === 0) {
+    return { success: false, error: t("errors.fileRequired") };
+  }
+
+  const fileValidation = validateFileUpload(
+    { size: fileEntry.size, type: fileEntry.type },
+    t
+  );
+  if (!fileValidation.success) {
+    return { success: false, error: fileValidation.error ?? t("errors.invalidFileType") };
+  }
+
+  const fileExt = fileEntry.name.split(".").pop()?.toLowerCase() ?? "jpg";
+  const sanitizedExt = sanitizeFileName(fileExt).slice(0, 10);
+  const fileName = `${userId}/${eventId}.${sanitizedExt}`;
+
+  const arrayBuffer = await fileEntry.arrayBuffer();
+  const uint8Array = new Uint8Array(arrayBuffer);
+
+  return {
+    success: true,
+    uint8Array,
+    fileName,
+    contentType: fileEntry.type,
+  };
+}
+
+/**
+ * Upload cover to storage and persist URL to database
+ */
+async function uploadAndPersistCover(
+  supabase: SupabaseClient,
+  fileName: string,
+  uint8Array: Uint8Array,
+  contentType: string,
+  eventId: string,
+  userId: string,
+  t: Translator
+): Promise<UploadResponse> {
+  const { error: uploadError } = await supabase.storage
+    .from("event-covers")
+    .upload(fileName, uint8Array, {
+      contentType,
+      cacheControl: "3600",
+      upsert: true,
+    });
+
+  if (uploadError) {
+    logError(uploadError, { action: "uploadEventCover", userId });
+    return { error: t("errors.uploadFailed") };
+  }
+
+  const { data: urlData } = supabase.storage
+    .from("event-covers")
+    .getPublicUrl(fileName);
+
+  const { error: updateError } = await supabase
+    .from("events")
+    .update({ cover_image_url: urlData.publicUrl })
+    .eq("id", eventId)
+    .eq("user_id", userId);
+
+  if (updateError) {
+    logError(updateError, { action: "uploadEventCover:update", userId });
+    await supabase.storage.from("event-covers").remove([fileName]);
+    return { error: t("errors.saveFailed") };
+  }
+
+  return { success: true, url: urlData.publicUrl };
+}
 
 export async function getUpcomingEvents(): Promise<EventWithDetails[]> {
   try {
@@ -280,7 +404,6 @@ export async function uploadEventCover(
       return { error: formatRateLimitError(uploadRateLimit.retryAfter, t) };
     }
 
-    // Verify user owns the event
     const { data: event } = await supabase
       .from("events")
       .select("id, cover_image_url")
@@ -290,65 +413,31 @@ export async function uploadEventCover(
 
     if (!event) return { error: t("errors.notFound") };
 
-    const file = formData.get("cover") as File;
-    if (!file || file.size === 0) {
-      return { error: t("errors.fileRequired") };
+    const fileResult = await validateAndReadFile(formData, user.id, eventId, t);
+    if (!fileResult.success) {
+      return { error: fileResult.error };
     }
 
-    const fileValidation = validateFileUpload(
-      { size: file.size, type: file.type },
+    if (event.cover_image_url) {
+      await deleteStorageCover(supabase, event.cover_image_url);
+    }
+
+    const uploadResult = await uploadAndPersistCover(
+      supabase,
+      fileResult.fileName,
+      fileResult.uint8Array,
+      fileResult.contentType,
+      eventId,
+      user.id,
       t
     );
-    if (!fileValidation.success) {
-      return { error: fileValidation.error || t("errors.invalidFileType") };
-    }
 
-    const fileExt = file.name.split(".").pop()?.toLowerCase() || "jpg";
-    const sanitizedExt = sanitizeFileName(fileExt).slice(0, 10);
-    const fileName = `${user.id}/${eventId}.${sanitizedExt}`;
-
-    const arrayBuffer = await file.arrayBuffer();
-    const uint8Array = new Uint8Array(arrayBuffer);
-
-    // Delete old cover if exists
-    if (event.cover_image_url) {
-      const oldPath = event.cover_image_url.split("/event-covers/")[1];
-      if (oldPath) {
-        await supabase.storage.from("event-covers").remove([oldPath]);
-      }
-    }
-
-    const { error: uploadError } = await supabase.storage
-      .from("event-covers")
-      .upload(fileName, uint8Array, {
-        contentType: file.type,
-        cacheControl: "3600",
-        upsert: true,
-      });
-
-    if (uploadError) {
-      logError(uploadError, { action: "uploadEventCover", userId: user.id });
-      return { error: t("errors.uploadFailed") };
-    }
-
-    const { data: urlData } = supabase.storage
-      .from("event-covers")
-      .getPublicUrl(fileName);
-
-    const { error: updateError } = await supabase
-      .from("events")
-      .update({ cover_image_url: urlData.publicUrl })
-      .eq("id", eventId)
-      .eq("user_id", user.id);
-
-    if (updateError) {
-      logError(updateError, { action: "uploadEventCover:update", userId: user.id });
-      await supabase.storage.from("event-covers").remove([fileName]);
-      return { error: t("errors.saveFailed") };
+    if ("error" in uploadResult) {
+      return uploadResult;
     }
 
     CacheStrategy.afterEventUpdate();
-    return { success: true, url: urlData.publicUrl };
+    return uploadResult;
   } catch (error) {
     logError(error, { action: "uploadEventCover" });
     return { error: t("errors.serverError") };
@@ -370,6 +459,11 @@ export async function removeEventCover(eventId: string): Promise<ActionResponse>
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { error: t("errors.unauthorized") };
 
+    const rateLimit = RateLimiters.upload(user.id);
+    if (!rateLimit.success) {
+      return { error: formatRateLimitError(rateLimit.retryAfter, t) };
+    }
+
     const { data: event } = await supabase
       .from("events")
       .select("id, cover_image_url")
@@ -380,10 +474,7 @@ export async function removeEventCover(eventId: string): Promise<ActionResponse>
     if (!event) return { error: t("errors.notFound") };
 
     if (event.cover_image_url) {
-      const oldPath = event.cover_image_url.split("/event-covers/")[1];
-      if (oldPath) {
-        await supabase.storage.from("event-covers").remove([oldPath]);
-      }
+      await deleteStorageCover(supabase, event.cover_image_url);
     }
 
     const { error: updateError } = await supabase
