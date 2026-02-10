@@ -228,42 +228,20 @@ describe("registerBulkPhotos", () => {
     expect((result as { error: string }).error).toBe(t("errors.invalidInput"));
   });
 
-  it("should reject when max photos exceeded and clean up storage", async () => {
-    mockGetUser.mockResolvedValue({ data: { user: { id: "user-123" } } });
-
-    mockFrom.mockReturnValue({
-      select: vi.fn().mockReturnValue({
-        eq: vi.fn().mockResolvedValue({ count: 99, error: null }),
-      }),
-    });
-
-    const mockRemove = vi.fn().mockResolvedValue({ error: null });
-    mockStorage.mockReturnValue({ remove: mockRemove });
-
-    const items = [
-      { storagePath: "user-123/a.webp", takenAt: null },
-      { storagePath: "user-123/b.webp", takenAt: "2024-03-15T10:00:00.000Z" },
-    ];
-    const { registerBulkPhotos } = await import("@/lib/room-photos/actions");
-    const result = await registerBulkPhotos(items);
-
-    expect(result).toHaveProperty("error");
-    expect((result as { error: string }).error).toBe(t("errors.maxPhotosReached"));
-    expect(mockRemove).toHaveBeenCalledWith(["user-123/a.webp", "user-123/b.webp"]);
-  });
-
   it("should insert records and return success", async () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: "user-123" } } });
 
-    mockFrom
-      .mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockResolvedValue({ count: 0, error: null }),
+    mockFrom.mockReturnValue({
+      insert: vi.fn().mockReturnValue({
+        select: vi.fn().mockResolvedValue({
+          data: [
+            { id: "1", user_id: "user-123", photo_url: "https://example.com/storage/user-123/a.webp" },
+            { id: "2", user_id: "user-123", photo_url: "https://example.com/storage/user-123/b.webp" },
+          ],
+          error: null,
         }),
-      })
-      .mockReturnValueOnce({
-        insert: vi.fn().mockResolvedValue({ error: null }),
-      });
+      }),
+    });
 
     mockStorage.mockReturnValue({
       getPublicUrl: vi.fn((path: string) => ({
@@ -278,21 +256,20 @@ describe("registerBulkPhotos", () => {
     const { registerBulkPhotos } = await import("@/lib/room-photos/actions");
     const result = await registerBulkPhotos(items);
 
-    expect(result).toEqual({ success: true });
+    expect(result).toHaveProperty("success", true);
   });
 
   it("should clean up storage on DB insert failure", async () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: "user-123" } } });
 
-    mockFrom
-      .mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockResolvedValue({ count: 0, error: null }),
+    mockFrom.mockReturnValue({
+      insert: vi.fn().mockReturnValue({
+        select: vi.fn().mockResolvedValue({
+          data: null,
+          error: { message: "insert failed" },
         }),
-      })
-      .mockReturnValueOnce({
-        insert: vi.fn().mockResolvedValue({ error: { message: "insert failed" } }),
-      });
+      }),
+    });
 
     mockStorage.mockReturnValue({
       getPublicUrl: vi.fn((path: string) => ({

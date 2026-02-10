@@ -16,7 +16,6 @@ import type { RoomPhoto } from "@/domain/room-photo";
 
 interface RoomPhotoManagerProps {
   photos: RoomPhoto[];
-  maxPhotos?: number;
   compact?: boolean;
   previewLimit?: number;
 }
@@ -28,11 +27,9 @@ interface RoomPhotoManagerProps {
  * 複数枚の一括アップロードに対応。クライアント側で圧縮→直接Storageアップロード。
  *
  * @param props.photos - 現在の写真一覧
- * @param props.maxPhotos - 最大アップロード枚数（デフォルト: config値）
  */
 export function RoomPhotoManager({
   photos,
-  maxPhotos = ROOM_PHOTOS.maxPhotosPerUser,
   compact = false,
   previewLimit,
 }: RoomPhotoManagerProps) {
@@ -58,9 +55,7 @@ export function RoomPhotoManager({
   } = useBulkUpload();
 
 
-  const remainingTotal = Math.max(0, maxPhotos - currentPhotos.length);
-  const effectiveBulkLimit = Math.min(ROOM_PHOTOS.maxBulkUpload, remainingTotal);
-  const canUpload = !isUploading && remainingTotal > 0;
+  const canUpload = !isUploading;
   const hasPreviewLimit = compact && previewLimit !== undefined && currentPhotos.length > previewLimit;
 
   const handleUploadClick = () => {
@@ -75,13 +70,15 @@ export function RoomPhotoManager({
       if (!files || files.length === 0) return;
 
       setError("");
-      startUpload(Array.from(files), remainingTotal);
+      startUpload(Array.from(files), (newPhotos) => {
+        setCurrentPhotos((prev) => [...prev, ...newPhotos]);
+      });
 
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
     },
-    [startUpload, remainingTotal]
+    [startUpload]
   );
 
   const handleDelete = useCallback(
@@ -118,7 +115,7 @@ export function RoomPhotoManager({
             {t("roomPhotos.roomPhotosSection")}
           </p>
           <span className="text-[10px] text-brand-500 font-bold tracking-wider bg-primary/10 px-2.5 py-1 rounded-full">
-            {currentPhotos.length} / {maxPhotos}
+            {currentPhotos.length} {t("roomPhotos.maxPhotos")}
           </span>
         </div>
       )}
@@ -226,20 +223,14 @@ export function RoomPhotoManager({
           </div>
         )}
 
-        {canUpload ? (
-          <div className="pt-2">
-            <p className="text-[10px] text-muted-foreground leading-relaxed font-medium">
-              <span className="text-brand-500 font-bold mr-1">INFO:</span>
-              {t("roomPhotos.uploadLimit", { max: maxPhotos, bulk: effectiveBulkLimit })}
-              <br />
-              {t("roomPhotos.supportedFormats")} — {t("roomPhotos.uploadInstructions")}
-            </p>
-          </div>
-        ) : (
-          <p className="text-[10px] text-warning font-bold tracking-wider uppercase bg-warning-bg px-3 py-1.5 rounded-full inline-block">
-            {t("errors.maxPhotosReached")}
+        <div className="pt-2">
+          <p className="text-[10px] text-muted-foreground leading-relaxed font-medium">
+            <span className="text-brand-500 font-bold mr-1">INFO:</span>
+            {t("roomPhotos.bulkUploadLimit", { count: ROOM_PHOTOS.maxBulkUpload })}
+            <br />
+            {t("roomPhotos.supportedFormats")} — {t("roomPhotos.uploadInstructions")}
           </p>
-        )}
+        </div>
 
         {currentPhotos.length === 0 && !isUploading && (
           <div className="py-8 text-center bg-muted/30 rounded-2xl border border-dashed border-border">

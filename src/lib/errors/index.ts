@@ -125,7 +125,7 @@ export function handleError(err: unknown): { error: string; code?: ErrorCodeType
 }
 
 /**
- * Sentryにエラーを送信する（内部ヘルパー）
+ * Sentryにエラー/警告を送信する（内部ヘルパー）
  */
 async function sendToSentry(
   error: unknown,
@@ -134,7 +134,8 @@ async function sendToSentry(
     action?: string;
     userId?: string;
     metadata?: Record<string, unknown>;
-  }
+  },
+  level: "error" | "warning" = "error"
 ): Promise<void> {
   const Sentry = await import("@sentry/nextjs");
   if (!Sentry.isInitialized()) return;
@@ -155,7 +156,7 @@ async function sendToSentry(
     } else {
       Sentry.captureMessage(
         typeof error === "string" ? error : JSON.stringify(errorData),
-        "error"
+        level
       );
     }
   });
@@ -199,6 +200,36 @@ export function logError(
   console.error("[AppError]", JSON.stringify(errorInfo, null, 2));
 
   sendToSentry(error, errorData, context).catch(() => {
+    // Sentry not available, skip silently
+  });
+}
+
+/**
+ * Log warning with context (for server-side use)
+ *
+ * Sentry DSNが設定されている場合はSentryにも警告を送信する。
+ * 設定されていない場合はコンソールログのみ出力する。
+ */
+export function logWarning(
+  message: string,
+  context?: {
+    action?: string;
+    userId?: string;
+    metadata?: Record<string, unknown>;
+  }
+): void {
+  const timestamp = new Date().toISOString();
+
+  const warningInfo = {
+    timestamp,
+    level: "warning",
+    message,
+    ...context,
+  };
+
+  console.warn("[AppWarning]", JSON.stringify(warningInfo, null, 2));
+
+  sendToSentry(message, { message }, context, "warning").catch(() => {
     // Sentry not available, skip silently
   });
 }

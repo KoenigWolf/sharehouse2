@@ -8,7 +8,6 @@ import type { PhotoWithProfile, PhotoActionHandlers } from "@/domain/room-photo"
 
 interface UsePhotoGalleryOptions {
   initialPhotos: PhotoWithProfile[];
-  userId: string | null;
   initialVisibleCount?: number;
 }
 
@@ -18,10 +17,10 @@ interface UsePhotoGalleryReturn {
   hasPhotos: boolean;
   hasMore: boolean;
   remainingCount: number;
-  remainingUploadSlots: number;
   maxBulkUpload: number;
   showMore: () => void;
   actionHandlers: PhotoActionHandlers;
+  addPhotos: (newPhotos: PhotoWithProfile[]) => void;
 }
 
 const DEFAULT_VISIBLE_COUNT = 24;
@@ -37,7 +36,6 @@ const DEFAULT_VISIBLE_COUNT = 24;
  */
 export function usePhotoGallery({
   initialPhotos,
-  userId,
   initialVisibleCount = DEFAULT_VISIBLE_COUNT,
 }: UsePhotoGalleryOptions): UsePhotoGalleryReturn {
   const router = useRouter();
@@ -48,18 +46,6 @@ export function usePhotoGallery({
   useEffect(() => {
     setPhotos(initialPhotos);
   }, [initialPhotos]);
-
-  // Calculate upload limits
-  const { remainingUploadSlots, maxBulkUpload } = useMemo(() => {
-    const userPhotoCount = userId
-      ? photos.filter((p) => p.user_id === userId).length
-      : 0;
-    const remaining = Math.max(0, ROOM_PHOTOS.maxPhotosPerUser - userPhotoCount);
-    return {
-      remainingUploadSlots: remaining,
-      maxBulkUpload: Math.min(ROOM_PHOTOS.maxBulkUpload, remaining),
-    };
-  }, [userId, photos]);
 
   // Derived state
   const hasPhotos = photos.length > 0;
@@ -109,15 +95,20 @@ export function usePhotoGallery({
     [handleDelete, handleUpdateCaption]
   );
 
+  const addPhotos = useCallback((newPhotos: PhotoWithProfile[]) => {
+    setPhotos((prev) => [...newPhotos, ...prev]);
+    setVisibleCount((prev) => prev + newPhotos.length);
+  }, []);
+
   return {
     photos,
     visiblePhotos,
     hasPhotos,
     hasMore,
     remainingCount,
-    remainingUploadSlots,
-    maxBulkUpload,
+    maxBulkUpload: ROOM_PHOTOS.maxBulkUpload,
     showMore,
     actionHandlers,
+    addPhotos,
   };
 }

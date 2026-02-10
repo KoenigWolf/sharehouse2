@@ -471,7 +471,7 @@ export const en: Translations = {
     uploadButton: "Upload photo",
     bulkUploadComplete: "{{count}} photos uploaded",
     bulkUploadPartial: "{{success}} uploaded, {{failed}} failed",
-    bulkUploadLimit: "Up to {{count}} at a time",
+    bulkUploadLimit: "You can upload up to {{count}} photos at once.",
     statusPending: "Waiting",
     statusCompressing: "Compressing",
     statusUploading: "Uploading",

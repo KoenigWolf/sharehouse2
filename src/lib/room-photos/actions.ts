@@ -17,19 +17,18 @@ import type { Profile } from "@/domain/profile";
  */
 type UpdateResponse = { success: true } | { error: string };
 type UploadResponse = { success: true; url: string } | { error: string };
+type BulkUploadResponse = { success: true; data: RoomPhoto[] } | { error: string };
 
 export interface BulkPhotoItem {
   storagePath: string;
   takenAt: string | null;
 }
 
-const MAX_PHOTOS_PER_USER = ROOM_PHOTOS.maxPhotosPerUser;
-
 /**
  * 部屋の写真をアップロードする
  *
  * オリジン検証 → 認証確認 → レート制限 → ファイルバリデーション →
- * 枚数チェック → Storage アップロード → DB挿入 → キャッシュ再検証の順に処理。
+ * Storage アップロード → DB挿入 → キャッシュ再検証の順に処理。
  *
  * @param formData - "photo" キーにFileを、"caption" キーにキャプション文字列を含むFormData
  * @returns 成功時 `{ success: true, url }`、失敗時 `{ error }`
@@ -71,20 +70,6 @@ export async function uploadRoomPhoto(formData: FormData): Promise<UploadRespons
     );
     if (!fileValidation.success) {
       return { error: fileValidation.error || t("errors.invalidFileType") };
-    }
-
-    const { count, error: countError } = await supabase
-      .from("room_photos")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", user.id);
-
-    if (countError) {
-      logError(countError, { action: "uploadRoomPhoto.countCheck", userId: user.id });
-      return { error: t("errors.serverError") };
-    }
-
-    if ((count ?? 0) >= MAX_PHOTOS_PER_USER) {
-      return { error: t("errors.maxPhotosReached") };
     }
 
     const fileExt = file.name.split(".").pop()?.toLowerCase() || "jpg";
@@ -378,7 +363,7 @@ export async function updateRoomPhotoCaption(
  */
 export async function registerBulkPhotos(
   items: BulkPhotoItem[]
-): Promise<UpdateResponse> {
+): Promise<BulkUploadResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "registerBulkPhotos");
@@ -391,6 +376,11 @@ export async function registerBulkPhotos(
     } = await supabase.auth.getUser();
 
     if (!user) return { error: t("errors.unauthorized") };
+
+    const uploadRateLimit = RateLimiters.upload(user.id);
+    if (!uploadRateLimit.success) {
+      return { error: formatRateLimitError(uploadRateLimit.retryAfter, t) };
+    }
 
     if (
       !Array.isArray(items) ||
@@ -409,24 +399,6 @@ export async function registerBulkPhotos(
 
     const storagePaths = items.map((item) => item.storagePath);
 
-    const { count, error: countError } = await supabase
-      .from("room_photos")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", user.id);
-
-    if (countError) {
-      logError(countError, {
-        action: "registerBulkPhotos.countCheck",
-        userId: user.id,
-      });
-      return { error: t("errors.serverError") };
-    }
-
-    if ((count ?? 0) + items.length > MAX_PHOTOS_PER_USER) {
-      await supabase.storage.from("room-photos").remove(storagePaths);
-      return { error: t("errors.maxPhotosReached") };
-    }
-
     const records = items.map((item) => {
       const { data } = supabase.storage
         .from("room-photos")
@@ -439,9 +411,10 @@ export async function registerBulkPhotos(
       };
     });
 
-    const { error: insertError } = await supabase
+    const { data: insertedData, error: insertError } = await supabase
       .from("room_photos")
-      .insert(records);
+      .insert(records)
+      .select("*");
 
     if (insertError) {
       logError(insertError, {
@@ -453,7 +426,7 @@ export async function registerBulkPhotos(
     }
 
     CacheStrategy.afterRoomPhotoUpdate();
-    return { success: true };
+    return { success: true, data: insertedData as RoomPhoto[] };
   } catch (error) {
     logError(error, { action: "registerBulkPhotos" });
     return { error: t("errors.serverError") };
