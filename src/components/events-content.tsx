@@ -651,6 +651,11 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                             <div className="flex items-center gap-3">
                               {attendeeCount > 0 && (
                                 <div className="flex items-center gap-2">
+                                  <AttendeeAvatars
+                                    attendees={event.event_attendees}
+                                    maxDisplay={3}
+                                    isBlurred={isTeaser}
+                                  />
                                   <span className="text-[11px] font-bold text-muted-foreground flex items-center gap-1">
                                     <Users size={ICON_SIZE.xs} />
                                     {attendeeCount}
