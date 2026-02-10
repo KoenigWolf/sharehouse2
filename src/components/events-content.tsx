@@ -556,26 +556,43 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                       >
                         {/* Cover Image */}
                         {event.cover_image_url && (
-                          <Link href={`/events/${event.id}`} className={isTeaser ? "pointer-events-none" : ""}>
+                          isTeaser ? (
                             <div className="relative aspect-[16/9] bg-muted">
                               <Image
                                 src={event.cover_image_url}
                                 alt={event.title}
                                 fill
-                                className={`object-cover ${isTeaser ? "blur-[3px]" : ""}`}
+                                className="object-cover blur-[3px]"
                               />
                             </div>
-                          </Link>
+                          ) : (
+                            <Link href={`/events/${event.id}`}>
+                              <div className="relative aspect-[16/9] bg-muted">
+                                <Image
+                                  src={event.cover_image_url}
+                                  alt={event.title}
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
+                            </Link>
+                          )
                         )}
 
                         <div className="p-5 sm:p-6 space-y-4">
                           <div className="flex items-start justify-between gap-3">
-                            <Link
-                              href={`/events/${event.id}`}
-                              className={`text-[17px] font-bold text-foreground leading-snug hover:text-brand-600 transition-colors ${isTeaser ? "blur-[2.5px] select-none pointer-events-none" : ""}`}
-                            >
-                              {event.title}
-                            </Link>
+                            {isTeaser ? (
+                              <span className="text-[17px] font-bold text-foreground leading-snug blur-[2.5px] select-none">
+                                {event.title}
+                              </span>
+                            ) : (
+                              <Link
+                                href={`/events/${event.id}`}
+                                className="text-[17px] font-bold text-foreground leading-snug hover:text-brand-600 transition-colors"
+                              >
+                                {event.title}
+                              </Link>
+                            )}
                             {isMine && (
                               <div className="flex items-center gap-1 shrink-0">
                                 <button

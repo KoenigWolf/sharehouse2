@@ -21,6 +21,7 @@ import { MobileNav } from "@/components/mobile-nav";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
+import { getInitials } from "@/lib/utils/formatting";
 import { useI18n } from "@/hooks/use-i18n";
 import { useUser } from "@/hooks/use-user";
 import {
@@ -282,6 +283,7 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
                       src={event.profiles?.avatar_url}
                       alt={creatorName}
                       context="card"
+                      fallback={getInitials(creatorName)}
                     />
                   </Avatar>
                   <span className="font-medium text-foreground group-hover:text-brand-600 transition-colors">
@@ -310,7 +312,12 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
                           className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted hover:bg-muted/80 transition-colors"
                         >
                           <Avatar className="w-6 h-6">
-                            <OptimizedAvatarImage src={attendee.profiles?.avatar_url} alt={name} context="card" />
+                            <OptimizedAvatarImage
+                              src={attendee.profiles?.avatar_url}
+                              alt={name}
+                              context="card"
+                              fallback={getInitials(name)}
+                            />
                           </Avatar>
                           <span className="text-sm font-medium text-foreground">{name}</span>
                         </Link>
