@@ -148,7 +148,6 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
     visiblePhotos,
     hasPhotos,
     hasMore,
-    remainingCount,
     maxBulkUpload,
     showMore,
     actionHandlers,
