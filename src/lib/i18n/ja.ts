@@ -685,6 +685,10 @@ export const ja = {
     noEventsOnDay: "この日のイベントはありません",
     createAndInvite: "イベントを作成して、みんなを誘ってみましょう",
     countLabel: "{{count}}件",
+    backToList: "イベント一覧に戻る",
+    unknownCreator: "不明な作成者",
+    unknownAttendee: "不明な参加者",
+    createdByLabel: "作成者",
   },
 
   digest: {

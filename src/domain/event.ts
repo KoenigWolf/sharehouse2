@@ -6,6 +6,7 @@ export interface Event {
   event_date: string;
   event_time: string | null;
   location: string | null;
+  cover_image_url: string | null;
   created_at: string;
   updated_at: string;
 }

@@ -686,6 +686,10 @@ export const en: Translations = {
     noEventsOnDay: "No events on this day",
     createAndInvite: "Create an event and invite everyone",
     countLabel: "{{count}} event(s)",
+    backToList: "Back to events",
+    unknownCreator: "Unknown creator",
+    unknownAttendee: "Unknown attendee",
+    createdByLabel: "Created by",
   },
 
   digest: {
