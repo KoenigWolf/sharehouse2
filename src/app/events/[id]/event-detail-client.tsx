@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { m } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import {
   Calendar,
   MapPin,
@@ -21,6 +21,7 @@ import { MobileNav } from "@/components/mobile-nav";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
+import { TimeSelect } from "@/components/ui/time-select";
 import { getInitials } from "@/lib/utils/formatting";
 import { useI18n } from "@/hooks/use-i18n";
 import { useUser } from "@/hooks/use-user";
@@ -29,8 +30,10 @@ import {
   deleteEvent,
   uploadEventCover,
   removeEventCover,
+  updateEvent,
 } from "@/lib/events/actions";
-import { FILE_UPLOAD } from "@/lib/constants/config";
+import { FILE_UPLOAD, EVENTS } from "@/lib/constants/config";
+import { X } from "lucide-react";
 import { prepareImageForUpload } from "@/lib/utils/image-compression";
 import { logError } from "@/lib/errors";
 import type { EventWithDetails } from "@/domain/event";
@@ -49,6 +52,15 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUploadingCover, setIsUploadingCover] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Inline editing state
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState(event.title);
+  const [editDate, setEditDate] = useState(event.event_date);
+  const [editTime, setEditTime] = useState(event.event_time ?? "");
+  const [editLocation, setEditLocation] = useState(event.location ?? "");
+  const [editDescription, setEditDescription] = useState(event.description ?? "");
+  const [isSaving, setIsSaving] = useState(false);
 
   const isOwner = event.user_id === userId;
   const isAttending = event.event_attendees.some((a) => a.user_id === userId);
@@ -131,6 +143,50 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
       setEvent((prev) => ({ ...prev, cover_image_url: null }));
     }
     setIsUploadingCover(false);
+  };
+
+  const handleStartEdit = () => {
+    setEditTitle(event.title);
+    setEditDate(event.event_date);
+    setEditTime(event.event_time ?? "");
+    setEditLocation(event.location ?? "");
+    setEditDescription(event.description ?? "");
+    setIsEditing(true);
+    setError(null);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editTitle.trim() || !editDate || isSaving) return;
+    setIsSaving(true);
+    setError(null);
+
+    const result = await updateEvent(event.id, {
+      title: editTitle,
+      description: editDescription || null,
+      event_date: editDate,
+      event_time: editTime || null,
+      location: editLocation || null,
+    });
+
+    if ("error" in result) {
+      setError(result.error);
+    } else {
+      setEvent((prev) => ({
+        ...prev,
+        title: editTitle,
+        description: editDescription || null,
+        event_date: editDate,
+        event_time: editTime || null,
+        location: editLocation || null,
+      }));
+      setIsEditing(false);
+      router.refresh();
+    }
+    setIsSaving(false);
   };
 
   const formatDate = (dateStr: string) => {
@@ -223,62 +279,191 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
 
             {/* Main Card */}
             <div className="premium-surface rounded-2xl overflow-hidden">
-              {/* Header */}
-              <div className="p-6 sm:p-8 border-b border-border">
-                <div className="flex items-start justify-between gap-4 mb-4">
-                  <h1 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight">
-                    {event.title}
-                  </h1>
-                  {isOwner && (
-                    <div className="flex gap-1 shrink-0">
+              {/* Header / Edit Form */}
+              <AnimatePresence mode="wait">
+                {isEditing ? (
+                  <m.div
+                    key="edit-form"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="p-6 sm:p-8 border-b border-border"
+                  >
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-2xl bg-amber-500/10 flex items-center justify-center">
+                          <Pencil size={20} className="text-amber-500" />
+                        </div>
+                        <h2 className="text-lg font-bold text-foreground">
+                          {t("events.edit")}
+                        </h2>
+                      </div>
                       <button
                         type="button"
-                        onClick={() => router.push(`/events?edit=${event.id}`)}
-                        className="w-9 h-9 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                        onClick={handleCancelEdit}
+                        className="w-8 h-8 rounded-full bg-secondary hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
                       >
-                        <Pencil size={18} />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleDelete}
-                        disabled={isDeleting}
-                        className="w-9 h-9 flex items-center justify-center rounded-lg text-muted-foreground hover:text-error hover:bg-error-bg transition-colors"
-                      >
-                        {isDeleting ? <Spinner size="xs" /> : <Trash2 size={18} />}
+                        <X size={18} />
                       </button>
                     </div>
-                  )}
-                </div>
 
-                {/* Meta Info */}
-                <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-                  <div className="flex items-center gap-2 text-foreground">
-                    <Calendar size={16} className="text-brand-500 shrink-0" />
-                    <span>{formatDate(event.event_date)}</span>
-                  </div>
-                  {event.event_time && (
-                    <div className="flex items-center gap-2 text-foreground">
-                      <Clock size={16} className="text-brand-500 shrink-0" />
-                      <span>{event.event_time}</span>
-                    </div>
-                  )}
-                  {event.location && (
-                    <div className="flex items-center gap-2 text-foreground">
-                      <MapPin size={16} className="text-brand-500 shrink-0" />
-                      <span>{event.location}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
+                    <div className="space-y-5">
+                      <div className="space-y-2">
+                        <label className="block text-[11px] font-bold text-muted-foreground tracking-wider uppercase ml-1">
+                          {t("events.titleLabel")} <span className="text-error">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={editTitle}
+                          onChange={(e) => setEditTitle(e.target.value)}
+                          placeholder={t("events.titlePlaceholder")}
+                          maxLength={EVENTS.maxTitleLength}
+                          className="w-full h-12 px-4 bg-secondary/50 border border-border rounded-2xl text-foreground text-[15px] font-medium placeholder:text-muted-foreground/60 focus:outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500/50 focus:bg-card transition-all duration-300"
+                        />
+                      </div>
 
-              {/* Description */}
-              {event.description && (
-                <div className="p-6 sm:p-8 border-b border-border">
-                  <p className="text-foreground/80 whitespace-pre-wrap leading-relaxed">
-                    {event.description}
-                  </p>
-                </div>
-              )}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <label className="block text-[11px] font-bold text-muted-foreground tracking-wider uppercase ml-1">
+                            {t("events.dateLabel")} <span className="text-error">*</span>
+                          </label>
+                          <input
+                            type="date"
+                            value={editDate}
+                            onChange={(e) => setEditDate(e.target.value)}
+                            className="w-full h-12 px-4 bg-secondary/50 border border-border rounded-2xl text-foreground text-[15px] font-medium focus:outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500/50 focus:bg-card transition-all duration-300"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="block text-[11px] font-bold text-muted-foreground tracking-wider uppercase ml-1">
+                            {t("events.timeLabel")}
+                          </label>
+                          <TimeSelect
+                            value={editTime}
+                            onChange={setEditTime}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="block text-[11px] font-bold text-muted-foreground tracking-wider uppercase ml-1">
+                          {t("events.locationLabel")}
+                        </label>
+                        <div className="relative">
+                          <MapPin size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
+                          <input
+                            type="text"
+                            value={editLocation}
+                            onChange={(e) => setEditLocation(e.target.value)}
+                            placeholder={t("events.locationPlaceholder")}
+                            className="w-full h-12 pl-11 pr-4 bg-secondary/50 border border-border rounded-2xl text-foreground text-[15px] font-medium placeholder:text-muted-foreground/60 focus:outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500/50 focus:bg-card transition-all duration-300"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="block text-[11px] font-bold text-muted-foreground tracking-wider uppercase ml-1">
+                          {t("events.descriptionLabel")}
+                        </label>
+                        <textarea
+                          value={editDescription}
+                          onChange={(e) => setEditDescription(e.target.value)}
+                          placeholder={t("events.descriptionPlaceholder")}
+                          maxLength={EVENTS.maxDescriptionLength}
+                          rows={3}
+                          className="w-full px-4 py-3 bg-secondary/50 border border-border rounded-2xl text-foreground text-[15px] font-medium placeholder:text-muted-foreground/60 focus:outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500/50 focus:bg-card transition-all duration-300 resize-none leading-relaxed"
+                        />
+                      </div>
+
+                      <div className="flex justify-end gap-3 pt-3">
+                        <button
+                          type="button"
+                          onClick={handleCancelEdit}
+                          className="h-11 px-6 rounded-full text-[12px] font-bold text-muted-foreground hover:text-foreground hover:bg-secondary tracking-wider uppercase transition-all duration-300"
+                        >
+                          {t("common.cancel")}
+                        </button>
+                        <m.button
+                          type="button"
+                          onClick={handleSaveEdit}
+                          disabled={!editTitle.trim() || !editDate || isSaving}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          className="h-11 px-8 rounded-full bg-amber-500 hover:bg-amber-600 disabled:bg-secondary disabled:text-muted-foreground text-white text-[12px] font-bold tracking-wider uppercase transition-all duration-300 shadow-lg shadow-amber-500/20 disabled:shadow-none"
+                        >
+                          {isSaving ? t("events.updating") : t("events.update")}
+                        </m.button>
+                      </div>
+                    </div>
+                  </m.div>
+                ) : (
+                  <m.div
+                    key="view-mode"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {/* Header */}
+                    <div className="p-6 sm:p-8 border-b border-border">
+                      <div className="flex items-start justify-between gap-4 mb-4">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight">
+                          {event.title}
+                        </h1>
+                        {isOwner && (
+                          <div className="flex gap-1 shrink-0">
+                            <button
+                              type="button"
+                              onClick={handleStartEdit}
+                              className="w-9 h-9 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                            >
+                              <Pencil size={18} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={handleDelete}
+                              disabled={isDeleting}
+                              className="w-9 h-9 flex items-center justify-center rounded-lg text-muted-foreground hover:text-error hover:bg-error-bg transition-colors"
+                            >
+                              {isDeleting ? <Spinner size="xs" /> : <Trash2 size={18} />}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Meta Info */}
+                      <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+                        <div className="flex items-center gap-2 text-foreground">
+                          <Calendar size={16} className="text-brand-500 shrink-0" />
+                          <span>{formatDate(event.event_date)}</span>
+                        </div>
+                        {event.event_time && (
+                          <div className="flex items-center gap-2 text-foreground">
+                            <Clock size={16} className="text-brand-500 shrink-0" />
+                            <span>{event.event_time}</span>
+                          </div>
+                        )}
+                        {event.location && (
+                          <div className="flex items-center gap-2 text-foreground">
+                            <MapPin size={16} className="text-brand-500 shrink-0" />
+                            <span>{event.location}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    {event.description && (
+                      <div className="p-6 sm:p-8 border-b border-border">
+                        <p className="text-foreground/80 whitespace-pre-wrap leading-relaxed">
+                          {event.description}
+                        </p>
+                      </div>
+                    )}
+                  </m.div>
+                )}
+              </AnimatePresence>
 
               {/* Host */}
               <div className="p-6 sm:p-8 border-b border-border">
