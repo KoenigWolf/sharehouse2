@@ -67,13 +67,17 @@ function groupEventsByDate(events: EventWithDetails[]): Map<string, EventWithDet
 function generateCalendarDates(): { date: string; day: number; weekday: number; isToday: boolean }[] {
   const dates = [];
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
 
   for (let i = 0; i < 14; i++) {
     const date = new Date(today);
     date.setDate(today.getDate() + i);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+
     dates.push({
-      date: date.toISOString().split("T")[0],
+      date: dateStr,
       day: date.getDate(),
       weekday: date.getDay(),
       isToday: i === 0,
@@ -383,7 +387,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                   </h3>
                   <p className="text-xs text-muted-foreground">
                     {isEditMode
-                      ? t("events.editEvent")
+                      ? t("events.edit")
                       : t("events.createEvent")
                     }
                   </p>
@@ -414,7 +418,13 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                       type="date"
                       value={eventDate}
                       onChange={(e) => setEventDate(e.target.value)}
-                      min={new Date().toISOString().split("T")[0]}
+                      min={(() => {
+                        const d = new Date();
+                        const year = d.getFullYear();
+                        const month = String(d.getMonth() + 1).padStart(2, '0');
+                        const day = String(d.getDate()).padStart(2, '0');
+                        return `${year}-${month}-${day}`;
+                      })()}
                       className="w-full h-12 px-4 bg-secondary/50 border border-border rounded-2xl text-foreground text-[15px] font-medium focus:outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500/50 focus:bg-card transition-all duration-300"
                     />
                   </div>
