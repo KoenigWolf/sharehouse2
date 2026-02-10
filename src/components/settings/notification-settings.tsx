@@ -2,11 +2,13 @@
 
 import { memo, useState, useCallback } from "react";
 import { m } from "framer-motion";
+import { Bell } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Spinner } from "@/components/ui/spinner";
 import { useI18n } from "@/hooks/use-i18n";
 import { updateTeaTimeSetting } from "@/lib/tea-time/actions";
 import { updateNotificationSetting } from "@/lib/notifications/actions";
+import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
 import type { NotificationKey } from "@/domain/notification";
 
 interface NotificationSettingsProps {
@@ -85,9 +87,7 @@ export const NotificationSettings = memo(function NotificationSettings({
     >
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
-          <svg className="w-4 h-4 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-          </svg>
+          <Bell size={ICON_SIZE.md} strokeWidth={ICON_STROKE.normal} className="text-brand-500" />
           <h2 className="text-[10px] font-bold tracking-[0.25em] text-muted-foreground uppercase whitespace-nowrap">
             {t("notifications.sectionTitle")}
           </h2>
@@ -97,7 +97,6 @@ export const NotificationSettings = memo(function NotificationSettings({
 
       <div className="premium-surface rounded-[2rem] p-6 sm:p-8 shadow-sm border border-border/50">
         <div className="divide-y divide-border/50">
-          {/* Tea Time Participation */}
           <div className="flex items-center justify-between py-5 first:pt-0">
             <div className="space-y-1 pr-4">
               <p className="text-[13px] font-bold text-foreground/80 tracking-wide">
@@ -119,7 +118,6 @@ export const NotificationSettings = memo(function NotificationSettings({
             )}
           </div>
 
-          {/* Notification Items */}
           {notificationItems.map((item) => (
             <div key={item.key} className="flex items-center justify-between py-5 last:pb-0">
               <div className="space-y-1 pr-4">

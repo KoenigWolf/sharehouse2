@@ -1,8 +1,9 @@
 "use client";
 
-import { memo, useRef, useCallback } from "react";
+import { memo, useCallback } from "react";
 import { m } from "framer-motion";
 import { Plus } from "lucide-react";
+import { ICON_STROKE } from "@/lib/constants/icons";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { useI18n } from "@/hooks/use-i18n";
@@ -66,7 +67,7 @@ export const UploadCard = memo(function UploadCard({
           <>
             <Plus
               className="w-6 h-6 text-muted-foreground"
-              strokeWidth={1.5}
+              strokeWidth={ICON_STROKE.thin}
               aria-hidden="true"
             />
             <span className="text-[11px] text-muted-foreground mt-1.5 font-medium">

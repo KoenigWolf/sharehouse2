@@ -53,7 +53,6 @@ export default async function SettingsPage() {
 
       <main className="flex-1 pb-20 sm:pb-0">
         <div className="container mx-auto px-4 sm:px-6 py-5 sm:py-8 max-w-2xl">
-          {/* Header */}
           <div className="mb-8">
             <Link
               href={`/profile/${user.id}`}
@@ -69,21 +68,16 @@ export default async function SettingsPage() {
             </p>
           </div>
 
-          {/* Settings Sections */}
           <div className="space-y-12">
-            {/* Appearance */}
             <ThemeSettings />
 
-            {/* Language */}
             <LanguageSettings />
 
-            {/* Notifications */}
             <NotificationSettings
               initialTeaTimeEnabled={teaTimeSetting?.is_enabled ?? false}
               initialNotificationSettings={notificationSettings}
             />
 
-            {/* Account */}
             <AccountSettings
               userEmail={user.email}
               hasPassword={user.app_metadata?.providers?.includes("email") ?? false}

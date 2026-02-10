@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { m } from "framer-motion";
+import { ChevronRight } from "lucide-react";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { Profile } from "@/domain/profile";
 import { TeaTimeMatch } from "@/domain/tea-time";
 import { useI18n } from "@/hooks/use-i18n";
 import { getInitials } from "@/lib/utils";
+import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
 
 interface TeaTimeNotificationProps {
   match: TeaTimeMatch & { partner: Profile | null };
@@ -51,19 +53,7 @@ export function TeaTimeNotification({ match }: TeaTimeNotificationProps) {
             </div>
 
             <div className="w-10 h-10 rounded-full flex items-center justify-center text-muted-foreground/70 group-hover:text-brand-500 group-hover:bg-primary/10 transition-all shrink-0">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
+              <ChevronRight size={ICON_SIZE.lg} strokeWidth={ICON_STROKE.normal} />
             </div>
           </div>
         </div>

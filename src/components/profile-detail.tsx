@@ -25,8 +25,11 @@ import {
   Laptop,
   Building2,
   Brain,
-  Palmtree
+  Palmtree,
+  Pencil,
+  Smile,
 } from "lucide-react";
+import { ICON_SIZE, ICON_STROKE, ICON_GAP } from "@/lib/constants/icons";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { RoomPhotoManager } from "@/components/room-photo-manager";
@@ -70,19 +73,16 @@ function MBTIBadge({ mbti, className = "" }: { mbti: string; className?: string 
 
   return (
     <span className={`
-      relative inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all duration-300
+      relative inline-flex items-center ${ICON_GAP.sm} px-3 py-1.5 rounded-xl border transition-all duration-300
       ${colors.bg} ${colors.text} ${colors.border}
       shadow-sm hover:shadow-md hover:scale-[1.02]
       overflow-hidden group
       ${className}
     `}>
-      {/* Glow effect on hover */}
       <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%]`} />
 
-      <svg className={`w-3.5 h-3.5 ${colors.icon}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
-      </svg>
-      <div className="flex items-baseline gap-1.5">
+      <Sparkles size={ICON_SIZE.sm} strokeWidth={ICON_STROKE.normal} className={colors.icon} />
+      <div className={`flex items-baseline ${ICON_GAP.xs}`}>
         <span className="font-bold tracking-wider text-[13px] font-mono">{mbti}</span>
         <span className="text-[10px] opacity-80 font-medium tracking-wide">
           {label}
@@ -115,14 +115,11 @@ function MBTIDetail({ mbti }: { mbti: string }) {
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-lg transition-all hover:shadow-xl group">
-      {/* Hero Header */}
       <div className={`relative px-6 py-8 sm:px-8 ${colors.hero} overflow-hidden`}>
-        {/* Decorative Watermark */}
         <div className="absolute -right-4 -bottom-8 text-[100px] font-black opacity-10 select-none pointer-events-none leading-none tracking-tighter transition-transform duration-700 ease-out group-hover:scale-110 group-hover:rotate-[-5deg] text-current">
           {mbti}
         </div>
 
-        {/* Decorative Pattern/Blob */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-current opacity-10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
 
         <div className="relative z-10">
@@ -141,10 +138,8 @@ function MBTIDetail({ mbti }: { mbti: string }) {
         </div>
       </div>
 
-      {/* Content Body */}
       <div className="p-6 sm:p-8 bg-card">
         <div className="flex flex-col gap-6">
-          {/* Summary */}
           <div className="space-y-4">
             <p className="text-lg sm:text-xl font-bold leading-relaxed text-foreground opacity-90">
               {leadText}
@@ -158,7 +153,6 @@ function MBTIDetail({ mbti }: { mbti: string }) {
 
           <div className={`border-t w-full ${colors.border} opacity-50`} />
 
-          {/* Traits */}
           <div className="space-y-2">
             <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
               {t("mbti.traitsLabel")}
@@ -236,7 +230,6 @@ function translateLanguages(
   });
 }
 
-// Facebook-style card component
 function FbCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
     <div className={`bg-card rounded-xl border border-border shadow-sm ${className}`}>
@@ -270,7 +263,6 @@ function FbCardHeader({
   );
 }
 
-// Facebook-style detail section
 function DetailSection({
   title,
   icon,
@@ -282,7 +274,7 @@ function DetailSection({
 }) {
   return (
     <FbCard>
-      <div className="flex items-center gap-3 p-4 pb-3 border-b border-border">
+      <div className={`flex items-center ${ICON_GAP.lg} p-4 pb-3 border-b border-border`}>
         <span className="text-muted-foreground">{icon}</span>
         <h3 className="text-[17px] font-bold text-foreground">{title}</h3>
       </div>
@@ -293,21 +285,24 @@ function DetailSection({
   );
 }
 
-// Facebook-style info item (for detail sections)
 function DetailItem({
   icon,
   label,
-  value
+  value,
+  suffix
 }: {
   icon: React.ReactNode;
   label: string;
   value: string | null | undefined;
+  suffix?: string;
 }) {
   if (!value) return null;
   return (
-    <div className="flex items-center gap-3 py-2" aria-label={label}>
+    <div className={`flex items-center ${ICON_GAP.lg} py-2`} aria-label={label}>
       <span className="text-muted-foreground shrink-0" aria-hidden="true">{icon}</span>
-      <span className="text-[15px] text-foreground">{value}</span>
+      <span className="text-[15px] text-foreground">
+        {value}{suffix && <span className="text-muted-foreground">{suffix}</span>}
+      </span>
     </div>
   );
 }
@@ -363,42 +358,42 @@ export function ProfileDetail({
   }, [t, router]);
 
   const basicInfo = [
-    { label: t("profile.nickname"), value: profile.nickname, icon: <User size={14} /> },
-    { label: t("profile.ageRange"), value: translateOption(profile.age_range, "ageRange", AGE_RANGES, t), icon: <Clock size={14} /> },
-    { label: t("profile.gender"), value: translateOption(profile.gender, "gender", GENDERS, t), icon: <User size={14} /> },
-    { label: t("profile.nationality"), value: profile.nationality, icon: <Globe size={14} /> },
-    { label: t("profile.hometown"), value: profile.hometown, icon: <Home size={14} /> },
-    { label: t("profile.languages"), value: translateLanguages(profile.languages, t).join(", ") || null, icon: <Globe size={14} /> },
+    { label: t("profile.nickname"), value: profile.nickname, icon: <User size={ICON_SIZE.sm} />, suffix: t("profile.suffixNickname") },
+    { label: t("profile.ageRange"), value: translateOption(profile.age_range, "ageRange", AGE_RANGES, t), icon: <Clock size={ICON_SIZE.sm} /> },
+    { label: t("profile.gender"), value: translateOption(profile.gender, "gender", GENDERS, t), icon: <User size={ICON_SIZE.sm} /> },
+    { label: t("profile.nationality"), value: profile.nationality, icon: <Globe size={ICON_SIZE.sm} /> },
+    { label: t("profile.hometown"), value: profile.hometown, icon: <Home size={ICON_SIZE.sm} />, suffix: t("profile.suffixHometown") },
+    { label: t("profile.languages"), value: translateLanguages(profile.languages, t).join(", ") || null, icon: <Globe size={ICON_SIZE.sm} /> },
   ].filter((f) => f.value);
 
   const workInfo = [
-    { label: t("profile.occupation"), value: translateOption(profile.occupation, "occupation", OCCUPATIONS, t), icon: <Briefcase size={14} /> },
-    { label: t("profile.industry"), value: translateOption(profile.industry, "industry", INDUSTRIES, t), icon: <Building2 size={14} /> },
-    { label: t("profile.workLocation"), value: profile.work_location, icon: <MapPin size={14} /> },
-    { label: t("profile.workStyle"), value: translateOption(profile.work_style, "workStyle", WORK_STYLES, t), icon: <Laptop size={14} /> },
+    { label: t("profile.occupation"), value: translateOption(profile.occupation, "occupation", OCCUPATIONS, t), icon: <Briefcase size={ICON_SIZE.sm} /> },
+    { label: t("profile.industry"), value: translateOption(profile.industry, "industry", INDUSTRIES, t), icon: <Building2 size={ICON_SIZE.sm} />, suffix: t("profile.suffixIndustry") },
+    { label: t("profile.workLocation"), value: profile.work_location, icon: <MapPin size={ICON_SIZE.sm} />, suffix: t("profile.suffixWorkLocation") },
+    { label: t("profile.workStyle"), value: translateOption(profile.work_style, "workStyle", WORK_STYLES, t), icon: <Laptop size={ICON_SIZE.sm} /> },
   ].filter((f) => f.value);
 
   const lifestyleInfo = [
-    { label: t("profile.dailyRhythm"), value: translateOption(profile.daily_rhythm, "dailyRhythm", DAILY_RHYTHMS, t), icon: profile.daily_rhythm === "morning" ? <Sun size={14} /> : <Moon size={14} /> },
-    { label: t("profile.homeFrequency"), value: translateOption(profile.home_frequency, "homeFrequency", HOME_FREQUENCIES, t), icon: <Home size={14} /> },
-    { label: t("profile.alcohol"), value: translateOption(profile.alcohol, "alcohol", ALCOHOL_OPTIONS, t), icon: <Wine size={14} /> },
-    { label: t("profile.smoking"), value: translateOption(profile.smoking, "smoking", SMOKING_OPTIONS, t), icon: <Cigarette size={14} /> },
-    { label: t("profile.pets"), value: translateOption(profile.pets, "pets", PET_OPTIONS, t), icon: <Dog size={14} /> },
-    { label: t("profile.guestFrequency"), value: translateOption(profile.guest_frequency, "guestFrequency", GUEST_FREQUENCIES, t), icon: <Users size={14} /> },
+    { label: t("profile.dailyRhythm"), value: translateOption(profile.daily_rhythm, "dailyRhythm", DAILY_RHYTHMS, t), icon: profile.daily_rhythm === "morning" ? <Sun size={ICON_SIZE.sm} /> : <Moon size={ICON_SIZE.sm} /> },
+    { label: t("profile.homeFrequency"), value: translateOption(profile.home_frequency, "homeFrequency", HOME_FREQUENCIES, t), icon: <Home size={ICON_SIZE.sm} /> },
+    { label: t("profile.alcohol"), value: translateOption(profile.alcohol, "alcohol", ALCOHOL_OPTIONS, t), icon: <Wine size={ICON_SIZE.sm} /> },
+    { label: t("profile.smoking"), value: translateOption(profile.smoking, "smoking", SMOKING_OPTIONS, t), icon: <Cigarette size={ICON_SIZE.sm} /> },
+    { label: t("profile.pets"), value: translateOption(profile.pets, "pets", PET_OPTIONS, t), icon: <Dog size={ICON_SIZE.sm} /> },
+    { label: t("profile.guestFrequency"), value: translateOption(profile.guest_frequency, "guestFrequency", GUEST_FREQUENCIES, t), icon: <Users size={ICON_SIZE.sm} /> },
   ].filter((f) => f.value);
 
   const communalInfo = [
-    { label: t("profile.socialStance"), value: translateOption(profile.social_stance, "socialStance", SOCIAL_STANCES, t), icon: <Users size={14} /> },
-    { label: t("profile.cleaningAttitude"), value: translateOption(profile.cleaning_attitude, "cleaningAttitude", CLEANING_ATTITUDES, t), icon: <Sparkles size={14} /> },
-    { label: t("profile.cookingFrequency"), value: translateOption(profile.cooking_frequency, "cookingFrequency", COOKING_FREQUENCIES, t), icon: <Utensils size={14} /> },
-    { label: t("profile.sharedMeals"), value: translateOption(profile.shared_meals, "sharedMeals", SHARED_MEAL_OPTIONS, t), icon: <Utensils size={14} /> },
-    { label: t("profile.allergies"), value: profile.allergies, icon: <Heart size={14} /> },
+    { label: t("profile.socialStance"), value: translateOption(profile.social_stance, "socialStance", SOCIAL_STANCES, t), icon: <Users size={ICON_SIZE.sm} /> },
+    { label: t("profile.cleaningAttitude"), value: translateOption(profile.cleaning_attitude, "cleaningAttitude", CLEANING_ATTITUDES, t), icon: <Sparkles size={ICON_SIZE.sm} /> },
+    { label: t("profile.cookingFrequency"), value: translateOption(profile.cooking_frequency, "cookingFrequency", COOKING_FREQUENCIES, t), icon: <Utensils size={ICON_SIZE.sm} /> },
+    { label: t("profile.sharedMeals"), value: translateOption(profile.shared_meals, "sharedMeals", SHARED_MEAL_OPTIONS, t), icon: <Utensils size={ICON_SIZE.sm} /> },
+    { label: t("profile.allergies"), value: profile.allergies, icon: <Heart size={ICON_SIZE.sm} /> },
   ].filter((f) => f.value);
 
   const sharedSpaceUsage = profile.shared_space_usage;
   const personalityInfo = [
-    { label: t("profile.personalityType"), value: profile.personality_type, icon: <Brain size={14} /> },
-    { label: t("profile.weekendActivities"), value: profile.weekend_activities, icon: <Palmtree size={14} /> },
+    { label: t("profile.personalityType"), value: profile.personality_type, icon: <Brain size={ICON_SIZE.sm} /> },
+    { label: t("profile.weekendActivities"), value: profile.weekend_activities, icon: <Palmtree size={ICON_SIZE.sm} /> },
   ].filter((f) => f.value);
 
   const snsLinks = [
@@ -444,7 +439,6 @@ export function ProfileDetail({
         variants={itemVariants}
         className={`premium-surface rounded-2xl overflow-hidden ${isMockProfile ? "border-dashed border-border" : ""}`}
       >
-        {/* Cover Photo */}
         <div className="relative aspect-2/1 sm:aspect-21/8 bg-secondary overflow-hidden">
           {coverUrl ? (
             <Image
@@ -467,7 +461,7 @@ export function ProfileDetail({
               disabled={isUploadingCover}
               className="absolute bottom-3 right-3 bg-card/90 backdrop-blur-sm border-border text-muted-foreground hover:text-foreground hover:border-border"
             >
-              <Camera size={14} strokeWidth={1.5} />
+              <Camera size={ICON_SIZE.sm} strokeWidth={ICON_STROKE.thin} />
               {isUploadingCover
                 ? t("myPage.coverPhotoUploading")
                 : coverUrl
@@ -487,10 +481,8 @@ export function ProfileDetail({
           )}
         </div>
 
-        {/* Facebook-style Profile Header */}
         <div className="px-4 sm:px-8 pb-4">
           <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4">
-            {/* Avatar - overlapping cover */}
             <div className="shrink-0 -mt-[68px] sm:-mt-[84px]">
               <div className="w-[136px] h-[136px] sm:w-[168px] sm:h-[168px] rounded-full border-4 border-card bg-secondary overflow-hidden shadow-lg">
                 <Avatar className="size-full rounded-full">
@@ -506,7 +498,6 @@ export function ProfileDetail({
               </div>
             </div>
 
-            {/* Name and Info */}
             <div className="flex-1 text-center sm:text-left pb-2">
               <h1 className="text-[32px] font-bold text-foreground leading-tight">
                 {isTeaser ? (
@@ -516,7 +507,6 @@ export function ProfileDetail({
                 )}
               </h1>
 
-              {/* SNS Links Row */}
               {snsLinks.length > 0 && (
                 <div className="flex items-center justify-center sm:justify-start gap-3 mt-2">
                   {snsLinks.map((link) => (
@@ -559,14 +549,11 @@ export function ProfileDetail({
               )}
             </div>
 
-            {/* Action Button */}
             {isOwnProfile && (
               <div className="pb-2">
-                <Button asChild className="gap-2">
+                <Button asChild className={ICON_GAP.md}>
                   <Link href={`/profile/${profile.id}/edit`}>
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                    </svg>
+                    <Pencil size={ICON_SIZE.md} strokeWidth={ICON_STROKE.normal} />
                     {t("myPage.editProfile")}
                   </Link>
                 </Button>
@@ -574,25 +561,20 @@ export function ProfileDetail({
             )}
           </div>
 
-          {/* Divider */}
           <div className="border-t border-border mt-4 pt-3">
-            {/* Badges Row */}
             <div className="flex flex-wrap justify-center sm:justify-start gap-2">
               {profile.mbti && (
                 <MBTIBadge mbti={profile.mbti} />
               )}
-              <span className={`inline-flex items-center gap-1.5 text-[13px] px-3 py-1 rounded-full ${teaTimeEnabled
+              <span className={`inline-flex items-center ${ICON_GAP.xs} text-[13px] px-3 py-1 rounded-full ${teaTimeEnabled
                 ? "bg-primary/10 text-primary"
                 : "bg-muted text-muted-foreground"
                 }`}>
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z" />
-                </svg>
+                <Smile size={ICON_SIZE.md} strokeWidth={ICON_STROKE.thin} />
                 {t("teaTime.title")}: {teaTimeEnabled ? t("teaTime.participating") : t("teaTime.notParticipating")}
               </span>
             </div>
 
-            {/* Interests Tags */}
             {profile.interests && profile.interests.length > 0 && (
               <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-3">
                 {profile.interests.map((interest, idx) => (
@@ -606,12 +588,11 @@ export function ProfileDetail({
               </div>
             )}
 
-            {/* Personality Info */}
             {personalityInfo.length > 0 && (
               <div className="border-t border-border mt-3 pt-3">
                 <div className="flex flex-wrap justify-center sm:justify-start gap-x-4 gap-y-1 text-[14px] text-muted-foreground">
                   {personalityInfo.map((field, i) => (
-                    <span key={i} className="flex items-center gap-1.5" aria-label={field.label}>
+                    <span key={i} className={`flex items-center ${ICON_GAP.xs}`} aria-label={field.label}>
                       <span aria-hidden="true">{field.icon}</span>
                       <span>{field.value}</span>
                     </span>
@@ -623,37 +604,32 @@ export function ProfileDetail({
         </div>
       </m.div>
 
-      {/* Facebook-style Two-Column Layout */}
       {hasExtendedInfo && !isTeaser && (
         <div className="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-5">
-          {/* Left Column (Info Sections) - 1/3 width */}
           <div className="lg:col-span-1 space-y-4">
-            {/* Basic Info */}
             {basicInfo.length > 0 && (
               <m.div variants={itemVariants}>
-                <DetailSection title={t("profile.sectionBasicInfo")} icon={<User size={20} />}>
+                <DetailSection title={t("profile.sectionBasicInfo")} icon={<User size={ICON_SIZE.lg} />}>
                   {basicInfo.map((field, i) => (
-                    <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} />
+                    <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} suffix={field.suffix} />
                   ))}
                 </DetailSection>
               </m.div>
             )}
 
-            {/* Work */}
             {workInfo.length > 0 && (
               <m.div variants={itemVariants}>
-                <DetailSection title={t("profile.sectionWork")} icon={<Briefcase size={20} />}>
+                <DetailSection title={t("profile.sectionWork")} icon={<Briefcase size={ICON_SIZE.lg} />}>
                   {workInfo.map((field, i) => (
-                    <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} />
+                    <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} suffix={field.suffix} />
                   ))}
                 </DetailSection>
               </m.div>
             )}
 
-            {/* Lifestyle */}
             {lifestyleInfo.length > 0 && (
               <m.div variants={itemVariants}>
-                <DetailSection title={t("profile.sectionLifestyle")} icon={<Sun size={20} />}>
+                <DetailSection title={t("profile.sectionLifestyle")} icon={<Sun size={ICON_SIZE.lg} />}>
                   {lifestyleInfo.map((field, i) => (
                     <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} />
                   ))}
@@ -661,10 +637,9 @@ export function ProfileDetail({
               </m.div>
             )}
 
-            {/* Communal */}
             {(communalInfo.length > 0 || sharedSpaceUsage) && (
               <m.div variants={itemVariants}>
-                <DetailSection title={t("profile.sectionCommunal")} icon={<Users size={20} />}>
+                <DetailSection title={t("profile.sectionCommunal")} icon={<Users size={ICON_SIZE.lg} />}>
                   {communalInfo.map((field, i) => (
                     <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} />
                   ))}
@@ -680,16 +655,13 @@ export function ProfileDetail({
 
           </div>
 
-          {/* Right Column (MBTI, Photos) - 2/3 width */}
           <div className="lg:col-span-2 space-y-4">
-            {/* MBTI */}
             {profile.mbti && (
               <m.div variants={itemVariants}>
                 <MBTIDetail mbti={profile.mbti} />
               </m.div>
             )}
 
-            {/* Photos Card */}
             {(isOwnProfile || roomPhotos.length > 0) && (
               <m.div variants={itemVariants}>
                 <FbCard>

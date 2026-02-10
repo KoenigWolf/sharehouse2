@@ -2,6 +2,15 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { m, motion, AnimatePresence } from "framer-motion";
+import {
+  LayoutGrid,
+  Layers,
+  List,
+  Search,
+  X,
+  ChevronRight,
+  Coffee,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ResidentCard } from "@/components/resident-card";
 import { Profile } from "@/domain/profile";
@@ -13,6 +22,7 @@ import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
 import { getFloorFromRoom, isNewResident, FLOOR_COLORS, type FloorId } from "@/lib/utils/residents";
 import { VibeInput } from "@/components/vibe-input";
+import { ICON_SIZE, ICON_STROKE, ICON_GAP } from "@/lib/constants/icons";
 
 interface ResidentsGridProps {
   profiles: Profile[];
@@ -54,9 +64,9 @@ export function ResidentsGrid({
 
   const viewModeOptions = useMemo(
     () => [
-      { value: "grid" as const, label: t("residents.viewGrid"), icon: GridIcon },
-      { value: "floor" as const, label: t("residents.viewFloor"), icon: FloorIcon },
-      { value: "list" as const, label: t("residents.viewList"), icon: ListIcon },
+      { value: "grid" as const, label: t("residents.viewGrid"), icon: LayoutGrid },
+      { value: "floor" as const, label: t("residents.viewFloor"), icon: Layers },
+      { value: "list" as const, label: t("residents.viewList"), icon: List },
     ],
     [t]
   );
@@ -210,7 +220,7 @@ export function ResidentsGrid({
                   aria-label={option.label}
                   aria-pressed={isActive}
                 >
-                  <Icon />
+                  <Icon size={ICON_SIZE.md} strokeWidth={ICON_STROKE.thin} />
                 </Button>
               );
             })}
@@ -254,7 +264,7 @@ export function ResidentsGrid({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mt-4 sm:pb-4 sm:border-b sm:border-border">
             {totalCount >= SEARCH_VISIBLE_THRESHOLD && (
               <div className="relative group">
-                <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground z-10" />
+                <Search size={ICON_SIZE.md} strokeWidth={ICON_STROKE.thin} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground z-10" />
                 <input
                   type="search"
                   placeholder={t("residents.searchPlaceholder")}
@@ -270,7 +280,7 @@ export function ResidentsGrid({
                     onClick={() => setSearchQuery("")}
                     className="absolute right-3 top-1/2 -translate-y-1/2 hover:bg-transparent"
                   >
-                    <CloseIcon />
+                    <X size={ICON_SIZE.sm} strokeWidth={ICON_STROKE.thin} />
                   </Button>
                 )}
               </div>
@@ -322,7 +332,7 @@ export function ResidentsGrid({
               className="text-center py-12 sm:py-16"
             >
               <div className="w-16 h-16 mx-auto mb-4 bg-secondary rounded-lg flex items-center justify-center">
-                <SearchIcon className="w-8 h-8 text-muted-foreground/70" />
+                <Search size={ICON_SIZE["2xl"]} strokeWidth={ICON_STROKE.thin} className="text-muted-foreground/70" />
               </div>
               <p className="text-muted-foreground text-sm">{t("residents.noMatch")}</p>
               <Button
@@ -596,8 +606,8 @@ function ResidentListItem({
               </span>
             )}
             {isTeaTimeParticipant && !isMockProfile && (
-              <span className="text-[10px] px-2 py-0.5 bg-warning-bg text-warning rounded-lg font-bold flex items-center gap-1 shadow-sm border border-warning-border/50">
-                <TeaCupIcon />
+              <span className={`text-[10px] px-2 py-0.5 bg-warning-bg text-warning rounded-lg font-bold flex items-center ${ICON_GAP.xs} shadow-sm border border-warning-border/50`}>
+                <Coffee size={10} strokeWidth={ICON_STROKE.normal} />
               </span>
             )}
             {isMockProfile && (
@@ -616,99 +626,10 @@ function ResidentListItem({
         </div>
 
         <div className="text-muted-foreground/70 group-hover:text-brand-500 transition-colors shrink-0">
-          <ChevronRightIcon />
+          <ChevronRight size={ICON_SIZE.md} strokeWidth={ICON_STROKE.thin} />
         </div>
       </article>
     </Link>
   );
 }
 
-function GridIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <rect x="2" y="2" width="5" height="5" stroke="currentColor" strokeWidth="1.5" />
-      <rect x="9" y="2" width="5" height="5" stroke="currentColor" strokeWidth="1.5" />
-      <rect x="2" y="9" width="5" height="5" stroke="currentColor" strokeWidth="1.5" />
-      <rect x="9" y="9" width="5" height="5" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
-  );
-}
-
-function FloorIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <path d="M2 4H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M2 8H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M2 12H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <circle cx="5" cy="4" r="1.5" fill="currentColor" />
-      <circle cx="8" cy="4" r="1.5" fill="currentColor" />
-      <circle cx="5" cy="8" r="1.5" fill="currentColor" />
-      <circle cx="8" cy="8" r="1.5" fill="currentColor" />
-      <circle cx="11" cy="8" r="1.5" fill="currentColor" />
-      <circle cx="5" cy="12" r="1.5" fill="currentColor" />
-    </svg>
-  );
-}
-
-function ListIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <path d="M5 4H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M5 8H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M5 12H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <circle cx="2.5" cy="4" r="1" fill="currentColor" />
-      <circle cx="2.5" cy="8" r="1" fill="currentColor" />
-      <circle cx="2.5" cy="12" r="1" fill="currentColor" />
-    </svg>
-  );
-}
-
-function SearchIcon({ className }: { className?: string }) {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className={className}>
-      <circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M10.5 10.5L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function CloseIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-      <path d="M3 3L11 11M11 3L3 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function ChevronRightIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <path
-        d="M6 4L10 8L6 12"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function TeaCupIcon() {
-  return (
-    <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
-      <path
-        d="M2 6h10v5a3 3 0 01-3 3H5a3 3 0 01-3-3V6z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        fill="none"
-      />
-      <path
-        d="M12 7h1a2 2 0 110 4h-1"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        fill="none"
-      />
-    </svg>
-  );
-}

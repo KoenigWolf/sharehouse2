@@ -390,6 +390,69 @@
   }
 
   /* ========================================
+   * アイコン-テキストスペーシング（Icon-Text Spacing）
+   *
+   * 人間工学に基づくアイコンとテキスト間の最適間隔
+   * - アイコンサイズの約50%の間隔が視覚的にバランスが良い
+   * - 8pxグリッドシステムに準拠
+   * ======================================== */
+
+  /** Extra small icons (12px) - 6px gap */
+  .icon-text-xs {
+    @apply inline-flex items-center gap-1.5;
+  }
+
+  /** Small icons (14px) - 8px gap */
+  .icon-text-sm {
+    @apply inline-flex items-center gap-2;
+  }
+
+  /** Medium icons (16px) - 8px gap */
+  .icon-text-md {
+    @apply inline-flex items-center gap-2;
+  }
+
+  /** Large icons (20px) - 10px gap */
+  .icon-text-lg {
+    @apply inline-flex items-center gap-2.5;
+  }
+
+  /** Extra large icons (24px) - 12px gap */
+  .icon-text-xl {
+    @apply inline-flex items-center gap-3;
+  }
+
+  /** 2X large icons (32px) - 16px gap */
+  .icon-text-2xl {
+    @apply inline-flex items-center gap-4;
+  }
+
+  /* Section header with icon - consistent pattern */
+  .section-header-icon {
+    @apply inline-flex items-center gap-2 text-brand-500;
+  }
+
+  /* Button content with icon - optimized for touch */
+  .btn-content-icon {
+    @apply inline-flex items-center justify-center gap-2;
+  }
+
+  /* Badge/tag with icon - compact spacing */
+  .badge-icon {
+    @apply inline-flex items-center gap-1.5;
+  }
+
+  /* Nav item with icon - comfortable touch target */
+  .nav-item-icon {
+    @apply inline-flex items-center gap-3;
+  }
+
+  /* List item with icon - readable spacing */
+  .list-item-icon {
+    @apply flex items-center gap-3;
+  }
+
+  /* ========================================
    * ボタン系（Button Extensions）
    * ======================================== */
   .btn-icon {

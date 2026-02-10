@@ -2,10 +2,12 @@
 
 import { useState, useCallback } from "react";
 import { m, AnimatePresence } from "framer-motion";
+import { Lock, Mail, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { useI18n } from "@/hooks/use-i18n";
+import { ICON_SIZE, ICON_STROKE, ICON_GAP } from "@/lib/constants/icons";
 import { changePassword, changeEmail, deleteAccount } from "@/lib/account/actions";
 
 interface AccountSettingsProps {
@@ -83,10 +85,8 @@ function PasswordSection() {
       onSubmit={handleSubmit}
       className="premium-surface rounded-[2rem] p-8 border border-border/50 space-y-6 shadow-sm"
     >
-      <div className="flex items-center gap-2 mb-2">
-        <svg className="w-4 h-4 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 00-2 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-        </svg>
+      <div className={`flex items-center ${ICON_GAP.md} mb-2`}>
+        <Lock size={ICON_SIZE.md} strokeWidth={ICON_STROKE.normal} className="text-brand-500" />
         <h3 className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase">
           {t("account.password")}
         </h3>
@@ -182,10 +182,8 @@ function EmailSection({ userEmail }: { userEmail: string | undefined }) {
       onSubmit={handleSubmit}
       className="premium-surface rounded-[2rem] p-8 border border-border/50 space-y-6 shadow-sm"
     >
-      <div className="flex items-center gap-2 mb-2">
-        <svg className="w-4 h-4 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-        </svg>
+      <div className={`flex items-center ${ICON_GAP.md} mb-2`}>
+        <Mail size={ICON_SIZE.md} strokeWidth={ICON_STROKE.normal} className="text-brand-500" />
         <h3 className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase">
           {t("account.email")}
         </h3>
@@ -263,10 +261,8 @@ function DeleteSection() {
       onSubmit={handleSubmit}
       className="bg-error-bg/50 rounded-[2rem] p-8 border border-error-border/50 space-y-6"
     >
-      <div className="flex items-center gap-2 mb-2">
-        <svg className="w-4 h-4 text-error" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-        </svg>
+      <div className={`flex items-center ${ICON_GAP.md} mb-2`}>
+        <Trash2 size={ICON_SIZE.md} strokeWidth={ICON_STROKE.normal} className="text-error" />
         <h3 className="text-[10px] font-bold tracking-widest text-error uppercase">
           {t("account.deleteAccount")}
         </h3>
@@ -302,7 +298,7 @@ function DeleteSection() {
         className="w-full sm:w-auto h-11 px-8 rounded-full bg-error hover:bg-error/90 text-white font-bold tracking-wider uppercase text-[11px] transition-all duration-300 shadow-lg shadow-error/10"
       >
         {isSubmitting ? (
-          <span className="flex items-center gap-2">
+          <span className={`flex items-center ${ICON_GAP.xs}`}>
             <Spinner size="xs" variant="light" />
             {t("account.deleting")}
           </span>

@@ -2,6 +2,7 @@
 
 import { memo, useCallback } from "react";
 import { m, AnimatePresence } from "framer-motion";
+import { Camera } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useI18n } from "@/hooks/use-i18n";
 import { useUser } from "@/hooks/use-user";
@@ -11,6 +12,7 @@ import { useLightbox } from "@/hooks/use-lightbox";
 import { BulkUploadProgress } from "@/components/bulk-upload-progress";
 import { PhotoCard, UploadCard } from "@/components/gallery";
 import { ROOM_PHOTOS } from "@/lib/constants/config";
+import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
 import type { PhotoWithProfile } from "@/domain/room-photo";
 
 const PhotoLightbox = dynamic(
@@ -30,24 +32,6 @@ interface RoomPhotosGalleryProps {
 // Sub-components
 // ============================================================================
 
-function CameraIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
-      <circle cx="12" cy="13" r="3" />
-    </svg>
-  );
-}
 
 interface SectionHeaderProps {
   icon: React.ReactNode;
@@ -239,12 +223,11 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
         aria-labelledby="gallery-title"
       >
         <SectionHeader
-          icon={<CameraIcon />}
+          icon={<Camera size={ICON_SIZE.md} strokeWidth={ICON_STROKE.thin} />}
           title={t("roomPhotos.gallery")}
           count={hasPhotos ? photos.length : undefined}
         />
 
-        {/* Upload progress and feedback */}
         <AnimatePresence mode="wait">
           {isUploading && (
             <BulkUploadProgress
@@ -263,7 +246,6 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
           )}
         </AnimatePresence>
 
-        {/* Photo grid - responsive: 2 cols mobile, 3 cols tablet, 4 cols desktop */}
         <div
           className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-[2px] sm:gap-1 bg-secondary/50 rounded-sm overflow-hidden"
           role="list"
@@ -285,18 +267,15 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
           ))}
         </div>
 
-        {/* Show more button */}
         {hasMore && (
           <ShowMoreButton onClick={showMore} remainingCount={remainingCount} />
         )}
 
-        {/* Footer with upload info */}
         <GalleryFooter
           maxPhotos={ROOM_PHOTOS.maxPhotosPerUser}
           maxBulkUpload={maxBulkUpload}
         />
 
-        {/* Empty state */}
         {!hasPhotos && (
           <p className="text-sm text-muted-foreground mt-6 text-center py-12">
             {t("roomPhotos.noPhotosHint")}
@@ -304,7 +283,6 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
         )}
       </m.section>
 
-      {/* Lightbox */}
       <PhotoLightbox
         photos={photos}
         selectedIndex={lightbox.selectedIndex}

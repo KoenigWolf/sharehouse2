@@ -79,7 +79,6 @@ export const PhotoCard = memo(function PhotoCard({
           priority={isEagerLoad}
         />
 
-        {/* Instagram-style hover overlay */}
         <div
           className="absolute inset-0 bg-black/0 group-hover:bg-black/40 group-focus-visible:bg-black/40 transition-colors duration-200 flex items-center justify-center"
           aria-hidden="true"

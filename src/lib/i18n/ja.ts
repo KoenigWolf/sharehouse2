@@ -199,6 +199,10 @@ export const ja = {
     snsHint: "ユーザー名または URLを入力",
     allergies: "アレルギー・食事制限",
     allergiesPlaceholder: "卵アレルギー、ベジタリアン など",
+    suffixNickname: "（ニックネーム）",
+    suffixHometown: "出身",
+    suffixIndustry: "業界",
+    suffixWorkLocation: "勤務",
   },
 
   profileOptions: {
@@ -671,6 +675,16 @@ export const ja = {
     tomorrow: "明日",
     createdBy: "{{name}}さんが作成",
     creating: "作成中...",
+    edit: "イベントを編集",
+    update: "更新",
+    updating: "更新中...",
+    nextTwoWeeks: "今後2週間",
+    showAll: "すべて表示",
+    createEvent: "新しいイベントを作成",
+
+    noEventsOnDay: "この日のイベントはありません",
+    createAndInvite: "イベントを作成して、みんなを誘ってみましょう",
+    countLabel: "{{count}}件",
   },
 
   digest: {

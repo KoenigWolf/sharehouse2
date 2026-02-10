@@ -2,10 +2,20 @@
 
 import { useState, useCallback, memo } from "react";
 import { m } from "framer-motion";
+import {
+  Wifi,
+  Trash2,
+  KeyRound,
+  Mailbox,
+  Building2,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/use-i18n";
 import { GarbageScheduleView } from "@/components/garbage-schedule-view";
 import { GarbageAdminPanel } from "@/components/garbage-admin-panel";
+import { ICON_SIZE, ICON_STROKE, ICON_GAP } from "@/lib/constants/icons";
 import type { WifiInfo } from "@/domain/wifi";
 import type { GarbageSchedule, GarbageDutyWithProfile } from "@/domain/garbage";
 import type { SharedInfo } from "@/domain/shared-info";
@@ -79,7 +89,7 @@ interface SectionHeaderProps {
 
 const SectionHeader = memo(function SectionHeader({ icon, title }: SectionHeaderProps) {
   return (
-    <div className="flex items-center gap-2 mb-4 mt-2">
+    <div className={`flex items-center ${ICON_GAP.md} mb-4 mt-2`}>
       <span className="text-muted-foreground/70">{icon}</span>
       <h2 className="text-[11px] font-bold tracking-widest uppercase text-muted-foreground">{title}</h2>
     </div>
@@ -128,7 +138,11 @@ const WifiCard = memo(function WifiCard({ wifiInfos }: WifiCardProps) {
               className="text-muted-foreground hover:text-foreground hover:bg-secondary rounded-xl w-10 h-10"
               aria-label={showPassword ? t("wifi.hidePassword") : t("wifi.showPassword")}
             >
-              {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+              {showPassword ? (
+                <EyeOff size={ICON_SIZE.md} strokeWidth={ICON_STROKE.thin} />
+              ) : (
+                <Eye size={ICON_SIZE.md} strokeWidth={ICON_STROKE.thin} />
+              )}
             </Button>
             <Button
               type="button"
@@ -165,80 +179,6 @@ const WifiCard = memo(function WifiCard({ wifiInfos }: WifiCardProps) {
 
 WifiCard.displayName = "WifiCard";
 
-function WifiIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M5 12.55a11 11 0 0 1 14.08 0" />
-      <path d="M1.42 9a16 16 0 0 1 21.16 0" />
-      <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
-      <circle cx="12" cy="20" r="1" />
-    </svg>
-  );
-}
-
-function TrashIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 6h18" />
-      <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-      <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-    </svg>
-  );
-}
-
-function KeyIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
-    </svg>
-  );
-}
-
-function MailboxIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M22 17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.5C2 7 4 5 6.5 5H18c2.2 0 4 1.8 4 4v8Z" />
-      <polyline points="15,9 18,9 18,11" />
-      <path d="M6.5 5C9 5 11 7 11 9.5V17a2 2 0 0 1-2 2v0" />
-    </svg>
-  );
-}
-
-function BuildingIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect width="16" height="20" x="4" y="2" rx="2" ry="2" />
-      <path d="M9 22v-4h6v4" />
-      <path d="M8 6h.01" />
-      <path d="M16 6h.01" />
-      <path d="M12 6h.01" />
-      <path d="M12 10h.01" />
-      <path d="M12 14h.01" />
-      <path d="M16 10h.01" />
-      <path d="M16 14h.01" />
-      <path d="M8 10h.01" />
-      <path d="M8 14h.01" />
-    </svg>
-  );
-}
-
-function EyeIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-      <circle cx="12" cy="12" r="3" />
-    </svg>
-  );
-}
-
-function EyeOffIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-      <line x1="1" y1="1" x2="23" y2="23" />
-    </svg>
-  );
-}
 
 export function InfoPageContent({
   wifiInfos,
@@ -273,7 +213,7 @@ export function InfoPageContent({
         <div className="grid gap-3 sm:grid-cols-2">
           {wifiPassword && (
             <QuickAccessCard
-              icon={<KeyIcon />}
+              icon={<KeyRound size={ICON_SIZE.md} strokeWidth={ICON_STROKE.thin} />}
               label={t("info.wifiPassword")}
               value={wifiPassword}
               copyLabel={t("common.copy")}
@@ -281,7 +221,7 @@ export function InfoPageContent({
           )}
           {mailboxInfo && (
             <QuickAccessCard
-              icon={<MailboxIcon />}
+              icon={<Mailbox size={ICON_SIZE.md} strokeWidth={ICON_STROKE.thin} />}
               label={mailboxInfo.title}
               value={mailboxInfo.content}
               subtext={mailboxInfo.notes || undefined}
@@ -295,7 +235,7 @@ export function InfoPageContent({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1], delay: 0.1 }}
       >
-        <SectionHeader icon={<WifiIcon />} title="Wi-Fi" />
+        <SectionHeader icon={<Wifi size={ICON_SIZE.md} strokeWidth={ICON_STROKE.thin} />} title={t("info.tabWifi")} />
         <WifiCard wifiInfos={wifiInfos} />
       </m.section>
 
@@ -304,7 +244,7 @@ export function InfoPageContent({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1], delay: 0.2 }}
       >
-        <SectionHeader icon={<TrashIcon />} title={t("info.tabGarbage")} />
+        <SectionHeader icon={<Trash2 size={ICON_SIZE.md} strokeWidth={ICON_STROKE.thin} />} title={t("info.tabGarbage")} />
         <GarbageScheduleView
           schedule={schedule}
           duties={duties}
@@ -319,7 +259,7 @@ export function InfoPageContent({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1], delay: 0.3 }}
         >
-          <SectionHeader icon={<BuildingIcon />} title={t("info.tabBuilding")} />
+          <SectionHeader icon={<Building2 size={ICON_SIZE.md} strokeWidth={ICON_STROKE.thin} />} title={t("info.tabBuilding")} />
           <div className="space-y-4">
             {addressInfo && (
               <div className="premium-surface rounded-2xl p-5 border-border/50">

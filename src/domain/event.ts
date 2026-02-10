@@ -16,5 +16,12 @@ export interface EventWithDetails extends Event {
     nickname: string | null;
     avatar_url: string | null;
   } | null;
-  event_attendees: { user_id: string }[];
+  event_attendees: {
+    user_id: string;
+    profiles: {
+      name: string;
+      nickname: string | null;
+      avatar_url: string | null;
+    } | null;
+  }[];
 }

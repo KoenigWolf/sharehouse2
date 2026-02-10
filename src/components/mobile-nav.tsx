@@ -22,6 +22,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
 import { useI18n } from "@/hooks/use-i18n";
 import { useUser } from "@/hooks/use-user";
 import type { TranslationKey } from "@/lib/i18n";
@@ -141,9 +142,9 @@ export const MobileNav = memo(function MobileNav() {
           >
             <div className="relative">
               <MoreHorizontal
-                size={24}
+                size={ICON_SIZE.xl}
                 className="text-muted-foreground group-hover:text-foreground transition-colors"
-                strokeWidth={2}
+                strokeWidth={ICON_STROKE.normal}
               />
             </div>
             <span className="sr-only">{t("mobileNav.more")}</span>

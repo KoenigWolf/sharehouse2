@@ -21,6 +21,7 @@ import {
   Shield,
   Home,
 } from "lucide-react";
+import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -72,8 +73,8 @@ const NavLink = memo(function NavLink({ item, isActive }: NavLinkProps) {
     >
       <div className="relative z-10 flex items-center justify-center">
         <Icon
-          size={20}
-          strokeWidth={isActive ? 2.5 : 2}
+          size={ICON_SIZE.lg}
+          strokeWidth={isActive ? ICON_STROKE.medium : ICON_STROKE.normal}
           className={
             isActive
               ? "text-primary"
@@ -144,7 +145,7 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
               />
             ) : (
               <div className="w-full h-full bg-muted flex items-center justify-center">
-                <User size={18} className="text-muted-foreground" strokeWidth={2} />
+                <User size={ICON_SIZE.md} className="text-muted-foreground" strokeWidth={ICON_STROKE.normal} />
               </div>
             )}
           </div>
@@ -153,27 +154,27 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
       <DropdownMenuContent align="end" sideOffset={10} className="w-48 p-1.5 rounded-2xl shadow-xl border-border">
         <DropdownMenuItem asChild className="rounded-xl px-3 py-2.5 focus:bg-secondary cursor-pointer">
           <Link href={profileHref} className="flex items-center">
-            <User size={16} strokeWidth={2} className="mr-3 text-muted-foreground" />
+            <User size={ICON_SIZE.md} strokeWidth={ICON_STROKE.normal} className="mr-3 text-muted-foreground" />
             <span className="font-semibold text-sm text-foreground/80">{t("nav.myPage")}</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild className="rounded-xl px-3 py-2.5 focus:bg-secondary cursor-pointer">
           <Link href="/settings" className="flex items-center">
-            <Settings size={16} strokeWidth={2} className="mr-3 text-muted-foreground" />
+            <Settings size={ICON_SIZE.md} strokeWidth={ICON_STROKE.normal} className="mr-3 text-muted-foreground" />
             <span className="font-semibold text-sm text-foreground/80">{t("nav.settings")}</span>
           </Link>
         </DropdownMenuItem>
         {isAdmin && (
           <DropdownMenuItem asChild className="rounded-xl px-3 py-2.5 focus:bg-secondary cursor-pointer">
             <Link href="/admin" className="flex items-center">
-              <Shield size={16} strokeWidth={2} className="mr-3 text-muted-foreground" />
+              <Shield size={ICON_SIZE.md} strokeWidth={ICON_STROKE.normal} className="mr-3 text-muted-foreground" />
               <span className="font-semibold text-sm text-foreground/80">{t("nav.admin")}</span>
             </Link>
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator className="my-1.5 bg-border" />
         <DropdownMenuItem onClick={handleLogout} className="rounded-xl px-3 py-2.5 focus:bg-secondary cursor-pointer group/logout">
-          <LogOut size={16} strokeWidth={2} className="mr-3 text-muted-foreground group-hover/logout:text-foreground transition-colors" />
+          <LogOut size={ICON_SIZE.md} strokeWidth={ICON_STROKE.normal} className="mr-3 text-muted-foreground group-hover/logout:text-foreground transition-colors" />
           <span className="font-semibold text-sm text-muted-foreground group-hover/logout:text-foreground">{t("nav.logout")}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -186,7 +187,6 @@ UserAvatarMenu.displayName = "UserAvatarMenu";
 export const Header = memo(function Header() {
   const pathname = usePathname();
   const t = useI18n();
-  const { userId } = useUser();
 
   const isPathActive = useCallback(
     (item: NavItem) => pathname === item.href,
@@ -205,7 +205,7 @@ export const Header = memo(function Header() {
             className="flex items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 group"
             aria-label={t("a11y.goHome")}
           >
-            <Home size={22} className="text-primary" strokeWidth={2.5} />
+            <Home size={ICON_SIZE.lg} className="text-primary" strokeWidth={ICON_STROKE.medium} />
             <div className="flex flex-col leading-none">
               <span className="text-xl font-bold tracking-tight text-foreground">
                 Share<span className="text-primary">House</span>

@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { m, AnimatePresence } from "framer-motion";
+import { m } from "framer-motion";
 import { MoveLeft, Home, ArrowRight } from "lucide-react";
+import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/use-i18n";
 
@@ -11,7 +12,6 @@ export default function NotFound() {
 
   return (
     <div className="min-h-[100dvh] bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      {/* Decorative Background Elements */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-200/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-brand-300/20 rounded-full blur-[120px] pointer-events-none" />
 
@@ -38,7 +38,7 @@ export default function NotFound() {
               className="bg-card/80 backdrop-blur-xl p-8 sm:p-12 rounded-[2.5rem] shadow-2xl border border-border/50 premium-surface"
             >
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 text-brand-500 mb-6">
-                <MoveLeft size={32} strokeWidth={1.5} />
+                <MoveLeft size={ICON_SIZE["2xl"]} strokeWidth={ICON_STROKE.thin} />
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-4 tracking-tight">
                 {t("pages.notFound.title")}
@@ -50,14 +50,14 @@ export default function NotFound() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <Button size="xl" asChild className="rounded-2xl shadow-lg shadow-brand-200/50 group">
                   <Link href="/">
-                    <Home size={18} className="mr-2" />
+                    <Home size={ICON_SIZE.md} className="mr-2" />
                     {t("pages.notFound.backHome")}
                   </Link>
                 </Button>
                 <Button variant="outline" size="xl" asChild className="rounded-2xl bg-card border-border hover:bg-background hover:border-primary/40 group">
                   <Link href="/residents">
                     {t("nav.residents")}
-                    <ArrowRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight size={ICON_SIZE.md} className="ml-2 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
               </div>

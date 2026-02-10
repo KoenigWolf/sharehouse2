@@ -18,7 +18,7 @@ export async function getUpcomingEvents(): Promise<EventWithDetails[]> {
 
     const { data, error } = await supabase
       .from("events")
-      .select("*, profiles!events_user_id_profiles_fk(name, nickname, avatar_url), event_attendees(user_id)")
+      .select("*, profiles!events_user_id_profiles_fk(name, nickname, avatar_url), event_attendees(user_id, profiles!event_attendees_user_id_profiles_fk(name, nickname, avatar_url))")
       .gte("event_date", today)
       .order("event_date", { ascending: true });
 
@@ -134,6 +134,67 @@ export async function toggleAttendance(eventId: string): Promise<ActionResponse>
   }
 }
 
+export async function updateEvent(
+  eventId: string,
+  input: {
+    title: string;
+    description: string | null;
+    event_date: string;
+    event_time: string | null;
+    location: string | null;
+  }
+): Promise<ActionResponse> {
+  const t = await getServerTranslator();
+  const originError = await enforceAllowedOrigin(t, "updateEvent");
+  if (originError) return { error: originError };
+
+  try {
+    if (!isValidUUID(eventId)) return { error: t("errors.invalidIdFormat") };
+
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: t("errors.unauthorized") };
+
+    const trimmedTitle = input.title.trim();
+    if (!trimmedTitle) return { error: t("errors.invalidInput") };
+    if (trimmedTitle.length > EVENTS.maxTitleLength) {
+      return { error: t("errors.invalidInput") };
+    }
+
+    if (!input.event_date) return { error: t("errors.invalidInput") };
+
+    const trimmedDesc = input.description?.trim() || null;
+    if (trimmedDesc && trimmedDesc.length > EVENTS.maxDescriptionLength) {
+      return { error: t("errors.invalidInput") };
+    }
+
+    const { data, error } = await supabase
+      .from("events")
+      .update({
+        title: trimmedTitle,
+        description: trimmedDesc,
+        event_date: input.event_date,
+        event_time: input.event_time?.trim() || null,
+        location: input.location?.trim() || null,
+      })
+      .eq("id", eventId)
+      .eq("user_id", user.id)
+      .select("id")
+      .single();
+
+    if (error || !data) {
+      if (error) logError(error, { action: "updateEvent", userId: user.id });
+      return { error: t("errors.saveFailed") };
+    }
+
+    CacheStrategy.afterEventUpdate();
+    return { success: true };
+  } catch (error) {
+    logError(error, { action: "updateEvent" });
+    return { error: t("errors.serverError") };
+  }
+}
+
 export async function deleteEvent(eventId: string): Promise<ActionResponse> {
   const t = await getServerTranslator();
   const originError = await enforceAllowedOrigin(t, "deleteEvent");
@@ -146,14 +207,16 @@ export async function deleteEvent(eventId: string): Promise<ActionResponse> {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { error: t("errors.unauthorized") };
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("events")
       .delete()
       .eq("id", eventId)
-      .eq("user_id", user.id);
+      .eq("user_id", user.id)
+      .select("id")
+      .single();
 
-    if (error) {
-      logError(error, { action: "deleteEvent", userId: user.id });
+    if (error || !data) {
+      if (error) logError(error, { action: "deleteEvent", userId: user.id });
       return { error: t("errors.deleteFailed") };
     }
 

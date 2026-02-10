@@ -199,6 +199,10 @@ export const en: Translations = {
     snsHint: "Enter username or URL",
     allergies: "Allergies & Dietary Restrictions",
     allergiesPlaceholder: "e.g., Egg allergy, vegetarian",
+    suffixNickname: " (nickname)",
+    suffixHometown: " native",
+    suffixIndustry: " industry",
+    suffixWorkLocation: " based",
   },
 
   profileOptions: {
@@ -672,6 +676,16 @@ export const en: Translations = {
     tomorrow: "Tomorrow",
     createdBy: "Created by {{name}}",
     creating: "Creating...",
+    edit: "Edit Event",
+    update: "Update",
+    updating: "Updating...",
+    nextTwoWeeks: "Next 2 Weeks",
+    showAll: "Show All",
+    createEvent: "Create Event",
+
+    noEventsOnDay: "No events on this day",
+    createAndInvite: "Create an event and invite everyone",
+    countLabel: "{{count}} event(s)",
   },
 
   digest: {
