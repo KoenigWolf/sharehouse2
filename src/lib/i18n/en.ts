@@ -146,7 +146,7 @@ export const en: Translations = {
     teaTimeStatus: "Tea Time",
     interestsSeparatorHint: "Use commas or dots to display tags",
     sectionBasicInfo: "Basic Information",
-    sectionWork: "Work & Education",
+    sectionWork: "Work",
     sectionLifestyle: "Lifestyle",
     sectionCommunal: "Community Living",
     sectionPersonality: "Personality & Hobbies",

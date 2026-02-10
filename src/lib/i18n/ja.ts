@@ -146,7 +146,7 @@ export const ja = {
     teaTimeStatus: "ティータイム",
     interestsSeparatorHint: "「、」「・」「,」で区切ると、タグとして表示されます",
     sectionBasicInfo: "基本情報",
-    sectionWork: "仕事・学歴",
+    sectionWork: "仕事",
     sectionLifestyle: "ライフスタイル",
     sectionCommunal: "共同生活への姿勢",
     sectionPersonality: "性格・趣味",
