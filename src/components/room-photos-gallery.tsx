@@ -11,7 +11,6 @@ import { usePhotoGallery } from "@/hooks/use-photo-gallery";
 import { useLightbox } from "@/hooks/use-lightbox";
 import { BulkUploadProgress } from "@/components/bulk-upload-progress";
 import { PhotoCard, UploadCard } from "@/components/gallery";
-import { ROOM_PHOTOS } from "@/lib/constants/config";
 import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
 import type { PhotoWithProfile } from "@/domain/room-photo";
 
@@ -123,12 +122,10 @@ const ShowMoreButton = memo(function ShowMoreButton({
 ShowMoreButton.displayName = "ShowMoreButton";
 
 interface GalleryFooterProps {
-  maxPhotos: number;
   maxBulkUpload: number;
 }
 
 const GalleryFooter = memo(function GalleryFooter({
-  maxPhotos,
   maxBulkUpload,
 }: GalleryFooterProps) {
   const t = useI18n();
@@ -139,7 +136,7 @@ const GalleryFooter = memo(function GalleryFooter({
         <span className="text-brand-500 font-semibold mr-1">
           {t("roomPhotos.infoLabel")}
         </span>
-        {t("roomPhotos.uploadLimit", { max: maxPhotos, bulk: maxBulkUpload })}
+        {t("roomPhotos.bulkUploadLimit", { count: maxBulkUpload })}
         <span className="mx-1.5 text-muted-foreground/70" aria-hidden="true">·</span>
         {t("roomPhotos.supportedFormats")}
       </p>
@@ -175,13 +172,11 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
     hasPhotos,
     hasMore,
     remainingCount,
-    remainingUploadSlots,
     maxBulkUpload,
     showMore,
     actionHandlers,
   } = usePhotoGallery({
     initialPhotos,
-    userId,
   });
 
   // Lightbox state management
@@ -200,9 +195,9 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
   // Handlers
   const handleSelectFiles = useCallback(
     (files: File[]) => {
-      startUpload(files, remainingUploadSlots);
+      startUpload(files);
     },
-    [startUpload, remainingUploadSlots]
+    [startUpload]
   );
 
   const handlePhotoClick = useCallback(
@@ -212,7 +207,7 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
     [lightbox]
   );
 
-  const canUpload = remainingUploadSlots > 0;
+  const canUpload = !isUploading;
 
   return (
     <>
@@ -271,10 +266,7 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
           <ShowMoreButton onClick={showMore} remainingCount={remainingCount} />
         )}
 
-        <GalleryFooter
-          maxPhotos={ROOM_PHOTOS.maxPhotosPerUser}
-          maxBulkUpload={maxBulkUpload}
-        />
+        <GalleryFooter maxBulkUpload={maxBulkUpload} />
 
         {!hasPhotos && (
           <p className="text-sm text-muted-foreground mt-6 text-center py-12">

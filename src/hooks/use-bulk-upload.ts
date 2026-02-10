@@ -10,6 +10,7 @@ import {
 import { extractTakenAt } from "@/lib/utils/exif";
 import { registerBulkPhotos } from "@/lib/room-photos/actions";
 import type { BulkPhotoItem } from "@/lib/room-photos/actions";
+import type { RoomPhoto } from "@/domain/room-photo";
 import { useI18n } from "@/hooks/use-i18n";
 import { ROOM_PHOTOS } from "@/lib/constants/config";
 
@@ -107,19 +108,14 @@ export function useBulkUpload() {
   const startUpload = useCallback(
     async (
       files: File[],
-      maxRemaining?: number,
-      onComplete?: (photos: any[]) => void
+      onComplete?: (photos: RoomPhoto[]) => void
     ) => {
       if (files.length === 0) return;
 
-      const limit = Math.min(
-        maxRemaining ?? ROOM_PHOTOS.maxBulkUpload,
-        ROOM_PHOTOS.maxBulkUpload
-      );
-      if (files.length > limit) {
+      if (files.length > ROOM_PHOTOS.maxBulkUpload) {
         setFeedback({
           type: "error",
-          message: t("roomPhotos.tooManyFiles", { count: limit }),
+          message: t("roomPhotos.tooManyFiles", { count: ROOM_PHOTOS.maxBulkUpload }),
         });
         return;
       }

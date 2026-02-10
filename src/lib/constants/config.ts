@@ -70,7 +70,6 @@ export const CACHE = {
 } as const;
 
 export const ROOM_PHOTOS = {
-  maxPhotosPerUser: 100,
   maxBulkUpload: 50,
   maxCaptionLength: 200,
   maxSizeBytes: 5 * 1024 * 1024, // post-compression
