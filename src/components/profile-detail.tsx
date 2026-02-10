@@ -288,17 +288,21 @@ function DetailSection({
 function DetailItem({
   icon,
   label,
-  value
+  value,
+  suffix
 }: {
   icon: React.ReactNode;
   label: string;
   value: string | null | undefined;
+  suffix?: string;
 }) {
   if (!value) return null;
   return (
     <div className={`flex items-center ${ICON_GAP.lg} py-2`} aria-label={label}>
       <span className="text-muted-foreground shrink-0" aria-hidden="true">{icon}</span>
-      <span className="text-[15px] text-foreground">{value}</span>
+      <span className="text-[15px] text-foreground">
+        {value}{suffix && <span className="text-muted-foreground">{suffix}</span>}
+      </span>
     </div>
   );
 }
@@ -354,18 +358,18 @@ export function ProfileDetail({
   }, [t, router]);
 
   const basicInfo = [
-    { label: t("profile.nickname"), value: profile.nickname, icon: <User size={14} /> },
+    { label: t("profile.nickname"), value: profile.nickname, icon: <User size={14} />, suffix: t("profile.suffixNickname") },
     { label: t("profile.ageRange"), value: translateOption(profile.age_range, "ageRange", AGE_RANGES, t), icon: <Clock size={14} /> },
     { label: t("profile.gender"), value: translateOption(profile.gender, "gender", GENDERS, t), icon: <User size={14} /> },
     { label: t("profile.nationality"), value: profile.nationality, icon: <Globe size={14} /> },
-    { label: t("profile.hometown"), value: profile.hometown, icon: <Home size={14} /> },
+    { label: t("profile.hometown"), value: profile.hometown, icon: <Home size={14} />, suffix: t("profile.suffixHometown") },
     { label: t("profile.languages"), value: translateLanguages(profile.languages, t).join(", ") || null, icon: <Globe size={14} /> },
   ].filter((f) => f.value);
 
   const workInfo = [
     { label: t("profile.occupation"), value: translateOption(profile.occupation, "occupation", OCCUPATIONS, t), icon: <Briefcase size={14} /> },
-    { label: t("profile.industry"), value: translateOption(profile.industry, "industry", INDUSTRIES, t), icon: <Building2 size={14} /> },
-    { label: t("profile.workLocation"), value: profile.work_location, icon: <MapPin size={14} /> },
+    { label: t("profile.industry"), value: translateOption(profile.industry, "industry", INDUSTRIES, t), icon: <Building2 size={14} />, suffix: t("profile.suffixIndustry") },
+    { label: t("profile.workLocation"), value: profile.work_location, icon: <MapPin size={14} />, suffix: t("profile.suffixWorkLocation") },
     { label: t("profile.workStyle"), value: translateOption(profile.work_style, "workStyle", WORK_STYLES, t), icon: <Laptop size={14} /> },
   ].filter((f) => f.value);
 
@@ -607,7 +611,7 @@ export function ProfileDetail({
               <m.div variants={itemVariants}>
                 <DetailSection title={t("profile.sectionBasicInfo")} icon={<User size={20} />}>
                   {basicInfo.map((field, i) => (
-                    <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} />
+                    <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} suffix={field.suffix} />
                   ))}
                 </DetailSection>
               </m.div>
@@ -617,7 +621,7 @@ export function ProfileDetail({
               <m.div variants={itemVariants}>
                 <DetailSection title={t("profile.sectionWork")} icon={<Briefcase size={20} />}>
                   {workInfo.map((field, i) => (
-                    <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} />
+                    <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} suffix={field.suffix} />
                   ))}
                 </DetailSection>
               </m.div>

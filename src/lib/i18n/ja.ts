@@ -199,6 +199,10 @@ export const ja = {
     snsHint: "ユーザー名または URLを入力",
     allergies: "アレルギー・食事制限",
     allergiesPlaceholder: "卵アレルギー、ベジタリアン など",
+    suffixNickname: "（ニックネーム）",
+    suffixHometown: "出身",
+    suffixIndustry: "業界",
+    suffixWorkLocation: "勤務",
   },
 
   profileOptions: {

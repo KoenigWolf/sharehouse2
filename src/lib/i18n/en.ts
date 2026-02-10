@@ -199,6 +199,10 @@ export const en: Translations = {
     snsHint: "Enter username or URL",
     allergies: "Allergies & Dietary Restrictions",
     allergiesPlaceholder: "e.g., Egg allergy, vegetarian",
+    suffixNickname: " (nickname)",
+    suffixHometown: " native",
+    suffixIndustry: " industry",
+    suffixWorkLocation: " based",
   },
 
   profileOptions: {
