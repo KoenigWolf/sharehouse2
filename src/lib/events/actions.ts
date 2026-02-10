@@ -122,9 +122,13 @@ async function uploadAndPersistCover(
     .from("event-covers")
     .getPublicUrl(fileName);
 
+  // Add cache-busting timestamp to force browsers to fetch new image
+  const cacheBuster = Date.now();
+  const urlWithCacheBuster = `${urlData.publicUrl}?v=${cacheBuster}`;
+
   const { error: updateError } = await supabase
     .from("events")
-    .update({ cover_image_url: urlData.publicUrl })
+    .update({ cover_image_url: urlWithCacheBuster })
     .eq("id", eventId)
     .eq("user_id", userId);
 
@@ -134,7 +138,7 @@ async function uploadAndPersistCover(
     return { error: t("errors.saveFailed") };
   }
 
-  return { success: true, url: urlData.publicUrl };
+  return { success: true, url: urlWithCacheBuster };
 }
 
 export async function getUpcomingEvents(): Promise<EventWithDetails[]> {
