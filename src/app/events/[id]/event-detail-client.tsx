@@ -31,6 +31,8 @@ import {
   removeEventCover,
 } from "@/lib/events/actions";
 import { FILE_UPLOAD } from "@/lib/constants/config";
+import { prepareImageForUpload } from "@/lib/utils/image-compression";
+import { logError } from "@/lib/errors";
 import type { EventWithDetails } from "@/domain/event";
 
 interface EventDetailClientProps {
@@ -97,15 +99,24 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
     setIsUploadingCover(true);
     setError(null);
 
-    const formData = new FormData();
-    formData.append("cover", file);
+    try {
+      // Compress and convert to WebP/JPEG (handles HEIC/HEIF)
+      const prepared = await prepareImageForUpload(file);
 
-    const result = await uploadEventCover(event.id, formData);
-    if ("error" in result) {
-      setError(result.error);
-    } else {
-      setEvent((prev) => ({ ...prev, cover_image_url: result.url }));
+      const formData = new FormData();
+      formData.append("cover", prepared.file);
+
+      const result = await uploadEventCover(event.id, formData);
+      if ("error" in result) {
+        setError(result.error);
+      } else {
+        setEvent((prev) => ({ ...prev, cover_image_url: result.url }));
+      }
+    } catch (err) {
+      logError(err, { action: "handleCoverUpload:compress" });
+      setError(t("errors.uploadFailed"));
     }
+
     setIsUploadingCover(false);
     e.target.value = "";
   };
