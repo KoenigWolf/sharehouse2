@@ -195,25 +195,13 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
   // Handlers
   const handleSelectFiles = useCallback(
     (files: File[]) => {
-      startUpload(files, undefined, (newPhotos) => {
-        // Optimistic update: Add new photos to the gallery immediately
-        // Note: The server action returns RoomPhoto[], but we need PhotoWithProfile[]
-        // For optimistically added photos, profile might be missing or minimal,
-        // but since it's the current user, we could potentially enrich it if needed via useUser
-        // For now, casting or simple mapping if profile structure matches
-
-        // Actually, startUpload callback receives `any[]` in useBulkUpload signature currently
-        // But registerBulkPhotos returns RoomPhoto[].
-        // We need to match PhotoWithProfile.
-        // Let's enrich it with basic profile info from useUser if available, or just pass as is (profile: null)
-
-        const photosWithProfile = newPhotos.map(p => ({
-          ...p,
-          profile: null // Or fetch current user profile? We can't synchronously here easily without user object.
-          // But wait, useUser hook provides user.
+      startUpload(files, (newPhotos) => {
+        // Optimistic update: convert RoomPhoto[] to PhotoWithProfile[]
+        const photosWithProfile: PhotoWithProfile[] = newPhotos.map((photo) => ({
+          ...photo,
+          profile: null,
         }));
-
-        addPhotos(photosWithProfile as PhotoWithProfile[]);
+        addPhotos(photosWithProfile);
       });
     },
     [startUpload, addPhotos]

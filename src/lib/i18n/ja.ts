@@ -470,6 +470,7 @@ export const ja = {
     uploadButton: "写真を投稿",
     bulkUploadComplete: "{{count}}枚アップロードしました",
     bulkUploadPartial: "{{success}}枚成功、{{failed}}枚失敗",
+    bulkUploadLimit: "一度にアップロードできるのは{{count}}枚までです。",
     statusPending: "待機中",
     statusCompressing: "圧縮中",
     statusUploading: "送信中",
