@@ -253,7 +253,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                   ${isSelected
                     ? "bg-brand-500 text-white shadow-lg shadow-brand-500/25 scale-105"
                     : hasEvents
-                      ? "bg-brand-500/15 text-brand-700 dark:text-brand-300 hover:bg-brand-500/25"
+                      ? "bg-orange-100 text-orange-900 dark:bg-orange-900/30 dark:text-orange-100 hover:bg-orange-200 dark:hover:bg-orange-900/50"
                       : d.isToday
                         ? "bg-secondary border-2 border-brand-500/20 text-brand-600 hover:bg-secondary/80"
                         : "bg-secondary/50 hover:bg-secondary text-foreground/80"
@@ -262,12 +262,12 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
               >
                 <span
                   className={`text-[10px] font-bold tracking-wide ${isSelected
-                      ? "text-white/80"
-                      : hasEvents
-                        ? "text-brand-600/80 dark:text-brand-400/80"
-                        : isWeekend
-                          ? "text-rose-500"
-                          : "text-muted-foreground"
+                    ? "text-white/80"
+                    : hasEvents
+                      ? "text-orange-700 dark:text-orange-300"
+                      : isWeekend
+                        ? "text-rose-500"
+                        : "text-muted-foreground"
                     }`}
                 >
                   {weekdays[d.weekday]}
