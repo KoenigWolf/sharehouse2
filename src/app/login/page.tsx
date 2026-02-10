@@ -120,7 +120,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
-      {/* Decorative Background Elements */}
       <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/50 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-50/30 rounded-full blur-[120px] pointer-events-none" />
 
@@ -131,7 +130,6 @@ export default function LoginPage() {
           transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
           className="w-full max-w-[440px] space-y-8"
         >
-          {/* Header/Logo Section */}
           <div className="text-center space-y-2">
             <m.h1
               initial={{ opacity: 0 }}
@@ -151,9 +149,7 @@ export default function LoginPage() {
             </m.p>
           </div>
 
-          {/* Form Card */}
           <div className="bg-card/70 backdrop-blur-2xl rounded-[2.5rem] p-8 sm:p-10 shadow-2xl shadow-border/50 border border-border/50">
-            {/* Mode Switcher */}
             {!isForgotMode && (
               <div className="bg-secondary/50 p-1.5 rounded-2xl flex relative mb-10">
                 <m.div
@@ -349,7 +345,6 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Tagline for Desktop-like feel */}
           <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

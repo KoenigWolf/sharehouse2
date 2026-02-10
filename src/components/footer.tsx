@@ -70,8 +70,6 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
 
       <div className="container mx-auto px-6 pt-16 pb-24 sm:pb-16 max-w-6xl relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8 lg:gap-16">
-
-          {/* Brand Section */}
           <div className="md:col-span-4 lg:col-span-5 flex flex-col items-start">
             <Link href="/" className="flex items-center gap-2 group">
               <HomeIcon size={22} className="text-foreground transition-transform group-hover:scale-105" strokeWidth={2.5} />
@@ -90,7 +88,6 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
             </div>
           </div>
 
-          {/* Links Sections */}
           <div className="md:col-span-8 lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-10 md:gap-8">
             <FooterNavSection title={t("footer.directory")} links={NAV_LINKS} t={t} />
             <FooterLinkSection title={t("footer.community")} links={COMMUNITY_LINKS} t={t} />
@@ -98,7 +95,6 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
           </div>
         </div>
 
-        {/* Bottom Bar */}
         <div className="mt-16 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
             <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">

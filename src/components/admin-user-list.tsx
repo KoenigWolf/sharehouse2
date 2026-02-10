@@ -4,6 +4,7 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { m, AnimatePresence } from "framer-motion";
+import { Search, Mail, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -11,6 +12,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { useI18n } from "@/hooks/use-i18n";
 import { getInitials } from "@/lib/utils";
+import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
 import {
   toggleAdminStatus,
   adminDeleteAccount,
@@ -120,7 +122,7 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
   return (
     <div className="space-y-4">
       <div className="relative">
-        <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+        <Search size={ICON_SIZE.md} strokeWidth={ICON_STROKE.thin} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
         <input
           type="search"
           value={search}
@@ -164,7 +166,7 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
           transition={{ duration: 0.4, ease: EASE }}
           className="flex flex-col items-center justify-center py-16 text-center"
         >
-          <SearchIcon className="w-8 h-8 text-muted-foreground/70 mb-4" />
+          <Search size={ICON_SIZE["2xl"]} strokeWidth={ICON_STROKE.thin} className="text-muted-foreground/70 mb-4" />
           <p className="text-sm font-medium text-muted-foreground">
             {t("admin.noUsers")}
           </p>
@@ -549,7 +551,7 @@ function AdminCredentialsDialog({
 
             <form onSubmit={handleEmailSubmit} className="space-y-3">
               <div className="flex items-center gap-2">
-                <MailIcon className="w-3.5 h-3.5 text-brand-500" />
+                <Mail size={ICON_SIZE.sm} strokeWidth={ICON_STROKE.normal} className="text-brand-500" />
                 <h3 className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase">
                   {t("admin.newEmail")}
                 </h3>
@@ -605,7 +607,7 @@ function AdminCredentialsDialog({
 
             <form onSubmit={handlePasswordSubmit} className="space-y-3">
               <div className="flex items-center gap-2">
-                <LockIcon className="w-3.5 h-3.5 text-brand-500" />
+                <Lock size={ICON_SIZE.sm} strokeWidth={ICON_STROKE.normal} className="text-brand-500" />
                 <h3 className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase">
                   {t("admin.newPassword")}
                 </h3>
@@ -695,58 +697,3 @@ function FeedbackInline({
   );
 }
 
-function SearchIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      className={className}
-    >
-      <circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.5" />
-      <path
-        d="M10.5 10.5L14 14"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function MailIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-      />
-    </svg>
-  );
-}
-
-function LockIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-      />
-    </svg>
-  );
-}

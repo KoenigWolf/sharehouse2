@@ -16,7 +16,6 @@ export default function ProfileEditLoading() {
 
                <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
                   <div className="p-6 sm:p-8 space-y-8">
-                     {/* Profile Photo Edit Skeleton */}
                      <div className="flex items-center gap-6">
                         <Skeleton className="h-24 w-24 rounded-full" />
                         <div className="space-y-2 flex-1">

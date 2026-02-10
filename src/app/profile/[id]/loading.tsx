@@ -8,12 +8,10 @@ export default function ProfileLoading() {
          <main className="flex-1 pb-20 sm:pb-0">
             <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-10 max-w-5xl">
                <div className="bg-card border border-border rounded-[2rem] overflow-hidden shadow-sm">
-                  {/* Cover Photo Skeleton */}
                   <Skeleton className="aspect-2/1 sm:aspect-21/8 w-full" />
 
                   <div className="px-5 sm:px-10 pb-8 sm:pb-12 -mt-12 sm:-mt-16 relative">
                      <div className="flex flex-col sm:flex-row sm:items-end gap-6 sm:gap-8">
-                        {/* Avatar Skeleton */}
                         <Skeleton className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-card shadow-md shrink-0" />
 
                         <div className="flex-1 space-y-4">
@@ -27,7 +25,6 @@ export default function ProfileLoading() {
                         </div>
                      </div>
 
-                     {/* Stats Bar Skeleton */}
                      <div className="mt-10 pt-8 border-t border-border/50 grid grid-cols-2 sm:grid-cols-4 gap-6">
                         {[...Array(4)].map((_, i) => (
                            <div key={i} className="space-y-1">

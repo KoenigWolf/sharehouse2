@@ -2,7 +2,9 @@
 
 import { memo, useCallback, useState } from "react";
 import { m, motion } from "framer-motion";
+import { Languages, Check } from "lucide-react";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
+import { ICON_SIZE, ICON_STROKE, ICON_GAP } from "@/lib/constants/icons";
 import type { Locale } from "@/lib/i18n";
 import type { TranslationKey } from "@/lib/i18n";
 
@@ -42,10 +44,8 @@ export const LanguageSettings = memo(function LanguageSettings() {
       className="space-y-6"
     >
       <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2">
-          <svg className="w-4 h-4 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
-          </svg>
+        <div className={`flex items-center ${ICON_GAP.md}`}>
+          <Languages size={ICON_SIZE.md} strokeWidth={ICON_STROKE.normal} className="text-brand-500" />
           <h2 className="text-[10px] font-bold tracking-[0.25em] text-muted-foreground uppercase whitespace-nowrap">
             {t("settings.language")}
           </h2>
@@ -76,15 +76,7 @@ export const LanguageSettings = memo(function LanguageSettings() {
                 layoutId="language-check"
                 className="absolute top-3 right-3 w-5 h-5 rounded-full bg-primary flex items-center justify-center"
               >
-                <svg
-                  className="w-3 h-3 text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={3}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
+                <Check size={ICON_SIZE.xs} strokeWidth={ICON_STROKE.bold} className="text-white" />
               </motion.div>
             )}
 

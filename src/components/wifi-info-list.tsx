@@ -2,10 +2,12 @@
 
 import { useState, useCallback, useMemo } from "react";
 import { m, AnimatePresence } from "framer-motion";
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/use-i18n";
 import { WifiInfoForm } from "@/components/wifi-info-form";
 import { deleteWifiInfo } from "@/lib/wifi/actions";
+import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
 import type { WifiInfo } from "@/domain/wifi";
 
 interface WifiInfoListProps {
@@ -98,7 +100,6 @@ export function WifiInfoList({ wifiInfos, isAdmin }: WifiInfoListProps) {
         </div>
       )}
 
-      {/* 階タブ */}
       {floors.length > 1 && (
         <div className="flex gap-2 mb-4">
           {floors.map((floor) => (
@@ -132,12 +133,10 @@ export function WifiInfoList({ wifiInfos, isAdmin }: WifiInfoListProps) {
               />
             ) : (
               <div>
-                {/* エリア名 */}
                 <h3 className="text-sm text-foreground font-medium tracking-wide mb-3">
                   {wifi.area_name}
                 </h3>
 
-                {/* SSID */}
                 <dl className="space-y-2">
                   <div className="flex items-center justify-between">
                     <dt className="text-[10px] text-muted-foreground tracking-wide">
@@ -148,7 +147,6 @@ export function WifiInfoList({ wifiInfos, isAdmin }: WifiInfoListProps) {
                     </dd>
                   </div>
 
-                  {/* パスワード */}
                   <div className="flex items-center justify-between">
                     <dt className="text-[10px] text-muted-foreground tracking-wide">
                       {t("wifi.password")}
@@ -171,16 +169,15 @@ export function WifiInfoList({ wifiInfos, isAdmin }: WifiInfoListProps) {
                         }
                       >
                         {visiblePasswords.has(wifi.id) ? (
-                          <EyeOffIcon />
+                          <EyeOff size={ICON_SIZE.md} strokeWidth={ICON_STROKE.thin} />
                         ) : (
-                          <EyeIcon />
+                          <Eye size={ICON_SIZE.md} strokeWidth={ICON_STROKE.thin} />
                         )}
                       </Button>
                     </dd>
                   </div>
                 </dl>
 
-                {/* 管理者アクション */}
                 {isAdmin && (
                   <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border">
                     <Button
@@ -207,7 +204,6 @@ export function WifiInfoList({ wifiInfos, isAdmin }: WifiInfoListProps) {
         ))}
       </AnimatePresence>
 
-      {/* 新規追加（管理者のみ） */}
       {isAdmin && (
         <div>
           {showAddForm ? (
@@ -237,38 +233,3 @@ export function WifiInfoList({ wifiInfos, isAdmin }: WifiInfoListProps) {
   );
 }
 
-function EyeIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-      <circle cx="12" cy="12" r="3" />
-    </svg>
-  );
-}
-
-function EyeOffIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-      <line x1="1" y1="1" x2="23" y2="23" />
-    </svg>
-  );
-}

@@ -48,7 +48,6 @@ export default function GlobalError({
             margin: 0,
           }}
         >
-          {/* Fallback for background blobs */}
           <div
             style={{
               position: "absolute",

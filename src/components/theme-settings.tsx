@@ -2,8 +2,10 @@
 
 import { memo } from "react";
 import { m, motion } from "framer-motion";
+import { Check, Sun, Moon, Monitor } from "lucide-react";
 import { useTheme, type ThemeStyle, type ColorMode } from "@/hooks/use-theme";
 import { useI18n } from "@/hooks/use-i18n";
+import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
 
 interface ThemeOptionProps {
   value: ThemeStyle;
@@ -40,19 +42,10 @@ const ThemeOption = memo(function ThemeOption({
           layoutId="theme-check"
           className="absolute top-3 right-3 w-5 h-5 rounded-full bg-primary flex items-center justify-center"
         >
-          <svg
-            className="w-3 h-3 text-white"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={3}
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
+          <Check size={ICON_SIZE.xs} strokeWidth={ICON_STROKE.bold} className="text-white" />
         </motion.div>
       )}
 
-      {/* Color preview */}
       <div className="flex gap-1.5 mb-3">
         <div
           className="w-6 h-6 rounded-lg shadow-sm border border-foreground/20"
@@ -148,31 +141,17 @@ export const ThemeSettings = memo(function ThemeSettings() {
     {
       value: "light",
       labelKey: "theme.light",
-      icon: (
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <circle cx="12" cy="12" r="5" />
-          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-        </svg>
-      ),
+      icon: <Sun size={ICON_SIZE.lg} strokeWidth={ICON_STROKE.normal} />,
     },
     {
       value: "dark",
       labelKey: "theme.dark",
-      icon: (
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-        </svg>
-      ),
+      icon: <Moon size={ICON_SIZE.lg} strokeWidth={ICON_STROKE.normal} />,
     },
     {
       value: "system",
       labelKey: "theme.system",
-      icon: (
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
-          <path d="M8 21h8M12 17v4" />
-        </svg>
-      ),
+      icon: <Monitor size={ICON_SIZE.lg} strokeWidth={ICON_STROKE.normal} />,
     },
   ];
 
@@ -195,7 +174,6 @@ export const ThemeSettings = memo(function ThemeSettings() {
         <div className="flex-1 h-px bg-secondary" />
       </div>
 
-      {/* Theme Style */}
       <div className="space-y-4">
         <h3 className="text-xs font-bold text-foreground/80 uppercase tracking-wider">
           {t("theme.styleLabel")}
@@ -215,7 +193,6 @@ export const ThemeSettings = memo(function ThemeSettings() {
         </div>
       </div>
 
-      {/* Color Mode */}
       <div className="space-y-4">
         <h3 className="text-xs font-bold text-foreground/80 uppercase tracking-wider">
           {t("theme.colorModeLabel")}

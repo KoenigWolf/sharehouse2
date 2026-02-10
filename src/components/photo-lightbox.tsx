@@ -3,6 +3,7 @@
 import { useCallback, useState, useRef, memo, useEffect } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { X, ChevronLeft, ChevronRight, Trash2, Pencil } from "lucide-react";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -10,6 +11,7 @@ import { useI18n } from "@/hooks/use-i18n";
 import { getInitials } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/formatting";
 import { ROOM_PHOTOS } from "@/lib/constants/config";
+import { ICON_SIZE, ICON_STROKE, ICON_GAP } from "@/lib/constants/icons";
 import type { PhotoWithProfile, PhotoActionHandlers } from "@/domain/room-photo";
 
 // ============================================================================
@@ -33,102 +35,6 @@ const VH_FRACTION = 0.88;
 const SWIPE_THRESHOLD = 80;
 const SWIPE_VELOCITY_THRESHOLD = 500;
 
-// ============================================================================
-// Icon Components
-// ============================================================================
-
-const CloseIcon = memo(function CloseIcon() {
-  return (
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <line x1="18" y1="6" x2="6" y2="18" />
-      <line x1="6" y1="6" x2="18" y2="18" />
-    </svg>
-  );
-});
-
-const ChevronLeftIcon = memo(function ChevronLeftIcon() {
-  return (
-    <svg
-      width="28"
-      height="28"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <polyline points="15 18 9 12 15 6" />
-    </svg>
-  );
-});
-
-const ChevronRightIcon = memo(function ChevronRightIcon() {
-  return (
-    <svg
-      width="28"
-      height="28"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <polyline points="9 18 15 12 9 6" />
-    </svg>
-  );
-});
-
-const TrashIcon = memo(function TrashIcon() {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <polyline points="3 6 5 6 21 6" />
-      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-    </svg>
-  );
-});
-
-const EditIcon = memo(function EditIcon() {
-  return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-    </svg>
-  );
-});
 
 // ============================================================================
 // Utility Functions
@@ -235,7 +141,11 @@ const NavigationButton = memo(function NavigationButton({
       } z-20 w-12 h-12 flex items-center justify-center rounded-full text-white/40 hover:text-white hover:bg-white/10 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50`}
       aria-label={label}
     >
-      {isPrev ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+      {isPrev ? (
+        <ChevronLeft size={28} strokeWidth={ICON_STROKE.normal} aria-hidden="true" />
+      ) : (
+        <ChevronRight size={28} strokeWidth={ICON_STROKE.normal} aria-hidden="true" />
+      )}
     </button>
   );
 });
@@ -281,7 +191,6 @@ const PhotoInfoPanel = memo(function PhotoInfoPanel({
       transition={{ duration: 0.3, delay: 0.1, ease: [0.23, 1, 0.32, 1] }}
       className="w-full max-w-2xl mt-4 px-1"
     >
-      {/* Error feedback */}
       <AnimatePresence>
         {actionError && (
           <m.div
@@ -296,7 +205,7 @@ const PhotoInfoPanel = memo(function PhotoInfoPanel({
           </m.div>
         )}
       </AnimatePresence>
-      {/* User info row */}
+
       <div className="flex items-center gap-3">
         <Avatar className="w-10 h-10 rounded-full ring-2 ring-white/10">
           <OptimizedAvatarImage
@@ -330,13 +239,12 @@ const PhotoInfoPanel = memo(function PhotoInfoPanel({
             {isDeleting ? (
               <Spinner size="xs" variant="light" />
             ) : (
-              <TrashIcon />
+              <Trash2 size={18} strokeWidth={ICON_STROKE.thin} aria-hidden="true" />
             )}
           </Button>
         )}
       </div>
 
-      {/* Caption section */}
       {(photo.caption || isOwner) && (
         <div className="mt-3">
           {isEditingCaption ? (
@@ -365,12 +273,12 @@ const PhotoInfoPanel = memo(function PhotoInfoPanel({
                 photo.caption ? "text-white/70" : "text-white/30 italic"
               } ${
                 isOwner
-                  ? "cursor-text hover:text-white/90 transition-colors inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded"
+                  ? `cursor-text hover:text-white/90 transition-colors inline-flex items-center ${ICON_GAP.xs} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded`
                   : ""
               }`}
             >
               {photo.caption || t("roomPhotos.captionPlaceholder")}
-              {isOwner && !photo.caption && <EditIcon />}
+              {isOwner && !photo.caption && <Pencil size={ICON_SIZE.sm} strokeWidth={ICON_STROKE.thin} aria-hidden="true" />}
             </p>
           )}
         </div>
@@ -380,10 +288,6 @@ const PhotoInfoPanel = memo(function PhotoInfoPanel({
 });
 
 PhotoInfoPanel.displayName = "PhotoInfoPanel";
-
-// ============================================================================
-// Main Component
-// ============================================================================
 
 /**
  * Photo lightbox component for fullscreen photo viewing
@@ -575,7 +479,6 @@ export function PhotoLightbox({
           aria-modal="true"
           aria-label={t("roomPhotos.photoAlt")}
         >
-          {/* Backdrop */}
           <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -584,17 +487,15 @@ export function PhotoLightbox({
             aria-hidden="true"
           />
 
-          {/* Close button */}
           <button
             type="button"
             onClick={onClose}
             className="absolute top-4 right-4 z-20 w-11 h-11 flex items-center justify-center rounded-full text-white/60 hover:text-white hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
             aria-label={t("common.close")}
           >
-            <CloseIcon />
+            <X size={ICON_SIZE.xl} strokeWidth={ICON_STROKE.normal} aria-hidden="true" />
           </button>
 
-          {/* Photo counter */}
           <div
             className="absolute top-5 left-5 z-20 text-sm text-white/50 font-medium tracking-wide"
             aria-live="polite"
@@ -604,7 +505,6 @@ export function PhotoLightbox({
             {photos.length}
           </div>
 
-          {/* Navigation buttons */}
           {hasPrev && (
             <NavigationButton
               direction="prev"
@@ -620,7 +520,6 @@ export function PhotoLightbox({
             />
           )}
 
-          {/* Main content */}
           <m.div
             key={photo.id}
             drag="x"
