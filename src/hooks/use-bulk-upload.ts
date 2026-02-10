@@ -105,7 +105,11 @@ export function useBulkUpload() {
   );
 
   const startUpload = useCallback(
-    async (files: File[], maxRemaining?: number) => {
+    async (
+      files: File[],
+      maxRemaining?: number,
+      onComplete?: (photos: any[]) => void
+    ) => {
       if (files.length === 0) return;
 
       const limit = Math.min(
@@ -166,6 +170,10 @@ export function useBulkUpload() {
           setFeedback({ type: "error", message: result.error });
           setIsUploading(false);
           return;
+        }
+
+        if ("data" in result && onComplete) {
+          onComplete(result.data);
         }
       }
 

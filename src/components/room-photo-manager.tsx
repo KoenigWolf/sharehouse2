@@ -75,7 +75,9 @@ export function RoomPhotoManager({
       if (!files || files.length === 0) return;
 
       setError("");
-      startUpload(Array.from(files), remainingTotal);
+      startUpload(Array.from(files), remainingTotal, (newPhotos) => {
+        setCurrentPhotos((prev) => [...prev, ...newPhotos]);
+      });
 
       if (fileInputRef.current) {
         fileInputRef.current.value = "";

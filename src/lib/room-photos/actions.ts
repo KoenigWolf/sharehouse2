@@ -17,6 +17,7 @@ import type { Profile } from "@/domain/profile";
  */
 type UpdateResponse = { success: true } | { error: string };
 type UploadResponse = { success: true; url: string } | { error: string };
+type BulkUploadResponse = { success: true; data: RoomPhoto[] } | { error: string };
 
 export interface BulkPhotoItem {
   storagePath: string;
@@ -378,7 +379,7 @@ export async function updateRoomPhotoCaption(
  */
 export async function registerBulkPhotos(
   items: BulkPhotoItem[]
-): Promise<UpdateResponse> {
+): Promise<BulkUploadResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "registerBulkPhotos");
@@ -439,9 +440,10 @@ export async function registerBulkPhotos(
       };
     });
 
-    const { error: insertError } = await supabase
+    const { data: insertedData, error: insertError } = await supabase
       .from("room_photos")
-      .insert(records);
+      .insert(records)
+      .select("*");
 
     if (insertError) {
       logError(insertError, {
@@ -453,7 +455,7 @@ export async function registerBulkPhotos(
     }
 
     CacheStrategy.afterRoomPhotoUpdate();
-    return { success: true };
+    return { success: true, data: insertedData as RoomPhoto[] };
   } catch (error) {
     logError(error, { action: "registerBulkPhotos" });
     return { error: t("errors.serverError") };
