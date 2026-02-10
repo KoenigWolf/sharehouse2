@@ -404,14 +404,31 @@ export async function uploadEventCover(
       return { error: formatRateLimitError(uploadRateLimit.retryAfter, t) };
     }
 
-    const { data: event } = await supabase
+    // First check if the event exists (without user_id filter for debugging)
+    const { data: event, error: eventError } = await supabase
       .from("events")
-      .select("id, cover_image_url")
+      .select("id, cover_image_url, user_id")
       .eq("id", eventId)
-      .eq("user_id", user.id)
       .single();
 
-    if (!event) return { error: t("errors.notFound") };
+    if (eventError || !event) {
+      logError(eventError ?? new Error("Event not found"), {
+        action: "uploadEventCover:findEvent",
+        userId: user.id,
+        metadata: { eventId },
+      });
+      return { error: t("errors.notFound") };
+    }
+
+    // Verify ownership
+    if (event.user_id !== user.id) {
+      logError(new Error("User is not the event owner"), {
+        action: "uploadEventCover:ownership",
+        userId: user.id,
+        metadata: { eventId, eventOwnerId: event.user_id },
+      });
+      return { error: t("errors.notFound") };
+    }
 
     const fileResult = await validateAndReadFile(formData, user.id, eventId, t);
     if (!fileResult.success) {
@@ -464,14 +481,29 @@ export async function removeEventCover(eventId: string): Promise<ActionResponse>
       return { error: formatRateLimitError(rateLimit.retryAfter, t) };
     }
 
-    const { data: event } = await supabase
+    const { data: event, error: eventError } = await supabase
       .from("events")
-      .select("id, cover_image_url")
+      .select("id, cover_image_url, user_id")
       .eq("id", eventId)
-      .eq("user_id", user.id)
       .single();
 
-    if (!event) return { error: t("errors.notFound") };
+    if (eventError || !event) {
+      logError(eventError ?? new Error("Event not found"), {
+        action: "removeEventCover:findEvent",
+        userId: user.id,
+        metadata: { eventId },
+      });
+      return { error: t("errors.notFound") };
+    }
+
+    if (event.user_id !== user.id) {
+      logError(new Error("User is not the event owner"), {
+        action: "removeEventCover:ownership",
+        userId: user.id,
+        metadata: { eventId, eventOwnerId: event.user_id },
+      });
+      return { error: t("errors.notFound") };
+    }
 
     if (event.cover_image_url) {
       await deleteStorageCover(supabase, event.cover_image_url);
