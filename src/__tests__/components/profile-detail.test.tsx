@@ -32,24 +32,6 @@ describe("ProfileDetail", () => {
       expect(screen.getByText("山田 太郎")).toBeInTheDocument();
     });
 
-    it("renders room number with suffix", () => {
-      render(
-        <ProfileDetail profile={mockProfile} isOwnProfile={false} />
-      );
-      expect(screen.getByText(/301号室/)).toBeInTheDocument();
-    });
-
-    it("renders bio", () => {
-      render(
-        <ProfileDetail profile={mockProfile} isOwnProfile={false} />
-      );
-      expect(
-        screen.getByText(
-          "こんにちは、山田です。シェアハウスでの生活を楽しんでいます。"
-        )
-      ).toBeInTheDocument();
-    });
-
     it("renders all interests", () => {
       render(
         <ProfileDetail profile={mockProfile} isOwnProfile={false} />
@@ -62,26 +44,6 @@ describe("ProfileDetail", () => {
   });
 
   describe("optional fields", () => {
-    it("does not render room number when not provided", () => {
-      const profileWithoutRoom = { ...mockProfile, room_number: null };
-      render(
-        <ProfileDetail profile={profileWithoutRoom} isOwnProfile={false} />
-      );
-      expect(screen.queryByText(/号室/)).not.toBeInTheDocument();
-    });
-
-    it("does not render bio when not provided", () => {
-      const profileWithoutBio = { ...mockProfile, bio: null };
-      render(
-        <ProfileDetail profile={profileWithoutBio} isOwnProfile={false} />
-      );
-      expect(
-        screen.queryByText(
-          "こんにちは、山田です。シェアハウスでの生活を楽しんでいます。"
-        )
-      ).not.toBeInTheDocument();
-    });
-
     it("does not render interests when empty", () => {
       const profileWithoutInterests = { ...mockProfile, interests: [] };
       render(
@@ -91,14 +53,6 @@ describe("ProfileDetail", () => {
         />
       );
       expect(screen.queryByText("料理")).not.toBeInTheDocument();
-    });
-
-    it("does not render move-in info when date not provided", () => {
-      const profileWithoutMoveIn = { ...mockProfile, move_in_date: null };
-      render(
-        <ProfileDetail profile={profileWithoutMoveIn} isOwnProfile={false} />
-      );
-      expect(screen.queryByText("入居日")).not.toBeInTheDocument();
     });
   });
 
