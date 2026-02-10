@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback, useEffect } from "react";
+import { memo, useCallback, useEffect, useRef } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { Camera } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -162,10 +162,14 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
     rootMargin: "100px",
   });
 
+  const wasIntersectingRef = useRef(false);
+
   useEffect(() => {
-    if (isIntersecting && hasMore) {
+    // Only trigger on transition from false → true
+    if (isIntersecting && !wasIntersectingRef.current && hasMore) {
       showMore();
     }
+    wasIntersectingRef.current = isIntersecting;
   }, [isIntersecting, hasMore, showMore]);
 
   // Lightbox state management
@@ -203,7 +207,7 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
     [lightbox]
   );
 
-  const canUpload = !isUploading;
+  const canUpload = !!userId && !isUploading;
 
   return (
     <>
@@ -238,12 +242,12 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
         </AnimatePresence>
 
         <div
-          className="columns-2 md:columns-3 lg:columns-4 gap-2 md:gap-4 space-y-2 md:space-y-4 mx-auto"
+          className="columns-2 md:columns-3 lg:columns-4 gap-2 md:gap-4 mx-auto"
           role="list"
           aria-label={t("roomPhotos.gallery")}
         >
           {canUpload && (
-            <div className="break-inside-avoid mb-2 md:mb-4">
+            <div className="break-inside-avoid mb-2 md:mb-4" role="listitem">
               <UploadCard
                 onSelectFiles={handleSelectFiles}
                 isUploading={isUploading}
@@ -251,7 +255,7 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
             </div>
           )}
           {visiblePhotos.map((photo, index) => (
-            <div key={photo.id} className="break-inside-avoid mb-2 md:mb-4">
+            <div key={photo.id} className="break-inside-avoid mb-2 md:mb-4" role="listitem">
               <PhotoCard
                 photo={photo}
                 index={index}
