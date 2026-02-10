@@ -611,8 +611,8 @@ export function ProfileDetail({
               <div className="border-t border-border mt-3 pt-3">
                 <div className="flex flex-wrap justify-center sm:justify-start gap-x-4 gap-y-1 text-[14px] text-muted-foreground">
                   {personalityInfo.map((field, i) => (
-                    <span key={i} className="flex items-center gap-1.5">
-                      {field.icon}
+                    <span key={i} className="flex items-center gap-1.5" aria-label={field.label}>
+                      <span aria-hidden="true">{field.icon}</span>
                       <span>{field.value}</span>
                     </span>
                   ))}
