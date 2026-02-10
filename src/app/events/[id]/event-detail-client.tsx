@@ -1,0 +1,343 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { m } from "framer-motion";
+import {
+  Calendar,
+  MapPin,
+  Users,
+  ArrowLeft,
+  Pencil,
+  Trash2,
+  ImagePlus,
+  Clock,
+} from "lucide-react";
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
+import { MobileNav } from "@/components/mobile-nav";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
+import { useI18n } from "@/hooks/use-i18n";
+import { useUser } from "@/hooks/use-user";
+import {
+  toggleAttendance,
+  deleteEvent,
+  uploadEventCover,
+  removeEventCover,
+} from "@/lib/events/actions";
+import { FILE_UPLOAD } from "@/lib/constants/config";
+import type { EventWithDetails } from "@/domain/event";
+
+interface EventDetailClientProps {
+  initialEvent: EventWithDetails;
+}
+
+export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
+  const router = useRouter();
+  const t = useI18n();
+  const { userId } = useUser();
+
+  const [event, setEvent] = useState<EventWithDetails>(initialEvent);
+  const [isToggling, setIsToggling] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isUploadingCover, setIsUploadingCover] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const isOwner = event.user_id === userId;
+  const isAttending = event.event_attendees.some((a) => a.user_id === userId);
+
+  const handleToggleAttendance = async () => {
+    setIsToggling(true);
+    const result = await toggleAttendance(event.id);
+    if ("error" in result) {
+      setError(result.error);
+    } else {
+      router.refresh();
+      if (!isAttending && userId) {
+        setEvent(prev => ({
+          ...prev,
+          event_attendees: [...prev.event_attendees, { user_id: userId, profiles: null }]
+        }));
+      } else if (isAttending) {
+        setEvent(prev => ({
+          ...prev,
+          event_attendees: prev.event_attendees.filter(a => a.user_id !== userId)
+        }));
+      }
+    }
+    setIsToggling(false);
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm(t("events.deleteConfirm"))) return;
+    setIsDeleting(true);
+    const result = await deleteEvent(event.id);
+    if ("error" in result) {
+      setError(result.error);
+      setIsDeleting(false);
+    } else {
+      router.push("/events");
+    }
+  };
+
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingCover(true);
+    setError(null);
+
+    const formData = new FormData();
+    formData.append("cover", file);
+
+    const result = await uploadEventCover(event.id, formData);
+    if ("error" in result) {
+      setError(result.error);
+    } else {
+      setEvent((prev) => ({ ...prev, cover_image_url: result.url }));
+    }
+    setIsUploadingCover(false);
+    e.target.value = "";
+  };
+
+  const handleRemoveCover = async () => {
+    setIsUploadingCover(true);
+    const result = await removeEventCover(event.id);
+    if ("error" in result) {
+      setError(result.error);
+    } else {
+      setEvent((prev) => ({ ...prev, cover_image_url: null }));
+    }
+    setIsUploadingCover(false);
+  };
+
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString(undefined, {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  const creatorName = event.profiles?.nickname || event.profiles?.name || t("events.unknownCreator");
+
+  return (
+    <div className="min-h-screen bg-background flex flex-col">
+      <Header />
+
+      <main className="flex-1 pb-24 sm:pb-8">
+        <div className="container mx-auto px-4 sm:px-6 py-6 max-w-4xl">
+          {/* Back Link */}
+          <Link
+            href="/events"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
+          >
+            <ArrowLeft size={16} />
+            {t("events.backToList")}
+          </Link>
+
+          {/* Error */}
+          {error && (
+            <div className="mb-6 p-4 rounded-xl bg-error-bg border border-error-border">
+              <p className="text-sm text-error">{error}</p>
+            </div>
+          )}
+
+          <m.article
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-6"
+          >
+            {/* Cover Image */}
+            {(event.cover_image_url || isOwner) && (
+              <div className="relative aspect-[2/1] sm:aspect-[5/2] rounded-2xl overflow-hidden bg-muted">
+                {event.cover_image_url ? (
+                  <Image
+                    src={event.cover_image_url}
+                    alt={event.title}
+                    fill
+                    className="object-cover"
+                    priority
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center bg-brand-50">
+                    <Calendar size={48} strokeWidth={1} className="text-brand-200" />
+                  </div>
+                )}
+
+                {isOwner && (
+                  <div className="absolute bottom-3 right-3 flex gap-2">
+                    {event.cover_image_url && (
+                      <button
+                        type="button"
+                        onClick={handleRemoveCover}
+                        disabled={isUploadingCover}
+                        className="w-9 h-9 flex items-center justify-center rounded-full bg-foreground/80 text-background hover:bg-foreground transition-colors"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
+                    <label className="cursor-pointer">
+                      <input
+                        type="file"
+                        accept={FILE_UPLOAD.inputAccept}
+                        onChange={handleCoverUpload}
+                        className="hidden"
+                        disabled={isUploadingCover}
+                      />
+                      <div className="w-9 h-9 flex items-center justify-center rounded-full bg-foreground/80 text-background hover:bg-foreground transition-colors">
+                        {isUploadingCover ? <Spinner size="xs" /> : <ImagePlus size={16} />}
+                      </div>
+                    </label>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Main Card */}
+            <div className="premium-surface rounded-2xl overflow-hidden">
+              {/* Header */}
+              <div className="p-6 sm:p-8 border-b border-border">
+                <div className="flex items-start justify-between gap-4 mb-4">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight">
+                    {event.title}
+                  </h1>
+                  {isOwner && (
+                    <div className="flex gap-1 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => router.push(`/events?edit=${event.id}`)}
+                        className="w-9 h-9 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                      >
+                        <Pencil size={18} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleDelete}
+                        disabled={isDeleting}
+                        className="w-9 h-9 flex items-center justify-center rounded-lg text-muted-foreground hover:text-error hover:bg-error-bg transition-colors"
+                      >
+                        {isDeleting ? <Spinner size="xs" /> : <Trash2 size={18} />}
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Meta Info */}
+                <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+                  <div className="flex items-center gap-2 text-foreground">
+                    <Calendar size={16} className="text-brand-500 shrink-0" />
+                    <span>{formatDate(event.event_date)}</span>
+                  </div>
+                  {event.event_time && (
+                    <div className="flex items-center gap-2 text-foreground">
+                      <Clock size={16} className="text-brand-500 shrink-0" />
+                      <span>{event.event_time}</span>
+                    </div>
+                  )}
+                  {event.location && (
+                    <div className="flex items-center gap-2 text-foreground">
+                      <MapPin size={16} className="text-brand-500 shrink-0" />
+                      <span>{event.location}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Description */}
+              {event.description && (
+                <div className="p-6 sm:p-8 border-b border-border">
+                  <p className="text-foreground/80 whitespace-pre-wrap leading-relaxed">
+                    {event.description}
+                  </p>
+                </div>
+              )}
+
+              {/* Host */}
+              <div className="p-6 sm:p-8 border-b border-border">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
+                  {t("events.createdByLabel")}
+                </p>
+                <Link
+                  href={event.user_id ? `/profile/${event.user_id}` : "#"}
+                  className="inline-flex items-center gap-3 group"
+                >
+                  <Avatar className="w-10 h-10 border border-border">
+                    <OptimizedAvatarImage
+                      src={event.profiles?.avatar_url}
+                      alt={creatorName}
+                      context="card"
+                    />
+                  </Avatar>
+                  <span className="font-medium text-foreground group-hover:text-brand-600 transition-colors">
+                    {creatorName}
+                  </span>
+                </Link>
+              </div>
+
+              {/* Attendees */}
+              <div className="p-6 sm:p-8">
+                <div className="flex items-center gap-2 mb-4">
+                  <Users size={18} className="text-brand-500" />
+                  <h2 className="font-semibold text-foreground">
+                    {t("events.attendees", { count: event.event_attendees.length })}
+                  </h2>
+                </div>
+
+                {event.event_attendees.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {event.event_attendees.map((attendee) => {
+                      const name = attendee.profiles?.nickname || attendee.profiles?.name || t("events.unknownAttendee");
+                      return (
+                        <Link
+                          key={attendee.user_id}
+                          href={`/profile/${attendee.user_id}`}
+                          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted hover:bg-muted/80 transition-colors"
+                        >
+                          <Avatar className="w-6 h-6">
+                            <OptimizedAvatarImage src={attendee.profiles?.avatar_url} alt={name} context="card" />
+                          </Avatar>
+                          <span className="text-sm font-medium text-foreground">{name}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">{t("events.noAttendees")}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Action Button */}
+            {userId && (
+              <Button
+                onClick={handleToggleAttendance}
+                disabled={isToggling}
+                variant={isAttending ? "secondary" : "default"}
+                className="w-full h-12 rounded-xl text-base font-semibold"
+              >
+                {isToggling ? (
+                  <Spinner size="sm" />
+                ) : isAttending ? (
+                  t("events.attending")
+                ) : (
+                  t("events.attend")
+                )}
+              </Button>
+            )}
+          </m.article>
+        </div>
+      </main>
+
+      <Footer />
+      <MobileNav />
+    </div>
+  );
+}
