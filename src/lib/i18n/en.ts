@@ -679,6 +679,13 @@ export const en: Translations = {
     edit: "Edit Event",
     update: "Update",
     updating: "Updating...",
+    nextTwoWeeks: "Next 2 Weeks",
+    showAll: "Show All",
+    createEvent: "Create Event",
+    editEvent: "Edit Event",
+    noEventsOnDay: "No events on this day",
+    createAndInvite: "Create an event and invite everyone",
+    countLabel: "{{count}} event(s)",
   },
 
   digest: {

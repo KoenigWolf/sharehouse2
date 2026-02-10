@@ -678,6 +678,13 @@ export const ja = {
     edit: "イベントを編集",
     update: "更新",
     updating: "更新中...",
+    nextTwoWeeks: "今後2週間",
+    showAll: "すべて表示",
+    createEvent: "新しいイベントを作成",
+    editEvent: "イベントを編集",
+    noEventsOnDay: "この日のイベントはありません",
+    createAndInvite: "イベントを作成して、みんなを誘ってみましょう",
+    countLabel: "{{count}}件",
   },
 
   digest: {
