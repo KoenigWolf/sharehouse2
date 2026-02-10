@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import { m, AnimatePresence } from "framer-motion";
 import { MapPin, Clock, Calendar, Plus, X, CalendarDays, Users, Sparkles, Pencil } from "lucide-react";
 import { Avatar, AvatarFallback, OptimizedAvatarImage } from "@/components/ui/avatar";
-import { useI18n } from "@/hooks/use-i18n";
+import { useI18n, useLocale } from "@/hooks/use-i18n";
 import { createEvent, updateEvent, toggleAttendance, deleteEvent } from "@/lib/events/actions";
 import { EVENTS } from "@/lib/constants/config";
+import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
 import { getInitials } from "@/lib/utils";
 import type { EventWithDetails } from "@/domain/event";
 
@@ -146,7 +147,8 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
 
   const isEditMode = editingEventId !== null;
 
-  const isJapanese = t("common.loading").includes("読み込み");
+  const locale = useLocale();
+  const isJapanese = locale === "ja";
   const grouped = useMemo(() => groupEventsByDate(events), [events]);
   const calendarDates = useMemo(() => generateCalendarDates(), []);
 
@@ -255,9 +257,9 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
       <div className="premium-surface rounded-3xl p-4 sm:p-6 overflow-hidden">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2 text-muted-foreground">
-            <CalendarDays size={16} className="text-brand-500" />
+            <CalendarDays size={ICON_SIZE.md} className="text-brand-500" />
             <span className="text-[11px] font-bold tracking-wider uppercase">
-              {isJapanese ? "今後2週間" : "Next 2 Weeks"}
+              {t("events.nextTwoWeeks")}
             </span>
           </div>
           {selectedCalendarDate && (
@@ -266,7 +268,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
               onClick={() => setSelectedCalendarDate(null)}
               className="text-[10px] font-bold text-brand-500 hover:text-brand-700 tracking-wider uppercase transition-colors"
             >
-              {isJapanese ? "すべて表示" : "Show All"}
+              {t("events.showAll")}
             </button>
           )}
         </div>
@@ -326,7 +328,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
             whileTap={{ scale: 0.98 }}
             className="h-11 px-6 rounded-full bg-brand-500 hover:bg-brand-600 text-white text-[12px] font-bold tracking-wider uppercase transition-all duration-300 shadow-lg shadow-brand-500/20 flex items-center gap-2"
           >
-            <Plus size={16} strokeWidth={2.5} />
+            <Plus size={ICON_SIZE.md} strokeWidth={ICON_STROKE.medium} />
             {t("events.create")}
           </m.button>
         </div>
@@ -364,15 +366,15 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                 onClick={resetForm}
                 className="absolute top-4 right-4 w-8 h-8 rounded-full bg-secondary hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
               >
-                <X size={16} />
+                <X size={ICON_SIZE.md} />
               </button>
 
               <div className="flex items-center gap-3 mb-6">
                 <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${isEditMode ? "bg-amber-500/10" : "bg-brand-500/10"}`}>
                   {isEditMode ? (
-                    <Pencil size={20} className="text-amber-500" />
+                    <Pencil size={ICON_SIZE.lg} className="text-amber-500" />
                   ) : (
-                    <Calendar size={20} className="text-brand-500" />
+                    <Calendar size={ICON_SIZE.lg} className="text-brand-500" />
                   )}
                 </div>
                 <div>
@@ -381,8 +383,8 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                   </h3>
                   <p className="text-xs text-muted-foreground">
                     {isEditMode
-                      ? (isJapanese ? "イベントを編集" : "Edit event")
-                      : (isJapanese ? "新しいイベントを作成" : "Create a new event")
+                      ? t("events.editEvent")
+                      : t("events.createEvent")
                     }
                   </p>
                 </div>
@@ -435,7 +437,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                     {t("events.locationLabel")}
                   </label>
                   <div className="relative">
-                    <MapPin size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
+                    <MapPin size={ICON_SIZE.md} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
                     <input
                       type="text"
                       value={location}
@@ -474,11 +476,10 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                     disabled={!title.trim() || !eventDate || isSubmitting}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className={`h-11 px-8 rounded-full disabled:bg-secondary disabled:text-muted-foreground text-white text-[12px] font-bold tracking-wider uppercase transition-all duration-300 disabled:shadow-none ${
-                      isEditMode
-                        ? "bg-amber-500 hover:bg-amber-600 shadow-lg shadow-amber-500/20"
-                        : "bg-brand-500 hover:bg-brand-600 shadow-lg shadow-brand-500/20"
-                    }`}
+                    className={`h-11 px-8 rounded-full disabled:bg-secondary disabled:text-muted-foreground text-white text-[12px] font-bold tracking-wider uppercase transition-all duration-300 disabled:shadow-none ${isEditMode
+                      ? "bg-amber-500 hover:bg-amber-600 shadow-lg shadow-amber-500/20"
+                      : "bg-brand-500 hover:bg-brand-600 shadow-lg shadow-brand-500/20"
+                      }`}
                   >
                     {isSubmitting
                       ? (isEditMode ? t("events.updating") : t("events.creating"))
@@ -500,19 +501,16 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
           className="py-16 text-center"
         >
           <div className="w-20 h-20 mx-auto mb-6 rounded-3xl bg-secondary/80 flex items-center justify-center">
-            <Sparkles size={32} className="text-muted-foreground/50" />
+            <Sparkles size={ICON_SIZE["2xl"]} className="text-muted-foreground/50" />
           </div>
           <h3 className="text-lg font-bold text-foreground mb-2">
             {selectedCalendarDate
-              ? (isJapanese ? "この日のイベントはありません" : "No events on this day")
+              ? t("events.noEventsOnDay")
               : t("events.empty")
             }
           </h3>
           <p className="text-sm text-muted-foreground mb-6 max-w-xs mx-auto">
-            {isJapanese
-              ? "イベントを作成して、みんなを誘ってみましょう"
-              : "Create an event and invite everyone"
-            }
+            {t("events.createAndInvite")}
           </p>
           {!isTeaser && !isFormOpen && (
             <m.button
@@ -522,7 +520,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
               whileTap={{ scale: 0.95 }}
               className="h-11 px-6 rounded-full bg-brand-500 hover:bg-brand-600 text-white text-[12px] font-bold tracking-wider uppercase transition-all duration-300 shadow-lg shadow-brand-500/20 inline-flex items-center gap-2"
             >
-              <Plus size={16} strokeWidth={2.5} />
+              <Plus size={ICON_SIZE.md} strokeWidth={ICON_STROKE.medium} />
               {t("events.create")}
             </m.button>
           )}
@@ -557,7 +555,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                   </div>
                   <div className="flex-1 h-px bg-border" />
                   <span className="text-[10px] font-bold text-muted-foreground tracking-wider">
-                    {dateEvents.length} {isJapanese ? "件" : dateEvents.length === 1 ? "event" : "events"}
+                    {t("events.countLabel", { count: dateEvents.length })}
                   </span>
                 </m.div>
 
@@ -589,7 +587,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                               {event.title}
                             </h4>
                             {isMine && (
-                              <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 shrink-0">
+                              <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-all duration-300 shrink-0">
                                 <button
                                   type="button"
                                   onClick={() => handleEdit(event)}
@@ -612,13 +610,13 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                           <div className="flex flex-wrap gap-2">
                             {event.event_time && (
                               <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 bg-secondary/80 rounded-xl text-[12px] font-semibold text-foreground/80 ${isTeaser ? "blur-[2px] select-none" : ""}`}>
-                                <Clock size={13} className="text-brand-500" />
+                                <Clock size={ICON_SIZE.sm} className="text-brand-500" />
                                 {event.event_time}
                               </span>
                             )}
                             {event.location && (
                               <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 bg-secondary/80 rounded-xl text-[12px] font-semibold text-foreground/80 ${isTeaser ? "blur-[2px] select-none" : ""}`}>
-                                <MapPin size={13} className="text-brand-500" />
+                                <MapPin size={ICON_SIZE.sm} className="text-brand-500" />
                                 {event.location}
                               </span>
                             )}
@@ -654,14 +652,12 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                               {attendeeCount > 0 && (
                                 <div className="flex items-center gap-2">
                                   <AttendeeAvatars
-                                    attendees={event.event_attendees.map((a) => ({
-                                      user_id: a.user_id,
-                                    }))}
+                                    attendees={event.event_attendees}
                                     maxDisplay={3}
                                     isBlurred={isTeaser}
                                   />
                                   <span className="text-[11px] font-bold text-muted-foreground flex items-center gap-1">
-                                    <Users size={12} />
+                                    <Users size={ICON_SIZE.xs} />
                                     {attendeeCount}
                                   </span>
                                 </div>
