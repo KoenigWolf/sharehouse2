@@ -18,6 +18,7 @@ interface EventsContentProps {
   events: EventWithDetails[];
   currentUserId: string;
   isTeaser?: boolean;
+  initialEditEventId?: string;
 }
 
 const WEEKDAYS_JA = ["日", "月", "火", "水", "木", "金", "土"];
@@ -89,7 +90,7 @@ function generateCalendarDates(): { date: string; day: number; weekday: number; 
 }
 
 
-export function EventsContent({ events, currentUserId, isTeaser = false }: EventsContentProps) {
+export function EventsContent({ events, currentUserId, isTeaser = false, initialEditEventId }: EventsContentProps) {
   const t = useI18n();
   const router = useRouter();
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -142,6 +143,19 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
     setIsFormOpen(true);
     setFeedback(null);
   }, []);
+
+  // Open edit form when navigated with ?edit=eventId (runs once on mount)
+  const hasInitializedRef = useRef(false);
+  useEffect(() => {
+    if (hasInitializedRef.current || !initialEditEventId) return;
+    hasInitializedRef.current = true;
+
+    const eventToEdit = events.find((e) => e.id === initialEditEventId);
+    if (eventToEdit) {
+      // Use setTimeout to avoid setState in effect body warning
+      setTimeout(() => handleEdit(eventToEdit), 0);
+    }
+  }, [initialEditEventId, events, handleEdit]);
 
   const handleSubmit = useCallback(async () => {
     if (!title.trim() || !eventDate || isSubmitting) return;

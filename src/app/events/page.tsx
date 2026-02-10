@@ -7,7 +7,12 @@ import { EventsContent } from "@/components/events-content";
 import { getUpcomingEvents } from "@/lib/events/actions";
 import { getServerTranslator } from "@/lib/i18n/server";
 
-export default async function EventsPage() {
+interface EventsPageProps {
+  searchParams: Promise<{ edit?: string }>;
+}
+
+export default async function EventsPage({ searchParams }: EventsPageProps) {
+  const { edit: editEventId } = await searchParams;
   const t = await getServerTranslator();
   const supabase = await createClient();
 
@@ -39,6 +44,7 @@ export default async function EventsPage() {
           <EventsContent
             events={events}
             currentUserId={user.id}
+            initialEditEventId={editEventId}
           />
         </div>
       </main>
