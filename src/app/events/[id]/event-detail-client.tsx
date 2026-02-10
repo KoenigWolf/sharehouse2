@@ -110,6 +110,7 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
   };
 
   const handleRemoveCover = async () => {
+    setError(null);
     setIsUploadingCover(true);
     const result = await removeEventCover(event.id);
     if ("error" in result) {
