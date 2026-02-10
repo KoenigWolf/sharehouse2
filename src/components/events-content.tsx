@@ -252,24 +252,32 @@ export function EventsContent({ events, currentUserId, isTeaser = false }: Event
                   flex flex-col items-center gap-1
                   ${isSelected
                     ? "bg-brand-500 text-white shadow-lg shadow-brand-500/25 scale-105"
-                    : d.isToday
-                      ? "bg-brand-500/10 text-brand-600 hover:bg-brand-500/20"
-                      : "bg-secondary/50 hover:bg-secondary text-foreground/80"
+                    : hasEvents
+                      ? "bg-brand-500/15 text-brand-700 dark:text-brand-300 hover:bg-brand-500/25"
+                      : d.isToday
+                        ? "bg-secondary border-2 border-brand-500/20 text-brand-600 hover:bg-secondary/80"
+                        : "bg-secondary/50 hover:bg-secondary text-foreground/80"
                   }
                 `}
               >
-                <span className={`text-[10px] font-bold tracking-wide ${isSelected ? "text-white/80" : isWeekend ? "text-rose-500" : "text-muted-foreground"}`}>
+                <span
+                  className={`text-[10px] font-bold tracking-wide ${isSelected
+                      ? "text-white/80"
+                      : hasEvents
+                        ? "text-brand-600/80 dark:text-brand-400/80"
+                        : isWeekend
+                          ? "text-rose-500"
+                          : "text-muted-foreground"
+                    }`}
+                >
                   {weekdays[d.weekday]}
                 </span>
-                <span className={`text-lg font-bold ${isSelected ? "text-white" : ""}`}>
+                <span
+                  className={`text-lg font-bold ${isSelected ? "text-white" : ""
+                    }`}
+                >
                   {d.day}
                 </span>
-                {hasEvents && !isSelected && (
-                  <span className="absolute bottom-1.5 w-1.5 h-1.5 rounded-full bg-brand-500" />
-                )}
-                {hasEvents && isSelected && (
-                  <span className="absolute bottom-1.5 w-1.5 h-1.5 rounded-full bg-white" />
-                )}
               </button>
             );
           })}
