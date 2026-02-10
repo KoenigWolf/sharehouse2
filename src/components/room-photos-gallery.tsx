@@ -261,12 +261,6 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
           ))}
         </div>
 
-        {isUploading && (
-          <div className="flex justify-center py-8">
-            <Spinner />
-          </div>
-        )}
-
         <div ref={loadMoreRef} className="h-4 w-full" />
 
         {hasMore && (

@@ -152,10 +152,11 @@ function formatAuditLog(entry: AuditLogEntry): string {
  * In production, this should write to a secure, tamper-evident log store
  */
 export function auditLog(entry: AuditLogEntry): void {
-  const formattedLog = formatAuditLog({
+  const fullEntry = {
     ...entry,
     timestamp: entry.timestamp || new Date().toISOString(),
-  });
+  };
+  const formattedLog = formatAuditLog(fullEntry);
 
   const severity = getSeverity(entry.eventType);
 
@@ -167,7 +168,7 @@ export function auditLog(entry: AuditLogEntry): void {
       console.error(`[AUDIT:ERROR] ${formattedLog}`);
       break;
     case AuditSeverity.WARNING:
-      logWarning(`[AUDIT:WARNING] ${formattedLog}`, { action: "auditLog" });
+      logWarning("Audit warning", { action: "auditLog", metadata: fullEntry });
       break;
     default:
       console.info(`[AUDIT:INFO] ${formattedLog}`);
