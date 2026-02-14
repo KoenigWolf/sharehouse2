@@ -308,6 +308,7 @@ export const ja = {
     sampleData: "サンプル表示",
     noResidents: "まだ住民が登録されていません",
     noMatch: "条件に一致する住民がいません",
+    tryDifferentSearch: "別のキーワードで検索するか、フィルターを変更してください",
     clearSearch: "検索をクリア",
     sortByRoom: "部屋",
     sortByName: "名前",
@@ -628,6 +629,8 @@ export const ja = {
     terms: "利用規約",
     privacy: "プライバシーポリシー",
     backToTop: "トップへ戻る",
+    more: "その他",
+    joinCommunity: "コミュニティに参加",
   },
 
   legal: {

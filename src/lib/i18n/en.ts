@@ -308,6 +308,7 @@ export const en: Translations = {
     sampleData: "Sample",
     noResidents: "No residents have registered yet",
     noMatch: "No residents match your search",
+    tryDifferentSearch: "Try a different keyword or change the filter",
     clearSearch: "Clear search",
     sortByRoom: "Room",
     sortByName: "Name",
@@ -629,6 +630,8 @@ export const en: Translations = {
     terms: "Terms of Service",
     privacy: "Privacy Policy",
     backToTop: "Back to Top",
+    more: "More",
+    joinCommunity: "Join the community",
   },
 
   legal: {
