@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { connection } from "next/server";
 import { logError } from "@/lib/errors";
 import { mockProfiles } from "@/lib/mock-data";
@@ -65,18 +66,14 @@ export interface PublicProfileTeaser {
  * プロフィール一覧を取得し、未登録部屋のモックデータをマージして返す
  * @param orderBy ソート対象カラム（デフォルト: "name"）
  */
-export async function getProfilesWithMock(
+export const getProfilesWithMock = cache(async function getProfilesWithMock(
   supabase: SupabaseClient,
   orderBy: string = "name",
 ): Promise<{ profiles: Profile[]; dbProfiles: Profile[] }> {
-  // Force dynamic rendering - ensures fresh data on every request
   await connection();
 
-  // 並列で取得を試みる
   const [profilesRes, bulletinsRes] = await Promise.all([
     supabase.from("profiles").select(PROFILE_BASE_COLUMNS).order(orderBy),
-    // DBビュー latest_bulletins_per_user は DISTINCT ON (user_id) で
-    // 各ユーザーの最新投稿1件のみを返す（DB側で重複排除済み）
     supabase
       .from("latest_bulletins_per_user")
       .select("user_id, message, updated_at"),
@@ -89,7 +86,6 @@ export async function getProfilesWithMock(
     logError(bulletinsRes.error, { action: "getProfilesWithMock:bulletins" });
   }
 
-  // ビューが既に各ユーザー1件のみ返すためそのままMapに格納
   const vibeMap = new Map<string, { message: string; updated_at: string }>();
   if (bulletinsRes.data) {
     for (const b of bulletinsRes.data) {
@@ -119,15 +115,12 @@ export async function getProfilesWithMock(
     profiles: [...dbProfiles, ...remainingMockProfiles],
     dbProfiles,
   };
-}
+});
 
-/**
- * 未認証ユーザー向けの公開チラ見せデータを取得する
- */
-export async function getPublicProfilesWithMock(
+/** 未認証ユーザー向けの公開チラ見せデータを取得する */
+export const getPublicProfilesWithMock = cache(async function getPublicProfilesWithMock(
   supabase: SupabaseClient,
 ): Promise<{ profiles: PublicProfileTeaser[] }> {
-  // Force dynamic rendering - ensures fresh data on every request
   await connection();
 
   const { data, error } = await supabase
@@ -141,7 +134,6 @@ export async function getPublicProfilesWithMock(
 
   const dbTeasers = (data as PublicProfileTeaser[]) ?? [];
 
-  // モックデータもマスクして追加（一貫性のため）
   const remainingMockTeasers: PublicProfileTeaser[] = mockProfiles
     .filter((mock) => !dbTeasers.some((db) => db.id === mock.id))
     .map((mock) => ({
@@ -156,6 +148,6 @@ export async function getPublicProfilesWithMock(
     }));
 
   return {
-    profiles: [...dbTeasers, ...remainingMockTeasers].slice(0, 20), // 20件までに制限
+    profiles: [...dbTeasers, ...remainingMockTeasers].slice(0, 20),
   };
-}
+});

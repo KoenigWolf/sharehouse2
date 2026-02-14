@@ -45,7 +45,7 @@ export async function getGarbageSchedule(): Promise<GarbageSchedule[]> {
 
     const { data, error } = await supabase
       .from("garbage_schedule")
-      .select("*")
+      .select("id, garbage_type, day_of_week, notes, display_order, created_at, updated_at")
       .order("day_of_week", { ascending: true })
       .order("display_order", { ascending: true });
 
@@ -88,7 +88,7 @@ export async function getUpcomingDuties(days = 7): Promise<GarbageDutyWithProfil
 
     const { data: duties, error } = await supabase
       .from("garbage_duties")
-      .select("*")
+      .select("id, user_id, duty_date, garbage_type, is_completed, created_at")
       .gte("duty_date", today)
       .lte("duty_date", endDateStr)
       .order("duty_date", { ascending: true });
@@ -147,7 +147,7 @@ export async function getMyDuties(): Promise<GarbageDuty[]> {
 
     const { data, error } = await supabase
       .from("garbage_duties")
-      .select("*")
+      .select("id, user_id, duty_date, garbage_type, is_completed, created_at")
       .eq("user_id", user.id)
       .gte("duty_date", today)
       .order("duty_date", { ascending: true });
@@ -447,7 +447,7 @@ export async function generateDutyRotation(startDate: string, weeks: number): Pr
 
     const { data: schedule, error: scheduleError } = await supabase
       .from("garbage_schedule")
-      .select("*")
+      .select("day_of_week, garbage_type")
       .order("day_of_week", { ascending: true })
       .order("display_order", { ascending: true });
 

@@ -1,4 +1,3 @@
-import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -10,6 +9,7 @@ import { getTeaTimeSetting } from "@/lib/tea-time/actions";
 import { getRoomPhotos } from "@/lib/room-photos/actions";
 import { validateId } from "@/lib/security/validation";
 import { getServerTranslator } from "@/lib/i18n/server";
+import { getCachedUser } from "@/lib/supabase/cached-queries";
 
 interface ProfilePageProps {
   params: Promise<{ id: string }>;
@@ -23,11 +23,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   } catch {
     notFound();
   }
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, supabase } = await getCachedUser();
 
   if (!user) {
     redirect("/login");

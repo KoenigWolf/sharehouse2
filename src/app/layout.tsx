@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Lato } from "next/font/google";
 import { getServerLocale } from "@/lib/i18n/server";
 import { headers } from "next/headers";
-import { createClient } from "@/lib/supabase/server";
+import { getCachedAuthWithProfile } from "@/lib/supabase/cached-queries";
 import { MotionProvider } from "@/components/motion-provider";
 import { UserProvider } from "@/hooks/use-user";
 import { ThemeProvider, ThemeScript, type ThemeStyle, type ColorMode } from "@/hooks/use-theme";
@@ -49,29 +49,19 @@ export default async function RootLayout({
   ]);
   const nonce = headersList.get("x-nonce") || undefined;
 
-  let userId: string | null = null;
-  let avatarUrl: string | null = null;
-  let isAdmin = false;
-  let themeStyle: ThemeStyle | null = null;
-  let colorMode: ColorMode | null = null;
-  try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      userId = user.id;
-      const { data } = await supabase
-        .from("profiles")
-        .select("avatar_url, is_admin, theme_style, color_mode")
-        .eq("id", user.id)
-        .single();
-      avatarUrl = data?.avatar_url ?? null;
-      isAdmin = data?.is_admin === true;
-      themeStyle = (data?.theme_style as ThemeStyle) ?? null;
-      colorMode = (data?.color_mode as ColorMode) ?? null;
-    }
-  } catch {
-    // 未認証ページ（/login 等）ではスキップ
-  }
+  const authData = await getCachedAuthWithProfile().catch(() => ({
+    userId: null,
+    avatarUrl: null,
+    isAdmin: false,
+    themeStyle: null,
+    colorMode: null,
+  }));
+
+  const userId = authData.userId;
+  const avatarUrl = authData.avatarUrl;
+  const isAdmin = authData.isAdmin;
+  const themeStyle = authData.themeStyle as ThemeStyle | null;
+  const colorMode = authData.colorMode as ColorMode | null;
 
   return (
     <html lang={locale} nonce={nonce} suppressHydrationWarning>

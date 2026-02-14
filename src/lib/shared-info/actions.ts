@@ -26,7 +26,7 @@ export async function getSharedInfo(): Promise<SharedInfo[]> {
 
     const { data, error } = await supabase
       .from("shared_info")
-      .select("*")
+      .select("id, info_key, title, content, notes, display_order, updated_by, created_at, updated_at")
       .order("display_order", { ascending: true });
 
     if (error || !data) {
@@ -61,7 +61,7 @@ export async function getSharedInfoByKey(key: string): Promise<SharedInfo | null
 
     const { data, error } = await supabase
       .from("shared_info")
-      .select("*")
+      .select("id, info_key, title, content, notes, display_order, updated_by, created_at, updated_at")
       .eq("info_key", key)
       .single();
 

@@ -1,4 +1,3 @@
-import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -6,14 +5,11 @@ import { MobileNav } from "@/components/mobile-nav";
 import { ShareContent } from "@/components/share-content";
 import { getShareItems } from "@/lib/share/actions";
 import { getServerTranslator } from "@/lib/i18n/server";
+import { getCachedUser } from "@/lib/supabase/cached-queries";
 
 export default async function SharePage() {
   const t = await getServerTranslator();
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await getCachedUser();
 
   if (!user) {
     redirect("/login");

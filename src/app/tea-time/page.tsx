@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Settings, ChevronRight, Coffee } from "lucide-react";
 import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
@@ -9,13 +8,11 @@ import { MobileNav } from "@/components/mobile-nav";
 import { TeaTimeMatchCard } from "@/components/tea-time-match-card";
 import { getTeaTimeSetting, getMyMatches } from "@/lib/tea-time/actions";
 import { getServerTranslator } from "@/lib/i18n/server";
+import { getCachedUser } from "@/lib/supabase/cached-queries";
 
 export default async function TeaTimePage() {
   const t = await getServerTranslator();
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await getCachedUser();
 
   if (!user) {
     redirect("/login");

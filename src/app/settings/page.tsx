@@ -1,4 +1,3 @@
-import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -10,6 +9,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { getTeaTimeSetting } from "@/lib/tea-time/actions";
 import { getNotificationSettings } from "@/lib/notifications/actions";
 import { getServerTranslator } from "@/lib/i18n/server";
+import { getCachedUser } from "@/lib/supabase/cached-queries";
 
 const ThemeSettings = dynamic(
   () => import("@/components/theme-settings").then((m) => m.ThemeSettings),
@@ -32,12 +32,8 @@ const AccountSettings = dynamic(
 );
 
 export default async function SettingsPage() {
-  const supabase = await createClient();
   const t = await getServerTranslator();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await getCachedUser();
 
   if (!user) {
     redirect("/login");

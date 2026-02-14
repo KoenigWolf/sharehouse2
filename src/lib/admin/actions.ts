@@ -10,17 +10,26 @@ import { isValidUUID, AuditEventType, auditLog } from "@/lib/security";
 import { enforceAllowedOrigin } from "@/lib/security/request";
 import { requireAdmin } from "@/lib/admin/check";
 import { emailSchema, passwordSchema } from "@/domain/validation/auth";
-import type { Profile } from "@/domain/profile";
 
 type UpdateResponse = { success: true } | { error: string };
 type EmailResponse = { success: true; email: string } | { error: string };
 
+export interface AdminListProfile {
+  id: string;
+  name: string;
+  avatar_url: string | null;
+  room_number: string | null;
+  is_admin: boolean;
+  move_in_date: string | null;
+}
+
+const ADMIN_LIST_COLUMNS = "id, name, avatar_url, room_number, is_admin, move_in_date" as const;
+
 /**
  * 全ユーザーのプロフィール一覧を取得する（管理者専用）
- *
  * @returns プロフィール配列、エラー時は空配列
  */
-export async function getAllProfilesForAdmin(): Promise<Profile[]> {
+export async function getAllProfilesForAdmin(): Promise<AdminListProfile[]> {
   const t = await getServerTranslator();
 
   const adminError = await requireAdmin(t);
@@ -31,7 +40,7 @@ export async function getAllProfilesForAdmin(): Promise<Profile[]> {
 
     const { data, error } = await supabase
       .from("profiles")
-      .select("*")
+      .select(ADMIN_LIST_COLUMNS)
       .order("room_number", { ascending: true, nullsFirst: false });
 
     if (error || !data) {
@@ -39,7 +48,7 @@ export async function getAllProfilesForAdmin(): Promise<Profile[]> {
       return [];
     }
 
-    return data;
+    return data as AdminListProfile[];
   } catch (error) {
     logError(error, { action: "getAllProfilesForAdmin" });
     return [];
@@ -147,14 +156,19 @@ export async function adminDeleteAccount(targetUserId: string): Promise<UpdateRe
       return { error: "SUPABASE_SERVICE_ROLE_KEY is not configured" };
     }
 
-    // Storage: room-photos
-    const { data: photoFiles } = await adminClient.storage
-      .from("room-photos")
-      .list(targetUserId);
+    // Storage: room-photos - DBから取得して削除（storage.list()より効率的）
+    const { data: roomPhotos } = await adminClient
+      .from("room_photos")
+      .select("photo_url")
+      .eq("user_id", targetUserId);
 
-    if (photoFiles && photoFiles.length > 0) {
-      const photoPaths = photoFiles.map((f) => `${targetUserId}/${f.name}`);
-      await adminClient.storage.from("room-photos").remove(photoPaths);
+    if (roomPhotos && roomPhotos.length > 0) {
+      const photoPaths = roomPhotos
+        .map((p) => p.photo_url?.split("/room-photos/").pop())
+        .filter((path): path is string => !!path);
+      if (photoPaths.length > 0) {
+        await adminClient.storage.from("room-photos").remove(photoPaths);
+      }
     }
 
     // Storage: avatars / cover-photos
