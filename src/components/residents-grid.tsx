@@ -542,7 +542,7 @@ function FloorView({
                         ease: [0.25, 0.46, 0.45, 0.94],
                         delay: floorIndex * 0.1 + 0.2,
                       }}
-                      className={`h-full rounded-full ${colors.accent.replace("text-", "bg-")}`}
+                      className={`h-full rounded-full ${colors.accent}`}
                     />
                   </div>
                 </div>

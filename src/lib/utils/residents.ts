@@ -8,14 +8,16 @@ export interface FloorColorConfig {
   accent: string;
   /** CSS color value for style={{}} (e.g. "var(--brand-500)") */
   fill: string;
+  /** Tailwind ring class for focus/active states (e.g. "ring-brand-100") */
+  ring: string;
 }
 
 export const FLOOR_COLORS: Record<FloorId | "?", FloorColorConfig> = {
-  "5F": { bg: "bg-brand-50", border: "border-brand-100", text: "text-brand-900", accent: "bg-brand-500", fill: "var(--brand-500)" },
-  "4F": { bg: "floor-slate-bg", border: "floor-slate-border", text: "floor-slate-text", accent: "bg-secondary", fill: "var(--floor-slate)" },
-  "3F": { bg: "floor-violet-bg", border: "floor-violet-border", text: "floor-violet-text", accent: "bg-primary", fill: "var(--floor-violet)" },
-  "2F": { bg: "bg-brand-50", border: "border-brand-100", text: "text-brand-900", accent: "bg-brand-500", fill: "var(--brand-500)" },
-  "?": { bg: "floor-slate-bg", border: "floor-slate-border", text: "text-muted-foreground", accent: "bg-muted", fill: "var(--floor-slate)" },
+  "5F": { bg: "bg-brand-50", border: "border-brand-100", text: "text-brand-900", accent: "bg-brand-500", fill: "var(--brand-500)", ring: "ring-brand-100" },
+  "4F": { bg: "floor-slate-bg", border: "floor-slate-border", text: "floor-slate-text", accent: "bg-secondary", fill: "var(--floor-slate)", ring: "ring-secondary" },
+  "3F": { bg: "floor-violet-bg", border: "floor-violet-border", text: "floor-violet-text", accent: "bg-primary", fill: "var(--floor-violet)", ring: "ring-primary" },
+  "2F": { bg: "bg-brand-50", border: "border-brand-100", text: "text-brand-900", accent: "bg-brand-500", fill: "var(--brand-500)", ring: "ring-brand-100" },
+  "?": { bg: "floor-slate-bg", border: "floor-slate-border", text: "text-muted-foreground", accent: "bg-muted", fill: "var(--floor-slate)", ring: "ring-muted" },
 };
 
 export function getFloorFromRoom(roomNumber: string | null): string {

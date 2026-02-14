@@ -633,6 +633,7 @@ export const en: Translations = {
     more: "More",
     joinCommunity: "Join the community",
     madeWithCare: "Made with care for our community",
+    communityPortal: "Community Portal",
   },
 
   legal: {

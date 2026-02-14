@@ -4,7 +4,7 @@ import { memo, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { m } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Users,
   MessageCircle,
@@ -79,7 +79,7 @@ const NavLink = memo(function NavLink({ item, isActive }: NavLinkProps) {
         }
       />
       {isActive && (
-        <m.span
+        <motion.span
           layoutId="nav-active-indicator"
           className="absolute inset-0 bg-muted rounded-xl -z-10"
           transition={{ type: "spring", stiffness: 400, damping: 30 }}

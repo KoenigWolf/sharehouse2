@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import FocusTrap from "focus-trap-react";
 import { X, User, Briefcase, Calendar } from "lucide-react";
 import { Profile, ROOM_NUMBERS } from "@/domain/profile";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
@@ -116,7 +117,7 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
                 flex-1 min-w-[80px] h-20 flex flex-col items-center justify-center
                 rounded-2xl transition-all duration-200
                 ${isActive
-                  ? `${floorColors.bg} ${floorColors.text} shadow-lg ring-2 ring-offset-2 ring-offset-background ${floorColors.border.replace("border-", "ring-")}`
+                  ? `${floorColors.bg} ${floorColors.text} shadow-lg ring-2 ring-offset-2 ring-offset-background ${floorColors.ring}`
                   : "bg-muted/60 text-foreground/70 hover:bg-muted hover:text-foreground"
                 }
               `}
@@ -235,63 +236,72 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
       {/* Room detail popup */}
       <AnimatePresence>
         {selectedRoom && (
-          <>
-            {/* Backdrop */}
-            <m.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm"
-              onClick={handleClosePopup}
-            />
+          <FocusTrap
+            focusTrapOptions={{
+              initialFocus: false,
+              returnFocusOnDeactivate: true,
+              escapeDeactivates: true,
+              onDeactivate: handleClosePopup,
+            }}
+          >
+            <div>
+              {/* Backdrop */}
+              <m.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm"
+                onClick={handleClosePopup}
+              />
 
-            {/* Modal */}
-            <m.div
-              initial={{ opacity: 0, y: 100, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 100, scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              className="fixed inset-x-4 bottom-8 sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2 z-50 sm:inset-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-sm"
-              role="dialog"
-              aria-modal="true"
-              aria-label={selectedRoom}
-            >
-              <div className="bg-card border border-border/50 shadow-2xl rounded-3xl p-6 relative">
-                {/* Close button - 44px touch target */}
-                <button
-                  type="button"
-                  onClick={handleClosePopup}
-                  className="absolute top-4 right-4 w-11 h-11 flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                  aria-label={t("floorPlan.closeDetail")}
-                >
-                  <X size={20} />
-                </button>
+              {/* Modal */}
+              <m.div
+                initial={{ opacity: 0, y: 100, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 100, scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                className="fixed inset-x-4 bottom-8 sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2 z-50 sm:inset-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-sm"
+                role="dialog"
+                aria-modal="true"
+                aria-label={selectedRoom}
+              >
+                <div className="bg-card border border-border/50 shadow-2xl rounded-3xl p-6 relative">
+                  {/* Close button - 44px touch target */}
+                  <button
+                    type="button"
+                    onClick={handleClosePopup}
+                    className="absolute top-4 right-4 w-11 h-11 flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    aria-label={t("floorPlan.closeDetail")}
+                  >
+                    <X size={20} />
+                  </button>
 
-                {/* Room badge */}
-                <div className="flex items-center gap-3 mb-6">
-                  <span className={`text-sm font-bold px-3 py-1.5 rounded-xl ${colors.bg} ${colors.text} border ${colors.border}`}>
-                    {selectedRoom}
-                  </span>
-                  {selectedProfile && isMockProfile(selectedProfile) && (
-                    <span className="text-xs text-muted-foreground font-medium bg-muted px-2.5 py-1 rounded-lg">
-                      {t("residents.sampleData")}
+                  {/* Room badge */}
+                  <div className="flex items-center gap-3 mb-6">
+                    <span className={`text-sm font-bold px-3 py-1.5 rounded-xl ${colors.bg} ${colors.text} border ${colors.border}`}>
+                      {selectedRoom}
                     </span>
+                    {selectedProfile && isMockProfile(selectedProfile) && (
+                      <span className="text-xs text-muted-foreground font-medium bg-muted px-2.5 py-1 rounded-lg">
+                        {t("residents.sampleData")}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Content */}
+                  {selectedProfile ? (
+                    <RoomDetailOccupied
+                      profile={selectedProfile}
+                      isCurrentUser={selectedProfile.id === currentUserId}
+                    />
+                  ) : (
+                    <RoomDetailVacant />
                   )}
                 </div>
-
-                {/* Content */}
-                {selectedProfile ? (
-                  <RoomDetailOccupied
-                    profile={selectedProfile}
-                    isCurrentUser={selectedProfile.id === currentUserId}
-                  />
-                ) : (
-                  <RoomDetailVacant />
-                )}
-              </div>
-            </m.div>
-          </>
+              </m.div>
+            </div>
+          </FocusTrap>
         )}
       </AnimatePresence>
     </m.div>

@@ -88,7 +88,7 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
                 <h2 className="text-2xl font-bold tracking-tight text-foreground">
                   Share<span className="text-muted-foreground">House</span>
                 </h2>
-                <p className="text-xs text-muted-foreground mt-0.5">Community Portal</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{t("footer.communityPortal")}</p>
               </div>
             </Link>
 

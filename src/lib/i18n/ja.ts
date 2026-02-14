@@ -632,6 +632,7 @@ export const ja = {
     more: "その他",
     joinCommunity: "コミュニティに参加",
     madeWithCare: "コミュニティのために心を込めて作りました",
+    communityPortal: "コミュニティポータル",
   },
 
   legal: {
@@ -900,7 +901,7 @@ export const ja = {
     registered: "登録済み",
     newResidents: "新入居者",
     within3Months: "3ヶ月以内",
-    teaTime: "Tea Time",
+    teaTime: "お茶会",
     participating: "参加中",
     unregistered: "未登録",
     rooms: "部屋",
@@ -910,7 +911,7 @@ export const ja = {
     available: "出品中",
     photos: "写真",
     uploaders: "人が投稿",
-    vibes: "Vibe",
+    vibes: "つぶやき",
     posters: "人が投稿",
     teaTimeMatches: "マッチ",
     success: "成功",
