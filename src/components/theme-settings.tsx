@@ -31,11 +31,10 @@ const ThemeOption = memo(function ThemeOption({
     <button
       type="button"
       onClick={onSelect}
-      className={`relative flex-1 p-4 rounded-2xl border-2 transition-all duration-300 text-left ${
-        isSelected
+      className={`relative flex-1 p-4 rounded-2xl border-2 transition-all duration-300 text-left ${isSelected
           ? "border-primary bg-primary/10 shadow-md"
           : "border-border bg-card hover:border-primary/50 hover:bg-muted/50"
-      }`}
+        }`}
     >
       {isSelected && (
         <motion.div
@@ -87,11 +86,10 @@ const ColorModeOption = memo(function ColorModeOption({
     <button
       type="button"
       onClick={onSelect}
-      className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all duration-300 ${
-        isSelected
+      className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all duration-300 ${isSelected
           ? "border-primary bg-primary/10 text-foreground"
           : "border-border bg-card hover:border-primary/50 hover:bg-muted/50 text-muted-foreground"
-      }`}
+        }`}
     >
       <span className={isSelected ? "text-primary" : "text-muted-foreground"}>
         {icon}
@@ -111,59 +109,59 @@ export const ThemeSettings = memo(function ThemeSettings() {
     descriptionKey: string;
     colors: { primary: string; secondary: string; accent: string };
   }[] = [
-    {
-      value: "cottage",
-      labelKey: "theme.cottage",
-      descriptionKey: "theme.cottageDescription",
-      colors: {
-        primary: "#4a6741",
-        secondary: "#fdfcf8",
-        accent: "#e0b06b",
+      {
+        value: "cottage",
+        labelKey: "theme.cottage",
+        descriptionKey: "theme.cottageDescription",
+        colors: {
+          primary: "#4a6741",
+          secondary: "#fdfcf8",
+          accent: "#e0b06b",
+        },
       },
-    },
-    {
-      value: "modern",
-      labelKey: "theme.modern",
-      descriptionKey: "theme.modernDescription",
-      colors: {
-        primary: "#10b981",
-        secondary: "#f8fafc",
-        accent: "#8b5cf6",
+      {
+        value: "modern",
+        labelKey: "theme.modern",
+        descriptionKey: "theme.modernDescription",
+        colors: {
+          primary: "#10b981",
+          secondary: "#f8fafc",
+          accent: "#8b5cf6",
+        },
       },
-    },
-    {
-      value: "mono",
-      labelKey: "theme.mono",
-      descriptionKey: "theme.monoDescription",
-      colors: {
-        primary: "#0a0a0a",
-        secondary: "#ffffff",
-        accent: "#737373",
+      {
+        value: "mono",
+        labelKey: "theme.mono",
+        descriptionKey: "theme.monoDescription",
+        colors: {
+          primary: "#09090b",
+          secondary: "#ffffff",
+          accent: "#71717a",
+        },
       },
-    },
-  ];
+    ];
 
   const colorModes: {
     value: ColorMode;
     labelKey: string;
     icon: React.ReactNode;
   }[] = [
-    {
-      value: "light",
-      labelKey: "theme.light",
-      icon: <Sun size={ICON_SIZE.lg} strokeWidth={ICON_STROKE.normal} />,
-    },
-    {
-      value: "dark",
-      labelKey: "theme.dark",
-      icon: <Moon size={ICON_SIZE.lg} strokeWidth={ICON_STROKE.normal} />,
-    },
-    {
-      value: "system",
-      labelKey: "theme.system",
-      icon: <Monitor size={ICON_SIZE.lg} strokeWidth={ICON_STROKE.normal} />,
-    },
-  ];
+      {
+        value: "light",
+        labelKey: "theme.light",
+        icon: <Sun size={ICON_SIZE.lg} strokeWidth={ICON_STROKE.normal} />,
+      },
+      {
+        value: "dark",
+        labelKey: "theme.dark",
+        icon: <Moon size={ICON_SIZE.lg} strokeWidth={ICON_STROKE.normal} />,
+      },
+      {
+        value: "system",
+        labelKey: "theme.system",
+        icon: <Monitor size={ICON_SIZE.lg} strokeWidth={ICON_STROKE.normal} />,
+      },
+    ];
 
   return (
     <m.section
