@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { ChevronLeft } from "lucide-react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { MobileNav } from "@/components/mobile-nav";
@@ -51,24 +52,28 @@ export default async function SettingsPage() {
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
 
-      <main className="flex-1 pb-20 sm:pb-0">
-        <div className="container mx-auto px-4 sm:px-6 py-5 sm:py-8 max-w-2xl">
-          <div className="mb-8">
+      <main className="flex-1 pb-24 sm:pb-0">
+        <div className="container mx-auto px-5 sm:px-8 py-8 sm:py-13 max-w-2xl">
+          {/* Header section with golden ratio spacing */}
+          <div className="mb-13">
             <Link
               href={`/profile/${user.id}`}
-              className="text-[11px] tracking-wide text-muted-foreground hover:text-foreground transition-colors"
+              className="inline-flex items-center gap-1.5 h-10 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors group"
             >
+              <ChevronLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
               {t("myPage.backToMyPage")}
             </Link>
-            <h1 className="text-lg text-foreground tracking-wide font-light mt-4">
+
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight mt-5">
               {t("settings.title")}
             </h1>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
               {t("settings.description")}
             </p>
           </div>
 
-          <div className="space-y-12">
+          {/* Settings sections with golden ratio spacing (21→34→55) */}
+          <div className="space-y-13">
             <ThemeSettings />
 
             <LanguageSettings />

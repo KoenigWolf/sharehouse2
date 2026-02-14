@@ -1,11 +1,28 @@
 "use client";
 
 import { memo } from "react";
-import { m, motion } from "framer-motion";
-import { Check, Sun, Moon, Monitor } from "lucide-react";
+import { m, motion, AnimatePresence } from "framer-motion";
+import { Check, Sun, Moon, Monitor, Palette } from "lucide-react";
 import { useTheme, type ThemeStyle, type ColorMode } from "@/hooks/use-theme";
 import { useI18n } from "@/hooks/use-i18n";
-import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
+
+// Animation config with natural easing
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.06, delayChildren: 0.1 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] as const },
+  },
+};
 
 interface ThemeOptionProps {
   value: ThemeStyle;
@@ -28,43 +45,54 @@ const ThemeOption = memo(function ThemeOption({
   colors,
 }: ThemeOptionProps) {
   return (
-    <button
+    <m.button
       type="button"
       onClick={onSelect}
-      className={`relative flex-1 p-4 rounded-2xl border-2 transition-all duration-300 text-left ${isSelected
-          ? "border-primary bg-primary/10 shadow-md"
-          : "border-border bg-card hover:border-primary/50 hover:bg-muted/50"
-        }`}
+      variants={itemVariants}
+      whileHover={{ scale: 1.02, y: -2 }}
+      whileTap={{ scale: 0.98 }}
+      className={`relative flex-1 min-h-[120px] p-5 rounded-2xl border-2 transition-all duration-200 text-left ${
+        isSelected
+          ? "border-foreground bg-foreground/5 shadow-lg"
+          : "border-border bg-card hover:border-foreground/30 hover:bg-muted/50"
+      }`}
     >
-      {isSelected && (
-        <motion.div
-          layoutId="theme-check"
-          className="absolute top-3 right-3 w-5 h-5 rounded-full bg-primary flex items-center justify-center"
-        >
-          <Check size={ICON_SIZE.xs} strokeWidth={ICON_STROKE.bold} className="text-white" />
-        </motion.div>
-      )}
+      {/* Selected indicator with layoutId animation */}
+      <AnimatePresence>
+        {isSelected && (
+          <motion.div
+            layoutId="theme-check"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            exit={{ scale: 0 }}
+            className="absolute top-4 right-4 w-6 h-6 rounded-full bg-foreground flex items-center justify-center"
+          >
+            <Check size={14} strokeWidth={3} className="text-background" />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <div className="flex gap-1.5 mb-3">
+      {/* Color swatches - 32px for touch accessibility */}
+      <div className="flex gap-2 mb-4">
         <div
-          className="w-6 h-6 rounded-lg shadow-sm border border-foreground/20"
+          className="w-8 h-8 rounded-lg shadow-sm border border-foreground/10"
           style={{ backgroundColor: colors.primary }}
         />
         <div
-          className="w-6 h-6 rounded-lg shadow-sm border border-foreground/20"
+          className="w-8 h-8 rounded-lg shadow-sm border border-foreground/10"
           style={{ backgroundColor: colors.secondary }}
         />
         <div
-          className="w-6 h-6 rounded-lg shadow-sm border border-foreground/20"
+          className="w-8 h-8 rounded-lg shadow-sm border border-foreground/10"
           style={{ backgroundColor: colors.accent }}
         />
       </div>
 
-      <h4 className="text-sm font-bold text-foreground mb-1">{label}</h4>
-      <p className="text-[11px] text-muted-foreground leading-relaxed">
+      <h4 className="text-sm font-bold text-foreground mb-1.5">{label}</h4>
+      <p className="text-xs text-muted-foreground leading-relaxed">
         {description}
       </p>
-    </button>
+    </m.button>
   );
 });
 
@@ -83,19 +111,23 @@ const ColorModeOption = memo(function ColorModeOption({
   onSelect,
 }: ColorModeOptionProps) {
   return (
-    <button
+    <m.button
       type="button"
       onClick={onSelect}
-      className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all duration-300 ${isSelected
-          ? "border-primary bg-primary/10 text-foreground"
-          : "border-border bg-card hover:border-primary/50 hover:bg-muted/50 text-muted-foreground"
-        }`}
+      variants={itemVariants}
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.97 }}
+      className={`flex flex-col items-center justify-center gap-2.5 min-w-[88px] h-[88px] p-4 rounded-2xl border-2 transition-all duration-200 ${
+        isSelected
+          ? "border-foreground bg-foreground/5 text-foreground shadow-md"
+          : "border-border bg-card hover:border-foreground/30 hover:bg-muted/50 text-muted-foreground"
+      }`}
     >
-      <span className={isSelected ? "text-primary" : "text-muted-foreground"}>
+      <span className={isSelected ? "text-foreground" : "text-muted-foreground"}>
         {icon}
       </span>
       <span className="text-xs font-bold">{label}</span>
-    </button>
+    </m.button>
   );
 });
 
@@ -109,84 +141,91 @@ export const ThemeSettings = memo(function ThemeSettings() {
     descriptionKey: string;
     colors: { primary: string; secondary: string; accent: string };
   }[] = [
-      {
-        value: "cottage",
-        labelKey: "theme.cottage",
-        descriptionKey: "theme.cottageDescription",
-        colors: {
-          primary: "#4a6741",
-          secondary: "#fdfcf8",
-          accent: "#e0b06b",
-        },
+    {
+      value: "cottage",
+      labelKey: "theme.cottage",
+      descriptionKey: "theme.cottageDescription",
+      colors: {
+        primary: "#4a6741",
+        secondary: "#fdfcf8",
+        accent: "#e0b06b",
       },
-      {
-        value: "modern",
-        labelKey: "theme.modern",
-        descriptionKey: "theme.modernDescription",
-        colors: {
-          primary: "#10b981",
-          secondary: "#f8fafc",
-          accent: "#8b5cf6",
-        },
+    },
+    {
+      value: "modern",
+      labelKey: "theme.modern",
+      descriptionKey: "theme.modernDescription",
+      colors: {
+        primary: "#10b981",
+        secondary: "#f8fafc",
+        accent: "#8b5cf6",
       },
-      {
-        value: "mono",
-        labelKey: "theme.mono",
-        descriptionKey: "theme.monoDescription",
-        colors: {
-          primary: "#09090b",
-          secondary: "#ffffff",
-          accent: "#71717a",
-        },
+    },
+    {
+      value: "mono",
+      labelKey: "theme.mono",
+      descriptionKey: "theme.monoDescription",
+      colors: {
+        primary: "#09090b",
+        secondary: "#ffffff",
+        accent: "#71717a",
       },
-    ];
+    },
+  ];
 
   const colorModes: {
     value: ColorMode;
     labelKey: string;
     icon: React.ReactNode;
   }[] = [
-      {
-        value: "light",
-        labelKey: "theme.light",
-        icon: <Sun size={ICON_SIZE.lg} strokeWidth={ICON_STROKE.normal} />,
-      },
-      {
-        value: "dark",
-        labelKey: "theme.dark",
-        icon: <Moon size={ICON_SIZE.lg} strokeWidth={ICON_STROKE.normal} />,
-      },
-      {
-        value: "system",
-        labelKey: "theme.system",
-        icon: <Monitor size={ICON_SIZE.lg} strokeWidth={ICON_STROKE.normal} />,
-      },
-    ];
+    {
+      value: "light",
+      labelKey: "theme.light",
+      icon: <Sun size={22} strokeWidth={1.5} />,
+    },
+    {
+      value: "dark",
+      labelKey: "theme.dark",
+      icon: <Moon size={22} strokeWidth={1.5} />,
+    },
+    {
+      value: "system",
+      labelKey: "theme.system",
+      icon: <Monitor size={22} strokeWidth={1.5} />,
+    },
+  ];
 
   return (
     <m.section
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
       className="space-y-8"
     >
-      <div className="flex items-center gap-4">
-        <h2 className="text-[10px] font-bold tracking-[0.25em] text-muted-foreground uppercase whitespace-nowrap">
-          {t("theme.sectionTitle")}
-        </h2>
+      {/* Section header */}
+      <m.div variants={itemVariants} className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center">
+            <Palette size={18} className="text-brand-500" />
+          </div>
+          <h2 className="text-xs font-bold tracking-widest text-muted-foreground uppercase">
+            {t("theme.sectionTitle")}
+          </h2>
+        </div>
         {isPending && (
-          <span className="text-[10px] text-muted-foreground animate-pulse">
+          <span className="text-xs text-muted-foreground animate-pulse">
             {t("common.saving")}
           </span>
         )}
-        <div className="flex-1 h-px bg-secondary" />
-      </div>
+        <div className="flex-1 h-px bg-border" />
+      </m.div>
 
-      <div className="space-y-4">
-        <h3 className="text-xs font-bold text-foreground/80 uppercase tracking-wider">
+      {/* Theme style selection */}
+      <div className="space-y-5">
+        <m.h3 variants={itemVariants} className="text-sm font-semibold text-foreground ml-1">
           {t("theme.styleLabel")}
-        </h3>
-        <div className="flex gap-4">
+        </m.h3>
+        <m.div variants={containerVariants} className="flex flex-col sm:flex-row gap-4">
           {themes.map((themeOption) => (
             <ThemeOption
               key={themeOption.value}
@@ -198,14 +237,15 @@ export const ThemeSettings = memo(function ThemeSettings() {
               colors={themeOption.colors}
             />
           ))}
-        </div>
+        </m.div>
       </div>
 
-      <div className="space-y-4">
-        <h3 className="text-xs font-bold text-foreground/80 uppercase tracking-wider">
+      {/* Color mode selection */}
+      <div className="space-y-5">
+        <m.h3 variants={itemVariants} className="text-sm font-semibold text-foreground ml-1">
           {t("theme.colorModeLabel")}
-        </h3>
-        <div className="flex gap-3">
+        </m.h3>
+        <m.div variants={containerVariants} className="flex gap-3">
           {colorModes.map((mode) => (
             <ColorModeOption
               key={mode.value}
@@ -216,7 +256,7 @@ export const ThemeSettings = memo(function ThemeSettings() {
               onSelect={() => setColorMode(mode.value)}
             />
           ))}
-        </div>
+        </m.div>
       </div>
     </m.section>
   );
