@@ -336,6 +336,14 @@ export const ja = {
     showStats: "統計を表示",
     badgeNew: "NEW",
     badgeYou: "YOU",
+    statsActivity: "アクセス頻度（推定）",
+    activityRanges: {
+      within24h: "24時間以内",
+      within3d: "3日以内",
+      within1w: "1週間以内",
+      within1m: "1ヶ月以内",
+      moreThan1m: "1ヶ月以上",
+    },
   },
   teaser: {
     heading: "住民のプロフィールをチェックしよう",

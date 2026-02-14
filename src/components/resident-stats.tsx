@@ -12,6 +12,7 @@ import {
   HeartHandshakeIcon,
   MapPinIcon,
   ClockIcon,
+  ActivityIcon,
 } from "lucide-react";
 
 interface ResidentStatsProps {
@@ -44,6 +45,38 @@ export function ResidentStats({ profiles, teaTimeParticipants }: ResidentStatsPr
         .map(([label, count]) => ({ label, count, percentage: (count / registered.length) * 100 }));
     };
 
+    // Calculate Last Active Stats
+    const now = new Date();
+    const oneDay = 24 * 60 * 60 * 1000;
+    const activityCounts: Record<string, number> = {
+      within24h: 0,
+      within3d: 0,
+      within1w: 0,
+      within1m: 0,
+      moreThan1m: 0,
+    };
+
+    registered.forEach((p) => {
+      const profileUpdate = new Date(p.updated_at).getTime();
+      const vibeUpdate = p.vibe?.updated_at ? new Date(p.vibe.updated_at).getTime() : 0;
+      const lastActive = Math.max(profileUpdate, vibeUpdate);
+      const diff = now.getTime() - lastActive;
+
+      if (diff < oneDay) activityCounts.within24h++;
+      else if (diff < oneDay * 3) activityCounts.within3d++;
+      else if (diff < oneDay * 7) activityCounts.within1w++;
+      else if (diff < oneDay * 30) activityCounts.within1m++;
+      else activityCounts.moreThan1m++;
+    });
+
+    const activityStats = [
+      { label: t("residents.activityRanges.within24h"), count: activityCounts.within24h, percentage: (activityCounts.within24h / registered.length) * 100 },
+      { label: t("residents.activityRanges.within3d"), count: activityCounts.within3d, percentage: (activityCounts.within3d / registered.length) * 100 },
+      { label: t("residents.activityRanges.within1w"), count: activityCounts.within1w, percentage: (activityCounts.within1w / registered.length) * 100 },
+      { label: t("residents.activityRanges.within1m"), count: activityCounts.within1m, percentage: (activityCounts.within1m / registered.length) * 100 },
+      { label: t("residents.activityRanges.moreThan1m"), count: activityCounts.moreThan1m, percentage: (activityCounts.moreThan1m / registered.length) * 100 },
+    ].filter(i => i.count > 0);
+
     // Calculate Floor Stats
     const floorStats: Record<string, { total: number; registered: number }> = {
       "2F": { total: 5, registered: 0 },
@@ -63,6 +96,7 @@ export function ResidentStats({ profiles, teaTimeParticipants }: ResidentStatsPr
       newResidents: newResidents.length,
       teaTimeCount,
       floorStats,
+      activity: activityStats,
       demographics: {
         age: countBy("age_range", "profileOptions.ageRange"),
         gender: countBy("gender", "profileOptions.gender"),
@@ -101,36 +135,43 @@ export function ResidentStats({ profiles, teaTimeParticipants }: ResidentStatsPr
         <StatCard label={t("residents.statsUnregistered")} value={stats.unregistered} subValue={t("residents.statsRooms")} color="var(--muted-foreground)" />
       </div>
 
-      {/* 1. Floor Occupancy (Visual Bar) */}
-      <Section title={t("residents.floorOccupancy")} icon={<MapPinIcon size={18} />}>
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
-          {(["5F", "4F", "3F", "2F"] as const).map((floor) => {
-            const floorStat = stats.floorStats[floor];
-            const percentage = (floorStat.registered / floorStat.total) * 100;
-            const colors = FLOOR_COLORS[floor];
-            return (
-              <div key={floor} className="flex-1">
-                <div className="flex items-center justify-between mb-2">
-                  <span className={`text-sm font-bold tracking-tight ${colors.text}`}>{floor}</span>
-                  <span className="text-xs font-semibold text-muted-foreground">
-                    {floorStat.registered} <span className="opacity-50">/</span> {floorStat.total}
-                  </span>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* 1. Floor Occupancy (Visual Bar) */}
+        <Section title={t("residents.floorOccupancy")} icon={<MapPinIcon size={18} />}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {(["5F", "4F", "3F", "2F"] as const).map((floor) => {
+              const floorStat = stats.floorStats[floor];
+              const percentage = (floorStat.registered / floorStat.total) * 100;
+              const colors = FLOOR_COLORS[floor];
+              return (
+                <div key={floor} className="flex-1">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className={`text-sm font-bold tracking-tight ${colors.text}`}>{floor}</span>
+                    <span className="text-xs font-semibold text-muted-foreground">
+                      {floorStat.registered} <span className="opacity-50">/</span> {floorStat.total}
+                    </span>
+                  </div>
+                  <div className="h-2 bg-muted rounded-full overflow-hidden p-0.5 border border-border/50 shadow-inner">
+                    <m.div
+                      initial={{ width: 0 }}
+                      whileInView={{ width: `${percentage}%` }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+                      style={{ backgroundColor: colors.fill }}
+                      className="h-full rounded-full shadow-sm"
+                    />
+                  </div>
                 </div>
-                <div className="h-2 bg-muted rounded-full overflow-hidden p-0.5 border border-border/50 shadow-inner">
-                  <m.div
-                    initial={{ width: 0 }}
-                    whileInView={{ width: `${percentage}%` }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-                    style={{ backgroundColor: colors.fill }}
-                    className="h-full rounded-full shadow-sm"
-                  />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </Section>
+              );
+            })}
+          </div>
+        </Section>
+
+        {/* 2. Activity (New!) */}
+        <Section title={t("residents.statsActivity")} icon={<ActivityIcon size={18} />}>
+          <ChartGroup title={t("residents.statsActivity")} data={stats.activity} />
+        </Section>
+      </div>
 
       {/* 2. Demographics */}
       <Section title={t("profile.sectionBasicInfo")} icon={<UsersIcon size={18} />}>
