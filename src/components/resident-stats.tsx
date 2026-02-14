@@ -36,7 +36,11 @@ export function ResidentStats({ profiles, teaTimeParticipants }: ResidentStatsPr
         if (val) {
           // Use translation if prefix is provided, otherwise usage value itself
           // We cast to any because dynamically constructed keys can't be easily typed
-          const label = translationPrefix ? t(`${translationPrefix}.${val}` as any) : val;
+          const key = translationPrefix ? `${translationPrefix}.${val}` : val;
+          const translated = translationPrefix ? t(key as any) : val;
+          // If translation returns the key itself (fallback), use the original value
+          const label = translated === key ? val : translated;
+
           counts[label] = (counts[label] || 0) + 1;
         }
       });
