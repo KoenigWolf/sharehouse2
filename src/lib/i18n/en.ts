@@ -802,6 +802,8 @@ export const en: Translations = {
     cottageDescription: "Warm cream and olive green. A cozy farmhouse aesthetic.",
     modern: "Modern",
     modernDescription: "Cool slate and emerald green. Sleek minimalist design.",
+    mono: "Monochrome",
+    monoDescription: "Pure black and white only. A refined shadcn/ui-inspired minimal design.",
     light: "Light",
     dark: "Dark",
     system: "System",

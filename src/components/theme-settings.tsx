@@ -131,6 +131,16 @@ export const ThemeSettings = memo(function ThemeSettings() {
         accent: "#8b5cf6",
       },
     },
+    {
+      value: "mono",
+      labelKey: "theme.mono",
+      descriptionKey: "theme.monoDescription",
+      colors: {
+        primary: "#18181b",
+        secondary: "#ffffff",
+        accent: "#71717a",
+      },
+    },
   ];
 
   const colorModes: {

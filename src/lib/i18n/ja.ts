@@ -801,6 +801,8 @@ export const ja = {
     cottageDescription: "温かみのあるクリーム色とオリーブグリーン。親しみやすいファームハウススタイル。",
     modern: "モダン",
     modernDescription: "クールなスレートカラーとエメラルドグリーン。洗練されたミニマリストスタイル。",
+    mono: "モノクローム",
+    monoDescription: "白と黒のみで構成されたピュアなモノトーン。shadcn/ui風の洗練されたミニマルデザイン。",
     light: "ライト",
     dark: "ダーク",
     system: "システム",
