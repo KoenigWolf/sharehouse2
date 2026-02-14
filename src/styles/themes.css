@@ -494,15 +494,15 @@
   --accent-base: #09090b;
 
   /* Status Colors: Sophisticated through weight and contrast */
-  --success: #3f3f46;
+  --success: #52525b;
   --success-bg: #f4f4f5;
-  --success-border: #d4d4d8;
-  --error: #09090b;
+  --success-border: #a1a1aa;
+  --error: #18181b;
   --error-bg: #fafafa;
-  --error-border: #09090b;
-  --warning: #52525b;
+  --error-border: #3f3f46;
+  --warning: #71717a;
   --warning-bg: #fafafa;
-  --warning-border: #e4e4e7;
+  --warning-border: #d4d4d8;
 
   /* Floor Accents: Minimalist weight-based hierarchy */
   --floor-violet: #52525b;
@@ -625,15 +625,15 @@
   --brand-900: #fafafa;
 
   /* Status Dark: High-contrast emphasis */
-  --success: #d4d4d8;
-  --success-bg: #09090b;
-  --success-border: #27272a;
+  --success: #a1a1aa;
+  --success-bg: #18181b;
+  --success-border: #3f3f46;
   --error: #fafafa;
-  --error-bg: #18181b;
-  --error-border: #fafafa;
-  --warning: #a1a1aa;
-  --warning-bg: #09090b;
-  --warning-border: #3f3f46;
+  --error-bg: #27272a;
+  --error-border: #71717a;
+  --warning: #d4d4d8;
+  --warning-bg: #18181b;
+  --warning-border: #52525b;
 
   --floor-violet: #d4d4d8;
   --floor-violet-bg: #09090b;
