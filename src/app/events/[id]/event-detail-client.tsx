@@ -1,10 +1,8 @@
-"use client";
-
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { m, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import {
   Calendar,
   MapPin,
@@ -15,6 +13,8 @@ import {
   ImagePlus,
   Clock,
   X,
+  Share2,
+  CalendarPlus,
 } from "lucide-react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -53,6 +53,16 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
   const [isUploadingCover, setIsUploadingCover] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"],
+  });
+
+  const heroY = useTransform(scrollYProgress, [0, 1], [0, 200]);
+  const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.2]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+
   // Inline editing state
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(event.title);
@@ -63,7 +73,7 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
   const [isSaving, setIsSaving] = useState(false);
 
   const isOwner = event.user_id === userId;
-  const isAttending = event.event_attendees.some((a) => a.user_id === userId);
+  const isAttending = event.event_attendees.some((a: { user_id: string }) => a.user_id === userId);
 
   const handleToggleAttendance = async () => {
     if (!userId) return;
@@ -76,14 +86,14 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
     } else {
       // Update local state immediately for responsive UI
       if (isAttending) {
-        setEvent(prev => ({
+        setEvent((prev: EventWithDetails) => ({
           ...prev,
-          event_attendees: prev.event_attendees.filter(a => a.user_id !== userId)
+          event_attendees: prev.event_attendees.filter((a: { user_id: string }) => a.user_id !== userId)
         }));
       } else {
-        setEvent(prev => ({
+        setEvent((prev: EventWithDetails) => ({
           ...prev,
-          event_attendees: [...prev.event_attendees, { user_id: userId, profiles: null }]
+          event_attendees: [...prev.event_attendees, { user_id: userId!, profiles: null }]
         }));
       }
       // Sync with server in background
@@ -122,7 +132,7 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
       if ("error" in result) {
         setError(result.error);
       } else {
-        setEvent((prev) => ({ ...prev, cover_image_url: result.url }));
+        setEvent((prev: EventWithDetails) => ({ ...prev, cover_image_url: result.url }));
       }
     } catch (err) {
       logError(err, { action: "handleCoverUpload:compress" });
@@ -140,7 +150,7 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
     if ("error" in result) {
       setError(result.error);
     } else {
-      setEvent((prev) => ({ ...prev, cover_image_url: null }));
+      setEvent((prev: EventWithDetails) => ({ ...prev, cover_image_url: null }));
     }
     setIsUploadingCover(false);
   };
@@ -175,7 +185,7 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
     if ("error" in result) {
       setError(result.error);
     } else {
-      setEvent((prev) => ({
+      setEvent((prev: EventWithDetails) => ({
         ...prev,
         title: editTitle,
         description: editDescription || null,
@@ -187,6 +197,56 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
       router.refresh();
     }
     setIsSaving(false);
+  };
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: event.title,
+          text: event.description || undefined,
+          url: url,
+        });
+      } catch (err) {
+        if ((err as Error).name !== "AbortError") {
+          logError(err, { action: "handleShare" });
+        }
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(url);
+        alert(t("common.copied"));
+      } catch (err) {
+        logError(err, { action: "handleShare:clipboard" });
+      }
+    }
+  };
+
+  const handleAddToCalendar = () => {
+    const title = encodeURIComponent(event.title);
+    const description = encodeURIComponent(event.description || "");
+    const location = encodeURIComponent(event.location || "");
+
+    // Format dates for Google Calendar (YYYYMMDDTHHmmSSZ)
+    // Current event_date is YYYY-MM-DD
+    const datePart = event.event_date.replace(/-/g, "");
+    let startTime = "090000"; // Default to 9:00 AM if no time set
+    let endTime = "100000";
+
+    if (event.event_time) {
+      const match = event.event_time.match(/(\d{1,2}):(\d{2})/);
+      if (match) {
+        const h = match[1].padStart(2, "0");
+        const m = match[2];
+        startTime = `${h}${m}00`;
+        const endH = String((parseInt(h) + 1) % 24).padStart(2, "0");
+        endTime = `${endH}${m}00`;
+      }
+    }
+
+    const googleUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${datePart}T${startTime}/${datePart}T${endTime}&details=${description}&location=${location}`;
+    window.open(googleUrl, "_blank");
   };
 
   const formatDate = (dateStr: string) => {
@@ -204,7 +264,7 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
   const creatorName = event.profiles?.nickname || event.profiles?.name || t("events.unknownCreator");
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div ref={containerRef} className="min-h-screen bg-background flex flex-col">
       <Header />
 
       <main className="flex-1 pb-24 sm:pb-8">
@@ -233,7 +293,10 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
           >
             {/* Cover Image */}
             {(event.cover_image_url || isOwner) && (
-              <div className="relative aspect-[2/1] sm:aspect-[5/2] rounded-2xl overflow-hidden bg-muted">
+              <m.div
+                style={{ y: heroY, scale: heroScale, opacity: heroOpacity }}
+                className="relative aspect-[2/1] sm:aspect-[5/2] rounded-2xl overflow-hidden bg-muted shadow-2xl"
+              >
                 {event.cover_image_url ? (
                   <Image
                     src={event.cover_image_url}
@@ -275,7 +338,7 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
                     </label>
                   </div>
                 )}
-              </div>
+              </m.div>
             )}
 
             {/* Main Card */}
@@ -412,25 +475,53 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
                         <h1 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight">
                           {event.title}
                         </h1>
-                        {isOwner && (
-                          <div className="flex gap-1 shrink-0">
-                            <button
-                              type="button"
-                              onClick={handleStartEdit}
-                              className="w-9 h-9 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                            >
-                              <Pencil size={18} />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={handleDelete}
-                              disabled={isDeleting}
-                              className="w-9 h-9 flex items-center justify-center rounded-lg text-muted-foreground hover:text-error hover:bg-error-bg transition-colors"
-                            >
-                              {isDeleting ? <Spinner size="xs" /> : <Trash2 size={18} />}
-                            </button>
-                          </div>
-                        )}
+                        <div className="flex gap-1 shrink-0">
+                          <m.button
+                            type="button"
+                            onClick={handleShare}
+                            whileHover={{ scale: 1.1, y: -2 }}
+                            whileTap={{ scale: 0.9 }}
+                            className="w-10 h-10 flex items-center justify-center rounded-xl bg-secondary/80 backdrop-blur-md hover:bg-brand-500 hover:text-white text-muted-foreground transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-brand-500/20"
+                            title={t("common.share")}
+                          >
+                            <Share2 size={20} />
+                          </m.button>
+                          <m.button
+                            type="button"
+                            onClick={handleAddToCalendar}
+                            whileHover={{ scale: 1.1, y: -2 }}
+                            whileTap={{ scale: 0.9 }}
+                            className="w-10 h-10 flex items-center justify-center rounded-xl bg-secondary/80 backdrop-blur-md hover:bg-brand-500 hover:text-white text-muted-foreground transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-brand-500/20"
+                            title={t("events.addToCalendar")}
+                          >
+                            <CalendarPlus size={20} />
+                          </m.button>
+                          {isOwner && (
+                            <>
+                              <m.button
+                                type="button"
+                                onClick={handleStartEdit}
+                                whileHover={{ scale: 1.1, y: -2 }}
+                                whileTap={{ scale: 0.9 }}
+                                className="w-10 h-10 flex items-center justify-center rounded-xl bg-secondary/80 backdrop-blur-md hover:bg-amber-500 hover:text-white text-muted-foreground transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-amber-500/20"
+                                title={t("events.edit")}
+                              >
+                                <Pencil size={20} />
+                              </m.button>
+                              <m.button
+                                type="button"
+                                onClick={handleDelete}
+                                disabled={isDeleting}
+                                whileHover={{ scale: 1.1, y: -2 }}
+                                whileTap={{ scale: 0.9 }}
+                                className="w-10 h-10 flex items-center justify-center rounded-xl bg-secondary/80 backdrop-blur-md hover:bg-error-bg hover:text-error text-muted-foreground transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-error/20"
+                                title={t("events.delete")}
+                              >
+                                {isDeleting ? <Spinner size="xs" /> : <Trash2 size={20} />}
+                              </m.button>
+                            </>
+                          )}
+                        </div>
                       </div>
 
                       {/* Meta Info */}
@@ -500,7 +591,7 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
 
                 {event.event_attendees.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
-                    {event.event_attendees.map((attendee) => {
+                    {event.event_attendees.map((attendee: any) => {
                       const name = attendee.profiles?.nickname || attendee.profiles?.name || t("events.unknownAttendee");
                       return (
                         <Link

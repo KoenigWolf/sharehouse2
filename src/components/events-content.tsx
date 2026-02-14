@@ -563,9 +563,15 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
                           ease: [0.23, 1, 0.32, 1],
                           delay: (groupIndex * 0.1) + (eventIndex * 0.08),
                         }}
-                        whileHover={{ y: -2, transition: { duration: 0.2 } }}
-                        className="premium-surface rounded-3xl overflow-hidden relative group"
+                        whileHover={{
+                          y: -4,
+                          transition: { duration: 0.3, ease: "easeOut" }
+                        }}
+                        className="premium-surface rounded-3xl overflow-hidden relative group transition-shadow duration-500 hover:shadow-2xl hover:shadow-brand-500/10 border border-border/50 hover:border-brand-500/30"
                       >
+                        {/* Subtle Glow Effect on Hover */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-brand-500/0 via-brand-500/0 to-brand-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
                         {/* Cover Image */}
                         {event.cover_image_url && (
                           isTeaser ? (
@@ -586,8 +592,9 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
                                   alt={event.title}
                                   fill
                                   sizes="(min-width: 1024px) 448px, 100vw"
-                                  className="object-cover"
+                                  className="object-cover transition-transform duration-700 group-hover:scale-110"
                                 />
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500" />
                               </div>
                             </Link>
                           )
@@ -705,7 +712,8 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
             );
           })}
         </div>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 }
