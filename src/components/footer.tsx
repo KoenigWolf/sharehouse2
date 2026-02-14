@@ -52,13 +52,12 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
 
   if (variant === "minimal") {
     return (
-      <footer className="py-12 mt-auto bg-muted backdrop-blur-sm border-t border-border">
-        <div className="container mx-auto px-6 max-w-5xl flex flex-col items-center gap-6">
-          <div className="flex items-center gap-2">
-            <HomeIcon size={ICON_SIZE.md} className="text-foreground" strokeWidth={ICON_STROKE.medium} />
-            <span className="text-lg font-bold tracking-tight text-foreground">Share<span className="text-brand-500">House</span></span>
+      <footer className="py-8 mt-auto bg-background/80 backdrop-blur-md border-t border-border/50">
+        <div className="container mx-auto px-6 flex flex-col items-center gap-4">
+          <div className="flex items-center gap-2 opacity-80 hover:opacity-100 transition-opacity">
+            <span className="text-sm font-bold tracking-widest uppercase">ShareHouse</span>
           </div>
-          <p className="text-xs font-medium text-muted-foreground tracking-tight text-center">
+          <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
             {t("footer.copyright", { year: new Date().getFullYear() })}
           </p>
         </div>
@@ -67,83 +66,116 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
   }
 
   return (
-    <footer className="mt-auto bg-muted border-t border-border relative overflow-hidden">
+    <footer className="mt-auto bg-background border-t border-border relative overflow-hidden">
+      {/* Massive Brand Background - Subtle & Fixed */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none select-none opacity-[0.03] dark:opacity-[0.02]">
+        <span className="absolute -bottom-[10vw] -left-[2vw] text-[25vw] font-black leading-none tracking-tighter text-foreground whitespace-nowrap">
+          SHARE
+        </span>
+      </div>
 
-      <div className="container mx-auto px-6 pt-16 pb-24 sm:pb-16 max-w-6xl relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8 lg:gap-16">
-          <div className="md:col-span-4 lg:col-span-5 flex flex-col items-start">
-            <Link href="/" className="flex items-center gap-2 group">
-              <HomeIcon size={ICON_SIZE.lg} className="text-foreground transition-transform group-hover:scale-105" strokeWidth={ICON_STROKE.medium} />
-              <span className="text-2xl font-black tracking-tight text-foreground">
-                Share<span className="text-brand-500">House</span>
+      <div className="container mx-auto px-6 pt-24 pb-12 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-8">
+          {/* Brand Column */}
+          <div className="lg:col-span-5 flex flex-col justify-between h-full">
+            <div className="space-y-8">
+              <Link href="/" className="inline-block group">
+                <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground leading-none group-hover:text-foreground/80 transition-colors">
+                  Share<span className="text-muted-foreground">House</span>.
+                </h2>
+              </Link>
+              <p className="text-muted-foreground max-w-sm text-sm leading-relaxed font-medium">
+                {t("footer.tagline")}
+              </p>
+            </div>
+
+            <div className="hidden lg:flex items-center gap-4 mt-12 bg-muted/30 p-2 pr-6 rounded-full w-fit backdrop-blur-sm border border-border/50">
+              <div className="flex -space-x-3">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="w-8 h-8 rounded-full bg-background border-2 border-muted flex items-center justify-center relative z-[3-i]">
+                    <UsersIcon size={12} className="text-muted-foreground" />
+                  </div>
+                ))}
+              </div>
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                Join the community
               </span>
-            </Link>
-            <p className="text-sm font-medium text-muted-foreground mt-6 leading-relaxed max-w-sm">
-              {t("footer.tagline")}
-            </p>
-
-            <div className="flex items-center gap-3 mt-8">
-              <SNSPlaceholder icon={<TwitterIcon size={ICON_SIZE.md} />} label="Twitter" />
-              <SNSPlaceholder icon={<InstagramIcon size={ICON_SIZE.md} />} label="Instagram" />
-              <SNSPlaceholder icon={<GithubIcon size={ICON_SIZE.md} />} label="GitHub" />
             </div>
           </div>
 
-          <div className="md:col-span-8 lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-10 md:gap-8">
+          {/* Navigation Grid */}
+          <div className="lg:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-12 lg:gap-8">
             <FooterNavSection title={t("footer.directory")} links={NAV_LINKS} t={t} />
-            <FooterLinkSection title={t("footer.community")} links={COMMUNITY_LINKS} t={t} />
-            <FooterLinkSection title={t("footer.legal")} links={LEGAL_LINKS} t={t} />
+            <div className="space-y-12">
+              <FooterLinkSection title={t("footer.community")} links={COMMUNITY_LINKS} t={t} />
+              <FooterLinkSection title={t("footer.legal")} links={LEGAL_LINKS} t={t} />
+            </div>
+
+            {/* Socials & Action */}
+            <div className="col-span-2 md:col-span-1 flex flex-col justify-between">
+              <div className="space-y-6">
+                <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">
+                  Socials
+                </h3>
+                <div className="flex flex-col gap-4">
+                  <SocialLink icon={<TwitterIcon size={18} />} label="Twitter" href="#" />
+                  <SocialLink icon={<InstagramIcon size={18} />} label="Instagram" href="#" />
+                  <SocialLink icon={<GithubIcon size={18} />} label="GitHub" href="#" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="mt-16 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
-            <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
-              {t("footer.copyrightFull", { year: new Date().getFullYear() })}
-            </p>
-          </div>
+        {/* Footer Bottom */}
+        <div className="mt-24 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-6">
+          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+            {t("footer.copyrightFull", { year: new Date().getFullYear() })}
+          </p>
 
-          <div className="flex items-center gap-4">
-            <button
-              onClick={scrollToTop}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-muted hover:bg-secondary text-muted-foreground hover:text-foreground transition-all duration-400 ease-out delay-150 text-xs font-bold ring-1 ring-border/50"
-            >
-              <ArrowUpIcon size={ICON_SIZE.sm} />
-              {t("footer.backToTop")}
-            </button>
-          </div>
+          <button
+            onClick={scrollToTop}
+            className="group flex items-center gap-2 px-5 py-2.5 rounded-full bg-foreground text-background hover:bg-foreground/90 transition-all duration-300 shadow-lg hover:shadow-xl text-xs font-bold tracking-wide"
+          >
+            {t("footer.backToTop")}
+            <ArrowUpIcon size={14} className="group-hover:-translate-y-0.5 transition-transform" />
+          </button>
         </div>
-
       </div>
     </footer>
   );
 });
 
-function SNSPlaceholder({ icon, label }: { icon: React.ReactNode; label: string }) {
+function SocialLink({ icon, label, href }: { icon: React.ReactNode; label: string; href: string }) {
   return (
-    <span
-      className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center text-muted-foreground/70 border border-border cursor-default"
-      aria-label={label}
+    <a
+      href={href}
+      className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors group w-fit"
     >
-      {icon}
-    </span>
+      <span className="p-2 rounded-full bg-muted/50 group-hover:bg-foreground group-hover:text-background transition-colors duration-300">
+        {icon}
+      </span>
+      <span className="font-medium group-hover:translate-x-1 transition-transform duration-300">
+        {label}
+      </span>
+    </a>
   );
 }
 
 function FooterNavSection({ title, links, t }: { title: string; links: typeof NAV_LINKS; t: Translator }) {
   return (
     <div className="flex flex-col">
-      <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-6">
+      <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-8">
         {title}
       </h3>
-      <ul className="flex flex-col gap-4">
-        {links.map(({ href, labelKey, icon: Icon }) => (
+      <ul className="flex flex-col gap-5">
+        {links.map(({ href, labelKey }) => (
           <li key={href}>
             <Link
               href={href}
-              className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors font-semibold group"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium relative group inline-flex items-center gap-2"
             >
-              <Icon size={ICON_SIZE.md} strokeWidth={ICON_STROKE.normal} className="text-muted-foreground group-hover:text-foreground/80" />
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-500 opacity-0 -ml-3 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300"></span>
               {t(labelKey)}
             </Link>
           </li>
@@ -156,7 +188,7 @@ function FooterNavSection({ title, links, t }: { title: string; links: typeof NA
 function FooterLinkSection({ title, links, t }: { title: string; links: typeof COMMUNITY_LINKS | typeof LEGAL_LINKS; t: Translator }) {
   return (
     <div className="flex flex-col">
-      <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-6">
+      <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-8">
         {title}
       </h3>
       <ul className="flex flex-col gap-4">
@@ -165,12 +197,12 @@ function FooterLinkSection({ title, links, t }: { title: string; links: typeof C
             {href ? (
               <Link
                 href={href}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors font-semibold"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium hover:underline decoration-border underline-offset-4"
               >
                 {t(labelKey)}
               </Link>
             ) : (
-              <span className="text-sm text-muted-foreground/70 font-semibold cursor-default">
+              <span className="text-sm text-muted-foreground/60 font-medium cursor-not-allowed">
                 {t(labelKey)}
               </span>
             )}
