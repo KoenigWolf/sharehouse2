@@ -283,7 +283,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
                     : hasEvents
                       ? "text-orange-700 dark:text-orange-300"
                       : isWeekend
-                        ? "text-rose-500"
+                        ? "text-foreground/70"
                         : "text-muted-foreground"
                     }`}
                 >
