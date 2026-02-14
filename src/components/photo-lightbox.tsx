@@ -14,10 +14,6 @@ import { ROOM_PHOTOS } from "@/lib/constants/config";
 import { ICON_SIZE, ICON_STROKE, ICON_GAP } from "@/lib/constants/icons";
 import type { PhotoWithProfile, PhotoActionHandlers } from "@/domain/room-photo";
 
-// ============================================================================
-// Types
-// ============================================================================
-
 interface PhotoLightboxProps extends PhotoActionHandlers {
   photos: PhotoWithProfile[];
   selectedIndex: number | null;
@@ -26,19 +22,10 @@ interface PhotoLightboxProps extends PhotoActionHandlers {
   currentUserId?: string | null;
 }
 
-// ============================================================================
-// Constants
-// ============================================================================
-
 const VW_FRACTION = 0.94;
 const VH_FRACTION = 0.88;
 const SWIPE_THRESHOLD = 80;
 const SWIPE_VELOCITY_THRESHOLD = 500;
-
-
-// ============================================================================
-// Utility Functions
-// ============================================================================
 
 function computeDisplaySize(naturalWidth: number, naturalHeight: number) {
   const maxW = window.innerWidth * VW_FRACTION;
@@ -70,10 +57,6 @@ function getInitialSize() {
   );
   return { width: size, height: size };
 }
-
-// ============================================================================
-// Sub-components
-// ============================================================================
 
 interface LightboxImageProps {
   photo: PhotoWithProfile;
@@ -324,7 +307,6 @@ export function PhotoLightbox({
   const [isDeleting, setIsDeleting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
 
-  // Reset state on photo change
   const [prevIndex, setPrevIndex] = useState(selectedIndex);
   if (selectedIndex !== prevIndex) {
     setPrevIndex(selectedIndex);
@@ -399,7 +381,6 @@ export function PhotoLightbox({
     [handleSaveCaption, handleCancelEdit]
   );
 
-  // Delete handler
   const handleDelete = useCallback(async () => {
     if (!photo || !onDelete) return;
     if (!window.confirm(t("roomPhotos.deleteConfirm"))) return;

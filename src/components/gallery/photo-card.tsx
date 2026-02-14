@@ -82,7 +82,6 @@ export const PhotoCard = memo(function PhotoCard({
           priority={isEagerLoad}
         />
 
-        {/* Overlay - Desktop Hover Only */}
         <div
           className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 pointer-events-none"
           aria-hidden="true"

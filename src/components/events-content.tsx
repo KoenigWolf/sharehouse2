@@ -566,7 +566,6 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
                         whileHover={{ y: -2, transition: { duration: 0.2 } }}
                         className="premium-surface rounded-3xl overflow-hidden relative group"
                       >
-                        {/* Cover Image */}
                         {event.cover_image_url && (
                           isTeaser ? (
                             <div className="relative aspect-[16/9] bg-muted">
