@@ -26,6 +26,8 @@ export const ja = {
     formerResident: "退去済み",
     processing: "処理中...",
     copy: "コピー",
+    copied: "コピーしました",
+    share: "シェア",
   },
 
   nav: {
@@ -692,6 +694,8 @@ export const ja = {
     unknownCreator: "不明な作成者",
     unknownAttendee: "不明な参加者",
     createdByLabel: "作成者",
+    addToCalendar: "カレンダーに追加",
+    delete: "削除",
   },
 
   digest: {

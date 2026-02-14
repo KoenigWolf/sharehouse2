@@ -24,6 +24,8 @@ export const en: Translations = {
     formerResident: "Former resident",
     processing: "Processing...",
     copy: "Copy",
+    copied: "Copied!",
+    share: "Share",
   },
 
   nav: {
@@ -693,6 +695,8 @@ export const en: Translations = {
     unknownCreator: "Unknown creator",
     unknownAttendee: "Unknown attendee",
     createdByLabel: "Created by",
+    addToCalendar: "Add to Calendar",
+    delete: "Delete",
   },
 
   digest: {
