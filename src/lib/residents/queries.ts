@@ -4,8 +4,7 @@ import { mockProfiles } from "@/lib/mock-data";
 import type { Profile } from "@/domain/profile";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-export const PROFILE_BASE_COLUMNS =
-  "id, name, nickname, room_number, avatar_url, move_in_date, mbti, interests, occupation, industry, work_style, daily_rhythm, social_stance, sns_x, sns_instagram, sns_github, is_admin" as const;
+export const PROFILE_BASE_COLUMNS = "*" as const;
 
 export interface PublicProfileTeaser {
   id: string;
