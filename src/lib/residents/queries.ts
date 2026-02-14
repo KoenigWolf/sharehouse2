@@ -4,7 +4,51 @@ import { mockProfiles } from "@/lib/mock-data";
 import type { Profile } from "@/domain/profile";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-export const PROFILE_BASE_COLUMNS = "*" as const;
+export const PROFILE_BASE_COLUMNS = `
+  id,
+  name,
+  nickname,
+  room_number,
+  bio,
+  avatar_url,
+  interests,
+  mbti,
+  move_in_date,
+  is_admin,
+  created_at,
+  updated_at,
+  age_range,
+  gender,
+  nationality,
+  languages,
+  hometown,
+  occupation,
+  industry,
+  work_location,
+  work_style,
+  daily_rhythm,
+  home_frequency,
+  alcohol,
+  smoking,
+  pets,
+  guest_frequency,
+  social_stance,
+  shared_space_usage,
+  cleaning_attitude,
+  cooking_frequency,
+  shared_meals,
+  personality_type,
+  weekend_activities,
+  allergies,
+  sns_x,
+  sns_instagram,
+  sns_facebook,
+  sns_linkedin,
+  sns_github,
+  cover_photo_url,
+  theme_style,
+  color_mode
+` as const;
 
 export interface PublicProfileTeaser {
   id: string;

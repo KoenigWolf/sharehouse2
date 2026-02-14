@@ -306,8 +306,8 @@ export function ResidentStats({ profiles, teaTimeParticipants, extendedStats }: 
       <m.div variants={itemVariants} className="grid grid-cols-3 sm:grid-cols-6 gap-2.5 sm:gap-3">
         <QuickStat icon={<CalendarIcon size={16} />} value={extendedStats.events.total} label={t("stats.totalEvents")} detail={`${extendedStats.events.upcoming} ${t("stats.upcoming")}`} />
         <QuickStat icon={<SparklesIcon size={16} />} value={extendedStats.shareItems.total} label={t("stats.shareItems")} detail={`${extendedStats.shareItems.available} ${t("stats.available")}`} />
-        <QuickStat icon={<ImageIcon size={16} />} value={extendedStats.roomPhotos.total} label={t("stats.photos")} detail={`${extendedStats.roomPhotos.uniqueUploaders}人`} />
-        <QuickStat icon={<MessageSquareIcon size={16} />} value={extendedStats.bulletins.total} label={t("stats.vibes")} detail={`${extendedStats.bulletins.uniquePosters}人`} />
+        <QuickStat icon={<ImageIcon size={16} />} value={extendedStats.roomPhotos.total} label={t("stats.photos")} detail={`${extendedStats.roomPhotos.uniqueUploaders} ${t("stats.people")}`} />
+        <QuickStat icon={<MessageSquareIcon size={16} />} value={extendedStats.bulletins.total} label={t("stats.vibes")} detail={`${extendedStats.bulletins.uniquePosters} ${t("stats.people")}`} />
         <QuickStat icon={<CoffeeIcon size={16} />} value={extendedStats.teaTimeMatches.total} label={t("stats.teaTimeMatches")} detail={`${extendedStats.teaTimeMatches.successRate}%`} />
         <QuickStat icon={<TrashIcon size={16} />} value={extendedStats.garbageDuties.completed} label={t("stats.completed")} detail={`${extendedStats.garbageDuties.completionRate}%`} />
       </m.div>
