@@ -10,7 +10,7 @@ import {
   MapPin,
   Briefcase,
   User,
-  Heart,
+  AlertTriangle,
   Wine,
   Cigarette,
   Home,
@@ -387,7 +387,7 @@ export function ProfileDetail({
     { label: t("profile.cleaningAttitude"), value: translateOption(profile.cleaning_attitude, "cleaningAttitude", CLEANING_ATTITUDES, t), icon: <Sparkles size={ICON_SIZE.sm} /> },
     { label: t("profile.cookingFrequency"), value: translateOption(profile.cooking_frequency, "cookingFrequency", COOKING_FREQUENCIES, t), icon: <Utensils size={ICON_SIZE.sm} /> },
     { label: t("profile.sharedMeals"), value: translateOption(profile.shared_meals, "sharedMeals", SHARED_MEAL_OPTIONS, t), icon: <Utensils size={ICON_SIZE.sm} /> },
-    { label: t("profile.allergies"), value: profile.allergies, icon: <Heart size={ICON_SIZE.sm} /> },
+    { label: t("profile.allergies"), value: profile.allergies ? `${profile.allergies}（${t("profile.allergies")}）` : null, icon: <AlertTriangle size={ICON_SIZE.sm} /> },
   ].filter((f) => f.value);
 
   const sharedSpaceUsage = profile.shared_space_usage;
