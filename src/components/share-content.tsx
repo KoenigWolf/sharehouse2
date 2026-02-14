@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { m, AnimatePresence } from "framer-motion";
+import { Gift, Plus, X, Clock, Trash2, Check } from "lucide-react";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { useI18n } from "@/hooks/use-i18n";
 import { createShareItem, claimShareItem, deleteShareItem } from "@/lib/share/actions";
@@ -32,6 +33,24 @@ function formatTimeRemaining(expiresAt: string): string {
   const diffDays = Math.floor(diffHours / 24);
   return `${diffDays}d`;
 }
+
+// Animation config
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.05, delayChildren: 0.1 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] as const },
+  },
+};
 
 export function ShareContent({ items, currentUserId, isTeaser = false }: ShareContentProps) {
   const t = useI18n();
@@ -83,101 +102,176 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
     }
   }, [t, router]);
 
+  const resetForm = useCallback(() => {
+    setIsFormOpen(false);
+    setTitle("");
+    setDescription("");
+  }, []);
+
   return (
-    <div className="space-y-8">
+    <m.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-8"
+    >
+      {/* Create button */}
       {!isFormOpen && !isTeaser && (
-        <div className="flex justify-end">
-          <button
+        <m.div variants={itemVariants} className="flex justify-end">
+          <m.button
             type="button"
             onClick={() => { setIsFormOpen(true); setFeedback(null); }}
-            className="h-9 px-5 rounded-full bg-brand-500 hover:bg-brand-700 text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
+            whileHover={{ scale: 1.03, y: -1 }}
+            whileTap={{ scale: 0.97 }}
+            className="h-12 px-7 rounded-full bg-foreground text-background text-sm font-semibold tracking-wide transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2.5"
           >
+            <Plus size={18} strokeWidth={2.5} />
             {t("share.post")}
-          </button>
-        </div>
+          </m.button>
+        </m.div>
       )}
 
+      {/* Feedback */}
       <AnimatePresence>
         {feedback && (
           <m.div
-            initial={{ opacity: 0, y: -4 }}
+            initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-            className={`text-xs font-medium px-4 py-3 rounded-xl border-l-4 shadow-sm ${feedback.type === "success"
-              ? "bg-success-bg/50 border-success-border text-success"
-              : "bg-error-bg/50 border-error-border text-error"
-              }`}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.25 }}
+            className={`text-sm font-medium px-5 py-4 rounded-xl border-l-4 ${
+              feedback.type === "success"
+                ? "bg-success-bg/50 border-success text-success"
+                : "bg-error-bg/50 border-error text-error"
+            }`}
           >
             {feedback.message}
           </m.div>
         )}
       </AnimatePresence>
 
+      {/* Post form */}
       <AnimatePresence>
         {isFormOpen && (
-          <m.div
+          <m.section
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+            transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="overflow-hidden"
           >
-            <div className="premium-surface rounded-3xl p-6 sm:p-8 space-y-5">
-              <div className="space-y-2">
-                <label className="block text-[10px] font-bold text-muted-foreground tracking-wider uppercase ml-1">
-                  {t("share.titleLabel")}
-                </label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder={t("share.titlePlaceholder")}
-                  maxLength={SHARE_ITEMS.maxTitleLength}
-                  className="w-full h-11 px-4 bg-card border border-border rounded-2xl text-foreground/90 text-sm font-medium placeholder:text-muted-foreground/70 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300"
-                />
+            <div className="premium-surface rounded-2xl sm:rounded-3xl p-6 sm:p-8 relative">
+              {/* Close button */}
+              <button
+                type="button"
+                onClick={resetForm}
+                className="absolute top-5 right-5 w-9 h-9 rounded-full bg-muted/80 hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <X size={18} />
+              </button>
+
+              {/* Form header */}
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-12 h-12 rounded-2xl bg-brand-500/10 flex items-center justify-center">
+                  <Gift size={22} className="text-brand-500" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-foreground">
+                    {t("share.createItem")}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {t("share.createHint")}
+                  </p>
+                </div>
               </div>
-              <div className="space-y-2">
-                <label className="block text-[10px] font-bold text-muted-foreground tracking-wider uppercase ml-1">
-                  {t("share.descriptionLabel")}
-                </label>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder={t("share.descriptionPlaceholder")}
-                  maxLength={SHARE_ITEMS.maxDescriptionLength}
-                  rows={2}
-                  className="w-full px-4 py-3 bg-card border border-border rounded-2xl text-foreground/90 text-sm font-medium placeholder:text-muted-foreground/70 focus:outline-none focus:ring-4 focus:ring-brand-500/5 focus:border-brand-500/50 transition-all duration-300 resize-none"
-                />
-              </div>
-              <div className="flex justify-end gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => { setIsFormOpen(false); setTitle(""); setDescription(""); }}
-                  className="h-10 px-6 rounded-full text-[11px] font-bold text-muted-foreground hover:text-foreground/80 tracking-wider uppercase transition-all duration-300"
-                >
-                  {t("common.cancel")}
-                </button>
-                <button
-                  type="button"
-                  onClick={handlePost}
-                  disabled={!title.trim() || isSubmitting}
-                  className="h-10 px-8 rounded-full bg-brand-500 hover:bg-brand-700 disabled:bg-secondary disabled:text-muted-foreground text-white text-[11px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100"
-                >
-                  {isSubmitting ? t("share.posting") : t("share.post")}
-                </button>
+
+              {/* Form fields */}
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
+                    {t("share.titleLabel")} <span className="text-error">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder={t("share.titlePlaceholder")}
+                    maxLength={SHARE_ITEMS.maxTitleLength}
+                    className="w-full h-13 px-5 bg-muted/50 border border-border/50 rounded-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all duration-200"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
+                    {t("share.descriptionLabel")}
+                  </label>
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder={t("share.descriptionPlaceholder")}
+                    maxLength={SHARE_ITEMS.maxDescriptionLength}
+                    rows={2}
+                    className="w-full px-5 py-4 bg-muted/50 border border-border/50 rounded-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all duration-200 resize-none leading-relaxed"
+                  />
+                </div>
+
+                {/* Actions */}
+                <div className="flex justify-end gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={resetForm}
+                    className="h-12 px-6 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-all duration-200"
+                  >
+                    {t("common.cancel")}
+                  </button>
+                  <m.button
+                    type="button"
+                    onClick={handlePost}
+                    disabled={!title.trim() || isSubmitting}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="h-12 px-8 rounded-xl bg-foreground hover:bg-foreground/90 text-background text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                  >
+                    {isSubmitting ? t("share.posting") : t("share.post")}
+                  </m.button>
+                </div>
               </div>
             </div>
-          </m.div>
+          </m.section>
         )}
       </AnimatePresence>
 
+      {/* Empty state */}
       {items.length === 0 ? (
-        <div className="py-20 text-center">
-          <p className="text-sm text-muted-foreground font-medium">{t("share.empty")}</p>
-        </div>
+        <m.div
+          variants={itemVariants}
+          className="py-20 flex flex-col items-center text-center"
+        >
+          <div className="w-20 h-20 mb-8 rounded-2xl bg-muted/80 flex items-center justify-center">
+            <Gift size={32} className="text-muted-foreground/40" />
+          </div>
+          <h3 className="text-xl font-bold text-foreground mb-2">
+            {t("share.empty")}
+          </h3>
+          <p className="text-sm text-muted-foreground mb-8 max-w-sm leading-relaxed">
+            {t("share.emptyHint")}
+          </p>
+          {!isTeaser && !isFormOpen && (
+            <m.button
+              type="button"
+              onClick={() => setIsFormOpen(true)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="h-12 px-7 rounded-full bg-foreground text-background text-sm font-semibold tracking-wide transition-all duration-200 shadow-lg inline-flex items-center gap-2.5"
+            >
+              <Plus size={18} strokeWidth={2.5} />
+              {t("share.post")}
+            </m.button>
+          )}
+        </m.div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        /* Item grid - 2 columns on desktop */
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
           {items.map((item, index) => {
             const displayName = item.profiles?.nickname ?? item.profiles?.name ?? t("common.formerResident");
             const isMine = item.user_id === currentUserId;
@@ -185,73 +279,94 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
             const timeLeft = formatTimeRemaining(item.expires_at);
 
             return (
-              <m.div
+              <m.article
                 key={item.id}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1], delay: index * 0.05 }}
-                className={`premium-surface rounded-3xl p-6 relative group flex flex-col ${isClaimed ? "opacity-60 grayscale-[0.5]" : ""
-                  }`}
+                transition={{
+                  duration: 0.35,
+                  delay: index * 0.05,
+                  ease: [0.25, 0.46, 0.45, 0.94],
+                }}
+                whileHover={!isClaimed ? { y: -3, transition: { duration: 0.2 } } : {}}
+                className={`premium-surface rounded-2xl p-5 sm:p-6 flex flex-col group ${
+                  isClaimed ? "opacity-60" : ""
+                }`}
               >
+                {/* Header */}
                 <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2.5">
-                    <Avatar className="w-6 h-6 rounded-lg border border-border shadow-sm overflow-hidden">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="w-9 h-9 rounded-lg border border-border/50">
                       <OptimizedAvatarImage
                         src={item.profiles?.avatar_url}
                         alt={displayName}
                         context="card"
                         isBlurred={isTeaser}
                         fallback={
-                          <span className="text-[9px] font-bold text-muted-foreground">
+                          <span className="text-[10px] font-semibold text-muted-foreground">
                             {getInitials(displayName)}
                           </span>
                         }
                         fallbackClassName="bg-muted"
                       />
                     </Avatar>
-                    <div className="flex flex-col">
-                      <span className="text-[11px] font-bold text-foreground tracking-tight leading-none mb-0.5">
+                    <div className="min-w-0">
+                      <span className="text-sm font-semibold text-foreground truncate block">
                         {displayName}
                       </span>
                       {item.profiles?.room_number && (
-                        <span className="text-[9px] font-bold text-muted-foreground tracking-wider">
-                          #{item.profiles.room_number}
+                        <span className="text-xs text-muted-foreground">
+                          {item.profiles.room_number}
                         </span>
                       )}
                     </div>
                   </div>
+
+                  {/* Time remaining badge */}
                   {timeLeft && !isClaimed && (
-                    <span className="text-[10px] font-bold text-brand-500 bg-primary/10 px-2 py-0.5 rounded-full tracking-wider">
+                    <span className="flex items-center gap-1.5 text-xs font-semibold text-brand-500 bg-brand-500/10 px-2.5 py-1 rounded-lg">
+                      <Clock size={12} />
                       {timeLeft}
                     </span>
                   )}
                 </div>
 
-                <div className="space-y-2 mb-6 flex-1">
-                  <h4 className={`text-base font-bold tracking-tight ${isTeaser ? "blur-[2.5px] select-none" : isClaimed ? "text-muted-foreground line-through" : "text-foreground"}`}>
+                {/* Content */}
+                <div className="flex-1 space-y-2 mb-5">
+                  <h4 className={`text-base font-bold ${
+                    isTeaser ? "blur-[2.5px] select-none" : isClaimed ? "text-muted-foreground line-through" : "text-foreground"
+                  }`}>
                     {item.title}
                   </h4>
                   {item.description && (
-                    <p className={`text-sm font-medium leading-relaxed ${isTeaser ? "blur-[3px] select-none" : isClaimed ? "text-muted-foreground/70" : "text-muted-foreground"}`}>
+                    <p className={`text-sm leading-relaxed ${
+                      isTeaser ? "blur-[3px] select-none" : isClaimed ? "text-muted-foreground/60" : "text-muted-foreground"
+                    }`}>
                       {item.description}
                     </p>
                   )}
                 </div>
 
-                <div className="flex items-center justify-between mt-auto">
+                {/* Footer */}
+                <div className="flex items-center justify-between pt-4 border-t border-border/40">
                   {isClaimed ? (
-                    <span className="text-[10px] font-bold text-muted-foreground bg-secondary px-3 py-1 rounded-full uppercase tracking-widest">
+                    <span className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground bg-muted px-3 py-1.5 rounded-lg">
+                      <Check size={14} />
                       {t("share.claimed")}
                     </span>
                   ) : !isMine ? (
-                    <button
+                    <m.button
                       type="button"
                       onClick={() => !isTeaser && handleClaim(item.id)}
                       disabled={isSubmitting || isTeaser}
-                      className={`h-8 px-6 rounded-full bg-brand-500 hover:bg-brand-700 disabled:bg-secondary disabled:text-muted-foreground text-white text-[10px] font-bold tracking-wider uppercase transition-all duration-300 shadow-sm shadow-brand-100 ${isTeaser ? "opacity-50 cursor-not-allowed" : ""}`}
+                      whileHover={!isTeaser ? { scale: 1.03 } : {}}
+                      whileTap={!isTeaser ? { scale: 0.97 } : {}}
+                      className={`h-10 px-6 rounded-xl bg-foreground text-background text-sm font-semibold transition-all duration-200 ${
+                        isTeaser ? "opacity-50 cursor-not-allowed" : "hover:bg-foreground/90"
+                      }`}
                     >
                       {t("share.claim")}
-                    </button>
+                    </m.button>
                   ) : (
                     <div />
                   )}
@@ -261,17 +376,18 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                       type="button"
                       onClick={() => handleDelete(item.id)}
                       disabled={isSubmitting}
-                      className="text-[10px] font-bold text-muted-foreground/70 hover:text-rose-500 uppercase tracking-widest transition-all p-2"
+                      className="w-9 h-9 flex items-center justify-center rounded-lg text-muted-foreground/40 hover:text-error hover:bg-error/10 opacity-0 group-hover:opacity-100 transition-all"
+                      aria-label={t("common.delete")}
                     >
-                      {t("common.delete")}
+                      <Trash2 size={16} />
                     </button>
                   )}
                 </div>
-              </m.div>
+              </m.article>
             );
           })}
         </div>
       )}
-    </div>
+    </m.div>
   );
 }

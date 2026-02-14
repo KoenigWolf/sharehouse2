@@ -15,7 +15,7 @@ import {
 import { updateThemePreferences } from "@/lib/theme/actions";
 import { logError } from "@/lib/errors";
 
-export type ThemeStyle = "modern" | "cottage";
+export type ThemeStyle = "modern" | "cottage" | "mono";
 export type ColorMode = "light" | "dark" | "system";
 
 interface ThemeContextValue {
@@ -32,7 +32,7 @@ const COLOR_MODE_STORAGE_KEY = "sharehouse-color-mode";
 const DEFAULT_THEME: ThemeStyle = "cottage";
 const DEFAULT_COLOR_MODE: ColorMode = "light";
 
-const VALID_THEMES: readonly ThemeStyle[] = ["modern", "cottage"];
+const VALID_THEMES: readonly ThemeStyle[] = ["modern", "cottage", "mono"];
 const VALID_COLOR_MODES: readonly ColorMode[] = ["light", "dark", "system"];
 
 function isValidThemeStyle(value: unknown): value is ThemeStyle {
@@ -144,7 +144,7 @@ export function ThemeProvider({
 
     root.setAttribute("data-theme", theme);
 
-    root.classList.remove("theme-modern", "theme-cottage");
+    root.classList.remove("theme-modern", "theme-cottage", "theme-mono");
     root.classList.add(`theme-${theme}`);
 
     if (resolvedColorMode === "dark") {

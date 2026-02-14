@@ -6,7 +6,7 @@ import { getServerTranslator } from "@/lib/i18n/server";
 import { enforceAllowedOrigin } from "@/lib/security/request";
 import { checkRateLimitAsync } from "@/lib/security/rate-limit";
 
-export type ThemeStyle = "modern" | "cottage";
+export type ThemeStyle = "modern" | "cottage" | "mono";
 export type ColorMode = "light" | "dark" | "system";
 
 type UpdateResponse = { success: true } | { error: string };
@@ -17,7 +17,7 @@ interface ThemePreferences {
 }
 
 function isValidThemeStyle(value: unknown): value is ThemeStyle {
-  return value === "modern" || value === "cottage";
+  return value === "modern" || value === "cottage" || value === "mono";
 }
 
 function isValidColorMode(value: unknown): value is ColorMode {

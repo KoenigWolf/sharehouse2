@@ -209,7 +209,6 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
 
       <main className="flex-1 pb-24 sm:pb-8">
         <div className="container mx-auto px-4 sm:px-6 py-6 max-w-4xl">
-          {/* Back Link */}
           <Link
             href="/events"
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
@@ -218,7 +217,6 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
             {t("events.backToList")}
           </Link>
 
-          {/* Error */}
           {error && (
             <div className="mb-6 p-4 rounded-xl bg-error-bg border border-error-border">
               <p className="text-sm text-error">{error}</p>
@@ -231,7 +229,6 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
             transition={{ duration: 0.3 }}
             className="space-y-6"
           >
-            {/* Cover Image */}
             {(event.cover_image_url || isOwner) && (
               <div className="relative aspect-[2/1] sm:aspect-[5/2] rounded-2xl overflow-hidden bg-muted">
                 {event.cover_image_url ? (
@@ -278,9 +275,7 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
               </div>
             )}
 
-            {/* Main Card */}
             <div className="premium-surface rounded-2xl overflow-hidden">
-              {/* Header / Edit Form */}
               <AnimatePresence mode="wait">
                 {isEditing ? (
                   <m.div
@@ -406,7 +401,6 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.2 }}
                   >
-                    {/* Header */}
                     <div className="p-6 sm:p-8 border-b border-border">
                       <div className="flex items-start justify-between gap-4 mb-4">
                         <h1 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight">
@@ -433,7 +427,6 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
                         )}
                       </div>
 
-                      {/* Meta Info */}
                       <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
                         <div className="flex items-center gap-2 text-foreground">
                           <Calendar size={16} className="text-brand-500 shrink-0" />
@@ -454,7 +447,6 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
                       </div>
                     </div>
 
-                    {/* Description */}
                     {event.description && (
                       <div className="p-6 sm:p-8 border-b border-border">
                         <p className="text-foreground/80 whitespace-pre-wrap leading-relaxed">
@@ -466,7 +458,6 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
                 )}
               </AnimatePresence>
 
-              {/* Host */}
               <div className="p-6 sm:p-8 border-b border-border">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
                   {t("events.createdByLabel")}
@@ -489,7 +480,6 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
                 </Link>
               </div>
 
-              {/* Attendees */}
               <div className="p-6 sm:p-8">
                 <div className="flex items-center gap-2 mb-4">
                   <Users size={18} className="text-brand-500" />
@@ -527,7 +517,6 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
               </div>
             </div>
 
-            {/* Action Button */}
             {userId && (
               <Button
                 onClick={handleToggleAttendance}

@@ -11,7 +11,6 @@ import {
   ChevronRight,
   Coffee,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { ResidentCard } from "@/components/resident-card";
 import { Profile } from "@/domain/profile";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
@@ -22,7 +21,7 @@ import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
 import { getFloorFromRoom, isNewResident, FLOOR_COLORS, type FloorId } from "@/lib/utils/residents";
 import { VibeInput } from "@/components/vibe-input";
-import { ICON_SIZE, ICON_STROKE, ICON_GAP } from "@/lib/constants/icons";
+import { ICON_STROKE, ICON_GAP } from "@/lib/constants/icons";
 
 interface ResidentsGridProps {
   profiles: Profile[];
@@ -36,10 +35,30 @@ type FloorFilter = "all" | "2F" | "3F" | "4F" | "5F";
 
 const SEARCH_VISIBLE_THRESHOLD = 30;
 
-/**
- * 住人一覧グリッドコンポーネント
- * 統計ダッシュボード付き
- */
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.04,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.35,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
+
 export function ResidentsGrid({
   profiles,
   currentUserId,
@@ -171,214 +190,248 @@ export function ResidentsGrid({
 
   if (totalCount === 0) {
     return (
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex-1 flex items-center justify-center py-20">
         <p className="text-muted-foreground text-sm">{t("residents.noResidents")}</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 sm:space-y-12">
+    // Golden ratio spacing: space-y-10 ≈ 40px (Fibonacci)
+    <m.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-10"
+    >
+      {/* ═══════════════════════════════════════════════════════════════════
+          VIBE INPUT - Personal expression zone
+      ═══════════════════════════════════════════════════════════════════ */}
       {currentUserId && (
-        <div className="max-w-2xl mx-auto w-full">
+        <m.div variants={itemVariants} className="max-w-2xl mx-auto w-full">
           <VibeInput
             currentVibe={currentUserProfile?.vibe?.message}
             isLoggedIn={!!currentUserId}
           />
-        </div>
+        </m.div>
       )}
 
-      <div className="flex flex-col gap-4">
-        <div className="flex items-end justify-between">
+      {/* ═══════════════════════════════════════════════════════════════════
+          HEADER & CONTROLS
+          - Clear visual hierarchy
+          - Grouped by function (title, view mode)
+      ═══════════════════════════════════════════════════════════════════ */}
+      <m.section variants={itemVariants} className="space-y-6">
+        {/* Title row with view mode toggle */}
+        <div className="flex items-end justify-between gap-4">
           <div>
-            <h2 className="text-lg sm:text-xl text-foreground tracking-wide font-light">
+            <h2 className="text-xl sm:text-2xl text-foreground tracking-tight font-semibold">
               {t("residents.title")}
             </h2>
-            <p className="text-[11px] sm:text-xs text-muted-foreground mt-1">
+            <p className="text-sm text-muted-foreground mt-1.5">
               {t("residents.countLabel", { count: displayCount })}
               {(searchQuery || floorFilter !== "all") &&
                 ` ${t("residents.countOf", { total: totalCount })}`}
             </p>
           </div>
 
-          <div className="flex gap-1 bg-secondary p-1 rounded-xl">
+          {/* View mode toggle - touch target 44px+ */}
+          <div className="flex gap-1 p-1 bg-muted/60 rounded-xl">
             {viewModeOptions.map((option) => {
               const isActive = viewMode === option.value;
               const Icon = option.icon;
               return (
-                <Button
+                <button
                   key={option.value}
                   type="button"
-                  variant="ghost"
-                  size="icon-sm"
                   onClick={() => setViewMode(option.value)}
-                  className={`${isActive
-                    ? "bg-card text-brand-500 shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                    } rounded-lg transition-all`}
+                  className={`w-10 h-10 flex items-center justify-center rounded-lg transition-all duration-200 ${
+                    isActive
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                   title={option.label}
                   aria-label={option.label}
                   aria-pressed={isActive}
                 >
-                  <Icon size={ICON_SIZE.md} strokeWidth={ICON_STROKE.thin} />
-                </Button>
+                  <Icon size={18} strokeWidth={1.5} />
+                </button>
               );
             })}
           </div>
         </div>
 
-        <div className="sticky top-[64px] z-30 bg-muted/95 backdrop-blur-sm -mx-4 px-4 py-3 sm:relative sm:top-0 sm:bg-transparent sm:backdrop-none sm:mx-0 sm:px-0 sm:py-0">
-          <div className="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide -mx-1 px-1 pb-1 sm:pb-0">
-            {floors.map((floor) => {
+        {/* ═══════════════════════════════════════════════════════════════════
+            FLOOR FILTERS - Horizontal scroll with clear states
+        ═══════════════════════════════════════════════════════════════════ */}
+        <div className="sticky top-[64px] z-30 -mx-4 px-4 py-4 sm:relative sm:top-0 sm:mx-0 sm:px-0 sm:py-0 bg-background/95 backdrop-blur-sm sm:bg-transparent sm:backdrop-blur-none">
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+            {floors.map((floor, i) => {
               const isAll = floor === "all";
               const isActive = floorFilter === floor;
               const floorStat = isAll ? null : floorStats[floor];
               const colors = isAll ? null : FLOOR_COLORS[floor as keyof typeof FLOOR_COLORS];
 
               return (
-                <Button
+                <m.button
                   key={floor}
                   type="button"
-                  variant="outline"
                   onClick={() => setFloorFilter(floor)}
-                  className={`shrink-0 h-auto px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl transition-all ${isActive
-                    ? isAll
-                      ? "bg-brand-500 text-white shadow-lg shadow-brand-200 border-brand-500"
-                      : `${colors?.bg} ${colors?.text} border-transparent shadow-sm`
-                    : "bg-card text-foreground/80 hover:bg-muted hover:border-border"
-                    }`}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.2, delay: i * 0.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  className={`
+                    shrink-0 h-12 px-5 sm:px-6 rounded-xl
+                    flex items-center gap-2.5
+                    text-sm font-semibold tracking-tight
+                    transition-all duration-200
+                    ${isActive
+                      ? isAll
+                        ? "bg-foreground text-background shadow-lg"
+                        : `${colors?.bg} ${colors?.text} shadow-sm`
+                      : "bg-muted/60 text-foreground/70 hover:bg-muted hover:text-foreground"
+                    }
+                  `}
                 >
-                  <span className="text-sm font-semibold tracking-tight">
-                    {isAll ? t("residents.filterAll") : floor}
-                  </span>
+                  <span>{isAll ? t("residents.filterAll") : floor}</span>
                   {floorStat && (
-                    <span className={`ml-2 text-xs font-medium ${isActive ? "opacity-70" : "text-muted-foreground"}`}>
+                    <span className={`text-xs tabular-nums ${isActive ? "opacity-70" : "text-muted-foreground"}`}>
                       {floorStat.registered}/{floorStat.total}
                     </span>
                   )}
-                </Button>
+                </m.button>
               );
             })}
           </div>
-
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mt-4 sm:pb-4 sm:border-b sm:border-border">
-            {totalCount >= SEARCH_VISIBLE_THRESHOLD && (
-              <div className="relative group">
-                <Search size={ICON_SIZE.md} strokeWidth={ICON_STROKE.thin} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground z-10" />
-                <input
-                  type="search"
-                  placeholder={t("residents.searchPlaceholder")}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full sm:w-80 h-12 pl-11 pr-4 bg-card border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all shadow-sm"
-                />
-                {searchQuery && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-xs"
-                    onClick={() => setSearchQuery("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 hover:bg-transparent"
-                  >
-                    <X size={ICON_SIZE.sm} strokeWidth={ICON_STROKE.thin} />
-                  </Button>
-                )}
-              </div>
-            )}
-
-            <div className="relative sm:flex sm:gap-0">
-              <div className="flex overflow-x-auto scrollbar-hide sm:overflow-visible -mx-1 px-1 sm:mx-0 sm:px-0 snap-x snap-mandatory sm:snap-none">
-                {sortOptions.map((option) => {
-                  const isActive = sortBy === option.value;
-                  return (
-                    <Button
-                      key={option.value}
-                      type="button"
-                      variant="ghost"
-                      onClick={() => handleSortChange(option.value)}
-                      className="relative h-auto px-4 sm:px-4 py-2.5 sm:py-2 tracking-wide group whitespace-nowrap active:opacity-70 snap-center sm:snap-align-none shrink-0 hover:bg-transparent"
-                    >
-                      <span
-                        className={`text-sm ${isActive
-                          ? "text-foreground font-medium"
-                          : "text-muted-foreground group-hover:text-foreground/80"
-                          }`}
-                      >
-                        {option.label}
-                      </span>
-                      {isActive && (
-                        <motion.span
-                          layoutId="sort-underline"
-                          className="absolute bottom-0 left-3 right-3 sm:left-4 sm:right-4 h-px bg-foreground"
-                          transition={{ duration: 0.3, ease: "easeInOut" }}
-                        />
-                      )}
-                    </Button>
-                  );
-                })}
-              </div>
-              <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-background to-transparent pointer-events-none" />
-            </div>
-          </div>
         </div>
 
-        <AnimatePresence mode="wait">
-          {filteredAndSortedProfiles.length === 0 ? (
-            <m.div
-              key="empty"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="text-center py-12 sm:py-16"
-            >
-              <div className="w-16 h-16 mx-auto mb-4 bg-secondary rounded-lg flex items-center justify-center">
-                <Search size={ICON_SIZE["2xl"]} strokeWidth={ICON_STROKE.thin} className="text-muted-foreground/70" />
-              </div>
-              <p className="text-muted-foreground text-sm">{t("residents.noMatch")}</p>
-              <Button
-                type="button"
-                variant="outline"
-                size="lg"
-                onClick={() => {
-                  setSearchQuery("");
-                  setFloorFilter("all");
-                }}
-                className="mt-4 active:scale-[0.98]"
-              >
-                {t("residents.clearSearch")}
-              </Button>
-            </m.div>
-          ) : viewMode === "floor" ? (
-            <FloorView
-              key="floor-view"
-              groupedByFloor={groupedByFloor}
-              currentUserId={currentUserId}
-              floorStats={floorStats}
-              teaTimeSet={teaTimeSet}
-              t={t}
-            />
-          ) : viewMode === "list" ? (
-            <ListView
-              key="list-view"
-              profiles={filteredAndSortedProfiles}
-              currentUserId={currentUserId}
-              teaTimeSet={teaTimeSet}
-              t={t}
-            />
-          ) : (
-            <GridView
-              key="grid-view"
-              profiles={filteredAndSortedProfiles}
-              currentUserId={currentUserId}
-              teaTimeSet={teaTimeSet}
-            />
+        {/* ═══════════════════════════════════════════════════════════════════
+            SEARCH & SORT CONTROLS
+        ═══════════════════════════════════════════════════════════════════ */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/50">
+          {/* Search field - only show when needed */}
+          {totalCount >= SEARCH_VISIBLE_THRESHOLD && (
+            <div className="relative">
+              <Search size={18} strokeWidth={1.5} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/60" />
+              <input
+                type="search"
+                placeholder={t("residents.searchPlaceholder")}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full sm:w-80 h-12 pl-12 pr-10 bg-muted/50 border border-border/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all duration-200"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </div>
           )}
-        </AnimatePresence>
-      </div>
-    </div>
+
+          {/* Sort options - underline style */}
+          <div className="flex overflow-x-auto scrollbar-hide -mx-1 px-1 sm:mx-0 sm:px-0">
+            {sortOptions.map((option) => {
+              const isActive = sortBy === option.value;
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => handleSortChange(option.value)}
+                  className="relative px-4 py-2.5 whitespace-nowrap shrink-0 group"
+                >
+                  <span className={`text-sm transition-colors ${
+                    isActive
+                      ? "text-foreground font-medium"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}>
+                    {option.label}
+                  </span>
+                  {isActive && (
+                    <motion.span
+                      layoutId="residents-sort-underline"
+                      className="absolute bottom-0 left-4 right-4 h-0.5 bg-foreground rounded-full"
+                      transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </m.section>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          CONTENT AREA
+      ═══════════════════════════════════════════════════════════════════ */}
+      <AnimatePresence mode="wait">
+        {filteredAndSortedProfiles.length === 0 ? (
+          <m.div
+            key="empty"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="py-20 flex flex-col items-center text-center"
+          >
+            <div className="w-20 h-20 mb-8 rounded-2xl bg-muted/80 flex items-center justify-center">
+              <Search size={32} className="text-muted-foreground/40" />
+            </div>
+            <h3 className="text-xl font-semibold text-foreground mb-2">
+              {t("residents.noMatch")}
+            </h3>
+            <p className="text-sm text-muted-foreground mb-6 max-w-sm">
+              {t("residents.tryDifferentSearch")}
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setSearchQuery("");
+                setFloorFilter("all");
+              }}
+              className="h-11 px-6 rounded-xl bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors"
+            >
+              {t("residents.clearSearch")}
+            </button>
+          </m.div>
+        ) : viewMode === "floor" ? (
+          <FloorView
+            key="floor-view"
+            groupedByFloor={groupedByFloor}
+            currentUserId={currentUserId}
+            floorStats={floorStats}
+            teaTimeSet={teaTimeSet}
+            t={t}
+          />
+        ) : viewMode === "list" ? (
+          <ListView
+            key="list-view"
+            profiles={filteredAndSortedProfiles}
+            currentUserId={currentUserId}
+            teaTimeSet={teaTimeSet}
+            t={t}
+          />
+        ) : (
+          <GridView
+            key="grid-view"
+            profiles={filteredAndSortedProfiles}
+            currentUserId={currentUserId}
+            teaTimeSet={teaTimeSet}
+          />
+        )}
+      </AnimatePresence>
+    </m.div>
   );
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   GRID VIEW
+   - Golden ratio grid gaps (gap-5 ≈ 20px, gap-6 ≈ 24px)
+   - Responsive columns following content-aware breakpoints
+═══════════════════════════════════════════════════════════════════════════ */
 function GridView({
   profiles,
   currentUserId,
@@ -390,21 +443,21 @@ function GridView({
 }) {
   return (
     <m.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 sm:gap-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 sm:gap-6"
     >
       {profiles.map((profile, index) => (
         <m.div
           key={profile.id}
           className="h-full"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{
-            duration: 0.4,
-            delay: Math.min(index * 0.04, 0.4),
-            ease: [0.23, 1, 0.32, 1]
+            duration: 0.35,
+            delay: Math.min(index * 0.03, 0.3),
+            ease: [0.25, 0.46, 0.45, 0.94],
           }}
         >
           <ResidentCard
@@ -419,6 +472,11 @@ function GridView({
   );
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   FLOOR VIEW
+   - Clear section separation with golden ratio spacing (space-y-16 ≈ 64px)
+   - Visual hierarchy: Floor label → Progress → Cards
+═══════════════════════════════════════════════════════════════════════════ */
 function FloorView({
   groupedByFloor,
   currentUserId,
@@ -439,7 +497,7 @@ function FloorView({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="space-y-16 sm:space-y-20"
+      className="space-y-14 sm:space-y-16"
     >
       {floorsOrder.map((floor, floorIndex) => {
         const profiles = groupedByFloor[floor] || [];
@@ -451,44 +509,59 @@ function FloorView({
         return (
           <m.section
             key={floor}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: floorIndex * 0.1, ease: "easeOut" }}
+            transition={{
+              duration: 0.4,
+              delay: floorIndex * 0.08,
+              ease: [0.25, 0.46, 0.45, 0.94],
+            }}
+            className="space-y-6"
           >
-            <div className={`flex items-center gap-6 mb-8 pb-6 border-b border-border`}>
+            {/* Floor header with progress indicator */}
+            <div className="flex items-center gap-5 pb-5 border-b border-border/50">
               <div
-                className={`w-14 h-14 flex items-center justify-center rounded-2xl shadow-sm border ${colors.border} ${colors.bg}`}
+                className={`w-14 h-14 flex items-center justify-center rounded-2xl ${colors.bg} ${colors.border} border`}
               >
                 <span className={`text-xl font-bold tracking-tight ${colors.text}`}>{floor}</span>
               </div>
-              <div className="flex-1">
-                <h3 className={`text-lg font-semibold tracking-tight text-foreground`}>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-lg font-semibold text-foreground">
                   {t("residents.floorLabel", { floor: floor.replace("F", "") })}
                 </h3>
-                <div className="flex items-center gap-6 mt-2">
-                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                <div className="flex items-center gap-4 mt-2">
+                  <span className="text-xs font-medium text-muted-foreground tabular-nums">
                     {floorStat.registered}/{floorStat.total} {t("residents.registeredShort")}
                   </span>
-                  <div className="flex-1 max-w-48 h-1.5 bg-secondary rounded-full overflow-hidden">
+                  <div className="flex-1 max-w-48 h-1.5 bg-muted rounded-full overflow-hidden">
                     <m.div
                       initial={{ width: 0 }}
                       animate={{ width: `${(floorStat.registered / floorStat.total) * 100}%` }}
-                      transition={{ duration: 1, ease: [0.23, 1, 0.32, 1], delay: floorIndex * 0.1 + 0.3 }}
-                      className={`h-full rounded-full ${colors.accent.replace("text-", "bg-")}`}
+                      transition={{
+                        duration: 0.8,
+                        ease: [0.25, 0.46, 0.45, 0.94],
+                        delay: floorIndex * 0.1 + 0.2,
+                      }}
+                      className={`h-full rounded-full ${colors.accent}`}
                     />
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 sm:gap-8">
+            {/* Cards grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 sm:gap-6">
               {profiles.map((profile, index) => (
                 <m.div
                   key={profile.id}
                   className="h-full"
-                  initial={{ opacity: 0, y: 15 }}
+                  initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: index * 0.04, ease: "easeOut" }}
+                  transition={{
+                    duration: 0.3,
+                    delay: index * 0.04,
+                    ease: [0.25, 0.46, 0.45, 0.94],
+                  }}
                 >
                   <ResidentCard
                     profile={profile}
@@ -507,6 +580,11 @@ function FloorView({
   );
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIST VIEW
+   - Compact rows with clear touch targets
+   - F-pattern info layout (avatar → name → details → arrow)
+═══════════════════════════════════════════════════════════════════════════ */
 function ListView({
   profiles,
   currentUserId,
@@ -530,7 +608,11 @@ function ListView({
           key={profile.id}
           initial={{ opacity: 0, x: -8 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.2, delay: Math.min(index * 0.02, 0.2) }}
+          transition={{
+            duration: 0.25,
+            delay: Math.min(index * 0.02, 0.15),
+            ease: [0.25, 0.46, 0.45, 0.94],
+          }}
         >
           <ResidentListItem
             profile={profile}
@@ -544,6 +626,11 @@ function ListView({
   );
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIST ITEM
+   - Touch target: full row (minimum 64px height)
+   - Visual hierarchy: Avatar → Name/Room → Meta → Arrow
+═══════════════════════════════════════════════════════════════════════════ */
 function ResidentListItem({
   profile,
   isCurrentUser,
@@ -567,36 +654,44 @@ function ResidentListItem({
       aria-label={t("a11y.viewProfile", { name: profile.name })}
     >
       <article
-        className={`flex items-center gap-5 p-4 sm:p-5 bg-card rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 border border-border ${isCurrentUser ? "ring-2 ring-brand-500/20 border-brand-500" : ""
-          }`}
+        className={`
+          flex items-center gap-4 p-4 sm:p-5
+          bg-card rounded-xl border
+          transition-all duration-200
+          hover:shadow-md hover:-translate-y-0.5
+          ${isCurrentUser
+            ? "ring-2 ring-brand-500/20 border-brand-500"
+            : "border-border/50 hover:border-border"
+          }
+        `}
       >
+        {/* Avatar with badge */}
         <div className="relative shrink-0">
-          <Avatar className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl border border-border shadow-sm">
+          <Avatar className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl border border-border/50">
             <OptimizedAvatarImage
               src={profile.avatar_url}
               alt={profile.name}
               context="card"
               className="w-full h-full"
               fallback={getInitials(profile.name)}
-              fallbackClassName="bg-muted text-muted-foreground/70 text-lg font-semibold rounded-xl w-full h-full flex items-center justify-center"
+              fallbackClassName="bg-muted text-muted-foreground text-base sm:text-lg font-semibold rounded-xl w-full h-full flex items-center justify-center"
             />
           </Avatar>
           {isCurrentUser && (
-            <span className="absolute -top-1.5 -right-1.5 bg-brand-500 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase shadow-sm">
+            <span className="absolute -top-1.5 -right-1.5 bg-foreground text-background text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase">
               {t("common.you")}
             </span>
           )}
         </div>
 
+        {/* Main content */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2.5 flex-wrap">
             <h3 className="text-base sm:text-lg text-foreground font-semibold tracking-tight truncate">
               {profile.nickname || profile.name}
             </h3>
             {profile.room_number && (
-              <span
-                className={`text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-medium ${colors.bg} ${colors.text}`}
-              >
+              <span className={`text-xs px-2 py-0.5 rounded-lg font-medium ${colors.bg} ${colors.text}`}>
                 {profile.room_number}
               </span>
             )}
@@ -606,30 +701,35 @@ function ResidentListItem({
               </span>
             )}
             {isTeaTimeParticipant && !isMockProfile && (
-              <span className={`text-[10px] px-2 py-0.5 bg-warning-bg text-warning rounded-lg font-bold flex items-center ${ICON_GAP.xs} shadow-sm border border-warning-border/50`}>
+              <span className={`text-[10px] px-2 py-0.5 bg-warning-bg text-warning rounded-lg font-bold flex items-center ${ICON_GAP.xs} border border-warning-border/50`}>
                 <Coffee size={10} strokeWidth={ICON_STROKE.normal} />
               </span>
             )}
             {isMockProfile && (
-              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide truncate">
+              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">
                 {t("common.unregistered")}
               </span>
             )}
           </div>
 
-          <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
+          {/* Meta info */}
+          <div className="flex items-center gap-2.5 mt-1.5">
             {profile.occupation && (
-              <span className="bg-muted px-2 py-0.5 rounded-md">{t(`profileOptions.occupation.${profile.occupation}` as Parameters<typeof t>[0])}</span>
+              <span className="text-xs text-muted-foreground bg-muted/60 px-2 py-0.5 rounded-md">
+                {t(`profileOptions.occupation.${profile.occupation}` as Parameters<typeof t>[0])}
+              </span>
             )}
-            {profile.mbti && <span className="text-brand-500 font-semibold">{profile.mbti}</span>}
+            {profile.mbti && (
+              <span className="text-xs text-brand-500 font-semibold">{profile.mbti}</span>
+            )}
           </div>
         </div>
 
-        <div className="text-muted-foreground/70 group-hover:text-brand-500 transition-colors shrink-0">
-          <ChevronRight size={ICON_SIZE.md} strokeWidth={ICON_STROKE.thin} />
+        {/* Arrow indicator */}
+        <div className="text-muted-foreground/50 group-hover:text-foreground transition-colors shrink-0">
+          <ChevronRight size={20} strokeWidth={1.5} />
         </div>
       </article>
     </Link>
   );
 }
-

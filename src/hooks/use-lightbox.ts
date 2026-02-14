@@ -99,7 +99,6 @@ export function useLightbox({
     }
   }, [selectedIndex, onPhotoChange]);
 
-  // Keyboard navigation
   useEffect(() => {
     if (!isOpen) return;
 

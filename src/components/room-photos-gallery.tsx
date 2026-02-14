@@ -21,18 +21,9 @@ const PhotoLightbox = dynamic(
   { ssr: false }
 );
 
-// ============================================================================
-// Types
-// ============================================================================
-
 interface RoomPhotosGalleryProps {
   photos: PhotoWithProfile[];
 }
-
-// ============================================================================
-// Sub-components
-// ============================================================================
-
 
 interface SectionHeaderProps {
   icon: React.ReactNode;
@@ -123,10 +114,6 @@ const GalleryFooter = memo(function GalleryFooter({
 
 GalleryFooter.displayName = "GalleryFooter";
 
-// ============================================================================
-// Main Component
-// ============================================================================
-
 /**
  * Room photos gallery component
  *
@@ -185,7 +172,6 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
     startUpload,
   } = useBulkUpload();
 
-  // Handlers
   const handleSelectFiles = useCallback(
     (files: File[]) => {
       startUpload(files, (newPhotos) => {

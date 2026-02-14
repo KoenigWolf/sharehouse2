@@ -4,7 +4,7 @@ import { memo, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { m } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Users,
   MessageCircle,
@@ -21,8 +21,6 @@ import {
   Shield,
   Home,
 } from "lucide-react";
-import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -69,24 +67,22 @@ const NavLink = memo(function NavLink({ item, isActive }: NavLinkProps) {
       aria-current={isActive ? "page" : undefined}
       aria-label={t(item.labelKey)}
       title={t(item.labelKey)}
-      className="relative px-3 py-2 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 group rounded-lg"
+      className="relative w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 group"
     >
-      <div className="relative z-10 flex items-center justify-center">
-        <Icon
-          size={ICON_SIZE.lg}
-          strokeWidth={isActive ? ICON_STROKE.medium : ICON_STROKE.normal}
-          className={
-            isActive
-              ? "text-primary"
-              : "text-muted-foreground group-hover:text-foreground transition-colors"
-          }
-        />
-      </div>
+      <Icon
+        size={20}
+        strokeWidth={isActive ? 2 : 1.5}
+        className={
+          isActive
+            ? "text-foreground"
+            : "text-muted-foreground group-hover:text-foreground transition-colors"
+        }
+      />
       {isActive && (
-        <m.span
-          layoutId="nav-active-bar"
-          className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        <motion.span
+          layoutId="nav-active-indicator"
+          className="absolute inset-0 bg-muted rounded-xl -z-10"
+          transition={{ type: "spring", stiffness: 400, damping: 30 }}
         />
       )}
     </Link>
@@ -115,9 +111,12 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
 
   if (!userId) {
     return (
-      <Button asChild variant="ghost" className="text-sm font-medium text-muted-foreground hover:text-primary">
-        <Link href="/login">{t("auth.login")}</Link>
-      </Button>
+      <Link
+        href="/login"
+        className="h-10 px-5 flex items-center justify-center rounded-xl bg-foreground text-background text-sm font-semibold hover:bg-foreground/90 transition-colors"
+      >
+        {t("auth.login")}
+      </Link>
     );
   }
 
@@ -130,10 +129,11 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
           className="relative shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 rounded-full cursor-pointer group"
         >
           <div
-            className={`w-9 h-9 rounded-full overflow-hidden transition-all border-2 ${isActive
-              ? "border-primary shadow-sm"
-              : "border-border group-hover:border-primary/50"
-              }`}
+            className={`w-10 h-10 rounded-full overflow-hidden transition-all duration-200 ring-2 ${
+              isActive
+                ? "ring-foreground"
+                : "ring-border group-hover:ring-foreground/50"
+            }`}
           >
             {optimizedSrc ? (
               <Image
@@ -145,37 +145,56 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
               />
             ) : (
               <div className="w-full h-full bg-muted flex items-center justify-center">
-                <User size={ICON_SIZE.md} className="text-muted-foreground" strokeWidth={ICON_STROKE.normal} />
+                <User size={18} className="text-muted-foreground" strokeWidth={1.5} />
               </div>
             )}
           </div>
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" sideOffset={10} className="w-48 p-1.5 rounded-2xl shadow-xl border-border">
-        <DropdownMenuItem asChild className="rounded-xl px-3 py-2.5 focus:bg-secondary cursor-pointer">
-          <Link href={profileHref} className="flex items-center">
-            <User size={ICON_SIZE.md} strokeWidth={ICON_STROKE.normal} className="mr-3 text-muted-foreground" />
-            <span className="font-semibold text-sm text-foreground/80">{t("nav.myPage")}</span>
+      <DropdownMenuContent
+        align="end"
+        sideOffset={12}
+        className="w-52 p-2 rounded-2xl shadow-xl border-border/50 bg-card"
+      >
+        <DropdownMenuItem asChild className="rounded-xl h-11 px-3 focus:bg-muted cursor-pointer">
+          <Link href={profileHref} className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+              <User size={16} strokeWidth={1.5} className="text-muted-foreground" />
+            </div>
+            <span className="font-medium text-sm text-foreground">{t("nav.myPage")}</span>
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild className="rounded-xl px-3 py-2.5 focus:bg-secondary cursor-pointer">
-          <Link href="/settings" className="flex items-center">
-            <Settings size={ICON_SIZE.md} strokeWidth={ICON_STROKE.normal} className="mr-3 text-muted-foreground" />
-            <span className="font-semibold text-sm text-foreground/80">{t("nav.settings")}</span>
+        <DropdownMenuItem asChild className="rounded-xl h-11 px-3 focus:bg-muted cursor-pointer">
+          <Link href="/settings" className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+              <Settings size={16} strokeWidth={1.5} className="text-muted-foreground" />
+            </div>
+            <span className="font-medium text-sm text-foreground">{t("nav.settings")}</span>
           </Link>
         </DropdownMenuItem>
         {isAdmin && (
-          <DropdownMenuItem asChild className="rounded-xl px-3 py-2.5 focus:bg-secondary cursor-pointer">
-            <Link href="/admin" className="flex items-center">
-              <Shield size={ICON_SIZE.md} strokeWidth={ICON_STROKE.normal} className="mr-3 text-muted-foreground" />
-              <span className="font-semibold text-sm text-foreground/80">{t("nav.admin")}</span>
+          <DropdownMenuItem asChild className="rounded-xl h-11 px-3 focus:bg-muted cursor-pointer">
+            <Link href="/admin" className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+                <Shield size={16} strokeWidth={1.5} className="text-muted-foreground" />
+              </div>
+              <span className="font-medium text-sm text-foreground">{t("nav.admin")}</span>
             </Link>
           </DropdownMenuItem>
         )}
-        <DropdownMenuSeparator className="my-1.5 bg-border" />
-        <DropdownMenuItem onClick={handleLogout} className="rounded-xl px-3 py-2.5 focus:bg-secondary cursor-pointer group/logout">
-          <LogOut size={ICON_SIZE.md} strokeWidth={ICON_STROKE.normal} className="mr-3 text-muted-foreground group-hover/logout:text-foreground transition-colors" />
-          <span className="font-semibold text-sm text-muted-foreground group-hover/logout:text-foreground">{t("nav.logout")}</span>
+        <DropdownMenuSeparator className="my-2 bg-border/50" />
+        <DropdownMenuItem
+          onClick={handleLogout}
+          className="rounded-xl h-11 px-3 focus:bg-muted cursor-pointer group/logout"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center group-hover/logout:bg-error/10 transition-colors">
+              <LogOut size={16} strokeWidth={1.5} className="text-muted-foreground group-hover/logout:text-error transition-colors" />
+            </div>
+            <span className="font-medium text-sm text-muted-foreground group-hover/logout:text-error transition-colors">
+              {t("nav.logout")}
+            </span>
+          </div>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -195,27 +214,30 @@ export const Header = memo(function Header() {
 
   return (
     <header
-      className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border"
+      className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/50"
       role="banner"
     >
-      <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between max-w-5xl">
-        <div className="flex items-center gap-6 sm:gap-10">
+      <div className="container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between max-w-5xl">
+        {/* Left: Logo + Nav */}
+        <div className="flex items-center gap-8">
+          {/* Brand */}
           <Link
             href="/residents"
-            className="flex items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 group"
+            className="flex items-center gap-2.5 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 group"
             aria-label={t("a11y.goHome")}
           >
-            <Home size={ICON_SIZE.lg} className="text-primary" strokeWidth={ICON_STROKE.medium} />
-            <div className="flex flex-col leading-none">
-              <span className="text-xl font-bold tracking-tight text-foreground">
-                Share<span className="text-primary">House</span>
-              </span>
+            <div className="w-9 h-9 rounded-xl bg-foreground flex items-center justify-center">
+              <Home size={18} className="text-background" strokeWidth={2} />
             </div>
+            <span className="text-lg font-bold tracking-tight text-foreground hidden sm:block">
+              Share<span className="text-muted-foreground">House</span>
+            </span>
           </Link>
 
+          {/* Navigation - Desktop */}
           <nav
             aria-label={t("a11y.mainNavigation")}
-            className="hidden sm:flex items-center gap-1"
+            className="hidden sm:flex items-center gap-1 p-1 bg-muted/50 rounded-2xl"
           >
             {NAV_ITEMS.map((item) => (
               <NavLink
@@ -227,6 +249,7 @@ export const Header = memo(function Header() {
           </nav>
         </div>
 
+        {/* Right: User Menu */}
         <UserAvatarMenu />
       </div>
     </header>

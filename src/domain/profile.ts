@@ -96,7 +96,7 @@ export interface Profile {
     message: string;
     updated_at: string;
   } | null;
-  theme_style?: "modern" | "cottage" | null;
+  theme_style?: "modern" | "cottage" | "mono" | null;
   color_mode?: "light" | "dark" | "system" | null;
 }
 
