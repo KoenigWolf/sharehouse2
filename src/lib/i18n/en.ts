@@ -632,6 +632,7 @@ export const en: Translations = {
     backToTop: "Back to Top",
     more: "More",
     joinCommunity: "Join the community",
+    madeWithCare: "Made with care for our community",
   },
 
   legal: {

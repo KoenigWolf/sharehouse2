@@ -171,7 +171,7 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
             {t("footer.copyrightFull", { year: new Date().getFullYear() })}
           </p>
           <p className="text-xs text-muted-foreground/60">
-            Made with care for our community
+            {t("footer.madeWithCare")}
           </p>
         </div>
       </div>

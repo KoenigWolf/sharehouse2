@@ -631,6 +631,7 @@ export const ja = {
     backToTop: "トップへ戻る",
     more: "その他",
     joinCommunity: "コミュニティに参加",
+    madeWithCare: "コミュニティのために心を込めて作りました",
   },
 
   legal: {
