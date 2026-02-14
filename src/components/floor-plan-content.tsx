@@ -3,8 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { X } from "lucide-react";
-import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
+import { X, User, Briefcase, Calendar } from "lucide-react";
 import { Profile, ROOM_NUMBERS } from "@/domain/profile";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { useI18n } from "@/hooks/use-i18n";
@@ -26,6 +25,24 @@ function getRoomsForFloor(floor: FloorId): string[] {
 function isMockProfile(profile: Profile): boolean {
   return profile.id.startsWith("mock-");
 }
+
+// Animation config
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.05, delayChildren: 0.1 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] as const },
+  },
+};
 
 export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentProps) {
   const [activeFloor, setActiveFloor] = useState<FloorId>("5F");
@@ -70,186 +87,214 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
   const selectedProfile = selectedRoom ? profileByRoom.get(selectedRoom) ?? null : null;
 
   return (
-    <div>
-      <div className="flex gap-4 mb-10 overflow-x-auto pb-4 no-scrollbar">
-        {FLOORS.slice().reverse().map((floor) => {
+    <m.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-8"
+    >
+      {/* Floor selector - Touch targets 64px minimum */}
+      <m.div
+        variants={itemVariants}
+        className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide"
+      >
+        {FLOORS.slice().reverse().map((floor, i) => {
           const isActive = floor === activeFloor;
           const floorColors = FLOOR_COLORS[floor];
+          const occupancy = occupancyByFloor[floor];
 
           return (
-            <button
+            <m.button
               key={floor}
               type="button"
               onClick={() => { setActiveFloor(floor); setSelectedRoom(null); }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.25, delay: i * 0.05 }}
+              whileTap={{ scale: 0.97 }}
               className={`
-                relative flex-1 min-w-[70px] min-h-[64px] py-4 text-sm font-bold tracking-tight
-                transition-all duration-500 rounded-2xl overflow-hidden shadow-sm
+                flex-1 min-w-[80px] h-20 flex flex-col items-center justify-center
+                rounded-2xl transition-all duration-200
                 ${isActive
-                  ? `${floorColors.bg} ${floorColors.text} shadow-xl shadow-brand-100 ring-4 ring-brand-500/10`
-                  : "bg-secondary text-foreground hover:bg-muted hover:text-foreground/80 border border-border"
+                  ? `${floorColors.bg} ${floorColors.text} shadow-lg ring-2 ring-offset-2 ring-offset-background ${floorColors.border.replace("border-", "ring-")}`
+                  : "bg-muted/60 text-foreground/70 hover:bg-muted hover:text-foreground"
                 }
-                active:scale-[0.96]
               `}
             >
-              <span className="block text-xl">{floor}</span>
-              <span className={`block text-[9px] uppercase font-black tracking-[0.15em] mt-1.5 ${isActive ? "opacity-70" : "opacity-40"}`}>
-                {t("floorPlan.occupancy", { count: occupancyByFloor[floor] })}
+              <span className="text-xl font-bold">{floor}</span>
+              <span className={`text-xs font-medium mt-1 ${isActive ? "opacity-70" : "text-muted-foreground"}`}>
+                {occupancy}/5
               </span>
-            </button>
+            </m.button>
           );
         })}
-      </div>
+      </m.div>
 
-      <div className="premium-surface rounded-2xl p-6 sm:p-8">
-        <div className="flex items-center gap-3 mb-8">
-          <div
-            className={`w-10 h-10 flex items-center justify-center rounded-xl ${colors.bg} ${colors.text} shadow-sm border ${colors.border}`}
-          >
-            <span className="font-bold">{activeFloor}</span>
+      {/* Floor content */}
+      <m.section variants={itemVariants} className="premium-surface rounded-2xl sm:rounded-3xl p-6 sm:p-8">
+        {/* Floor header */}
+        <div className="flex items-center gap-4 mb-8">
+          <div className={`w-12 h-12 flex items-center justify-center rounded-2xl ${colors.bg} ${colors.text} border ${colors.border}`}>
+            <span className="text-lg font-bold">{activeFloor}</span>
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">
+            <h3 className="text-lg font-bold text-foreground">
               {t("floorPlan.floor", { floor: activeFloor[0] })}
             </h3>
-            <p className="text-xs text-muted-foreground">{t("floorPlan.residentLayout")}</p>
+            <p className="text-sm text-muted-foreground">
+              {t("floorPlan.residentLayout")}
+            </p>
           </div>
         </div>
 
+        {/* Room grid */}
         <AnimatePresence mode="wait">
           <m.div
             key={activeFloor}
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="grid grid-cols-5 gap-3 sm:gap-4"
           >
-            {rooms.map((roomNumber) => {
+            {rooms.map((roomNumber, index) => {
               const profile = profileByRoom.get(roomNumber);
               const isMock = profile ? isMockProfile(profile) : false;
               const isOccupied = !!profile && !isMock;
               const isCurrentUser = profile?.id === currentUserId;
 
               return (
-                <button
+                <m.button
                   key={roomNumber}
                   type="button"
                   onClick={() => setSelectedRoom(roomNumber)}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.25, delay: index * 0.03 }}
+                  whileHover={{ scale: 1.03, y: -2 }}
+                  whileTap={{ scale: 0.97 }}
                   className={`
-                    relative flex flex-col items-center p-3 sm:p-4 min-h-[88px] transition-all duration-500 rounded-2xl
+                    relative flex flex-col items-center p-3 sm:p-4 min-h-[100px] sm:min-h-[120px]
+                    rounded-2xl transition-all duration-200
                     ${isOccupied
-                      ? "bg-card border border-border shadow-sm hover:shadow-xl hover:-translate-y-0.5 ring-1 ring-border/50"
-                      : "bg-muted border border-dashed border-border hover:border-border opacity-60 hover:opacity-100"
+                      ? "bg-card border border-border shadow-sm hover:shadow-lg"
+                      : "bg-muted/50 border border-dashed border-border/50 opacity-60 hover:opacity-100"
                     }
                   `}
                 >
+                  {/* Current user badge */}
                   {isCurrentUser && (
-                    <span className="absolute -top-2 -right-2 bg-brand-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full z-10 shadow-sm">
+                    <span className="absolute -top-2 -right-2 bg-foreground text-background text-[9px] font-bold px-1.5 py-0.5 rounded-full z-10">
                       {t("common.you")}
                     </span>
                   )}
 
-                  <div className="w-14 h-14 sm:w-16 sm:h-16 mb-4 relative">
+                  {/* Avatar */}
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 mb-3 relative">
                     {profile ? (
-                      <Avatar className="w-full h-full rounded-2xl border-2 border-border/50 shadow-md">
+                      <Avatar className="w-full h-full rounded-xl border-2 border-border/50">
                         <OptimizedAvatarImage
                           src={profile.avatar_url}
                           alt={profile.nickname || profile.name}
                           context="card"
                           fallback={
-                            <span className="text-sm font-bold text-muted-foreground/70">
+                            <span className="text-sm font-semibold text-muted-foreground/70">
                               {getInitials(profile.nickname || profile.name)}
                             </span>
                           }
-                          fallbackClassName="bg-secondary"
+                          fallbackClassName="bg-muted"
                         />
                       </Avatar>
                     ) : (
-                      <div className="w-full h-full rounded-2xl bg-card/50 flex items-center justify-center border-2 border-dashed border-border shadow-inner">
-                        <span className="text-[10px] font-bold text-muted-foreground/70 tracking-wider">
+                      <div className="w-full h-full rounded-xl bg-muted/50 flex items-center justify-center border border-dashed border-border/50">
+                        <span className="text-[10px] font-medium text-muted-foreground/50">
                           {t("floorPlan.vacant")}
                         </span>
                       </div>
                     )}
                   </div>
 
-                  <span className={`text-[11px] font-black tracking-[0.1em] ${isOccupied ? "text-foreground" : "text-muted-foreground/70"}`}>
+                  {/* Room number */}
+                  <span className={`text-xs font-bold tracking-wide ${isOccupied ? "text-foreground" : "text-muted-foreground/60"}`}>
                     {roomNumber}
                   </span>
 
+                  {/* Name */}
                   {profile && (
-                    <span className={`text-[10px] truncate max-w-full mt-1.5 font-bold ${isMock ? "text-muted-foreground/30" : "text-muted-foreground"}`}>
+                    <span className={`text-[10px] truncate max-w-full mt-1 font-medium ${isMock ? "text-muted-foreground/30" : "text-muted-foreground"}`}>
                       {profile.nickname || profile.name}
                     </span>
                   )}
-                </button>
+                </m.button>
               );
             })}
           </m.div>
         </AnimatePresence>
-      </div>
+      </m.section>
 
+      {/* Room detail popup */}
       <AnimatePresence>
         {selectedRoom && (
           <>
+            {/* Backdrop */}
             <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+              transition={{ duration: 0.3 }}
               className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm"
               onClick={handleClosePopup}
             />
 
+            {/* Modal */}
             <m.div
               initial={{ opacity: 0, y: 100, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 100, scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 350, damping: 30 }}
+              transition={{ type: "spring", stiffness: 400, damping: 30 }}
               className="fixed inset-x-4 bottom-8 sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2 z-50 sm:inset-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-sm"
               role="dialog"
               aria-modal="true"
               aria-label={selectedRoom}
             >
-              <div className="glass border border-border/20 shadow-2xl rounded-3xl p-6 relative overflow-hidden">
-                <div className="absolute inset-0 bg-card/40" />
+              <div className="bg-card border border-border/50 shadow-2xl rounded-3xl p-6 relative">
+                {/* Close button - 44px touch target */}
+                <button
+                  type="button"
+                  onClick={handleClosePopup}
+                  className="absolute top-4 right-4 w-11 h-11 flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  aria-label={t("floorPlan.closeDetail")}
+                >
+                  <X size={20} />
+                </button>
 
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={handleClosePopup}
-                    className="absolute -top-1 -right-1 p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary/50 rounded-full transition-all"
-                    aria-label={t("floorPlan.closeDetail")}
-                  >
-                    <X size={ICON_SIZE.lg} strokeWidth={ICON_STROKE.normal} />
-                  </button>
-
-                  <div className="flex items-center gap-3 mb-6">
-                    <span className={`text-xs font-bold px-3 py-1 rounded-full shadow-sm ${colors.bg} ${colors.text} border ${colors.border}`}>
-                      {selectedRoom}
+                {/* Room badge */}
+                <div className="flex items-center gap-3 mb-6">
+                  <span className={`text-sm font-bold px-3 py-1.5 rounded-xl ${colors.bg} ${colors.text} border ${colors.border}`}>
+                    {selectedRoom}
+                  </span>
+                  {selectedProfile && isMockProfile(selectedProfile) && (
+                    <span className="text-xs text-muted-foreground font-medium bg-muted px-2.5 py-1 rounded-lg">
+                      {t("residents.sampleData")}
                     </span>
-                    {selectedProfile && isMockProfile(selectedProfile) && (
-                      <span className="text-[10px] text-muted-foreground font-medium bg-muted px-2 py-0.5 rounded-full border border-border">
-                        {t("residents.sampleData")}
-                      </span>
-                    )}
-                  </div>
-
-                  {selectedProfile ? (
-                    <RoomDetailOccupied
-                      profile={selectedProfile}
-                      isCurrentUser={selectedProfile.id === currentUserId}
-                    />
-                  ) : (
-                    <RoomDetailVacant />
                   )}
                 </div>
+
+                {/* Content */}
+                {selectedProfile ? (
+                  <RoomDetailOccupied
+                    profile={selectedProfile}
+                    isCurrentUser={selectedProfile.id === currentUserId}
+                  />
+                ) : (
+                  <RoomDetailVacant />
+                )}
               </div>
             </m.div>
           </>
         )}
       </AnimatePresence>
-    </div>
+    </m.div>
   );
 }
 
@@ -267,15 +312,16 @@ function RoomDetailOccupied({
   const isMock = isMockProfile(profile);
 
   return (
-    <div>
-      <div className="flex items-center gap-4 mb-6">
-        <Avatar className="w-16 h-16 rounded-2xl border border-white shadow-md">
+    <div className="space-y-6">
+      {/* Profile header */}
+      <div className="flex items-center gap-4">
+        <Avatar className="w-16 h-16 rounded-2xl border border-border">
           <OptimizedAvatarImage
             src={profile.avatar_url}
             alt={displayName}
             context="card"
             fallback={
-              <span className="text-lg text-muted-foreground/70 font-semibold">
+              <span className="text-lg font-semibold text-muted-foreground">
                 {getInitials(displayName)}
               </span>
             }
@@ -284,33 +330,44 @@ function RoomDetailOccupied({
         </Avatar>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <p className="text-lg font-bold text-foreground tracking-tight truncate">
+            <p className="text-lg font-bold text-foreground truncate">
               {displayName}
             </p>
             {isCurrentUser && (
-              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-brand-500 text-white shadow-sm shrink-0`}>
+              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-foreground text-background shrink-0">
                 {t("common.you")}
               </span>
             )}
           </div>
           {duration && (
-            <p className="text-sm text-muted-foreground mt-0.5 font-medium">{duration}</p>
+            <p className="text-sm text-muted-foreground mt-0.5">{duration}</p>
           )}
         </div>
       </div>
 
+      {/* Info grid */}
       {(moveInFormatted || profile.occupation) && (
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-2 gap-3">
           {moveInFormatted && (
-            <div className="bg-muted/50 p-3 rounded-xl border border-border">
-              <span className="block text-[9px] uppercase font-bold text-muted-foreground tracking-wider mb-1">{t("floorPlan.moveInDate")}</span>
-              <span className="text-xs font-semibold text-foreground/90">{moveInFormatted}</span>
+            <div className="bg-muted/50 p-4 rounded-xl">
+              <div className="flex items-center gap-2 mb-1.5">
+                <Calendar size={14} className="text-muted-foreground" />
+                <span className="text-xs font-medium text-muted-foreground">
+                  {t("floorPlan.moveInDate")}
+                </span>
+              </div>
+              <span className="text-sm font-semibold text-foreground">{moveInFormatted}</span>
             </div>
           )}
           {profile.occupation && (
-            <div className="bg-muted/50 p-3 rounded-xl border border-border">
-              <span className="block text-[9px] uppercase font-bold text-muted-foreground tracking-wider mb-1">{t("floorPlan.occupation")}</span>
-              <span className="text-xs font-semibold text-foreground/90 truncate block">
+            <div className="bg-muted/50 p-4 rounded-xl">
+              <div className="flex items-center gap-2 mb-1.5">
+                <Briefcase size={14} className="text-muted-foreground" />
+                <span className="text-xs font-medium text-muted-foreground">
+                  {t("floorPlan.occupation")}
+                </span>
+              </div>
+              <span className="text-sm font-semibold text-foreground truncate block">
                 {t(`profileOptions.occupation.${profile.occupation}` as Parameters<typeof t>[0])}
               </span>
             </div>
@@ -318,17 +375,20 @@ function RoomDetailOccupied({
         </div>
       )}
 
+      {/* Bio */}
       {profile.bio && (
-        <p className="text-sm text-muted-foreground leading-relaxed mb-6 line-clamp-3 font-medium italic">
+        <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 italic">
           &ldquo;{profile.bio}&rdquo;
         </p>
       )}
 
+      {/* Action */}
       {!isMock && (
         <Link
           href={`/profile/${profile.id}`}
-          className="block w-full text-center text-sm font-bold py-3.5 bg-brand-500 text-white rounded-xl shadow-lg shadow-brand-100 hover:bg-brand-700 hover:shadow-brand-200 transition-all active:scale-[0.98]"
+          className="flex items-center justify-center gap-2 w-full h-12 bg-foreground text-background rounded-xl text-sm font-semibold hover:bg-foreground/90 transition-colors"
         >
+          <User size={18} />
           {t("floorPlan.viewProfile")}
         </Link>
       )}
@@ -340,11 +400,13 @@ function RoomDetailVacant() {
   const t = useI18n();
 
   return (
-    <div className="py-8 text-center bg-muted/50 rounded-2xl border border-dashed border-border">
-      <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-card border border-border shadow-sm flex items-center justify-center">
-        <span className="text-sm text-muted-foreground/70 font-bold tracking-tight">{t("floorPlan.vacant")}</span>
+    <div className="py-10 text-center">
+      <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-muted/50 border border-dashed border-border flex items-center justify-center">
+        <span className="text-sm text-muted-foreground/50 font-medium">
+          {t("floorPlan.vacant")}
+        </span>
       </div>
-      <p className="text-sm text-muted-foreground max-w-[240px] mx-auto font-medium">
+      <p className="text-sm text-muted-foreground max-w-[240px] mx-auto leading-relaxed">
         {t("floorPlan.vacantDescription")}
       </p>
     </div>
