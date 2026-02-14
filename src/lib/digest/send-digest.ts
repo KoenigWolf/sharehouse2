@@ -39,7 +39,7 @@ export async function sendMorningDigest() {
         .select("id")
         .eq("status", "available")
         .gte("expires_at", today.toISOString()),
-      supabase.from("profiles").select("id"),
+      supabase.from("push_subscriptions").select("user_id"),
     ]);
 
   const garbageTypes = (garbageResult.data ?? [])
@@ -48,7 +48,9 @@ export async function sendMorningDigest() {
   const bulletinCount = bulletinResult.data?.length ?? 0;
   const eventCount = eventResult.data?.length ?? 0;
   const shareCount = shareResult.data?.length ?? 0;
-  const users = usersResult.data ?? [];
+
+  const uniqueUserIds = [...new Set((usersResult.data ?? []).map((s) => s.user_id))];
+  const users = uniqueUserIds.map((id) => ({ id }));
 
   const bodyParts: string[] = [];
 

@@ -5,15 +5,11 @@ import { MobileNav } from "@/components/mobile-nav";
 import { AdminUserList } from "@/components/admin-user-list";
 import { getAllProfilesForAdmin } from "@/lib/admin/actions";
 import { isCurrentUserAdmin } from "@/lib/admin/check";
-import { createClient } from "@/lib/supabase/server";
 import { getServerTranslator } from "@/lib/i18n/server";
+import { getCachedUser } from "@/lib/supabase/cached-queries";
 
 export default async function AdminPage() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await getCachedUser();
 
   if (!user) {
     redirect("/login");

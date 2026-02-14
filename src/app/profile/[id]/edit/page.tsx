@@ -1,4 +1,3 @@
-import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -10,6 +9,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Settings, ChevronRight } from "lucide-react";
 import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
 import { Profile } from "@/domain/profile";
+import { getCachedUser } from "@/lib/supabase/cached-queries";
 
 const ProfileEditForm = dynamic(
   () => import("@/components/profile-edit-form").then((m) => m.ProfileEditForm),
@@ -35,11 +35,7 @@ export default async function ProfileEditPage({ params }: ProfileEditPageProps) 
   } catch {
     notFound();
   }
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, supabase } = await getCachedUser();
 
   if (!user) {
     redirect("/login");

@@ -1,4 +1,3 @@
-import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -6,6 +5,7 @@ import { MobileNav } from "@/components/mobile-nav";
 import { EventsContent } from "@/components/events-content";
 import { getUpcomingEvents } from "@/lib/events/actions";
 import { getServerTranslator } from "@/lib/i18n/server";
+import { getCachedUser } from "@/lib/supabase/cached-queries";
 
 interface EventsPageProps {
   searchParams: Promise<{ edit?: string }>;
@@ -14,11 +14,7 @@ interface EventsPageProps {
 export default async function EventsPage({ searchParams }: EventsPageProps) {
   const { edit: editEventId } = await searchParams;
   const t = await getServerTranslator();
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await getCachedUser();
 
   if (!user) {
     redirect("/login");

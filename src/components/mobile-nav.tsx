@@ -159,15 +159,16 @@ export const MobileNav = memo(function MobileNav() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
               onClick={closeDrawer}
-              className="fixed inset-0 z-[60] bg-foreground/30 backdrop-blur-sm sm:hidden"
+              className="fixed inset-0 z-[60] bg-foreground/30 sm:hidden"
             />
             <m.div
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed inset-x-0 bottom-0 z-[70] bg-card rounded-t-[2.5rem] p-6 pb-20 shadow-2xl sm:hidden max-h-[85vh] overflow-y-auto overflow-x-hidden"
+              transition={{ type: "tween", duration: 0.2, ease: "easeOut" }}
+              className="fixed inset-x-0 bottom-0 z-[70] bg-card rounded-t-[2.5rem] p-6 pb-20 shadow-2xl sm:hidden max-h-[85vh] overflow-y-auto overflow-x-hidden will-change-transform"
             >
               <div className="absolute top-0 left-0 w-full h-32 bg-linear-to-b from-primary/5 to-transparent pointer-events-none" />
               <div className="absolute top-10 right-[-10%] w-48 h-48 bg-primary/10 rounded-full blur-[80px] pointer-events-none" />

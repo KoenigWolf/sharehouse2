@@ -46,7 +46,7 @@ export async function getTeaTimeSetting(userId: string) {
 
     const { data, error } = await supabase
       .from("tea_time_settings")
-      .select("*")
+      .select("user_id, is_enabled, preferred_time, created_at, updated_at")
       .eq("user_id", userId)
       .single();
 
@@ -135,7 +135,7 @@ export async function getMyMatches(): Promise<(TeaTimeMatch & { partner: Profile
 
     const { data: matches, error } = await supabase
       .from("tea_time_matches")
-      .select("*")
+      .select("id, user1_id, user2_id, matched_at, status, created_at")
       .or(buildUserMatchFilter(user.id))
       .order("matched_at", { ascending: false })
       .limit(TEA_TIME.maxMatchesDisplay);
@@ -270,7 +270,7 @@ export async function getLatestScheduledMatch(): Promise<(TeaTimeMatch & { partn
 
     const { data: match, error } = await supabase
       .from("tea_time_matches")
-      .select("*")
+      .select("id, user1_id, user2_id, matched_at, status, created_at")
       .or(buildUserMatchFilter(user.id))
       .eq("status", "scheduled")
       .order("matched_at", { ascending: false })

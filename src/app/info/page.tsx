@@ -1,4 +1,3 @@
-import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -8,13 +7,10 @@ import { getGarbageSchedule, getUpcomingDuties } from "@/lib/garbage/actions";
 import { getSharedInfo } from "@/lib/shared-info/actions";
 import { isCurrentUserAdmin } from "@/lib/admin/check";
 import { InfoPageContent } from "@/components/info-page-content";
+import { getCachedUser } from "@/lib/supabase/cached-queries";
 
 export default async function InfoPage() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await getCachedUser();
 
   if (!user) {
     redirect("/login");

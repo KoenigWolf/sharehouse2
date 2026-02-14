@@ -1,4 +1,3 @@
-import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -6,14 +5,11 @@ import { MobileNav } from "@/components/mobile-nav";
 import { ResidentStats } from "@/components/resident-stats";
 import { getServerTranslator } from "@/lib/i18n/server";
 import { getProfilesWithMock } from "@/lib/residents/queries";
+import { getCachedUser } from "@/lib/supabase/cached-queries";
 
 export default async function StatsPage() {
   const t = await getServerTranslator();
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, supabase } = await getCachedUser();
 
   if (!user) {
     redirect("/login");

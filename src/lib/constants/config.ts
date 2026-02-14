@@ -85,6 +85,7 @@ export const GARBAGE = {
 export const BULLETIN = {
   maxMessageLength: 200,
   maxDisplayOnHome: 5,
+  maxDisplayOnBulletinPage: 100,
 } as const;
 
 export const SHARE_ITEMS = {

@@ -1,4 +1,3 @@
-import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import dynamic from "next/dynamic";
 import { Header } from "@/components/header";
@@ -7,6 +6,7 @@ import { MobileNav } from "@/components/mobile-nav";
 import { Spinner } from "@/components/ui/spinner";
 import { getAllRoomPhotos } from "@/lib/room-photos/actions";
 import { getServerTranslator } from "@/lib/i18n/server";
+import { getCachedUser } from "@/lib/supabase/cached-queries";
 
 const RoomPhotosGallery = dynamic(
   () => import("@/components/room-photos-gallery").then((m) => m.RoomPhotosGallery),
@@ -15,11 +15,7 @@ const RoomPhotosGallery = dynamic(
 
 export default async function RoomPhotosPage() {
   const t = await getServerTranslator();
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await getCachedUser();
 
   if (!user) {
     redirect("/login");

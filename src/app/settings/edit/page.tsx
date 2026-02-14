@@ -1,12 +1,8 @@
-import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { getCachedUser } from "@/lib/supabase/cached-queries";
 
 export default async function SettingsEditPage() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await getCachedUser();
 
   if (!user) {
     redirect("/login");

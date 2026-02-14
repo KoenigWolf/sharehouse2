@@ -20,31 +20,37 @@ export async function getBulletins(): Promise<BulletinWithProfile[]> {
   try {
     const supabase = await createClient();
 
-    const [bulletinsRes, profilesRes] = await Promise.all([
-      supabase
-        .from("bulletins")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(BULLETIN.maxDisplayOnHome),
-      supabase
-        .from("profiles")
-        .select("id, name, nickname, avatar_url, room_number"),
-    ]);
+    const bulletinsRes = await supabase
+      .from("bulletins")
+      .select("id, user_id, message, created_at, updated_at")
+      .order("created_at", { ascending: false })
+      .limit(BULLETIN.maxDisplayOnBulletinPage);
 
     if (bulletinsRes.error) {
       logError(bulletinsRes.error, { action: "getBulletins:bulletins" });
       return [];
     }
 
-    if (profilesRes.error) {
-      logError(profilesRes.error, { action: "getBulletins:profiles" });
+    const bulletins = bulletinsRes.data ?? [];
+    if (bulletins.length === 0) {
+      return [];
+    }
+
+    const userIds = [...new Set(bulletins.map((b) => b.user_id))];
+    const { data: profiles, error: profilesError } = await supabase
+      .from("profiles")
+      .select("id, name, nickname, avatar_url, room_number")
+      .in("id", userIds);
+
+    if (profilesError) {
+      logError(profilesError, { action: "getBulletins:profiles" });
     }
 
     const profilesMap = new Map(
-      (profilesRes.data ?? []).map((p) => [p.id, p])
+      (profiles ?? []).map((p) => [p.id, p])
     );
 
-    return (bulletinsRes.data ?? []).map((bulletin) => ({
+    return bulletins.map((bulletin) => ({
       ...bulletin,
       profiles: profilesMap.get(bulletin.user_id) ?? null,
     })) as BulletinWithProfile[];

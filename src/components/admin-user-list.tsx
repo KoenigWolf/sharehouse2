@@ -19,13 +19,13 @@ import {
   adminGetUserEmail,
   adminUpdateUserEmail,
   adminUpdateUserPassword,
+  type AdminListProfile,
 } from "@/lib/admin/actions";
-import type { Profile } from "@/domain/profile";
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 
 interface AdminUserListProps {
-  profiles: Profile[];
+  profiles: AdminListProfile[];
   currentUserId: string;
 }
 
@@ -35,12 +35,12 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
   const [search, setSearch] = useState("");
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
-  const [deleteTarget, setDeleteTarget] = useState<Profile | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<AdminListProfile | null>(null);
   const [deleteError, setDeleteError] = useState("");
-  const [adminToggleTarget, setAdminToggleTarget] = useState<Profile | null>(
+  const [adminToggleTarget, setAdminToggleTarget] = useState<AdminListProfile | null>(
     null,
   );
-  const [credentialsTarget, setCredentialsTarget] = useState<Profile | null>(
+  const [credentialsTarget, setCredentialsTarget] = useState<AdminListProfile | null>(
     null,
   );
   const [error, setError] = useState("");
@@ -57,7 +57,7 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
     );
   }, [profiles, search, deletedIds]);
 
-  const openAdminToggleDialog = useCallback((profile: Profile) => {
+  const openAdminToggleDialog = useCallback((profile: AdminListProfile) => {
     setAdminToggleTarget(profile);
   }, []);
 
@@ -85,7 +85,7 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
     setAdminToggleTarget(null);
   }, [adminToggleTarget, t, router]);
 
-  const openDeleteDialog = useCallback((profile: Profile) => {
+  const openDeleteDialog = useCallback((profile: AdminListProfile) => {
     setDeleteError("");
     setDeleteTarget(profile);
   }, []);
@@ -375,7 +375,7 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
 }
 
 interface AdminCredentialsDialogProps {
-  target: Profile | null;
+  target: AdminListProfile | null;
   onClose: () => void;
 }
 

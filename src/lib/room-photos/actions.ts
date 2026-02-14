@@ -12,9 +12,6 @@ import { ROOM_PHOTOS } from "@/lib/constants/config";
 import type { RoomPhoto } from "@/domain/room-photo";
 import type { Profile } from "@/domain/profile";
 
-/**
- * Response types
- */
 type UpdateResponse = { success: true } | { error: string };
 type UploadResponse = { success: true; url: string } | { error: string };
 type BulkUploadResponse = { success: true; data: RoomPhoto[] } | { error: string };
@@ -155,7 +152,7 @@ export async function deleteRoomPhoto(photoId: string): Promise<UpdateResponse> 
 
     const { data: photo, error: fetchError } = await supabase
       .from("room_photos")
-      .select("*")
+      .select("id, photo_url")
       .eq("id", photoId)
       .eq("user_id", user.id)
       .single();
@@ -209,7 +206,7 @@ export async function getRoomPhotos(userId: string): Promise<RoomPhoto[]> {
 
     const { data, error } = await supabase
       .from("room_photos")
-      .select("*")
+      .select("id, user_id, photo_url, caption, taken_at, display_order, created_at")
       .eq("user_id", userId)
       .order("display_order", { ascending: true });
 
@@ -243,16 +240,11 @@ export async function getAllRoomPhotos(): Promise<
       return [];
     }
 
-    const [photosResult, profilesResult] = await Promise.all([
-      supabase
-        .from("room_photos")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(200),
-      supabase
-        .from("profiles")
-        .select("id, name, avatar_url"),
-    ]);
+    const photosResult = await supabase
+      .from("room_photos")
+      .select("id, user_id, photo_url, caption, taken_at, display_order, created_at")
+      .order("created_at", { ascending: false })
+      .limit(200);
 
     if (photosResult.error) {
       logError(photosResult.error, { action: "getAllRoomPhotos" });
@@ -264,11 +256,15 @@ export async function getAllRoomPhotos(): Promise<
       return [];
     }
 
-    if (profilesResult.error) {
-      logError(profilesResult.error, { action: "getAllRoomPhotos.fetchProfiles" });
-    }
+    const userIds = [...new Set(photos.map((p) => p.user_id))];
+    const { data: profiles, error: profilesError } = await supabase
+      .from("profiles")
+      .select("id, name, avatar_url")
+      .in("id", userIds);
 
-    const profiles = profilesResult.data;
+    if (profilesError) {
+      logError(profilesError, { action: "getAllRoomPhotos.fetchProfiles" });
+    }
 
     const profileMap = new Map<string, Profile>();
     if (profiles) {
@@ -414,7 +410,7 @@ export async function registerBulkPhotos(
     const { data: insertedData, error: insertError } = await supabase
       .from("room_photos")
       .insert(records)
-      .select("*");
+      .select("id, user_id, photo_url, caption, taken_at, display_order, created_at");
 
     if (insertError) {
       logError(insertError, {
