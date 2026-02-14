@@ -38,8 +38,8 @@ const COMMUNITY_LINKS: { href: string; labelKey: Parameters<Translator>[0] }[] =
 ];
 
 const LEGAL_LINKS: { href: string | null; labelKey: Parameters<Translator>[0] }[] = [
-  { href: null, labelKey: "footer.terms" },
-  { href: null, labelKey: "footer.privacy" },
+  { href: "/legal/terms", labelKey: "footer.terms" },
+  { href: "/legal/privacy", labelKey: "footer.privacy" },
 ];
 
 export const Footer = memo(function Footer({ variant = "default" }: FooterProps) {
