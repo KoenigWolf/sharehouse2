@@ -520,3 +520,62 @@
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
   }
 }
+
+/* ========================================
+ * モバイルパフォーマンス最適化
+ * ======================================== */
+@layer utilities {
+
+  /* モバイルでblur効果を軽量化（GPU負荷軽減） */
+  @media (max-width: 640px) {
+    .backdrop-blur-sm {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      background-color: rgba(var(--background-rgb, 253 252 248) / 0.95);
+    }
+
+    .backdrop-blur-md {
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+  }
+
+  /* reduced motion対応 */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* タッチデバイス向けホバー無効化 */
+  @media (hover: none) and (pointer: coarse) {
+    .group-hover\:scale-105 {
+      transform: none !important;
+    }
+  }
+
+  /* will-change最適化（アニメーション対象要素） */
+  .will-change-transform {
+    will-change: transform;
+  }
+
+  .will-change-opacity {
+    will-change: opacity;
+  }
+
+  /* コンテンツ可視性最適化（大きなリスト向け） */
+  .content-visibility-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 200px;
+  }
+
+  /* GPU合成レイヤー強制（スクロール性能改善） */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+}

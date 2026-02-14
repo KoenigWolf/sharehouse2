@@ -66,6 +66,9 @@ export default async function RootLayout({
   return (
     <html lang={locale} nonce={nonce} suppressHydrationWarning>
       <head>
+        {/* Preconnect to Supabase for faster image/API loads */}
+        <link rel="preconnect" href="https://nwvapjxkxoeomevhrzky.supabase.co" />
+        <link rel="dns-prefetch" href="https://nwvapjxkxoeomevhrzky.supabase.co" />
         <ThemeScript initialTheme={themeStyle} initialColorMode={colorMode} />
       </head>
       <body

@@ -141,6 +141,7 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
                 alt={t("nav.myPage")}
                 width={40}
                 height={40}
+                sizes="40px"
                 className="object-cover w-full h-full"
               />
             ) : (

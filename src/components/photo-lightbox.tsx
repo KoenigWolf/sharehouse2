@@ -87,6 +87,7 @@ const LightboxImage = memo(function LightboxImage({ photo }: LightboxImageProps)
         src={photo.photo_url}
         alt={t("roomPhotos.photoAlt")}
         fill
+        sizes="94vw"
         className={`object-contain transition-opacity duration-300 ${
           isLoaded ? "opacity-100" : "opacity-0"
         }`}
