@@ -803,7 +803,7 @@ export const en: Translations = {
     modern: "Modern",
     modernDescription: "Cool slate and emerald green. Sleek minimalist design.",
     mono: "Monochrome",
-    monoDescription: "Pure black and white only. A refined shadcn/ui-inspired minimal design.",
+    monoDescription: "Pure black and white. A serene, refined minimalism stripped to its essence.",
     light: "Light",
     dark: "Dark",
     system: "System",

@@ -802,7 +802,7 @@ export const ja = {
     modern: "モダン",
     modernDescription: "クールなスレートカラーとエメラルドグリーン。洗練されたミニマリストスタイル。",
     mono: "モノクローム",
-    monoDescription: "白と黒のみで構成されたピュアなモノトーン。shadcn/ui風の洗練されたミニマルデザイン。",
+    monoDescription: "純粋な白と黒。余計なものを削ぎ落とした、静謐で洗練されたミニマリズム。",
     light: "ライト",
     dark: "ダーク",
     system: "システム",

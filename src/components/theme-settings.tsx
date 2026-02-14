@@ -136,9 +136,9 @@ export const ThemeSettings = memo(function ThemeSettings() {
       labelKey: "theme.mono",
       descriptionKey: "theme.monoDescription",
       colors: {
-        primary: "#18181b",
+        primary: "#0a0a0a",
         secondary: "#ffffff",
-        accent: "#71717a",
+        accent: "#737373",
       },
     },
   ];

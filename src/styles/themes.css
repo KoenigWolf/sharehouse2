@@ -464,229 +464,293 @@
 
 /* ============================================
  * Theme: Mono (Pure Monochrome)
- * Zinc color scale, black & white only
- * shadcn/ui-inspired minimal design
+ *
+ * Design Philosophy:
+ * - Absolute purity: Only black, white, and neutral grays
+ * - Subtle hierarchy through weight and spacing, not color
+ * - Whisper-soft shadows that barely exist
+ * - Sharp geometry with minimal radius
+ * - Typography-first design language
+ *
+ * Inspired by: Dieter Rams, Swiss Design, Aesop
  * ============================================ */
 .theme-mono,
 :root[data-theme="mono"] {
-  /* Brand: Pure grayscale (no color accent) */
+  /*
+   * Brand Scale: Tailwind Neutral
+   * Pure, temperature-neutral grays without warm/cool bias
+   */
   --brand-50: #fafafa;
-  --brand-100: #f4f4f5;
-  --brand-200: #e4e4e7;
-  --brand-300: #d4d4d8;
-  --brand-400: #a1a1aa;
-  --brand-500: #71717a;
-  --brand-600: #52525b;
-  --brand-700: #3f3f46;
-  --brand-800: #27272a;
-  --brand-900: #18181b;
+  --brand-100: #f5f5f5;
+  --brand-200: #e5e5e5;
+  --brand-300: #d4d4d4;
+  --brand-400: #a3a3a3;
+  --brand-500: #737373;
+  --brand-600: #525252;
+  --brand-700: #404040;
+  --brand-800: #262626;
+  --brand-900: #171717;
 
-  /* Accent: Pure black */
-  --accent-base: #18181b;
+  /* Accent: Pure black - the only "color" we need */
+  --accent-base: #171717;
 
-  /* Status colors - Monochrome versions */
-  --success: #18181b;
-  --success-bg: #f4f4f5;
-  --success-border: #d4d4d8;
-  --error: #18181b;
-  --error-bg: #fafafa;
-  --error-border: #e4e4e7;
-  --warning: #52525b;
+  /*
+   * Status Colors
+   * Distinguished by visual weight, not hue
+   * Success: Light touch (subtle)
+   * Error: Heavy weight (demanding attention)
+   * Warning: Medium weight
+   */
+  --success: #404040;
+  --success-bg: #fafafa;
+  --success-border: #e5e5e5;
+  --error: #171717;
+  --error-bg: #f5f5f5;
+  --error-border: #171717;
+  --warning: #525252;
   --warning-bg: #fafafa;
-  --warning-border: #e4e4e7;
+  --warning-border: #d4d4d4;
 
-  /* Floor accent colors (monochrome) */
-  --floor-violet: #52525b;
+  /* Floor accent colors - distinguished by opacity/weight */
+  --floor-violet: #404040;
   --floor-violet-bg: #fafafa;
-  --floor-violet-border: #e4e4e7;
-  --floor-slate: #71717a;
-  --floor-slate-bg: #fafafa;
-  --floor-slate-border: #e4e4e7;
+  --floor-violet-border: #e5e5e5;
+  --floor-slate: #525252;
+  --floor-slate-bg: #f5f5f5;
+  --floor-slate-border: #e5e5e5;
 
-  /* Garbage type colors (monochrome) */
-  --garbage-combustible: #3f3f46;
+  /* Garbage type colors - pattern over color */
+  --garbage-combustible: #171717;
   --garbage-combustible-bg: #fafafa;
-  --garbage-plastic: #52525b;
-  --garbage-plastic-bg: #f4f4f5;
+  --garbage-plastic: #525252;
+  --garbage-plastic-bg: #f5f5f5;
 
-  /* Calendar day colors (monochrome) */
-  --day-sunday: #3f3f46;
+  /* Calendar day colors */
+  --day-sunday: #171717;
   --day-sunday-bg: #fafafa;
-  --day-saturday: #52525b;
-  --day-saturday-bg: #f4f4f5;
+  --day-saturday: #737373;
+  --day-saturday-bg: #f5f5f5;
 
-  /* MBTI group colors (monochrome - distinguished by weight/shade) */
-  --mbti-analysts: #18181b;
-  --mbti-analysts-bg: #fafafa;
-  --mbti-analysts-border: #d4d4d8;
-  --mbti-analysts-icon: #3f3f46;
-  --mbti-diplomats: #27272a;
-  --mbti-diplomats-bg: #f4f4f5;
-  --mbti-diplomats-border: #d4d4d8;
-  --mbti-diplomats-icon: #52525b;
-  --mbti-sentinels: #3f3f46;
-  --mbti-sentinels-bg: #fafafa;
-  --mbti-sentinels-border: #e4e4e7;
-  --mbti-sentinels-icon: #71717a;
-  --mbti-explorers: #52525b;
-  --mbti-explorers-bg: #f4f4f5;
-  --mbti-explorers-border: #e4e4e7;
-  --mbti-explorers-icon: #a1a1aa;
+  /*
+   * MBTI Group Colors
+   * Four levels of gray create clear visual distinction
+   */
+  --mbti-analysts: #171717;
+  --mbti-analysts-bg: #ffffff;
+  --mbti-analysts-border: #e5e5e5;
+  --mbti-analysts-icon: #404040;
+  --mbti-diplomats: #404040;
+  --mbti-diplomats-bg: #fafafa;
+  --mbti-diplomats-border: #e5e5e5;
+  --mbti-diplomats-icon: #525252;
+  --mbti-sentinels: #525252;
+  --mbti-sentinels-bg: #f5f5f5;
+  --mbti-sentinels-border: #e5e5e5;
+  --mbti-sentinels-icon: #737373;
+  --mbti-explorers: #737373;
+  --mbti-explorers-bg: #fafafa;
+  --mbti-explorers-border: #d4d4d4;
+  --mbti-explorers-icon: #a3a3a3;
 
-  /* MBTI Hero Header Colors */
-  --mbti-analysts-hero-bg: #18181b;
+  /* MBTI Hero Headers - Bold contrast */
+  --mbti-analysts-hero-bg: #0a0a0a;
   --mbti-analysts-hero-text: #ffffff;
-  --mbti-diplomats-hero-bg: #27272a;
+  --mbti-diplomats-hero-bg: #171717;
   --mbti-diplomats-hero-text: #ffffff;
-  --mbti-sentinels-hero-bg: #3f3f46;
+  --mbti-sentinels-hero-bg: #262626;
   --mbti-sentinels-hero-text: #ffffff;
-  --mbti-explorers-hero-bg: #52525b;
+  --mbti-explorers-hero-bg: #404040;
   --mbti-explorers-hero-text: #ffffff;
 
-  /* Core palette - Pure white/black */
+  /*
+   * Core Palette
+   * Pure white canvas, near-black ink
+   */
   --background: #ffffff;
-  --foreground: #09090b;
+  --foreground: #0a0a0a;
   --card: #ffffff;
-  --card-foreground: #09090b;
+  --card-foreground: #0a0a0a;
   --popover: #ffffff;
-  --popover-foreground: #09090b;
-  --primary: #18181b;
+  --popover-foreground: #0a0a0a;
+  --primary: #171717;
   --primary-foreground: #fafafa;
-  --secondary: #f4f4f5;
-  --secondary-foreground: #18181b;
-  --muted: #f4f4f5;
-  --muted-foreground: #71717a;
-  --accent: #18181b;
+  --secondary: #f5f5f5;
+  --secondary-foreground: #171717;
+  --muted: #f5f5f5;
+  --muted-foreground: #737373;
+  --accent: #171717;
   --accent-foreground: #fafafa;
-  --destructive: #18181b;
-  --border: #e4e4e7;
-  --input: #e4e4e7;
-  --ring: #18181b;
+  --destructive: #0a0a0a;
+  --border: #e5e5e5;
+  --input: #e5e5e5;
+  --ring: #0a0a0a;
 
-  /* Sidebar */
+  /* Sidebar - Barely distinguished from background */
   --sidebar: #fafafa;
-  --sidebar-foreground: #09090b;
-  --sidebar-primary: #18181b;
+  --sidebar-foreground: #0a0a0a;
+  --sidebar-primary: #171717;
   --sidebar-primary-foreground: #fafafa;
-  --sidebar-accent: #f4f4f5;
-  --sidebar-accent-foreground: #18181b;
-  --sidebar-border: #e4e4e7;
+  --sidebar-accent: #f5f5f5;
+  --sidebar-accent-foreground: #171717;
+  --sidebar-border: #e5e5e5;
 
-  /* Chart colors - Grayscale gradient */
-  --chart-1: #18181b;
-  --chart-2: #3f3f46;
-  --chart-3: #71717a;
-  --chart-4: #a1a1aa;
-  --chart-5: #d4d4d8;
+  /* Chart colors - Elegant grayscale progression */
+  --chart-1: #0a0a0a;
+  --chart-2: #404040;
+  --chart-3: #737373;
+  --chart-4: #a3a3a3;
+  --chart-5: #d4d4d4;
 
-  /* Shadows - More pronounced, architectural */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --premium-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  /*
+   * Shadows
+   * Whisper-soft, almost imperceptible
+   * Creates depth without weight
+   */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.02);
+  --shadow-md: 0 2px 4px -1px rgb(0 0 0 / 0.03), 0 1px 2px -1px rgb(0 0 0 / 0.02);
+  --shadow-lg: 0 4px 8px -2px rgb(0 0 0 / 0.04), 0 2px 4px -2px rgb(0 0 0 / 0.02);
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.02), 0 1px 2px -1px rgb(0 0 0 / 0.01);
+  --shadow-card-hover: 0 4px 12px -2px rgb(0 0 0 / 0.06), 0 2px 4px -2px rgb(0 0 0 / 0.02);
+  --shadow-elevated: 0 8px 24px -4px rgb(0 0 0 / 0.06);
+  --shadow-dropdown: 0 4px 16px -2px rgb(0 0 0 / 0.08);
+  --premium-shadow: 0 12px 40px -8px rgb(0 0 0 / 0.08);
 
-  /* Tokens override - Sharp, minimal */
-  --radius-card: 0.75rem;
-  --radius-container: 0.75rem;
-  --radius-button: 0.5rem;
-  --radius-input: 0.5rem;
-  --radius-badge: 0.25rem;
+  /*
+   * Border Radius
+   * Sharp and precise - geometric purity
+   */
+  --radius-card: 0.5rem;
+  --radius-container: 0.5rem;
+  --radius-button: 0.375rem;
+  --radius-input: 0.375rem;
+  --radius-badge: 0.125rem;
+  --radius-modal: 0.75rem;
 }
 
-/* Mono theme dark mode */
+/*
+ * Mono Dark Mode
+ * True darkness with precise gray hierarchy
+ * Designed for OLED screens and late-night use
+ */
 .theme-mono.dark,
 :root[data-theme="mono"].dark {
-  /* Brand: Pure grayscale (inverted) */
-  --brand-50: #18181b;
-  --brand-100: #27272a;
-  --brand-200: #3f3f46;
-  --brand-300: #52525b;
-  --brand-400: #71717a;
-  --brand-500: #a1a1aa;
-  --brand-600: #d4d4d8;
-  --brand-700: #e4e4e7;
-  --brand-800: #f4f4f5;
+  /* Brand Scale - Inverted for dark mode */
+  --brand-50: #171717;
+  --brand-100: #262626;
+  --brand-200: #404040;
+  --brand-300: #525252;
+  --brand-400: #737373;
+  --brand-500: #a3a3a3;
+  --brand-600: #d4d4d4;
+  --brand-700: #e5e5e5;
+  --brand-800: #f5f5f5;
   --brand-900: #fafafa;
 
-  /* Status colors (dark mode) */
-  --success: #fafafa;
-  --success-bg: #18181b;
-  --success-border: #3f3f46;
+  /*
+   * Status Colors - Dark Mode
+   * Inverted weight system
+   */
+  --success: #d4d4d4;
+  --success-bg: #171717;
+  --success-border: #262626;
   --error: #fafafa;
-  --error-bg: #18181b;
-  --error-border: #3f3f46;
-  --warning: #d4d4d8;
-  --warning-bg: #27272a;
-  --warning-border: #3f3f46;
+  --error-bg: #262626;
+  --error-border: #fafafa;
+  --warning: #a3a3a3;
+  --warning-bg: #171717;
+  --warning-border: #404040;
 
-  /* Floor accent colors (dark mode) */
-  --floor-violet: #a1a1aa;
-  --floor-violet-bg: #27272a;
-  --floor-violet-border: #3f3f46;
-  --floor-slate: #d4d4d8;
-  --floor-slate-bg: #18181b;
-  --floor-slate-border: #3f3f46;
+  /* Floor accent colors */
+  --floor-violet: #d4d4d4;
+  --floor-violet-bg: #171717;
+  --floor-violet-border: #262626;
+  --floor-slate: #a3a3a3;
+  --floor-slate-bg: #171717;
+  --floor-slate-border: #262626;
 
-  /* Garbage type colors (dark mode) */
-  --garbage-combustible: #d4d4d8;
-  --garbage-combustible-bg: #27272a;
-  --garbage-plastic: #a1a1aa;
-  --garbage-plastic-bg: #18181b;
+  /* Garbage type colors */
+  --garbage-combustible: #fafafa;
+  --garbage-combustible-bg: #171717;
+  --garbage-plastic: #a3a3a3;
+  --garbage-plastic-bg: #171717;
 
-  /* Calendar day colors (dark mode) */
-  --day-sunday: #d4d4d8;
-  --day-sunday-bg: #27272a;
-  --day-saturday: #a1a1aa;
-  --day-saturday-bg: #18181b;
+  /* Calendar day colors */
+  --day-sunday: #fafafa;
+  --day-sunday-bg: #262626;
+  --day-saturday: #a3a3a3;
+  --day-saturday-bg: #171717;
 
-  /* MBTI group colors (dark mode) */
+  /* MBTI group colors */
   --mbti-analysts: #fafafa;
-  --mbti-analysts-bg: #18181b;
-  --mbti-analysts-border: #3f3f46;
-  --mbti-analysts-icon: #d4d4d8;
-  --mbti-diplomats: #e4e4e7;
-  --mbti-diplomats-bg: #27272a;
-  --mbti-diplomats-border: #3f3f46;
-  --mbti-diplomats-icon: #a1a1aa;
-  --mbti-sentinels: #d4d4d8;
-  --mbti-sentinels-bg: #18181b;
-  --mbti-sentinels-border: #3f3f46;
-  --mbti-sentinels-icon: #71717a;
-  --mbti-explorers: #a1a1aa;
-  --mbti-explorers-bg: #27272a;
-  --mbti-explorers-border: #3f3f46;
-  --mbti-explorers-icon: #52525b;
+  --mbti-analysts-bg: #171717;
+  --mbti-analysts-border: #262626;
+  --mbti-analysts-icon: #e5e5e5;
+  --mbti-diplomats: #e5e5e5;
+  --mbti-diplomats-bg: #171717;
+  --mbti-diplomats-border: #262626;
+  --mbti-diplomats-icon: #d4d4d4;
+  --mbti-sentinels: #d4d4d4;
+  --mbti-sentinels-bg: #171717;
+  --mbti-sentinels-border: #262626;
+  --mbti-sentinels-icon: #a3a3a3;
+  --mbti-explorers: #a3a3a3;
+  --mbti-explorers-bg: #171717;
+  --mbti-explorers-border: #262626;
+  --mbti-explorers-icon: #737373;
 
-  /* MBTI Hero Header Colors (Dark Mode) */
+  /* MBTI Hero Headers - Inverted for dark */
   --mbti-analysts-hero-bg: #fafafa;
-  --mbti-analysts-hero-text: #09090b;
-  --mbti-diplomats-hero-bg: #e4e4e7;
-  --mbti-diplomats-hero-text: #09090b;
-  --mbti-sentinels-hero-bg: #d4d4d8;
-  --mbti-sentinels-hero-text: #09090b;
-  --mbti-explorers-hero-bg: #a1a1aa;
-  --mbti-explorers-hero-text: #09090b;
+  --mbti-analysts-hero-text: #0a0a0a;
+  --mbti-diplomats-hero-bg: #e5e5e5;
+  --mbti-diplomats-hero-text: #0a0a0a;
+  --mbti-sentinels-hero-bg: #d4d4d4;
+  --mbti-sentinels-hero-text: #0a0a0a;
+  --mbti-explorers-hero-bg: #a3a3a3;
+  --mbti-explorers-hero-text: #0a0a0a;
 
-  --background: #09090b;
+  /*
+   * Core Palette - Dark
+   * Near-black canvas, pure white ink
+   */
+  --background: #0a0a0a;
   --foreground: #fafafa;
-  --card: #18181b;
+  --card: #141414;
   --card-foreground: #fafafa;
-  --popover: #18181b;
+  --popover: #141414;
   --popover-foreground: #fafafa;
   --primary: #fafafa;
-  --primary-foreground: #18181b;
-  --secondary: #27272a;
+  --primary-foreground: #171717;
+  --secondary: #1f1f1f;
   --secondary-foreground: #fafafa;
-  --muted: #27272a;
-  --muted-foreground: #a1a1aa;
+  --muted: #1f1f1f;
+  --muted-foreground: #a3a3a3;
   --accent: #fafafa;
-  --accent-foreground: #18181b;
+  --accent-foreground: #171717;
   --destructive: #fafafa;
-  --border: #27272a;
-  --input: #27272a;
+  --border: #262626;
+  --input: #262626;
   --ring: #fafafa;
 
-  --sidebar: #09090b;
+  /* Sidebar */
+  --sidebar: #0a0a0a;
   --sidebar-foreground: #fafafa;
-  --sidebar-border: #27272a;
+  --sidebar-primary: #fafafa;
+  --sidebar-primary-foreground: #171717;
+  --sidebar-accent: #1f1f1f;
+  --sidebar-accent-foreground: #fafafa;
+  --sidebar-border: #262626;
+
+  /*
+   * Shadows - Dark Mode
+   * Subtle glow effect instead of shadow
+   * Creates depth in the void
+   */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 2px 8px -2px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 4px 16px -4px rgb(0 0 0 / 0.5);
+  --shadow-card: 0 0 0 1px rgb(255 255 255 / 0.03), 0 2px 8px -2px rgb(0 0 0 / 0.3);
+  --shadow-card-hover: 0 0 0 1px rgb(255 255 255 / 0.06), 0 8px 24px -4px rgb(0 0 0 / 0.4);
+  --shadow-elevated: 0 0 0 1px rgb(255 255 255 / 0.05), 0 16px 48px -8px rgb(0 0 0 / 0.5);
+  --shadow-dropdown: 0 0 0 1px rgb(255 255 255 / 0.05), 0 8px 32px -4px rgb(0 0 0 / 0.5);
+  --premium-shadow: 0 0 0 1px rgb(255 255 255 / 0.03), 0 24px 64px -12px rgb(0 0 0 / 0.6);
 }
