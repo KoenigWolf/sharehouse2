@@ -701,6 +701,9 @@ export const ja = {
     maxLength: "{{max}}文字以内",
     quickLinks: "みんなの機能",
     subtitle: "大切なお知らせやハウスメッセージ",
+    postMessage: "メッセージを投稿",
+    postHint: "共有したいことを書いてください",
+    emptyHint: "最初の投稿をしてみましょう",
   },
 
   share: {
@@ -719,6 +722,9 @@ export const ja = {
     empty: "現在出品されているものはありません",
     deleteConfirm: "この出品を削除しますか？",
     posting: "出品中...",
+    createItem: "アイテムを出品",
+    createHint: "余っているものをシェアしよう",
+    emptyHint: "最初に何かをシェアしてみましょう",
   },
 
   events: {

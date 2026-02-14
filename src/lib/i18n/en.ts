@@ -702,6 +702,9 @@ export const en: Translations = {
     maxLength: "{{max}} characters max",
     quickLinks: "Features",
     subtitle: "Important announcements and house messages",
+    postMessage: "Post a message",
+    postHint: "Share what's on your mind",
+    emptyHint: "Be the first to post something",
   },
 
   share: {
@@ -720,6 +723,9 @@ export const en: Translations = {
     empty: "No items available right now",
     deleteConfirm: "Delete this item?",
     posting: "Posting...",
+    createItem: "Post an item",
+    createHint: "Share something you have extra",
+    emptyHint: "Be the first to share something",
   },
 
   events: {
