@@ -11,7 +11,6 @@ import { TimeSelect } from "@/components/ui/time-select";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
 import { createEvent, updateEvent, toggleAttendance, deleteEvent } from "@/lib/events/actions";
 import { EVENTS } from "@/lib/constants/config";
-import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
 import { getInitials } from "@/lib/utils";
 import type { EventWithDetails } from "@/domain/event";
 
@@ -90,6 +89,29 @@ function generateCalendarDates(): { date: string; day: number; weekday: number; 
   return dates;
 }
 
+// Animation variants with natural easing
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.06,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
 
 export function EventsContent({ events, currentUserId, isTeaser = false, initialEditEventId }: EventsContentProps) {
   const t = useI18n();
@@ -145,7 +167,6 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
     setFeedback(null);
   }, []);
 
-  // Open edit form when navigated with ?edit=eventId (runs once on mount)
   const hasInitializedRef = useRef(false);
   useEffect(() => {
     if (hasInitializedRef.current || !initialEditEventId) return;
@@ -153,7 +174,6 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
 
     const eventToEdit = events.find((e) => e.id === initialEditEventId);
     if (eventToEdit) {
-      // Use setTimeout to avoid setState in effect body warning
       setTimeout(() => handleEdit(eventToEdit), 0);
     }
   }, [initialEditEventId, events, handleEdit]);
@@ -227,12 +247,30 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
   }, [grouped, selectedCalendarDate]);
 
   return (
-    <div className="space-y-6">
-      <div className="premium-surface rounded-3xl p-4 sm:p-6 overflow-hidden">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <CalendarDays size={ICON_SIZE.md} className="text-brand-500" />
-            <span className="text-[11px] font-bold tracking-wider uppercase">
+    // Main container: Golden ratio vertical rhythm (space-y-8 ≈ 32px)
+    <m.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-8"
+    >
+      {/* ═══════════════════════════════════════════════════════════════════
+          CALENDAR STRIP
+          - Touch targets: 48px minimum (Fitts' Law)
+          - Visual hierarchy: Today > Selected > HasEvents > Default
+          - Golden ratio: padding 20px (≈ 21 Fibonacci)
+      ═══════════════════════════════════════════════════════════════════ */}
+      <m.section
+        variants={itemVariants}
+        className="premium-surface rounded-2xl sm:rounded-3xl overflow-hidden"
+      >
+        {/* Header with clear visual hierarchy */}
+        <div className="flex items-center justify-between px-5 sm:px-6 pt-5 pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-brand-500/10 flex items-center justify-center">
+              <CalendarDays size={16} className="text-brand-500" />
+            </div>
+            <span className="text-xs font-semibold tracking-wide text-foreground/80">
               {t("events.nextTwoWeeks")}
             </span>
           </div>
@@ -240,141 +278,164 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
             <button
               type="button"
               onClick={() => setSelectedCalendarDate(null)}
-              className="text-[10px] font-bold text-brand-500 hover:text-brand-700 tracking-wider uppercase transition-colors"
+              className="text-xs font-semibold text-brand-500 hover:text-brand-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-brand-500/5"
             >
               {t("events.showAll")}
             </button>
           )}
         </div>
 
+        {/* Calendar scroll area with better proportions */}
         <div
           ref={calendarRef}
-          className="flex gap-2 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-hide"
+          className="flex gap-1.5 sm:gap-2 overflow-x-auto px-4 sm:px-5 pb-5 scrollbar-hide"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          {calendarDates.map((d) => {
+          {calendarDates.map((d, i) => {
             const hasEvents = eventDates.has(d.date);
             const isSelected = selectedCalendarDate === d.date;
             const isWeekend = d.weekday === 0 || d.weekday === 6;
             const weekdays = isJapanese ? WEEKDAYS_JA : WEEKDAYS_EN;
 
             return (
-              <button
+              <m.button
                 key={d.date}
                 id={`date-${d.date}`}
                 type="button"
                 onClick={() => handleCalendarDateClick(d.date)}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, delay: i * 0.02 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 className={`
-                  relative flex-shrink-0 w-12 sm:w-14 py-3 rounded-2xl transition-all duration-300
-                  flex flex-col items-center gap-1
+                  relative flex-shrink-0 w-[52px] sm:w-14 py-3 rounded-xl sm:rounded-2xl
+                  flex flex-col items-center justify-center gap-0.5
+                  transition-all duration-200
                   ${isSelected
-                    ? "bg-brand-500 text-white shadow-lg shadow-brand-500/25 scale-105"
-                    : hasEvents
-                      ? "bg-orange-100 text-orange-900 dark:bg-orange-900/30 dark:text-orange-100 hover:bg-orange-200 dark:hover:bg-orange-900/50"
-                      : d.isToday
-                        ? "bg-secondary border-2 border-brand-500/20 text-brand-600 hover:bg-secondary/80"
-                        : "bg-secondary/50 hover:bg-secondary text-foreground/80"
+                    ? "bg-foreground text-background shadow-lg"
+                    : d.isToday
+                      ? "bg-brand-500/10 ring-2 ring-brand-500/30 text-foreground"
+                      : "bg-muted/50 hover:bg-muted text-foreground"
                   }
                 `}
               >
+                {/* Weekday label */}
                 <span
-                  className={`text-[10px] font-bold tracking-wide ${isSelected
-                    ? "text-white/80"
-                    : hasEvents
-                      ? "text-orange-700 dark:text-orange-300"
+                  className={`text-[10px] font-semibold tracking-wide ${
+                    isSelected
+                      ? "text-background/70"
                       : isWeekend
-                        ? "text-foreground/70"
+                        ? "text-foreground/60"
                         : "text-muted-foreground"
-                    }`}
+                  }`}
                 >
                   {weekdays[d.weekday]}
                 </span>
-                <span
-                  className={`text-lg font-bold ${isSelected ? "text-white" : ""
-                    }`}
-                >
+
+                {/* Day number - larger for better readability */}
+                <span className={`text-lg font-bold leading-none ${isSelected ? "text-background" : ""}`}>
                   {d.day}
                 </span>
-              </button>
+
+                {/* Event indicator dot - subtle but clear */}
+                {hasEvents && !isSelected && (
+                  <span className="absolute bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-brand-500" />
+                )}
+              </m.button>
             );
           })}
         </div>
-      </div>
+      </m.section>
 
+      {/* ═══════════════════════════════════════════════════════════════════
+          CREATE BUTTON - Floating action position
+      ═══════════════════════════════════════════════════════════════════ */}
       {!isTeaser && !isFormOpen && (
-        <div className="flex justify-end">
+        <m.div variants={itemVariants} className="flex justify-end">
           <m.button
             type="button"
             onClick={() => { resetForm(); setIsFormOpen(true); setFeedback(null); }}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="h-11 px-6 rounded-full bg-brand-500 hover:bg-brand-600 text-white text-[12px] font-bold tracking-wider uppercase transition-all duration-300 shadow-lg shadow-brand-500/20 flex items-center gap-2"
+            whileHover={{ scale: 1.03, y: -1 }}
+            whileTap={{ scale: 0.97 }}
+            className="h-12 px-7 rounded-full bg-foreground text-background text-sm font-semibold tracking-wide transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2.5"
           >
-            <Plus size={ICON_SIZE.md} strokeWidth={ICON_STROKE.medium} />
+            <Plus size={18} strokeWidth={2.5} />
             {t("events.create")}
           </m.button>
-        </div>
+        </m.div>
       )}
 
+      {/* ═══════════════════════════════════════════════════════════════════
+          FEEDBACK MESSAGE
+      ═══════════════════════════════════════════════════════════════════ */}
       <AnimatePresence>
         {feedback && (
           <m.div
-            initial={{ opacity: 0, y: -8, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.95 }}
-            transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
-            className={`text-sm font-medium px-5 py-4 rounded-2xl border-l-4 shadow-sm ${feedback.type === "success"
-              ? "bg-success-bg/50 border-success text-success"
-              : "bg-error-bg/50 border-error text-error"
-              }`}
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.25 }}
+            className={`text-sm font-medium px-5 py-4 rounded-xl border-l-4 ${
+              feedback.type === "success"
+                ? "bg-success-bg/50 border-success text-success"
+                : "bg-error-bg/50 border-error text-error"
+            }`}
           >
             {feedback.message}
           </m.div>
         )}
       </AnimatePresence>
 
+      {/* ═══════════════════════════════════════════════════════════════════
+          EVENT CREATION FORM
+          - Grouped fields by relationship
+          - Golden ratio spacing (space-y-6 ≈ 24px)
+          - Clear visual hierarchy
+      ═══════════════════════════════════════════════════════════════════ */}
       <AnimatePresence>
         {isFormOpen && (
-          <m.div
-            initial={{ opacity: 0, height: 0, scale: 0.98 }}
-            animate={{ opacity: 1, height: "auto", scale: 1 }}
-            exit={{ opacity: 0, height: 0, scale: 0.98 }}
-            transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+          <m.section
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="overflow-hidden"
           >
-            <div className="premium-surface rounded-3xl p-6 sm:p-8 relative">
+            <div className="premium-surface rounded-2xl sm:rounded-3xl p-6 sm:p-8 relative">
+              {/* Close button */}
               <button
                 type="button"
                 onClick={resetForm}
-                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-secondary hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                className="absolute top-5 right-5 w-9 h-9 rounded-full bg-muted/80 hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
               >
-                <X size={ICON_SIZE.md} />
+                <X size={18} />
               </button>
 
-              <div className="flex items-center gap-3 mb-6">
-                <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${isEditMode ? "bg-amber-500/10" : "bg-brand-500/10"}`}>
+              {/* Form header */}
+              <div className="flex items-center gap-4 mb-8">
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isEditMode ? "bg-amber-500/10" : "bg-brand-500/10"}`}>
                   {isEditMode ? (
-                    <Pencil size={ICON_SIZE.lg} className="text-amber-500" />
+                    <Pencil size={22} className="text-amber-500" />
                   ) : (
-                    <Calendar size={ICON_SIZE.lg} className="text-brand-500" />
+                    <Calendar size={22} className="text-brand-500" />
                   )}
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-foreground">
+                  <h3 className="text-lg font-bold text-foreground">
                     {isEditMode ? t("events.edit") : t("events.create")}
                   </h3>
-                  <p className="text-xs text-muted-foreground">
-                    {isEditMode
-                      ? t("events.edit")
-                      : t("events.createEvent")
-                    }
+                  <p className="text-sm text-muted-foreground">
+                    {isEditMode ? t("events.edit") : t("events.createEvent")}
                   </p>
                 </div>
               </div>
 
-              <div className="space-y-5">
+              {/* Form fields with golden ratio spacing */}
+              <div className="space-y-6">
+                {/* Title - Primary field, full width */}
                 <div className="space-y-2">
-                  <label className="block text-[11px] font-bold text-muted-foreground tracking-wider uppercase ml-1">
+                  <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
                     {t("events.titleLabel")} <span className="text-error">*</span>
                   </label>
                   <input
@@ -383,13 +444,14 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder={t("events.titlePlaceholder")}
                     maxLength={EVENTS.maxTitleLength}
-                    className="w-full h-12 px-4 bg-secondary/50 border border-border rounded-2xl text-foreground text-[15px] font-medium placeholder:text-muted-foreground/60 focus:outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500/50 focus:bg-card transition-all duration-300"
+                    className="w-full h-13 px-5 bg-muted/50 border border-border/50 rounded-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all duration-200"
                   />
                 </div>
 
+                {/* Date & Time - Grouped related fields */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="block text-[11px] font-bold text-muted-foreground tracking-wider uppercase ml-1">
+                    <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
                       {t("events.dateLabel")} <span className="text-error">*</span>
                     </label>
                     <input
@@ -403,11 +465,11 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
                         const day = String(d.getDate()).padStart(2, '0');
                         return `${year}-${month}-${day}`;
                       })()}
-                      className="w-full h-12 px-4 bg-secondary/50 border border-border rounded-2xl text-foreground text-[15px] font-medium focus:outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500/50 focus:bg-card transition-all duration-300"
+                      className="w-full h-13 px-5 bg-muted/50 border border-border/50 rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all duration-200"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="block text-[11px] font-bold text-muted-foreground tracking-wider uppercase ml-1">
+                    <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
                       {t("events.timeLabel")}
                     </label>
                     <TimeSelect
@@ -417,24 +479,26 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
                   </div>
                 </div>
 
+                {/* Location - Secondary info */}
                 <div className="space-y-2">
-                  <label className="block text-[11px] font-bold text-muted-foreground tracking-wider uppercase ml-1">
+                  <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
                     {t("events.locationLabel")}
                   </label>
                   <div className="relative">
-                    <MapPin size={ICON_SIZE.md} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
+                    <MapPin size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40" />
                     <input
                       type="text"
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
                       placeholder={t("events.locationPlaceholder")}
-                      className="w-full h-12 pl-11 pr-4 bg-secondary/50 border border-border rounded-2xl text-foreground text-[15px] font-medium placeholder:text-muted-foreground/60 focus:outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500/50 focus:bg-card transition-all duration-300"
+                      className="w-full h-13 pl-12 pr-5 bg-muted/50 border border-border/50 rounded-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all duration-200"
                     />
                   </div>
                 </div>
 
+                {/* Description - Tertiary info */}
                 <div className="space-y-2">
-                  <label className="block text-[11px] font-bold text-muted-foreground tracking-wider uppercase ml-1">
+                  <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
                     {t("events.descriptionLabel")}
                   </label>
                   <textarea
@@ -443,15 +507,16 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
                     placeholder={t("events.descriptionPlaceholder")}
                     maxLength={EVENTS.maxDescriptionLength}
                     rows={3}
-                    className="w-full px-4 py-3 bg-secondary/50 border border-border rounded-2xl text-foreground text-[15px] font-medium placeholder:text-muted-foreground/60 focus:outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500/50 focus:bg-card transition-all duration-300 resize-none leading-relaxed"
+                    className="w-full px-5 py-4 bg-muted/50 border border-border/50 rounded-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all duration-200 resize-none leading-relaxed"
                   />
                 </div>
 
-                <div className="flex justify-end gap-3 pt-3">
+                {/* Action buttons - Clear visual hierarchy */}
+                <div className="flex justify-end gap-3 pt-4">
                   <button
                     type="button"
                     onClick={resetForm}
-                    className="h-11 px-6 rounded-full text-[12px] font-bold text-muted-foreground hover:text-foreground hover:bg-secondary tracking-wider uppercase transition-all duration-300"
+                    className="h-12 px-6 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-all duration-200"
                   >
                     {t("common.cancel")}
                   </button>
@@ -461,10 +526,11 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
                     disabled={!title.trim() || !eventDate || isSubmitting}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className={`h-11 px-8 rounded-full disabled:bg-secondary disabled:text-muted-foreground text-white text-[12px] font-bold tracking-wider uppercase transition-all duration-300 disabled:shadow-none ${isEditMode
-                      ? "bg-amber-500 hover:bg-amber-600 shadow-lg shadow-amber-500/20"
-                      : "bg-brand-500 hover:bg-brand-600 shadow-lg shadow-brand-500/20"
-                      }`}
+                    className={`h-12 px-8 rounded-xl text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 ${
+                      isEditMode
+                        ? "bg-amber-500 hover:bg-amber-600 text-white"
+                        : "bg-foreground hover:bg-foreground/90 text-background"
+                    }`}
                   >
                     {isSubmitting
                       ? (isEditMode ? t("events.updating") : t("events.creating"))
@@ -474,27 +540,30 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
                 </div>
               </div>
             </div>
-          </m.div>
+          </m.section>
         )}
       </AnimatePresence>
 
+      {/* ═══════════════════════════════════════════════════════════════════
+          EMPTY STATE
+          - Centered, clear call-to-action
+          - Golden ratio proportions
+      ═══════════════════════════════════════════════════════════════════ */}
       {filteredEvents.length === 0 ? (
         <m.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-          className="py-16 text-center"
+          variants={itemVariants}
+          className="py-20 flex flex-col items-center text-center"
         >
-          <div className="w-20 h-20 mx-auto mb-6 rounded-3xl bg-secondary/80 flex items-center justify-center">
-            <Sparkles size={ICON_SIZE["2xl"]} className="text-muted-foreground/50" />
+          <div className="w-20 h-20 mb-8 rounded-2xl bg-muted/80 flex items-center justify-center">
+            <Sparkles size={32} className="text-muted-foreground/40" />
           </div>
-          <h3 className="text-lg font-bold text-foreground mb-2">
+          <h3 className="text-xl font-bold text-foreground mb-2">
             {selectedCalendarDate
               ? t("events.noEventsOnDay")
               : t("events.empty")
             }
           </h3>
-          <p className="text-sm text-muted-foreground mb-6 max-w-xs mx-auto">
+          <p className="text-sm text-muted-foreground mb-8 max-w-sm leading-relaxed">
             {t("events.createAndInvite")}
           </p>
           {!isTeaser && !isFormOpen && (
@@ -503,48 +572,55 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
               onClick={() => setIsFormOpen(true)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="h-11 px-6 rounded-full bg-brand-500 hover:bg-brand-600 text-white text-[12px] font-bold tracking-wider uppercase transition-all duration-300 shadow-lg shadow-brand-500/20 inline-flex items-center gap-2"
+              className="h-12 px-7 rounded-full bg-foreground text-background text-sm font-semibold tracking-wide transition-all duration-200 shadow-lg inline-flex items-center gap-2.5"
             >
-              <Plus size={ICON_SIZE.md} strokeWidth={ICON_STROKE.medium} />
+              <Plus size={18} strokeWidth={2.5} />
               {t("events.create")}
             </m.button>
           )}
         </m.div>
       ) : (
-        <div className="space-y-8">
+        /* ═══════════════════════════════════════════════════════════════════
+            EVENT LIST
+            - Date groups with clear separation
+            - Golden ratio spacing between groups (space-y-10 ≈ 40px)
+        ═══════════════════════════════════════════════════════════════════ */
+        <div className="space-y-10">
           {Array.from(filteredGrouped.entries()).map(([date, dateEvents], groupIndex) => {
             const { label: dateLabel, isSpecial } = formatEventDate(date, t);
             const weekday = getWeekday(date, isJapanese);
 
             return (
-              <div key={date} id={`events-${date}`} className="space-y-4">
-                <m.div
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.4, delay: groupIndex * 0.1 }}
-                  className="flex items-center gap-4"
-                >
+              <m.section
+                key={date}
+                id={`events-${date}`}
+                variants={itemVariants}
+                className="space-y-5"
+              >
+                {/* Date header - Visual anchor */}
+                <div className="flex items-center gap-4">
                   <div className={`
-                    flex items-center gap-2 px-4 py-2 rounded-2xl
+                    flex items-center gap-2.5 px-4 py-2.5 rounded-xl
                     ${isSpecial
-                      ? "bg-brand-500 text-white shadow-lg shadow-brand-500/20"
-                      : "bg-secondary"
+                      ? "bg-foreground text-background"
+                      : "bg-muted"
                     }
                   `}>
-                    <span className={`text-lg font-bold ${isSpecial ? "text-white" : "text-foreground"}`}>
+                    <span className={`text-base font-bold ${isSpecial ? "text-background" : "text-foreground"}`}>
                       {dateLabel}
                     </span>
-                    <span className={`text-[11px] font-bold ${isSpecial ? "text-white/70" : "text-muted-foreground"}`}>
-                      ({weekday})
+                    <span className={`text-xs font-medium ${isSpecial ? "text-background/60" : "text-muted-foreground"}`}>
+                      {weekday}
                     </span>
                   </div>
-                  <div className="flex-1 h-px bg-border" />
-                  <span className="text-[10px] font-bold text-muted-foreground tracking-wider">
+                  <div className="flex-1 h-px bg-border/60" />
+                  <span className="text-xs font-medium text-muted-foreground tabular-nums">
                     {t("events.countLabel", { count: dateEvents.length })}
                   </span>
-                </m.div>
+                </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {/* Event cards grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                   {dateEvents.map((event, eventIndex) => {
                     const creatorName = event.profiles?.nickname ?? event.profiles?.name ?? t("common.formerResident");
                     const isMine = event.user_id === currentUserId;
@@ -554,21 +630,22 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
                     const attendeeCount = event.event_attendees.length;
 
                     return (
-                      <m.div
+                      <m.article
                         key={event.id}
                         initial={{ opacity: 0, y: 16 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{
-                          duration: 0.5,
-                          ease: [0.23, 1, 0.32, 1],
-                          delay: (groupIndex * 0.1) + (eventIndex * 0.08),
+                          duration: 0.4,
+                          ease: [0.25, 0.46, 0.45, 0.94],
+                          delay: (groupIndex * 0.08) + (eventIndex * 0.05),
                         }}
-                        whileHover={{ y: -2, transition: { duration: 0.2 } }}
-                        className="premium-surface rounded-3xl overflow-hidden relative group"
+                        whileHover={{ y: -3, transition: { duration: 0.2 } }}
+                        className="premium-surface rounded-2xl overflow-hidden group"
                       >
+                        {/* Cover image - Golden ratio aspect (≈ 1.618) */}
                         {event.cover_image_url && (
                           isTeaser ? (
-                            <div className="relative aspect-[16/9] bg-muted">
+                            <div className="relative aspect-[1.618/1] bg-muted">
                               <Image
                                 src={event.cover_image_url}
                                 alt={event.title}
@@ -579,100 +656,107 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
                             </div>
                           ) : (
                             <Link href={`/events/${event.id}`}>
-                              <div className="relative aspect-[16/9] bg-muted">
+                              <div className="relative aspect-[1.618/1] bg-muted overflow-hidden">
                                 <Image
                                   src={event.cover_image_url}
                                   alt={event.title}
                                   fill
                                   sizes="(min-width: 1024px) 448px, 100vw"
-                                  className="object-cover"
+                                  className="object-cover transition-transform duration-300 group-hover:scale-105"
                                 />
                               </div>
                             </Link>
                           )
                         )}
 
+                        {/* Card content - F-pattern layout */}
                         <div className="p-5 sm:p-6 space-y-4">
-                          <div className="flex items-start justify-between gap-3">
+                          {/* Title row - Primary focus */}
+                          <div className="flex items-start justify-between gap-4">
                             {isTeaser ? (
-                              <span className="text-[17px] font-bold text-foreground leading-snug blur-[2.5px] select-none">
+                              <span className="text-lg font-bold text-foreground leading-snug blur-[2.5px] select-none">
                                 {event.title}
                               </span>
                             ) : (
                               <Link
                                 href={`/events/${event.id}`}
-                                className="text-[17px] font-bold text-foreground leading-snug hover:text-brand-600 transition-colors"
+                                className="text-lg font-bold text-foreground leading-snug hover:text-brand-600 transition-colors"
                               >
                                 {event.title}
                               </Link>
                             )}
                             {isMine && (
-                              <div className="flex items-center gap-1 shrink-0">
+                              <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <button
                                   type="button"
                                   onClick={() => handleEdit(event)}
-                                  className="w-8 h-8 flex items-center justify-center rounded-full text-muted-foreground/60 hover:text-amber-500 hover:bg-amber-500/10 transition-colors"
+                                  className="w-9 h-9 flex items-center justify-center rounded-lg text-muted-foreground hover:text-amber-500 hover:bg-amber-500/10 transition-colors"
                                   aria-label={t("common.edit")}
                                 >
-                                  <Pencil size={ICON_SIZE.md} />
+                                  <Pencil size={16} />
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() => handleDelete(event.id)}
-                                  className="w-8 h-8 flex items-center justify-center rounded-full text-muted-foreground/60 hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
+                                  className="w-9 h-9 flex items-center justify-center rounded-lg text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
                                   aria-label={t("common.delete")}
                                 >
-                                  <Trash2 size={ICON_SIZE.md} />
+                                  <Trash2 size={16} />
                                 </button>
                               </div>
                             )}
                           </div>
 
+                          {/* Meta info - Secondary focus */}
                           <div className="flex flex-wrap gap-2">
                             {event.event_time && (
-                              <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 bg-secondary/80 rounded-xl text-[12px] font-semibold text-foreground/80 ${isTeaser ? "blur-[2px] select-none" : ""}`}>
-                                <Clock size={ICON_SIZE.sm} className="text-brand-500" />
+                              <span className={`inline-flex items-center gap-2 px-3 py-1.5 bg-muted/60 rounded-lg text-sm font-medium text-foreground/80 ${isTeaser ? "blur-[2px] select-none" : ""}`}>
+                                <Clock size={14} className="text-muted-foreground" />
                                 {event.event_time}
                               </span>
                             )}
                             {event.location && (
-                              <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 bg-secondary/80 rounded-xl text-[12px] font-semibold text-foreground/80 ${isTeaser ? "blur-[2px] select-none" : ""}`}>
-                                <MapPin size={ICON_SIZE.sm} className="text-brand-500" />
+                              <span className={`inline-flex items-center gap-2 px-3 py-1.5 bg-muted/60 rounded-lg text-sm font-medium text-foreground/80 ${isTeaser ? "blur-[2px] select-none" : ""}`}>
+                                <MapPin size={14} className="text-muted-foreground" />
                                 {event.location}
                               </span>
                             )}
                           </div>
 
+                          {/* Description - Tertiary focus */}
                           {event.description && (
-                            <p className={`text-[14px] text-foreground/70 leading-relaxed ${isTeaser ? "blur-[3px] select-none" : ""}`}>
+                            <p className={`text-sm text-muted-foreground leading-relaxed line-clamp-2 ${isTeaser ? "blur-[3px] select-none" : ""}`}>
                               {event.description}
                             </p>
                           )}
 
-                          <div className="flex items-center justify-between pt-2 border-t border-border/50">
+                          {/* Footer - Actions and meta */}
+                          <div className="flex items-center justify-between pt-4 border-t border-border/40">
+                            {/* Creator info */}
                             <div className="flex items-center gap-3">
-                              <Avatar className="w-7 h-7 border border-border shadow-sm">
+                              <Avatar className="w-8 h-8 border border-border/50">
                                 <OptimizedAvatarImage
                                   src={event.profiles?.avatar_url}
                                   alt={creatorName}
                                   context="card"
                                   isBlurred={isTeaser}
                                   fallback={
-                                    <AvatarFallback className="text-[9px] font-bold bg-secondary text-muted-foreground">
+                                    <AvatarFallback className="text-xs font-semibold bg-muted text-muted-foreground">
                                       {getInitials(creatorName)}
                                     </AvatarFallback>
                                   }
                                 />
                               </Avatar>
-                              <span className="text-[12px] font-semibold text-muted-foreground">
+                              <span className="text-sm font-medium text-muted-foreground">
                                 {creatorName}
                               </span>
                             </div>
 
+                            {/* Attendance controls */}
                             <div className="flex items-center gap-3">
                               {attendeeCount > 0 && (
-                                <span className="text-[11px] font-bold text-muted-foreground flex items-center gap-1.5 bg-secondary/50 px-2.5 py-1 rounded-full">
-                                  <Users size={ICON_SIZE.sm} />
+                                <span className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5 bg-muted/60 px-2.5 py-1.5 rounded-lg">
+                                  <Users size={14} />
                                   {attendeeCount}
                                 </span>
                               )}
@@ -680,13 +764,13 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
                                 type="button"
                                 onClick={() => !isTeaser && handleToggleAttendance(event.id)}
                                 disabled={isTeaser}
-                                whileHover={!isTeaser ? { scale: 1.05 } : {}}
-                                whileTap={!isTeaser ? { scale: 0.95 } : {}}
+                                whileHover={!isTeaser ? { scale: 1.03 } : {}}
+                                whileTap={!isTeaser ? { scale: 0.97 } : {}}
                                 className={`
-                                  h-9 px-5 rounded-full text-[11px] font-bold tracking-wider uppercase transition-all duration-300
+                                  h-10 px-5 rounded-lg text-sm font-semibold transition-all duration-200
                                   ${isAttending
-                                    ? "bg-brand-500/10 text-brand-600 hover:bg-brand-500/20 border border-brand-500/30"
-                                    : "bg-brand-500 text-white hover:bg-brand-600 shadow-md shadow-brand-500/20"
+                                    ? "bg-brand-500/10 text-brand-600 ring-1 ring-brand-500/30"
+                                    : "bg-foreground text-background hover:bg-foreground/90"
                                   }
                                   ${isTeaser ? "opacity-50 cursor-not-allowed" : ""}
                                 `}
@@ -696,15 +780,15 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
                             </div>
                           </div>
                         </div>
-                      </m.div>
+                      </m.article>
                     );
                   })}
                 </div>
-              </div>
+              </m.section>
             );
           })}
         </div>
       )}
-    </div>
+    </m.div>
   );
 }
