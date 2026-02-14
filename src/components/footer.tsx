@@ -16,7 +16,6 @@ import {
   MapIcon,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
 
 type FooterVariant = "default" | "minimal";
 
@@ -74,11 +73,11 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
         </span>
       </div>
 
-      <div className="container mx-auto px-6 pt-24 pb-12 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-8">
+      <div className="container mx-auto px-6 pt-16 pb-10 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8">
           {/* Brand Column */}
           <div className="lg:col-span-5 flex flex-col justify-between h-full">
-            <div className="space-y-8">
+            <div className="space-y-4">
               <Link href="/" className="inline-block group">
                 <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground leading-none group-hover:text-foreground/80 transition-colors">
                   Share<span className="text-muted-foreground">House</span>.
@@ -89,7 +88,7 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
               </p>
             </div>
 
-            <div className="hidden lg:flex items-center gap-4 mt-12 bg-muted/30 p-2 pr-6 rounded-full w-fit backdrop-blur-sm border border-border/50">
+            <div className="hidden lg:flex items-center gap-4 mt-8 bg-muted/30 p-2 pr-6 rounded-full w-fit backdrop-blur-sm border border-border/50">
               <div className="flex -space-x-3">
                 {[...Array(3)].map((_, i) => (
                   <div key={i} className="w-8 h-8 rounded-full bg-background border-2 border-muted flex items-center justify-center relative z-[3-i]">
@@ -104,20 +103,20 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
           </div>
 
           {/* Navigation Grid */}
-          <div className="lg:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-12 lg:gap-8">
+          <div className="lg:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-8 lg:gap-6">
             <FooterNavSection title={t("footer.directory")} links={NAV_LINKS} t={t} />
-            <div className="space-y-12">
+            <div className="space-y-8">
               <FooterLinkSection title={t("footer.community")} links={COMMUNITY_LINKS} t={t} />
               <FooterLinkSection title={t("footer.legal")} links={LEGAL_LINKS} t={t} />
             </div>
 
             {/* Socials & Action */}
             <div className="col-span-2 md:col-span-1 flex flex-col justify-between">
-              <div className="space-y-6">
+              <div className="space-y-4">
                 <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">
                   Socials
                 </h3>
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-3">
                   <SocialLink icon={<TwitterIcon size={18} />} label="Twitter" href="#" />
                   <SocialLink icon={<InstagramIcon size={18} />} label="Instagram" href="#" />
                   <SocialLink icon={<GithubIcon size={18} />} label="GitHub" href="#" />
@@ -128,7 +127,7 @@ export const Footer = memo(function Footer({ variant = "default" }: FooterProps)
         </div>
 
         {/* Footer Bottom */}
-        <div className="mt-24 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="mt-12 pt-6 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
             {t("footer.copyrightFull", { year: new Date().getFullYear() })}
           </p>
@@ -165,10 +164,10 @@ function SocialLink({ icon, label, href }: { icon: React.ReactNode; label: strin
 function FooterNavSection({ title, links, t }: { title: string; links: typeof NAV_LINKS; t: Translator }) {
   return (
     <div className="flex flex-col">
-      <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-8">
+      <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-4">
         {title}
       </h3>
-      <ul className="flex flex-col gap-5">
+      <ul className="flex flex-col gap-3">
         {links.map(({ href, labelKey }) => (
           <li key={href}>
             <Link
@@ -188,10 +187,10 @@ function FooterNavSection({ title, links, t }: { title: string; links: typeof NA
 function FooterLinkSection({ title, links, t }: { title: string; links: typeof COMMUNITY_LINKS | typeof LEGAL_LINKS; t: Translator }) {
   return (
     <div className="flex flex-col">
-      <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-8">
+      <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-4">
         {title}
       </h3>
-      <ul className="flex flex-col gap-4">
+      <ul className="flex flex-col gap-2">
         {links.map(({ href, labelKey }) => (
           <li key={labelKey as string}>
             {href ? (
