@@ -35,7 +35,8 @@ export const getCachedFullProfile = cache(async (userId: string) => {
       home_frequency, alcohol, smoking, pets, guest_frequency, social_stance,
       shared_space_usage, cleaning_attitude, cooking_frequency, shared_meals,
       personality_type, weekend_activities, allergies, sns_x, sns_instagram,
-      sns_facebook, sns_linkedin, sns_github, cover_photo_url, theme_style, color_mode
+      sns_facebook, sns_linkedin, sns_github, cover_photo_url, theme_style, color_mode,
+      created_at, updated_at
     `)
     .eq("id", userId)
     .single();

@@ -24,7 +24,7 @@ export async function getBulletins(): Promise<BulletinWithProfile[]> {
       .from("bulletins")
       .select("id, user_id, message, created_at, updated_at")
       .order("created_at", { ascending: false })
-      .limit(BULLETIN.maxDisplayOnHome);
+      .limit(BULLETIN.maxDisplayOnBulletinPage);
 
     if (bulletinsRes.error) {
       logError(bulletinsRes.error, { action: "getBulletins:bulletins" });
