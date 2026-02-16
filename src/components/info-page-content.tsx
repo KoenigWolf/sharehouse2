@@ -197,10 +197,10 @@ export function InfoPageContent({
   return (
     <div className="space-y-8">
       <div className="mb-2">
-        <h1 className="text-2xl font-light text-foreground tracking-wide">
+        <h1 className="heading-page">
           {t("info.title")}
         </h1>
-        <p className="text-sm text-muted-foreground mt-1.5 font-medium">
+        <p className="subtitle mt-2">
           {t("info.subtitle")}
         </p>
       </div>

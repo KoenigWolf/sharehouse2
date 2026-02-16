@@ -129,10 +129,10 @@ export default async function StatsPage() {
       <main className="flex-1 pb-20 sm:pb-12">
         <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-10 max-w-5xl">
           <div className="mb-8">
-            <h1 className="text-2xl font-light text-foreground tracking-wide">
+            <h1 className="heading-page">
               {t("residents.statsTitle")}
             </h1>
-            <p className="text-sm text-muted-foreground mt-1.5">{t("residents.statsSubtitle")}</p>
+            <p className="subtitle mt-2">{t("residents.statsSubtitle")}</p>
           </div>
 
           <ResidentStats

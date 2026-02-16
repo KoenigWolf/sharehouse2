@@ -33,10 +33,10 @@ export default async function TeaTimePage() {
       <main className="flex-1 pb-20 sm:pb-12">
         <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-10 max-w-lg">
           <div className="flex items-baseline justify-between mb-8">
-            <h1 className="text-2xl font-light text-foreground tracking-wide">
+            <h1 className="heading-page">
               {t("teaTime.title")}
             </h1>
-            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t("teaTime.subtitle")}</span>
+            <span className="label-uppercase">{t("teaTime.subtitle")}</span>
           </div>
 
           <Link href="/settings" className="block mb-10 group active:scale-[0.99] transition-all">
