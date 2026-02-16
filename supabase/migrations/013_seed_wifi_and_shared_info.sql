@@ -105,7 +105,7 @@ insert into public.shared_info (info_key, title, content, display_order)
 values (
   'address',
   '住所',
-  '東京都 文京区 白山3丁目 3番 4号 田中ビル5F',
+  '東京都文京区白山3丁目3番4号 田中ビル',
   2
 );
 
