@@ -256,11 +256,8 @@ export const Header = memo(function Header() {
           ))}
         </nav>
 
-        {/* Right: Brand + User Menu */}
-        <div className="flex items-center gap-4">
-          <span className="hidden sm:block text-sm text-muted-foreground tracking-wide">
-            ShareHouse
-          </span>
+        {/* Right: User Menu */}
+        <div className="flex items-center">
           <UserAvatarMenu />
         </div>
       </div>
