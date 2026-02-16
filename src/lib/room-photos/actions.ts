@@ -24,8 +24,14 @@ export interface BulkPhotoItem {
 /**
  * 部屋の写真をアップロードする
  *
- * オリジン検証 → 認証確認 → レート制限 → ファイルバリデーション →
- * Storage アップロード → DB挿入 → キャッシュ再検証の順に処理。
+ * 処理フロー:
+ * 1. オリジン検証
+ * 2. 認証確認
+ * 3. レート制限
+ * 4. ファイルバリデーション
+ * 5. Storage アップロード
+ * 6. DB挿入
+ * 7. キャッシュ再検証
  *
  * @param formData - "photo" キーにFileを、"caption" キーにキャプション文字列を含むFormData
  * @returns 成功時 `{ success: true, url }`、失敗時 `{ error }`
@@ -73,7 +79,7 @@ export async function uploadRoomPhoto(formData: FormData): Promise<UploadRespons
     const sanitizedExt = sanitizeFileName(fileExt).slice(0, 10);
     const fileName = `${user.id}/${Date.now()}.${sanitizedExt}`;
 
-    // クライアント側で EXIF 抽出済みなら FormData から受け取る（圧縮後は EXIF 消失）
+
     const clientTakenAt = (formData.get("takenAt") as string) || null;
     const arrayBuffer = await file.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
@@ -122,8 +128,14 @@ export async function uploadRoomPhoto(formData: FormData): Promise<UploadRespons
 /**
  * 部屋の写真を削除する
  *
- * オリジン検証 → 認証確認 → UUID検証 → 所有権確認 →
- * Storage削除 → DB削除 → キャッシュ再検証の順に処理。
+ * 処理フロー:
+ * 1. オリジン検証
+ * 2. 認証確認
+ * 3. UUID検証
+ * 4. 所有権確認
+ * 5. Storage削除
+ * 6. DB削除
+ * 7. キャッシュ再検証
  *
  * @param photoId - 削除対象の写真ID（UUID）
  * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
@@ -286,8 +298,12 @@ export async function getAllRoomPhotos(): Promise<
 /**
  * 部屋の写真キャプションを更新する
  *
- * オリジン検証 → 認証確認 → UUID検証 → 所有権チェック付きUPDATE →
- * キャッシュ再検証の順に処理。
+ * 処理フロー:
+ * 1. オリジン検証
+ * 2. 認証確認
+ * 3. UUID検証
+ * 4. 所有権チェック付きUPDATE
+ * 5. キャッシュ再検証
  *
  * @param photoId - 更新対象の写真ID（UUID）
  * @param caption - 新しいキャプション（null で削除）

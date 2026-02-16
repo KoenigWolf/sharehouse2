@@ -62,6 +62,7 @@ export async function getBulletins(): Promise<BulletinWithProfile[]> {
 
 /**
  * 各ユーザーの最新投稿のみ取得（/residents ページ用、上書き型）
+ * 
  * DB側で DISTINCT ON により重複排除済み
  */
 export async function getLatestBulletinPerUser(): Promise<Map<string, { message: string; updated_at: string }>> {
@@ -70,7 +71,6 @@ export async function getLatestBulletinPerUser(): Promise<Map<string, { message:
   try {
     const supabase = await createClient();
 
-    // DBビュー latest_bulletins_per_user は DISTINCT ON (user_id) で
     // 各ユーザーの最新投稿1件のみを返す
     const { data, error } = await supabase
       .from("latest_bulletins_per_user")
@@ -153,7 +153,7 @@ export async function deleteBulletin(bulletinId: string): Promise<ActionResponse
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { error: t("errors.unauthorized") };
 
-    // 削除結果を取得して実際に削除されたか確認
+
     const { data, error } = await supabase
       .from("bulletins")
       .delete()
@@ -167,7 +167,7 @@ export async function deleteBulletin(bulletinId: string): Promise<ActionResponse
       return { error: t("errors.deleteFailed") };
     }
 
-    // 削除対象が見つからなかった場合
+
     if (!data) {
       logError(new Error("Bulletin not found or not owned by user"), {
         action: "deleteBulletin:notFound",
