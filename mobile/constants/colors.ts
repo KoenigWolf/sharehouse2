@@ -1,9 +1,9 @@
 /**
- * Design tokens matching the web app
- * Based on immedio style: clean, modern, warm
+ * Design Tokens - Share House Mobile
+ * Web版と同期したカラーパレット（Slate + Cyan/Teal brand）
  */
 export const Colors = {
-  // Brand (Cyan/Teal)
+  // Brand (Cyan/Teal) - immedio style
   brand: {
     50: "#ecfeff",
     100: "#cffafe",
@@ -17,25 +17,49 @@ export const Colors = {
     900: "#164e63",
   },
 
-  // Backgrounds
-  background: "#FDFCF8", // Warm cream
-  card: "#FFFFFF",
-  muted: "#F5F3EE",
+  // Core palette - Slate based (Modern theme)
+  background: "#f8fafc",
+  foreground: "#0f172a",
+  card: "#ffffff",
+  cardForeground: "#0f172a",
 
-  // Text
-  foreground: "#2F3E33", // Dark earth
-  mutedForeground: "#6B7280",
+  // Secondary / Muted
+  secondary: "#f1f5f9",
+  secondaryForeground: "#0f172a",
+  muted: "#f1f5f9",
+  mutedForeground: "#64748b",
 
-  // Border
-  border: "#E6E2D6", // Warm beige
+  // Primary (same as brand-500)
+  primary: "#06b6d4",
+  primaryForeground: "#ffffff",
 
-  // Status
+  // Accent
+  accent: "#06b6d4",
+  accentForeground: "#ffffff",
+
+  // Border / Input
+  border: "#e2e8f0",
+  input: "#e2e8f0",
+  ring: "#06b6d4",
+
+  // Status colors
   success: "#059669",
-  error: "#DC2626",
-  warning: "#F59E0B",
+  successBg: "#ecfdf5",
+  successBorder: "#a7f3d0",
+
+  error: "#dc2626",
+  errorBg: "#fef2f2",
+  errorBorder: "#fecaca",
+
+  warning: "#d97706",
+  warningBg: "#fffbeb",
+  warningBorder: "#fde68a",
+
+  // Destructive
+  destructive: "#dc2626",
 
   // Overlay
-  overlay: "rgba(0, 0, 0, 0.5)",
+  overlay: "rgba(0, 0, 0, 0.4)",
 } as const;
 
 export const Spacing = {
@@ -48,6 +72,9 @@ export const Spacing = {
   "3xl": 32,
   "4xl": 40,
   "5xl": 48,
+  card: 24,
+  section: 32,
+  page: 16,
 } as const;
 
 export const BorderRadius = {
@@ -56,7 +83,12 @@ export const BorderRadius = {
   lg: 12,
   xl: 16,
   "2xl": 20,
+  "3xl": 24,
   full: 9999,
+  card: 16,
+  button: 9999,
+  input: 12,
+  badge: 6,
 } as const;
 
 export const FontSize = {
@@ -76,10 +108,43 @@ export const FontWeight = {
   semibold: "600",
   bold: "700",
   extrabold: "800",
+  black: "900",
 } as const;
 
 // Animation easing matching web
 export const Easing = {
   smooth: [0.25, 0.46, 0.45, 0.94],
   spring: { damping: 20, stiffness: 300 },
+} as const;
+
+// Shadow styles (for StyleSheet.create)
+export const Shadows = {
+  sm: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  card: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 20,
+    elevation: 4,
+  },
+  cardHover: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.12,
+    shadowRadius: 32,
+    elevation: 8,
+  },
+  elevated: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 16 },
+    shadowOpacity: 0.15,
+    shadowRadius: 48,
+    elevation: 12,
+  },
 } as const;

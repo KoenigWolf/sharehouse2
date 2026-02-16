@@ -8,36 +8,61 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Brand colors matching web
+        // Brand colors - Cyan/Teal (immedio style)
         brand: {
           50: "#ecfeff",
           100: "#cffafe",
           200: "#a5f3fc",
           300: "#67e8f9",
           400: "#22d3ee",
-          500: "#06b6d4", // Main brand cyan
+          500: "#06b6d4",
           600: "#0891b2",
           700: "#0e7490",
           800: "#155e75",
           900: "#164e63",
         },
-        // Background
-        background: "#FDFCF8", // Warm cream
-        foreground: "#2F3E33", // Dark earth
+        // Core palette - Slate based (Modern theme)
+        background: "#f8fafc",
+        foreground: "#0f172a",
         // Card
-        card: "#FFFFFF",
-        "card-foreground": "#2F3E33",
+        card: "#ffffff",
+        "card-foreground": "#0f172a",
+        // Primary
+        primary: "#06b6d4",
+        "primary-foreground": "#ffffff",
+        // Secondary
+        secondary: "#f1f5f9",
+        "secondary-foreground": "#0f172a",
         // Muted
-        muted: "#F5F3EE",
-        "muted-foreground": "#6B7280",
-        // Border
-        border: "#E6E2D6", // Warm beige
-        // Success/Error
+        muted: "#f1f5f9",
+        "muted-foreground": "#64748b",
+        // Accent
+        accent: "#06b6d4",
+        "accent-foreground": "#ffffff",
+        // Border / Input
+        border: "#e2e8f0",
+        input: "#e2e8f0",
+        ring: "#06b6d4",
+        // Status colors
         success: "#059669",
-        error: "#DC2626",
+        "success-bg": "#ecfdf5",
+        error: "#dc2626",
+        "error-bg": "#fef2f2",
+        warning: "#d97706",
+        "warning-bg": "#fffbeb",
+        destructive: "#dc2626",
       },
       fontFamily: {
         sans: ["System"],
+      },
+      borderRadius: {
+        "card": "16px",
+        "button": "9999px",
+        "input": "12px",
+        "badge": "6px",
+      },
+      fontSize: {
+        "2xs": ["10px", { lineHeight: "14px" }],
       },
     },
   },
