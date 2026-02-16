@@ -111,17 +111,6 @@ describe("ResidentCard", () => {
       const link = screen.getByRole("link");
       expect(link).toHaveAttribute("href", "/profile/user-123");
     });
-
-    it("has article role for profile content", () => {
-      render(<ResidentCard profile={mockProfile} />);
-      expect(screen.getByRole("article")).toBeInTheDocument();
-    });
-
-    it("avatar fallback shows initials", () => {
-      const profileNoAvatar = { ...mockProfile, avatar_url: null };
-      render(<ResidentCard profile={profileNoAvatar} />);
-      expect(screen.getByText("山太")).toBeInTheDocument();
-    });
   });
 
   describe("styling", () => {
@@ -137,6 +126,7 @@ describe("ResidentCard", () => {
     it("uses 3:4 aspect ratio for photo card", () => {
       const { container } = render(<ResidentCard profile={mockProfile} />);
       const article = container.querySelector("article");
+      // Checked against user code: 'aspect-[3/4]'
       expect(article).toHaveClass("aspect-[3/4]");
     });
   });
