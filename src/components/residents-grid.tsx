@@ -9,7 +9,6 @@ import {
   Search,
   X,
   ChevronRight,
-  Coffee,
   MessageCircle,
 } from "lucide-react";
 import { ResidentCard } from "@/components/resident-card";
@@ -22,12 +21,10 @@ import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
 import { getFloorFromRoom, isNewResident, FLOOR_COLORS, type FloorId } from "@/lib/utils/residents";
 import { VibeUpdateModal } from "@/components/vibe-update-modal";
-import { ICON_STROKE, ICON_GAP } from "@/lib/constants/icons";
 
 interface ResidentsGridProps {
   profiles: Profile[];
   currentUserId: string;
-  teaTimeParticipants?: string[];
 }
 
 type ViewMode = "grid" | "floor" | "list";
@@ -60,7 +57,6 @@ const itemVariants = {
 export function ResidentsGrid({
   profiles,
   currentUserId,
-  teaTimeParticipants = [],
 }: ResidentsGridProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
@@ -137,8 +133,6 @@ export function ResidentsGrid({
     });
     return groups;
   }, [filteredAndSortedProfiles]);
-
-  const teaTimeSet = useMemo(() => new Set(teaTimeParticipants), [teaTimeParticipants]);
 
   const totalCount = profiles.length;
 
@@ -276,7 +270,6 @@ export function ResidentsGrid({
             groupedByFloor={groupedByFloor}
             currentUserId={currentUserId}
             floorStats={floorStats}
-            teaTimeSet={teaTimeSet}
             t={t}
           />
         ) : viewMode === "list" ? (
@@ -284,7 +277,6 @@ export function ResidentsGrid({
             key="list-view"
             profiles={filteredAndSortedProfiles}
             currentUserId={currentUserId}
-            teaTimeSet={teaTimeSet}
             t={t}
           />
         ) : (
@@ -292,7 +284,6 @@ export function ResidentsGrid({
             key="grid-view"
             profiles={filteredAndSortedProfiles}
             currentUserId={currentUserId}
-            teaTimeSet={teaTimeSet}
           />
         )}
       </AnimatePresence>
@@ -300,22 +291,20 @@ export function ResidentsGrid({
   );
 }
 
-/* Grid View - Denser for more faces visible */
+/* Grid View - Compact horizontal cards */
 function GridView({
   profiles,
   currentUserId,
-  teaTimeSet,
 }: {
   profiles: Profile[];
   currentUserId: string;
-  teaTimeSet: Set<string>;
 }) {
   return (
     <m.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5"
+      className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4"
     >
       {profiles.map((profile, index) => (
         <m.div
@@ -332,8 +321,6 @@ function GridView({
           <ResidentCard
             profile={profile}
             isCurrentUser={profile.id === currentUserId}
-            showTeaTime={true}
-            teaTimeEnabled={teaTimeSet.has(profile.id)}
           />
         </m.div>
       ))}
@@ -346,13 +333,11 @@ function FloorView({
   groupedByFloor,
   currentUserId,
   floorStats,
-  teaTimeSet,
   t,
 }: {
   groupedByFloor: Record<string, Profile[]>;
   currentUserId: string;
   floorStats: Record<string, { total: number; registered: number }>;
-  teaTimeSet: Set<string>;
   t: Translator;
 }) {
   const floorsOrder: FloorId[] = ["5F", "4F", "3F", "2F"];
@@ -426,9 +411,6 @@ function FloorView({
                   <ResidentCard
                     profile={profile}
                     isCurrentUser={profile.id === currentUserId}
-                    floorAccent={colors.accent}
-                    showTeaTime={true}
-                    teaTimeEnabled={teaTimeSet.has(profile.id)}
                   />
                 </m.div>
               ))}
@@ -444,12 +426,10 @@ function FloorView({
 function ListView({
   profiles,
   currentUserId,
-  teaTimeSet,
   t,
 }: {
   profiles: Profile[];
   currentUserId: string;
-  teaTimeSet: Set<string>;
   t: Translator;
 }) {
   return (
@@ -472,7 +452,6 @@ function ListView({
           <ResidentListItem
             profile={profile}
             isCurrentUser={profile.id === currentUserId}
-            isTeaTimeParticipant={teaTimeSet.has(profile.id)}
             t={t}
           />
         </m.div>
@@ -485,12 +464,10 @@ function ListView({
 function ResidentListItem({
   profile,
   isCurrentUser,
-  isTeaTimeParticipant,
   t,
 }: {
   profile: Profile;
   isCurrentUser: boolean;
-  isTeaTimeParticipant: boolean;
   t: Translator;
 }) {
   const isMockProfile = profile.id.startsWith("mock-");
@@ -549,11 +526,6 @@ function ResidentListItem({
             {isNew && !isMockProfile && (
               <span className="text-[9px] px-1.5 py-0.5 bg-brand-500 text-white rounded-full font-bold">
                 NEW
-              </span>
-            )}
-            {isTeaTimeParticipant && !isMockProfile && (
-              <span className={`text-[9px] px-1.5 py-0.5 bg-warning-bg text-warning rounded-md font-bold flex items-center ${ICON_GAP.xs} border border-warning-border/50`}>
-                <Coffee size={9} strokeWidth={ICON_STROKE.normal} />
               </span>
             )}
             {isMockProfile && (
