@@ -57,18 +57,24 @@ function EventComposeModal({ isOpen, onClose, onSubmit, isSubmitting, editingEve
     setLocation("");
     setDescription("");
     setImageFile(null);
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+    }
     setImagePreview(null);
     onClose();
-  }, [onClose]);
+  }, [onClose, imagePreview]);
 
   const handleImageSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+    }
     setImageFile(file);
     const objectUrl = URL.createObjectURL(file);
     setImagePreview(objectUrl);
-  }, []);
+  }, [imagePreview]);
 
   const handleRemoveImage = useCallback(() => {
     setImageFile(null);

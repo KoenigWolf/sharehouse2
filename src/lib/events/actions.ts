@@ -203,7 +203,7 @@ export async function createEvent(input: {
     }).select("id").single();
 
     if (error || !data) {
-      logError(error, { action: "createEvent", userId: user.id });
+      if (error) logError(error, { action: "createEvent", userId: user.id });
       return { error: t("errors.saveFailed") };
     }
 
