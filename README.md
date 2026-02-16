@@ -1,6 +1,6 @@
 # Share House Portal
 
-20人規模のシェアハウス住民専用ポータルサイト。「Premium Modern Minimalism」をテーマに、住民同士の交流を促進するための名簿、プロフィール管理、掲示板、イベント、ティータイムなどの機能を提供します。
+20人規模のシェアハウス住民専用ポータルサイト。「Modern Homestead（現代的な農家スタイル）」をテーマに、温かみと自然を感じるデザインで住民同士の交流を促進します。名簿、プロフィール管理、掲示板、イベント、ティータイムなどの機能を提供。
 
 ## 機能概要
 
@@ -30,7 +30,7 @@
 |------------|------|
 | [README.md](./README.md) | プロジェクト概要・セットアップ（本ファイル） |
 | [CONCEPT.md](./docs/concept.md) | プロダクトビジョン・原則 |
-| [DESIGN_GUIDELINES.md](./docs/design-guidelines.md) | Premium Modern Minimalist デザインシステム |
+| [DESIGN_GUIDELINES.md](./docs/design-guidelines.md) | Modern Homestead デザインシステム |
 | [CODING_GUIDELINES.md](./docs/coding-guidelines.md) | コーディング規約・品質基準 |
 | [IMPROVEMENTS.md](./docs/improvements.md) | 改善履歴・技術的負債・ロードマップ |
 
@@ -38,7 +38,7 @@
 
 - **Framework**: Next.js 16 (App Router)
 - **Runtime**: React 19
-- **Styling**: Tailwind CSS 4 + Framer Motion (Premium Animations)
+- **Styling**: Tailwind CSS 4 + Framer Motion
 - **UI Components**: shadcn/ui + Radix UI
 - **Backend**: Supabase (Auth, DB, RLS, Storage)
 - **Infrastructure**: Vercel + Upstash (Redis for Rate Limiting)

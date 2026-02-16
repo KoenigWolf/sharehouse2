@@ -37,7 +37,7 @@ export function BlurredImage({ userId, className }: BlurredImageProps) {
         </m.div>
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-white/80 to-transparent pointer-events-none" />
+      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-card/80 to-transparent pointer-events-none" />
     </div>
   );
 }

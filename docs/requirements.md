@@ -64,26 +64,22 @@ const dbIds = new Set(dbTeasers.map(t => t.id));
 - `bulletin-board.tsx`
 - `share-item-form.tsx`
 
-### 2.3 Image 最適化
+### 2.3 Image 最適化 ✅
 
-全 `Image` コンポーネントに以下を明示:
-- `width` / `height`
-- `priority` (ATF画像) または `loading="lazy"` (BTF画像)
-- `placeholder="blur"` 検討
+`OptimizedAvatarImage` コンポーネントで統一:
+- Next.js Image ベースの最適化
+- レスポンシブサイズ対応
+- フォールバック表示
 
 ---
 
 ## Phase 3: 機能的欠落対応
 
-### 3.1 i18n トレイト配列化
+### 3.1 i18n トレイト配列化 ✅
 
-`profile-detail.tsx:101` のTODO対応。現在のカンマ分割が脆弱:
+`src/lib/i18n/mbti-types.ts` で型安全に定義済み:
 ```typescript
-// 現在
-const traits = traitsStr.split(/\s*,\s*/);
-
-// 改善: i18nで配列として定義
-mbtiTypes: {
+export const MBTI_TYPES = {
   INTJ: { traits: ["独立的", "戦略的", "分析的"] }
 }
 ```
