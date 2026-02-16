@@ -55,7 +55,7 @@ export function PublicTeaserGrid({ profiles }: PublicTeaserGridProps) {
             ))}
           </m.div>
 
-          <div className="absolute inset-x-0 bottom-0 h-80 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none z-10" />
+          <div className="absolute inset-x-0 bottom-0 h-80 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none z-10" />
         </div>
 
         <div className="-mt-40 relative z-20">

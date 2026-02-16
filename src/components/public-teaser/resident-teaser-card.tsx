@@ -63,7 +63,7 @@ export const ResidentTeaserCard = memo(function ResidentTeaserCard({
               <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2 blur-[2px] select-none">
                 {profile.masked_bio}...
               </p>
-              <div className="absolute inset-x-0 bottom-0 h-full bg-gradient-to-t from-white/20 to-transparent pointer-events-none" />
+              <div className="absolute inset-x-0 bottom-0 h-full bg-gradient-to-t from-card/30 to-transparent pointer-events-none" />
             </div>
           )}
         </div>
