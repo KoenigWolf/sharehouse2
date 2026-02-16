@@ -1,5 +1,5 @@
 -- ============================================
--- おすそわけボード: テーブル定義
+-- Share Board: テーブル定義
 -- ============================================
 
 create table if not exists public.share_items (
@@ -29,24 +29,24 @@ create index if not exists share_items_status_expires_idx on public.share_items 
 alter table public.share_items enable row level security;
 
 do $$ begin
-  if not exists (select 1 from pg_policies where tablename = 'share_items' and policyname = '認証済みユーザーはおすそわけを閲覧可能') then
-    create policy "認証済みユーザーはおすそわけを閲覧可能"
+  if not exists (select 1 from pg_policies where tablename = 'share_items' and policyname = '認証済みユーザーはShareを閲覧可能') then
+    create policy "認証済みユーザーはShareを閲覧可能"
       on public.share_items for select to authenticated using (true);
   end if;
 
-  if not exists (select 1 from pg_policies where tablename = 'share_items' and policyname = '自分のおすそわけのみ作成可能') then
-    create policy "自分のおすそわけのみ作成可能"
+  if not exists (select 1 from pg_policies where tablename = 'share_items' and policyname = '自分のShareのみ作成可能') then
+    create policy "自分のShareのみ作成可能"
       on public.share_items for insert to authenticated with check (auth.uid() = user_id);
   end if;
 
-  if not exists (select 1 from pg_policies where tablename = 'share_items' and policyname = 'おすそわけの更新ポリシー') then
+  if not exists (select 1 from pg_policies where tablename = 'share_items' and policyname = 'Shareの更新ポリシー') then
     -- 投稿者は自由に更新可。他ユーザーは available のアイテムを claimed に変更可能
-    create policy "おすそわけの更新ポリシー"
+    create policy "Shareの更新ポリシー"
       on public.share_items for update to authenticated using (auth.uid() = user_id or status = 'available');
   end if;
 
-  if not exists (select 1 from pg_policies where tablename = 'share_items' and policyname = '自分のおすそわけのみ削除可能') then
-    create policy "自分のおすそわけのみ削除可能"
+  if not exists (select 1 from pg_policies where tablename = 'share_items' and policyname = '自分のShareのみ削除可能') then
+    create policy "自分のShareのみ削除可能"
       on public.share_items for delete to authenticated using (auth.uid() = user_id);
   end if;
 end $$;

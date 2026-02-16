@@ -50,7 +50,7 @@ export const ja = {
     gallery: "Gallery",
     info: "情報",
     floorPlan: "Floor Map",
-    share: "おすそわけ",
+    share: "Share",
     events: "Events",
     admin: "管理",
     stats: "統計",
@@ -766,8 +766,8 @@ export const ja = {
   },
 
   share: {
-    title: "おすそわけボード",
-    subtitle: "食材や日用品をシェアしよう",
+    title: "Share Board",
+    subtitle: "食材や日用品をShareしよう",
     post: "出品する",
     titleLabel: "タイトル",
     titlePlaceholder: "卵6個余ってます",
@@ -783,8 +783,8 @@ export const ja = {
     posting: "出品中...",
     createItem: "アイテムを出品",
     editItem: "アイテムを編集",
-    createHint: "余っているものをシェアしよう",
-    emptyHint: "最初に何かをシェアしてみましょう",
+    createHint: "余っているものをShareしよう",
+    emptyHint: "最初に何かをShareしてみましょう",
     update: "更新する",
     imageLabel: "写真（任意）",
     addImage: "写真を追加",
@@ -844,7 +844,7 @@ export const ja = {
     garbageToday: "今日は{{type}}の日です",
     newBulletins: "新しいVibe: {{count}}件",
     upcomingEvents: "近日のイベント: {{count}}件",
-    shareItems: "おすそわけ: {{count}}件",
+    shareItems: "Share: {{count}}件",
   },
 
   floorPlan: {
@@ -976,7 +976,7 @@ export const ja = {
     rooms: "部屋",
     totalEvents: "イベント",
     upcoming: "予定",
-    shareItems: "おすそわけ",
+    shareItems: "Share",
     available: "出品中",
     photos: "写真",
     uploaders: "人が投稿",

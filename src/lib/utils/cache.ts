@@ -91,7 +91,7 @@ export const CacheStrategy = {
   },
 
   /**
-   * おすそわけ更新後のキャッシュ再検証
+   * Share更新後のキャッシュ再検証
    */
   afterShareUpdate: () => {
     revalidatePath("/");
