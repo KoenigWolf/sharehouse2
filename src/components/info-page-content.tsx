@@ -134,10 +134,10 @@ const FloorSection = memo(function FloorSection({ floorData }: { floorData: Floo
     <m.div variants={itemVariants} className="group">
       <div className="flex items-baseline gap-4 mb-4 border-b border-border/50 pb-2">
         <h3 className="text-xl font-semibold tracking-tight text-foreground font-sans">
-          {isShared ? "Shared Facilities" : `${floorData.floor}F`}
+          {isShared ? "田中ビル" : `${floorData.floor}F`}
         </h3>
         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-          {isShared ? "Common Area" : "Resident Area"}
+          {isShared ? "共用設備" : "フロア情報"}
         </span>
       </div>
 
@@ -187,12 +187,9 @@ const FloorSection = memo(function FloorSection({ floorData }: { floorData: Floo
               <span className="text-xs font-bold uppercase tracking-wider">Mailbox</span>
             </div>
             <div className="flex items-center justify-between">
-              <div>
-                <span className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-0.5">Code</span>
-                <span className="text-lg font-bold text-foreground font-mono">
-                  {floorData.mailboxInfo.content}
-                </span>
-              </div>
+              <span className="text-lg font-bold text-foreground font-mono">
+                {floorData.mailboxInfo.content}
+              </span>
               <CopyButton value={floorData.mailboxInfo.content} label="Copy Mailbox Code" />
             </div>
             {floorData.mailboxInfo.notes && (
