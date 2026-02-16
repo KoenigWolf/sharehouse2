@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useMemo, useCallback, memo } from "react";
-import { m } from "framer-motion";
-import Image from "next/image";
 import { Check, User, Calendar } from "lucide-react";
+import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
 import { completeDuty } from "@/lib/garbage/actions";
@@ -13,37 +12,32 @@ import { cn } from "@/lib/utils";
 
 const GARBAGE_TYPE_STYLES: Record<
   string,
-  { bg: string; text: string; border: string; dot: string }
+  { bg: string; text: string; border: string }
 > = {
   可燃ごみ: {
     bg: "bg-rose-500/10",
     text: "text-rose-700 dark:text-rose-300",
     border: "border-rose-200/50 dark:border-rose-800/50",
-    dot: "bg-rose-500",
   },
   不燃ごみ: {
     bg: "bg-slate-500/10",
     text: "text-slate-700 dark:text-slate-300",
     border: "border-slate-200/50 dark:border-slate-700/50",
-    dot: "bg-slate-500",
   },
   資源: {
     bg: "bg-blue-500/10",
     text: "text-blue-700 dark:text-blue-300",
     border: "border-blue-200/50 dark:border-blue-800/50",
-    dot: "bg-blue-500",
   },
   資源プラスチック: {
     bg: "bg-yellow-500/10",
     text: "text-yellow-700 dark:text-yellow-300",
     border: "border-yellow-200/50 dark:border-yellow-700/50",
-    dot: "bg-yellow-500",
   },
   資源ごみ: {
     bg: "bg-blue-500/10",
     text: "text-blue-700 dark:text-blue-300",
     border: "border-blue-200/50 dark:border-blue-800/50",
-    dot: "bg-blue-500",
   },
 };
 
@@ -51,7 +45,6 @@ const DEFAULT_STYLE = {
   bg: "bg-muted/50",
   text: "text-muted-foreground",
   border: "border-border/50",
-  dot: "bg-muted-foreground",
 };
 
 interface GarbageScheduleViewProps {
@@ -69,7 +62,6 @@ const WeekRow = memo(function WeekRow({
   todayIndex: number;
   dayNames: readonly string[];
 }) {
-  const t = useI18n();
   const getTypeStyle = (type: string) => GARBAGE_TYPE_STYLES[type] ?? DEFAULT_STYLE;
 
   return (
@@ -149,27 +141,22 @@ const DutyRow = memo(function DutyRow({
       </div>
 
       <div className="flex-1 flex items-center gap-3">
-        <div className="w-8 h-8 rounded-full overflow-hidden bg-muted flex-shrink-0">
-          {duty.profile?.avatar_url ? (
-            <Image
-              src={duty.profile.avatar_url}
-              alt={duty.profile.name}
-              width={32}
-              height={32}
-              className="object-cover w-full h-full"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <User size={14} className="text-muted-foreground" />
-            </div>
-          )}
-        </div>
+        <Avatar className="w-8 h-8 flex-shrink-0">
+          <OptimizedAvatarImage
+            src={duty.profile?.avatar_url}
+            alt={duty.profile?.name ?? t("garbage.unknownUser")}
+            context="card"
+            className="object-cover w-full h-full"
+            fallback={<User size={14} className="text-muted-foreground" />}
+            fallbackClassName="bg-muted w-full h-full flex items-center justify-center"
+          />
+        </Avatar>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <span className={cn("text-sm font-medium", isOwn && "text-primary font-bold")}>
-              {duty.profile?.name ?? "Unknown"}
+              {duty.profile?.name ?? t("garbage.unknownUser")}
             </span>
-            {isOwn && <span className="text-[10px] bg-primary/10 text-primary px-1.5 rounded font-bold">YOU</span>}
+            {isOwn && <span className="text-[10px] bg-primary/10 text-primary px-1.5 rounded font-bold">{t("residents.badgeYou")}</span>}
           </div>
         </div>
       </div>
@@ -191,7 +178,7 @@ const DutyRow = memo(function DutyRow({
           disabled={isCompleting}
           className="h-8 rounded-full px-3 text-xs"
         >
-          {isCompleting ? "..." : "Done"}
+          {isCompleting ? t("common.processing") : t("garbage.markComplete")}
         </Button>
       ) : (
         <div className="w-8 flex justify-center">
