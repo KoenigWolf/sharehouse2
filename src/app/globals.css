@@ -472,3 +472,66 @@ img {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* ============================================
+ * Progressive Image Loading Animations
+ * ============================================ */
+
+/* Instagram-style shimmer loading effect */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+.dark .shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+}
+
+/* View Transitions API support */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.25s;
+  animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Shared element view transitions */
+::view-transition-group(shared-avatar) {
+  animation-duration: 0.35s;
+  animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Optimistic navigation - instant feedback */
+.nav-link-active {
+  transform: scale(0.98);
+  opacity: 0.8;
+  transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+}
+
+/* Page exit animation helper */
+.page-exiting {
+  pointer-events: none;
+  user-select: none;
+}
