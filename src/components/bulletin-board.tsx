@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useId } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { m, AnimatePresence } from "framer-motion";
-import { MessageCircle, Send, Trash2 } from "lucide-react";
+import { Feather, X, Trash2, MessageCircle } from "lucide-react";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
 import { createBulletin, deleteBulletin } from "@/lib/bulletin/actions";
@@ -25,26 +26,178 @@ interface BulletinBoardProps {
 
 function formatTimestamp(dateString: string, locale: string): string {
   const date = new Date(dateString);
-  return date.toLocaleDateString(locale, { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" });
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMins < 1) return locale === "ja" ? "たった今" : "now";
+  if (diffMins < 60) return `${diffMins}m`;
+  if (diffHours < 24) return `${diffHours}h`;
+  if (diffDays < 7) return `${diffDays}d`;
+
+  return date.toLocaleDateString(locale, { month: "short", day: "numeric" });
 }
 
-// Animation config
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.05, delayChildren: 0.1 },
-  },
-};
+const EASE = [0.23, 1, 0.32, 1] as const;
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 12 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] as const },
-  },
-};
+interface ComposeModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (message: string) => Promise<void>;
+  isSubmitting: boolean;
+  userProfile?: {
+    name: string;
+    nickname: string | null;
+    avatar_url: string | null;
+  };
+}
+
+function ComposeModal({ isOpen, onClose, onSubmit, isSubmitting, userProfile }: ComposeModalProps) {
+  const t = useI18n();
+  const id = useId();
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async () => {
+    if (!message.trim()) return;
+    await onSubmit(message.trim());
+    setMessage("");
+  };
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !isSubmitting) onClose();
+    },
+    [isSubmitting, onClose],
+  );
+
+  useEffect(() => {
+    if (!isOpen) return;
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, handleKeyDown]);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  const displayName = userProfile?.nickname ?? userProfile?.name ?? "";
+  const canSubmit = message.trim().length > 0 && !isSubmitting;
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <m.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 z-50 bg-background sm:bg-black/50 sm:backdrop-blur-sm"
+          onClick={isSubmitting ? undefined : onClose}
+        >
+          <m.div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={`${id}-title`}
+            initial={{ opacity: 0, y: "100%" }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: "100%" }}
+            transition={{ duration: 0.3, ease: EASE }}
+            className="fixed inset-0 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-lg sm:rounded-2xl bg-background sm:premium-surface flex flex-col sm:max-h-[80vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 h-14 border-b border-border/50 shrink-0">
+              <button
+                type="button"
+                onClick={onClose}
+                disabled={isSubmitting}
+                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted transition-colors"
+                aria-label={t("common.close")}
+              >
+                <X size={20} className="text-foreground" />
+              </button>
+
+              <h2 id={`${id}-title`} className="sr-only">
+                {t("bulletin.postMessage")}
+              </h2>
+
+              <m.button
+                type="button"
+                onClick={handleSubmit}
+                disabled={!canSubmit}
+                whileHover={canSubmit ? { scale: 1.02 } : undefined}
+                whileTap={canSubmit ? { scale: 0.98 } : undefined}
+                className="h-9 px-5 rounded-full bg-foreground text-background text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
+              >
+                {isSubmitting ? t("common.processing") : t("bulletin.post")}
+              </m.button>
+            </div>
+
+            {/* Compose area */}
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="flex gap-3">
+                {/* User avatar */}
+                <Avatar className="w-10 h-10 rounded-full border border-border/50 shrink-0">
+                  <OptimizedAvatarImage
+                    src={userProfile?.avatar_url}
+                    alt={displayName}
+                    context="card"
+                    fallback={
+                      <span className="text-xs font-semibold text-muted-foreground">
+                        {getInitials(displayName)}
+                      </span>
+                    }
+                    fallbackClassName="bg-muted"
+                  />
+                </Avatar>
+
+                {/* Textarea */}
+                <div className="flex-1 min-w-0">
+                  <textarea
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder={t("bulletin.placeholder")}
+                    maxLength={BULLETIN.maxMessageLength}
+                    autoFocus
+                    rows={6}
+                    className="w-full bg-transparent text-lg text-foreground placeholder:text-muted-foreground/50 focus:outline-none resize-none leading-relaxed"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="px-4 py-3 border-t border-border/50 shrink-0">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground tabular-nums">
+                  {message.length}/{BULLETIN.maxMessageLength}
+                </span>
+                <span
+                  className={`text-xs font-medium transition-colors ${
+                    message.length > BULLETIN.maxMessageLength * 0.9
+                      ? "text-error"
+                      : "text-muted-foreground"
+                  }`}
+                >
+                  {t("bulletin.maxLength", { max: BULLETIN.maxMessageLength })}
+                </span>
+              </div>
+            </div>
+          </m.div>
+        </m.div>
+      )}
+    </AnimatePresence>
+  );
+}
 
 export function BulletinBoard({ bulletins: initialBulletins, currentUserId, currentUserProfile, isTeaser = false }: BulletinBoardProps) {
   const t = useI18n();
@@ -52,7 +205,7 @@ export function BulletinBoard({ bulletins: initialBulletins, currentUserId, curr
   const router = useRouter();
   const [bulletins, setBulletins] = useState(initialBulletins);
   const isEditing = !isTeaser;
-  const [message, setMessage] = useState("");
+  const [isComposeOpen, setIsComposeOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
@@ -60,15 +213,13 @@ export function BulletinBoard({ bulletins: initialBulletins, currentUserId, curr
     setBulletins(initialBulletins);
   }, [initialBulletins]);
 
-  const handlePost = useCallback(async () => {
+  const handlePost = useCallback(async (message: string) => {
     if (!message.trim() || isSubmitting) return;
     setIsSubmitting(true);
     setFeedback(null);
 
-    const trimmedMessage = message.trim();
-
     try {
-      const result = await createBulletin(trimmedMessage);
+      const result = await createBulletin(message);
 
       if ("error" in result) {
         setFeedback({ type: "error", message: result.error });
@@ -79,21 +230,21 @@ export function BulletinBoard({ bulletins: initialBulletins, currentUserId, curr
       const newBulletin: BulletinWithProfile = {
         id: `temp-${Date.now()}`,
         user_id: currentUserId,
-        message: trimmedMessage,
+        message,
         created_at: now,
         updated_at: now,
         profiles: currentUserProfile ?? null,
       };
 
       setBulletins((prev) => [newBulletin, ...prev]);
-      setMessage("");
+      setIsComposeOpen(false);
       router.refresh();
     } catch {
       setFeedback({ type: "error", message: t("errors.serverError") });
     } finally {
       setIsSubmitting(false);
     }
-  }, [message, isSubmitting, router, t, currentUserId, currentUserProfile]);
+  }, [isSubmitting, router, t, currentUserId, currentUserProfile]);
 
   const handleDelete = useCallback(async (bulletinId: string) => {
     if (bulletinId.startsWith("temp-")) return;
@@ -117,179 +268,176 @@ export function BulletinBoard({ bulletins: initialBulletins, currentUserId, curr
   }, [t, router]);
 
   return (
-    <m.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="space-y-8"
-    >
-      {/* Feedback message */}
-      <AnimatePresence>
-        {feedback && (
+    <>
+      <div className="space-y-1">
+        {/* Feedback message */}
+        <AnimatePresence>
+          {feedback && (
+            <m.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25 }}
+              className={`text-sm font-medium px-4 py-3 rounded-xl mb-4 ${
+                feedback.type === "success"
+                  ? "bg-success-bg/50 text-success"
+                  : "bg-error-bg/50 text-error"
+              }`}
+            >
+              {feedback.message}
+            </m.div>
+          )}
+        </AnimatePresence>
+
+        {/* Empty state */}
+        {bulletins.length === 0 ? (
           <m.div
-            initial={{ opacity: 0, y: -8 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.25 }}
-            className={`text-sm font-medium px-5 py-4 rounded-xl border-l-4 ${
-              feedback.type === "success"
-                ? "bg-success-bg/50 border-success text-success"
-                : "bg-error-bg/50 border-error text-error"
-            }`}
+            transition={{ duration: 0.4, ease: EASE }}
+            className="py-20 flex flex-col items-center text-center"
           >
-            {feedback.message}
-          </m.div>
-        )}
-      </AnimatePresence>
-
-      {/* Post form */}
-      <AnimatePresence>
-        {isEditing && (
-          <m.div
-            variants={itemVariants}
-            className="premium-surface rounded-2xl overflow-hidden"
-          >
-            {/* Form header */}
-            <div className="flex items-center gap-3 px-5 sm:px-6 pt-5 pb-3">
-              <div className="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center">
-                <MessageCircle size={18} className="text-brand-500" />
-              </div>
-              <div>
-                <h3 className="text-sm font-semibold text-foreground">
-                  {t("bulletin.postMessage")}
-                </h3>
-                <p className="text-xs text-muted-foreground">
-                  {t("bulletin.postHint")}
-                </p>
-              </div>
+            <div className="w-20 h-20 mb-6 rounded-full bg-muted/60 flex items-center justify-center">
+              <MessageCircle size={32} className="text-muted-foreground/40" />
             </div>
+            <h3 className="text-lg font-semibold text-foreground mb-2">
+              {t("bulletin.empty")}
+            </h3>
+            <p className="text-sm text-muted-foreground max-w-xs">
+              {t("bulletin.emptyHint")}
+            </p>
+          </m.div>
+        ) : (
+          /* Timeline */
+          <div className="divide-y divide-border/40">
+            {bulletins.map((bulletin, index) => {
+              const displayName = bulletin.profiles?.nickname ?? bulletin.profiles?.name ?? t("common.formerResident");
+              const isMine = bulletin.user_id === currentUserId;
+              const profileHref = bulletin.profiles ? `/profile/${bulletin.user_id}` : undefined;
 
-            {/* Textarea */}
-            <div className="px-5 sm:px-6 pb-5">
-              <textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder={t("bulletin.placeholder")}
-                maxLength={BULLETIN.maxMessageLength}
-                rows={3}
-                className="w-full px-4 py-3 bg-muted/50 border border-border/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all duration-200 resize-none leading-relaxed"
-              />
-
-              {/* Actions */}
-              <div className="flex items-center justify-between mt-4">
-                <span className="text-xs font-medium text-muted-foreground tabular-nums">
-                  {message.length}/{BULLETIN.maxMessageLength}
-                </span>
-                <m.button
-                  type="button"
-                  onClick={handlePost}
-                  disabled={!message.trim() || isSubmitting}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="h-11 px-6 rounded-xl bg-foreground text-background text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+              return (
+                <m.article
+                  key={bulletin.id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{
+                    duration: 0.3,
+                    delay: Math.min(index * 0.03, 0.3),
+                  }}
+                  className="py-4 px-1 hover:bg-muted/30 transition-colors group"
                 >
-                  <Send size={16} />
-                  {isSubmitting ? t("common.processing") : t("bulletin.post")}
-                </m.button>
-              </div>
-            </div>
-          </m.div>
-        )}
-      </AnimatePresence>
+                  <div className="flex gap-3">
+                    {/* Avatar */}
+                    {profileHref ? (
+                      <Link href={profileHref} className="shrink-0">
+                        <Avatar className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-border/30">
+                          <OptimizedAvatarImage
+                            src={bulletin.profiles?.avatar_url}
+                            alt={displayName}
+                            context="card"
+                            isBlurred={isTeaser}
+                            fallback={
+                              <span className="text-xs font-semibold text-muted-foreground">
+                                {getInitials(displayName)}
+                              </span>
+                            }
+                            fallbackClassName="bg-muted"
+                          />
+                        </Avatar>
+                      </Link>
+                    ) : (
+                      <Avatar className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-border/30 shrink-0">
+                        <OptimizedAvatarImage
+                          src={bulletin.profiles?.avatar_url}
+                          alt={displayName}
+                          context="card"
+                          isBlurred={isTeaser}
+                          fallback={
+                            <span className="text-xs font-semibold text-muted-foreground">
+                              {getInitials(displayName)}
+                            </span>
+                          }
+                          fallbackClassName="bg-muted"
+                        />
+                      </Avatar>
+                    )}
 
-      {/* Empty state */}
-      {bulletins.length === 0 ? (
-        <m.div
-          variants={itemVariants}
-          className="py-20 flex flex-col items-center text-center"
-        >
-          <div className="w-20 h-20 mb-8 rounded-2xl bg-muted/80 flex items-center justify-center">
-            <MessageCircle size={32} className="text-muted-foreground/40" />
-          </div>
-          <h3 className="text-xl font-semibold text-foreground mb-2">
-            {t("bulletin.empty")}
-          </h3>
-          <p className="text-sm text-muted-foreground max-w-sm">
-            {t("bulletin.emptyHint")}
-          </p>
-        </m.div>
-      ) : (
-        /* Bulletin list */
-        <div className="space-y-4">
-          {bulletins.map((bulletin, index) => {
-            const displayName = bulletin.profiles?.nickname ?? bulletin.profiles?.name ?? t("common.formerResident");
-            const isMine = bulletin.user_id === currentUserId;
-
-            return (
-              <m.article
-                key={bulletin.id}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.35,
-                  delay: index * 0.04,
-                  ease: [0.25, 0.46, 0.45, 0.94],
-                }}
-                className="premium-surface rounded-2xl p-5 sm:p-6 group relative"
-              >
-                <div className="flex gap-4">
-                  {/* Avatar */}
-                  <Avatar className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl border border-border/50 shrink-0">
-                    <OptimizedAvatarImage
-                      src={bulletin.profiles?.avatar_url}
-                      alt={displayName}
-                      context="card"
-                      isBlurred={isTeaser}
-                      fallback={
-                        <span className="text-xs font-semibold text-muted-foreground">
-                          {getInitials(displayName)}
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      {/* Header row */}
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        {profileHref ? (
+                          <Link href={profileHref} className="hover:underline">
+                            <span className="text-[15px] font-bold text-foreground truncate">
+                              {displayName}
+                            </span>
+                          </Link>
+                        ) : (
+                          <span className="text-[15px] font-bold text-foreground truncate">
+                            {displayName}
+                          </span>
+                        )}
+                        {bulletin.profiles?.room_number && (
+                          <span className="text-sm text-muted-foreground">
+                            · {bulletin.profiles.room_number}
+                          </span>
+                        )}
+                        <span className="text-sm text-muted-foreground">
+                          · {formatTimestamp(bulletin.created_at, locale)}
                         </span>
-                      }
-                      fallbackClassName="bg-muted"
-                    />
-                  </Avatar>
 
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    {/* Header */}
-                    <div className="flex items-center gap-2.5 mb-2">
-                      <span className="text-sm font-semibold text-foreground truncate">
-                        {displayName}
-                      </span>
-                      {bulletin.profiles?.room_number && (
-                        <span className="text-xs font-medium text-muted-foreground bg-muted/60 px-2 py-0.5 rounded-md">
-                          {bulletin.profiles.room_number}
-                        </span>
-                      )}
-                      <span className="text-xs text-muted-foreground/60 ml-auto shrink-0">
-                        {formatTimestamp(bulletin.created_at, locale)}
-                      </span>
+                        {/* Delete button */}
+                        {isMine && !bulletin.id.startsWith("temp-") && (
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(bulletin.id)}
+                            disabled={isSubmitting}
+                            className="ml-auto w-8 h-8 flex items-center justify-center rounded-full text-muted-foreground/40 hover:text-error hover:bg-error/10 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all"
+                            aria-label={t("common.delete")}
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Message */}
+                      <p className={`text-[15px] text-foreground leading-relaxed whitespace-pre-wrap break-words ${isTeaser ? "blur-[2.5px] select-none" : ""}`}>
+                        {bulletin.message}
+                      </p>
                     </div>
-
-                    {/* Message */}
-                    <p className={`text-sm text-foreground/80 leading-relaxed ${isTeaser ? "blur-[2.5px] select-none" : ""}`}>
-                      {bulletin.message}
-                    </p>
                   </div>
-                </div>
+                </m.article>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
-                {/* Delete button */}
-                {isMine && !bulletin.id.startsWith("temp-") && (
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(bulletin.id)}
-                    disabled={isSubmitting}
-                    className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-lg text-muted-foreground/40 hover:text-error hover:bg-error/10 opacity-0 group-hover:opacity-100 transition-all"
-                    aria-label={t("common.delete")}
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                )}
-              </m.article>
-            );
-          })}
-        </div>
+      {/* Floating Action Button (FAB) */}
+      {isEditing && (
+        <m.button
+          type="button"
+          onClick={() => setIsComposeOpen(true)}
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.3, type: "spring", stiffness: 400, damping: 25 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="fixed bottom-24 sm:bottom-8 right-5 sm:right-8 z-40 w-14 h-14 rounded-full bg-foreground text-background shadow-lg shadow-foreground/20 flex items-center justify-center"
+          aria-label={t("bulletin.postMessage")}
+        >
+          <Feather size={22} />
+        </m.button>
       )}
-    </m.div>
+
+      {/* Compose Modal */}
+      <ComposeModal
+        isOpen={isComposeOpen}
+        onClose={() => setIsComposeOpen(false)}
+        onSubmit={handlePost}
+        isSubmitting={isSubmitting}
+        userProfile={currentUserProfile}
+      />
+    </>
   );
 }
