@@ -98,10 +98,10 @@ describe("ResidentCard", () => {
       expect(screen.queryByText("未登録")).not.toBeInTheDocument();
     });
 
-    it("applies dashed border for mock profiles", () => {
+    it("applies solid border for mock profiles", () => {
       const { container } = render(<ResidentCard profile={mockMockProfile} />);
       const article = container.querySelector("article");
-      expect(article).toHaveClass("border-dashed");
+      expect(article).toHaveClass("border-border");
     });
   });
 

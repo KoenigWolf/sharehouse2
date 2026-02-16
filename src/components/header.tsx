@@ -19,7 +19,6 @@ import {
   Settings,
   LogOut,
   Shield,
-  Home,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -215,43 +214,53 @@ export const Header = memo(function Header() {
 
   return (
     <header
-      className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/50"
+      className="sticky top-0 z-40 bg-card border-b border-border/30"
       role="banner"
     >
-      <div className="container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between max-w-5xl">
-        {/* Left: Logo + Nav */}
-        <div className="flex items-center gap-8">
-          {/* Brand */}
+      <div className="container mx-auto px-4 sm:px-8 h-14 flex items-center max-w-6xl">
+        {/* Left: Navigation text links */}
+        <div className="flex-1 flex items-center gap-6">
+          {/* Brand - Clean text style */}
           <Link
             href="/residents"
-            className="flex items-center gap-2.5 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 group"
+            className="flex items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 group"
             aria-label={t("a11y.goHome")}
           >
-            <div className="w-9 h-9 rounded-xl bg-foreground flex items-center justify-center">
-              <Home size={18} className="text-background" strokeWidth={2} />
-            </div>
-            <span className="text-lg font-bold tracking-tight text-foreground hidden sm:block">
-              Share<span className="text-muted-foreground">House</span>
+            <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors tracking-wide">
+              {t("header.brand")}
             </span>
           </Link>
 
-          {/* Navigation - Desktop */}
-          <nav
-            aria-label={t("a11y.mainNavigation")}
-            className="hidden sm:flex items-center gap-1 p-1 bg-muted/50 rounded-2xl"
-          >
-            {NAV_ITEMS.map((item) => (
-              <NavLink
-                key={item.href}
-                item={item}
-                isActive={isPathActive(item)}
-              />
-            ))}
-          </nav>
+          {/* Separator */}
+          <div className="hidden sm:block w-px h-4 bg-border" />
+
+          {/* Current section indicator */}
+          <span className="hidden sm:block text-sm font-bold text-foreground tracking-wide">
+            {(() => {
+              const activeItem = NAV_ITEMS.find((item) => isPathActive(item));
+              return activeItem ? t(activeItem.labelKey) : t("header.brand");
+            })()}
+          </span>
         </div>
 
+        {/* Center: Navigation - Desktop */}
+        <nav
+          aria-label={t("a11y.mainNavigation")}
+          className="hidden lg:flex items-center gap-1"
+        >
+          {NAV_ITEMS.map((item) => (
+            <NavLink
+              key={item.href}
+              item={item}
+              isActive={isPathActive(item)}
+            />
+          ))}
+        </nav>
+
         {/* Right: User Menu */}
-        <UserAvatarMenu />
+        <div className="flex-1 flex items-center justify-end">
+          <UserAvatarMenu />
+        </div>
       </div>
     </header>
   );

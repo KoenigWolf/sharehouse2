@@ -6,88 +6,40 @@ import { Profile } from "@/domain/profile";
  * - 人物: シンプルな線画風
  * - 色: 低彩度、ニュートラルトーン
  */
-const generateMinimalAvatar = (
-  variant: "a" | "b" | "c" | "d",
-  hairColor: string,
-  clothesColor: string
-) => {
-  const bgColors: Record<string, string> = {
-    a: "#f4f4f5",
-    b: "#fafafa",
-    c: "#f4f4f5",
-    d: "#fafafa",
-  };
+/**
+ * DESIGN_GUIDELINES.md準拠のモダンでプレミアムなアバター生成
+ * - 抽象的なグラデーションとシェイプを使用
+ * - 鮮やかだが落ち着いた色味（Vibrant & Premium）
+ * - "未登録" 感を出しつつも、プレースホルダーとして美しいデザイン
+ */
+/**
+ * DESIGN_GUIDELINES.md準拠のモノクローム人型アイコン
+ * - 背景: 落ち着いたグレー
+ * - 人物: シンプルなシルエット
+ * - 色: モノクローム（プレミアム感のある無機質さ）
+ */
+const generateMonochromeHumanAvatar = (seed: number) => {
+  // 微妙に異なるグレーのバリエーション（完全に同じだと単調すぎるため）
+  const bgs = ["#f4f4f5", "#e4e4e7", "#d4d4d8", "#fafafa", "#f5f5f5"];
+  const bg = bgs[seed % bgs.length];
+  const fg = "#a1a1aa"; // Neutral-400
 
-  const bg = bgColors[variant];
-  const skinTone = "#e8e0d8";
-
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-    <!-- 背景 -->
-    <rect width="100" height="100" fill="${bg}"/>
-
-    <!-- 首 -->
-    <rect x="44" y="66" width="12" height="10" fill="${skinTone}"/>
-
-    <!-- 服（シンプルな形） -->
-    <path d="M30 100 Q30 78 50 76 Q70 78 70 100 Z" fill="${clothesColor}"/>
-
-    <!-- 顔 -->
-    <ellipse cx="50" cy="48" rx="20" ry="24" fill="${skinTone}"/>
-
-    <!-- 髪（シンプル） -->
-    ${variant === "a" || variant === "c"
-      ? `<ellipse cx="50" cy="30" rx="21" ry="14" fill="${hairColor}"/>
-         <rect x="29" y="28" width="42" height="12" fill="${hairColor}"/>`
-      : variant === "b"
-        ? `<ellipse cx="50" cy="30" rx="22" ry="14" fill="${hairColor}"/>
-         <path d="M28 32 Q26 50 30 65 L36 62 Q34 48 36 36 Z" fill="${hairColor}"/>
-         <path d="M72 32 Q74 50 70 65 L64 62 Q66 48 64 36 Z" fill="${hairColor}"/>`
-        : `<ellipse cx="50" cy="30" rx="22" ry="14" fill="${hairColor}"/>
-         <path d="M28 32 Q26 45 32 55 L38 52 Q34 44 36 36 Z" fill="${hairColor}"/>
-         <path d="M72 32 Q74 45 68 55 L62 52 Q66 44 64 36 Z" fill="${hairColor}"/>`
-    }
-
-    <!-- 目（シンプルな点） -->
-    <circle cx="42" cy="48" r="2.5" fill="#3f3f46"/>
-    <circle cx="58" cy="48" r="2.5" fill="#3f3f46"/>
-
-    <!-- 口（控えめな線） -->
-    <path d="M46 58 Q50 61 54 58" stroke="#a1a1aa" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  // シンプルな人型シルエットアイコン
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+    <rect width="100" height="100" fill="${bg}" />
+    
+    <!-- 頭部 -->
+    <circle cx="50" cy="40" r="18" fill="${fg}" />
+    
+    <!-- 身体（半円形） -->
+    <path d="M20 90 C20 70 30 60 50 60 C70 60 80 70 80 90 V100 H20 V90 Z" fill="${fg}" />
   </svg>`;
 
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 };
 
-const avatarConfigs: Array<{
-  variant: "a" | "b" | "c" | "d";
-  hairColor: string;
-  clothesColor: string;
-}> = [
-    { variant: "b", hairColor: "#3f3f46", clothesColor: "#d4d4d8" },
-    { variant: "a", hairColor: "#27272a", clothesColor: "#e4e4e7" },
-    { variant: "d", hairColor: "#52525b", clothesColor: "#d4d4d8" },
-    { variant: "a", hairColor: "#3f3f46", clothesColor: "#e4e4e7" },
-    { variant: "b", hairColor: "#27272a", clothesColor: "#d4d4d8" },
-    { variant: "a", hairColor: "#3f3f46", clothesColor: "#e4e4e7" },
-    { variant: "c", hairColor: "#52525b", clothesColor: "#d4d4d8" },
-    { variant: "a", hairColor: "#27272a", clothesColor: "#e4e4e7" },
-    { variant: "b", hairColor: "#3f3f46", clothesColor: "#d4d4d8" },
-    { variant: "a", hairColor: "#52525b", clothesColor: "#e4e4e7" },
-    { variant: "d", hairColor: "#27272a", clothesColor: "#d4d4d8" },
-    { variant: "a", hairColor: "#3f3f46", clothesColor: "#e4e4e7" },
-    { variant: "c", hairColor: "#52525b", clothesColor: "#d4d4d8" },
-    { variant: "a", hairColor: "#27272a", clothesColor: "#d4d4d8" },
-    { variant: "b", hairColor: "#52525b", clothesColor: "#e4e4e7" },
-    { variant: "a", hairColor: "#3f3f46", clothesColor: "#d4d4d8" },
-    { variant: "d", hairColor: "#27272a", clothesColor: "#e4e4e7" },
-    { variant: "a", hairColor: "#52525b", clothesColor: "#d4d4d8" },
-    { variant: "c", hairColor: "#3f3f46", clothesColor: "#e4e4e7" },
-    { variant: "a", hairColor: "#27272a", clothesColor: "#d4d4d8" },
-  ];
+const avatars = Array.from({ length: 20 }, (_, i) => generateMonochromeHumanAvatar(i));
 
-const avatars = avatarConfigs.map((config) =>
-  generateMinimalAvatar(config.variant, config.hairColor, config.clothesColor)
-);
 
 export const mockProfiles: Profile[] = [
   {

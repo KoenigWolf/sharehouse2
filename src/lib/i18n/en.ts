@@ -1,8 +1,12 @@
 /**
  * English translations
+ *
+ * Must maintain the same structure as ja.ts.
+ * Type safety is enforced by importing Translations from ja.ts.
  */
 
 import type { Translations } from "./ja";
+import { mbtiTypesEn } from "./mbti-types";
 
 export const en: Translations = {
   common: {
@@ -24,6 +28,10 @@ export const en: Translations = {
     formerResident: "Former resident",
     processing: "Processing...",
     copy: "Copy",
+  },
+
+  header: {
+    brand: "SHARE HOUSE",
   },
 
   nav: {
@@ -82,8 +90,7 @@ export const en: Translations = {
       fair: "Fair",
       strong: "Strong",
     },
-    signupHint:
-      "After registration, you can edit details on your profile page.",
+    signupHint: "After registration, you can edit details on your profile page.",
     browseAsGuest: "Browse as guest",
     defaultName: "User",
     forgotPassword: "Forgot password?",
@@ -346,10 +353,12 @@ export const en: Translations = {
       moreThan1m: "More than 1 month",
     },
   },
+
   teaser: {
     heading: "Check out resident profiles",
     headingWithCount: "There are {{count}} more residents waiting",
-    description: "To see detailed profiles, daily vibes, and event information of your share house mates, you need to register for the resident portal.",
+    description:
+      "To see detailed profiles, daily vibes, and event information of your share house mates, you need to register for the resident portal.",
     ctaJoin: "Sign up to see more",
     ctaLogin: "Log in",
     footer: "Secure closed community",
@@ -366,8 +375,7 @@ export const en: Translations = {
     enableInSettings: "Enable participation in settings",
     goToSettings: "Settings",
     participateToggle: "Participate",
-    participateHint:
-      "Turn on to be randomly matched with other residents each week",
+    participateHint: "Turn on to be randomly matched with other residents each week",
     newMatches: "New matches",
     history: "History",
     noMatches: "No matches yet",
@@ -562,9 +570,21 @@ export const en: Translations = {
     tabWifi: "Wi-Fi",
     tabGarbage: "Garbage",
     tabBuilding: "Building",
-    wifiNote: "SSIDs are hidden, so please manually search from your device. Please avoid setting up additional Wi-Fi routers in your room as it may cause interference.",
+    wifiNote:
+      "SSIDs are hidden, so please manually search from your device. Please avoid setting up additional Wi-Fi routers in your room as it may cause interference.",
     securityType: "Security: WPA2",
     wifiPassword: "Wi-Fi Password",
+    buildingName: "Tanaka Building",
+    sharedFacilities: "Shared Facilities",
+    floorInfo: "Floor Info",
+    floorGuide: "Floor Guide",
+    garbageAndDuties: "Garbage & Duties",
+    generalInformation: "General Information",
+    wifi: "Wi-Fi",
+    password: "Password",
+    noPassword: "No Password",
+    mailbox: "Mailbox",
+    address: "Address",
   },
 
   sharedInfo: {
@@ -599,7 +619,8 @@ export const en: Translations = {
     newEmail: "New email",
     changeEmail: "Change email",
     changingEmail: "Changing...",
-    emailChangeSuccess: "A confirmation email has been sent. Please verify from your new address.",
+    emailChangeSuccess:
+      "A confirmation email has been sent. Please verify from your new address.",
     password: "Password",
     currentPassword: "Current password",
     newPassword: "New password",
@@ -610,7 +631,8 @@ export const en: Translations = {
     currentPasswordWrong: "Current password is incorrect",
     passwordChanged: "Password has been changed",
     deleteAccount: "Delete Account",
-    deleteWarning: "Deleting your account will permanently remove all your data. This action cannot be undone.",
+    deleteWarning:
+      "Deleting your account will permanently remove all your data. This action cannot be undone.",
     deleteConfirmLabel: 'Type "delete" to confirm',
     deleteConfirmPlaceholder: "delete",
     deleteButton: "Delete account",
@@ -638,15 +660,19 @@ export const en: Translations = {
 
   legal: {
     termsTitle: "Terms of Service",
-    termsMetaDescription: "Terms of Service for Share House Portal. Please read before using the service.",
+    termsMetaDescription:
+      "Terms of Service for Share House Portal. Please read before using the service.",
     privacyTitle: "Privacy Policy",
-    privacyMetaDescription: "How we handle your personal information at Share House Portal.",
+    privacyMetaDescription:
+      "How we handle your personal information at Share House Portal.",
     lastUpdated: "Last updated: {{date}}",
     terms: {
       article1Title: "Article 1 (Purpose)",
-      article1Content: "These Terms of Service establish the conditions for using Share House Portal (the \"Service\"). By using the Service, you agree to these terms.",
+      article1Content:
+        "These Terms of Service establish the conditions for using Share House Portal (the \"Service\"). By using the Service, you agree to these terms.",
       article2Title: "Article 2 (Eligibility)",
-      article2Content: "The Service is available only to residents of this share house and related parties. Upon moving out, please delete your account promptly or contact the administrator.",
+      article2Content:
+        "The Service is available only to residents of this share house and related parties. Upon moving out, please delete your account promptly or contact the administrator.",
       article3Title: "Article 3 (Prohibited Conduct)",
       article3Content: "Users must not engage in the following activities:",
       article3Item1: "Harassment, defamation, or invasion of privacy of other users",
@@ -655,13 +681,17 @@ export const en: Translations = {
       article3Item4: "Impersonating another person",
       article3Item5: "Violating laws or public morals",
       article4Title: "Article 4 (Account Management)",
-      article4Content: "Users are responsible for properly managing their account information (email, password, etc.). We are not liable for damages caused by unauthorized use of accounts.",
+      article4Content:
+        "Users are responsible for properly managing their account information (email, password, etc.). We are not liable for damages caused by unauthorized use of accounts.",
       article5Title: "Article 5 (Service Changes and Interruptions)",
-      article5Content: "We may change, suspend, or terminate the Service without prior notice. We are not liable for any damages to users resulting from such changes.",
+      article5Content:
+        "We may change, suspend, or terminate the Service without prior notice. We are not liable for any damages to users resulting from such changes.",
       article6Title: "Article 6 (Disclaimer)",
-      article6Content: "The Service is provided \"as is.\" We are not liable for disputes between users, data loss, or any other damages related to the use of the Service.",
+      article6Content:
+        "The Service is provided \"as is.\" We are not liable for disputes between users, data loss, or any other damages related to the use of the Service.",
       article7Title: "Article 7 (Changes to Terms)",
-      article7Content: "We may modify these terms as needed. Modified terms become effective when posted on the Service.",
+      article7Content:
+        "We may modify these terms as needed. Modified terms become effective when posted on the Service.",
     },
     privacy: {
       section1Title: "1. Information We Collect",
@@ -673,24 +703,32 @@ export const en: Translations = {
       section1Item5: "Device information (browser type, IP address)",
       section2Title: "2. How We Use Information",
       section2Content: "We use collected information for:",
-      section2Item1: "Providing and operating the Service (facilitating communication between residents)",
+      section2Item1:
+        "Providing and operating the Service (facilitating communication between residents)",
       section2Item2: "Improving the Service and developing new features",
       section2Item3: "Responding to inquiries",
       section3Title: "3. Information Sharing",
-      section3Content: "Profile information and posted content are visible to other registered users.",
+      section3Content:
+        "Profile information and posted content are visible to other registered users.",
       section3Item1: "Profile information is displayed in the resident directory",
       section3Item2: "Posted photos and event information are shared with other residents",
-      section3Item3: "We do not share information with third parties except when required by law",
+      section3Item3:
+        "We do not share information with third parties except when required by law",
       section4Title: "4. Data Storage and Security",
-      section4Content: "Your data is stored on servers with appropriate security measures. However, we cannot guarantee complete security over the internet.",
+      section4Content:
+        "Your data is stored on servers with appropriate security measures. However, we cannot guarantee complete security over the internet.",
       section5Title: "5. Use of Cookies",
-      section5Content: "We use cookies to maintain login status and improve user experience. You can disable cookies in your browser settings, but some features may not work properly.",
+      section5Content:
+        "We use cookies to maintain login status and improve user experience. You can disable cookies in your browser settings, but some features may not work properly.",
       section6Title: "6. Your Rights",
-      section6Content: "You can edit or delete your profile information at any time. When you delete your account, associated data will be removed from our servers (though backups and logs may be retained for a period).",
+      section6Content:
+        "You can edit or delete your profile information at any time. When you delete your account, associated data will be removed from our servers (though backups and logs may be retained for a period).",
       section7Title: "7. Policy Changes",
-      section7Content: "This policy may be updated as needed. Significant changes will be announced on the Service.",
+      section7Content:
+        "This policy may be updated as needed. Significant changes will be announced on the Service.",
       section8Title: "8. Contact",
-      section8Content: "For questions about this policy, please contact the share house administrator.",
+      section8Content:
+        "For questions about this policy, please contact the share house administrator.",
     },
   },
 
@@ -762,7 +800,6 @@ export const en: Translations = {
     nextTwoWeeks: "Next 2 Weeks",
     showAll: "Show All",
     createEvent: "Create Event",
-
     noEventsOnDay: "No events on this day",
     createAndInvite: "Create an event and invite everyone",
     countLabel: "{{count}} event(s)",
@@ -824,14 +861,12 @@ export const en: Translations = {
     userCount: "{{count}} users",
     credentials: "Credentials",
     credentialsTitle: "Change Credentials",
-    credentialsDescription:
-      "Change email address or password for {{name}}",
+    credentialsDescription: "Change email address or password for {{name}}",
     currentEmailLabel: "Current email",
     newEmail: "New email address",
     newPassword: "New password",
     confirmNewPassword: "Confirm new password",
-    passwordHint:
-      "At least 10 characters, with uppercase, lowercase, and a number",
+    passwordHint: "At least 10 characters, with uppercase, lowercase, and a number",
     updateEmail: "Update email",
     updatingEmail: "Updating...",
     updatePassword: "Update password",
@@ -880,7 +915,8 @@ export const en: Translations = {
     modern: "Modern",
     modernDescription: "Cool slate and emerald green. Sleek minimalist design.",
     mono: "Monochrome",
-    monoDescription: "Pure black and white. A serene, refined minimalism stripped to its essence.",
+    monoDescription:
+      "Pure black and white. A serene, refined minimalism stripped to its essence.",
     light: "Light",
     dark: "Dark",
     system: "System",
@@ -948,86 +984,5 @@ export const en: Translations = {
     Explorers: "Explorers",
   },
 
-  mbtiTypes: {
-    INTJ: {
-      label: "Architect",
-      summary: "Strategic thinkers passionate about solving complex problems with strong independence. INTJs have a long-term vision and excel at meticulously planning to achieve it. With an insatiable thirst for knowledge, they constantly pursue self-improvement.\n\nThey tend to hold themselves and others to high standards, and can be impatient with inefficient processes or illogical decisions. They prefer deep discussions and idea exchanges over superficial conversations.\n\nWhile they may seem cold at first glance, they show sincere and loyal sides to those they trust. Possessing a unique worldview, they have the strength to follow the path they believe is right without being swayed by the majority.",
-      traits: "Logical, Independent, Strategic, Perfectionist",
-    },
-    INTP: {
-      label: "Logician",
-      summary: "Innovative thinkers who love logical analysis and have endless intellectual curiosity. INTPs enjoy exploring abstract concepts and theories, deeply contemplating to understand the essence of things. With a unique perspective, they can think outside conventional frameworks.\n\nMultiple ideas and projects constantly swirl in their minds, and they thrive most in environments that provide intellectual stimulation. While they may appear reserved in social situations, they become surprisingly talkative about topics that interest them.\n\nThey tend to prioritize logic over emotions and approach problems through objective analysis. They dislike being confined to molds and seek environments where they can freely let their thoughts roam.",
-      traits: "Analytical, Creative, Objective, Curious",
-    },
-    ENTJ: {
-      label: "Commander",
-      summary: "Excellent leaders who efficiently guide people toward achieving goals. ENTJs have a clear vision and the ability to rally others to realize it. Even in difficult situations, they make calm decisions and lead their team to success.\n\nNatural strategists, they excel at planning to achieve long-term goals and putting those plans into action. They express opinions with a confident attitude, and while they may sometimes appear forceful, this reflects their strong will to move things forward.\n\nThey dislike inefficiency and always keep an eye on process improvements. They can recognize team members' potential and place people in positions where they'll thrive. In private, they often show a surprisingly caring side.",
-      traits: "Decisive, Efficient, Leader, Confident",
-    },
-    ENTP: {
-      label: "Debater",
-      summary: "Innovative thinkers who enjoy intellectual debates and challenging existing ideas. ENTPs excel at viewing things from multiple perspectives and finding new possibilities. Endlessly curious, they're interested in various fields and generate ideas one after another.\n\nKnown for enjoying debates, they sometimes engage in arguments just to counter others' opinions. This isn't malicious but reflects an intellectual desire to explore problems from every angle.\n\nThey dislike routines and constraints, performing best in environments where they can think freely. Sociable and enjoying witty conversations, they're also skilled at making others laugh. They pour passion into starting new projects but tend to prefer moving to the next idea rather than completing things.",
-      traits: "Witty, Challenging, Adaptable, Inventive",
-    },
-    INFJ: {
-      label: "Advocate",
-      summary: "Idealists with deep insight who find joy in helping others. INFJs intuitively understand others' emotions and motivations, valuing building meaningful connections. Quietly but firmly holding strong convictions, they feel a sense of mission to contribute to a better world.\n\nExcellent at reading the true feelings deep in people's hearts, they often play counselor-like roles. They prefer building deep, trusting relationships over superficial ones.\n\nThey value alone time and recover energy through introspection. With creative expression abilities, they enjoy expressing their inner world through writing and art. Considered the rarest MBTI type, they're characterized by unique perspectives and deep thinking.",
-      traits: "Insightful, Idealistic, Compassionate, Sincere",
-    },
-    INFP: {
-      label: "Mediator",
-      summary: "Sensitive souls with rich inner worlds who live true to their values. INFPs overflow with creativity and imagination, enjoying expressing themselves through art and literature. With deep empathy for others, they possess a kindness that can't ignore those in need.\n\nIdealistic, they constantly harbor wishes to make the world a better place. In situations conflicting with their values, they show quiet but strong resistance. Though introverted, they passionately share their thoughts with those they trust.\n\nThey have a sensitivity for finding beauty and meaning in everyday life, viewing the world from a poetic perspective. Perfectionist tendencies can make them hesitant to share their work or ideas. Often seen as dreamers, they can act with surprising persistence for things they believe in.",
-      traits: "Creative, Empathetic, Authentic, Idealist",
-    },
-    ENFJ: {
-      label: "Protagonist",
-      summary: "Charismatic types who bring out the best in people and create harmonious environments. ENFJs naturally attract others and have a talent for uniting groups. They genuinely rejoice in others' growth and spare no effort in supporting them.\n\nWith excellent empathy, they can sense people's feelings and offer appropriate words. Skilled at inspiring and motivating people, they possess natural qualities as educators and mentors. They tend to avoid conflict and work hard to maintain harmony within groups.\n\nBeing too sensitive to others' needs, they sometimes put their own needs last. Idealistic, they have a strong sense of mission to make society better. They often actively participate in community activities and volunteering.",
-      traits: "Charismatic, Empathetic, Altruistic, Passionate",
-    },
-    ENFP: {
-      label: "Campaigner",
-      summary: "Passionate and creative free spirits who value connections with people. ENFPs are open to new ideas and possibilities, bringing energy and vitality to those around them. They excel at finding the good in people and encouraging them.\n\nSociable and warm, they can quickly connect with strangers. They dislike routines and constraints, valuing freedom and flexibility. Emotionally expressive, they honestly show their feelings.\n\nCurious with various interests, they tend to struggle with focusing on one thing continuously. Idealistic, they believe in the world's possibilities and try to create positive change. They enjoy deep conversations and discussing life's meaning and purpose. They pour passion into creative projects, trying to realize them by involving others.",
-      traits: "Passionate, Creative, Sociable, Optimistic",
-    },
-    ISTJ: {
-      label: "Logistician",
-      summary: "Highly reliable types with strong responsibility who value tradition and order. ISTJs always keep their promises and see assigned tasks through to completion. They make decisions based on facts and data, steadily moving things forward with solidity.\n\nThey respect rules and regulations, valuing maintaining social order. They prefer acting according to plans and may feel confused by unexpected changes. Prioritizing logic over emotions, they judge based on objective facts.\n\nThough they may seem quiet, they demonstrate sincerity through actions. Skilled at accumulating years of experience and knowledge and applying it in practice. They hold deep loyalty to family and close ones, striving to provide a stable environment. Quietly possessing inner strength, they fulfill responsibilities even in difficult situations.",
-      traits: "Responsible, Honest, Methodical, Reliable",
-    },
-    ISFJ: {
-      label: "Defender",
-      summary: "Warm types who compassionately and devotedly support those around them. ISFJs are attentive to details and excel at sensing others' needs. Though modest, they spare no effort for those they care about.\n\nThey value traditions and customs, preferring stable environments. They cherish past experiences and apply them to current decisions. They serve without seeking gratitude but feel great joy when recognized.\n\nTending to avoid conflict, they work to maintain harmony with others. With strong responsibility, they carefully complete tasks they've accepted. Skilled at creating a homey atmosphere, they're a reassuring presence to those around them. They prefer stability over change but don't hesitate to sacrifice themselves for loved ones.",
-      traits: "Devoted, Caring, Humble, Loyal",
-    },
-    ESTJ: {
-      label: "Executive",
-      summary: "Practical types with excellent organizational skills who value rules and efficiency. ESTJs lead teams toward clear goals and create orderly environments. With strong responsibility, they demand discipline from themselves and others, but deliver results accordingly.\n\nThey respect tradition and order, performing well within established systems. They prefer direct communication and dislike ambiguous expressions. Naturally called upon to show leadership, they're skilled at uniting groups.\n\nThey excel at finding practical solutions and executing them efficiently. Sincere and honest, they always keep their promises. Though sometimes appearing stubborn, this reflects their faithfulness to their beliefs. They value community contribution and try to fulfill social responsibilities.",
-      traits: "Organized, Practical, Decisive, Responsible",
-    },
-    ESFJ: {
-      label: "Consul",
-      summary: "Sociable and cooperative types who prioritize others' happiness and love to care for people. ESFJs value harmony and serve as the glue that holds groups together. They express love through practical support and cherish their community.\n\nSensitive to others' needs, they readily reach out to help those in trouble. They value traditions and customs, cherishing bonds with family and friends. Skilled at organizing events and celebrations, they bring people together to create enjoyable times.\n\nThey appreciate being recognized and feel great joy from words of gratitude. They avoid conflict and work to maintain peace with others. Responsible, they always keep their promises. Skilled at creating warm, homey atmospheres, they're a reassuring presence to those around them.",
-      traits: "Sociable, Cooperative, Kind, Loyal",
-    },
-    ISTP: {
-      label: "Virtuoso",
-      summary: "Practical types with calm observation skills and excellent problem-solving abilities. ISTPs prefer learning by doing and are interested in how machines and systems work. They stay calm in crises and find efficient solutions.\n\nExcellent at logical thinking, they analyze situations objectively without being swayed by emotions. They value freedom and independence, disliking being constrained. Though they may seem quiet, it's because they prefer showing through actions rather than words.\n\nWith practical skills, they're adept at using tools. They remain calm in unpredictable situations and can respond flexibly. They don't fear risks and enjoy thrilling experiences. With those they've built trust, they can show a surprisingly humorous side.",
-      traits: "Calm, Practical, Adaptable, Logical",
-    },
-    ISFP: {
-      label: "Adventurer",
-      summary: "Types with artistic sense and flexibility who cherish living in the moment. ISFPs enjoy experiencing the world through their senses and are moved by beauty. They value their own pace and soothe others with their gentle, unobtrusive nature.\n\nThey live true to their values while respecting others' values. They express love through actions rather than words, supporting others with subtle kindness. They enjoy connecting with nature and art, drawing inspiration from them.\n\nTending to avoid conflict, they prefer harmonious environments. They prefer going with the flow rather than making plans. With rich sensitivity, they keenly sense others' emotions. They love freedom and dislike being confined, but show strong will for loved ones and beliefs.",
-      traits: "Artistic, Flexible, Gentle, Sensitive",
-    },
-    ESTP: {
-      label: "Entrepreneur",
-      summary: "Action-oriented types who seek thrills and new experiences. ESTPs enjoy the present moment and act immediately when opportunities arise. Sociable and influential, they can read the room and respond flexibly.\n\nExcellent at practical problem-solving, they prefer trying things out over theory. They don't fear risks and enjoy thrilling challenges. They prefer direct communication and dislike roundabout expressions.\n\nWith sharp observation skills, they quickly grasp their surroundings. Energetic, they hate boredom and constantly seek stimulation. With negotiation skills, they're adept at persuading people. They prefer acting flexibly according to situations rather than making plans. Competitive, they perform well in challenging situations.",
-      traits: "Energetic, Bold, Realistic, Sociable",
-    },
-    ESFP: {
-      label: "Entertainer",
-      summary: "Sociable and optimistic entertainers who excel at bringing joy to those around them. ESFPs are masters of enjoying life, uplifting others with their brightness. Spontaneous and flexible, they genuinely enjoy meeting new people and having new experiences.\n\nWith a talent for livening up atmospheres, they often become the center of parties and events. They enjoy the world through their senses, savoring delicious food, music, and nature. They value going with the flow rather than making plans.\n\nEmotionally expressive, they honestly show their feelings. They enjoy helping people and readily support those in trouble. Skilled at practical problem-solving, they prioritize practice over theory. Even in negative situations, they find positive aspects and can encourage those around them.",
-      traits: "Sociable, Optimistic, Playful, Spontaneous",
-    },
-  },
+  mbtiTypes: mbtiTypesEn,
 };

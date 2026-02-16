@@ -101,11 +101,12 @@ values (
 );
 
 -- 住所情報（notes は省略で NULL）
+-- 注: 階数(5F等)は floor カラムで管理するため、住所文字列からは意図的に除外
 insert into public.shared_info (info_key, title, content, display_order)
 values (
   'address',
   '住所',
-  '東京都 文京区 白山3丁目 3番 4号 田中ビル5F',
+  '東京都文京区白山3丁目3番4号 田中ビル',
   2
 );
 

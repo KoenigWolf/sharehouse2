@@ -131,34 +131,64 @@
   }
 
   /* ========================================
-   * テキスト系（Typography）
+   * テキスト系（Typography）- immedio style
    * ======================================== */
-  .heading-page {
-    @apply text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground tracking-tight;
+
+  /* メイン見出し - 極太 */
+  .heading-hero {
+    @apply text-3xl sm:text-4xl lg:text-5xl text-foreground leading-tight;
+    font-weight: 900;
+    letter-spacing: -0.03em;
   }
 
+  /* ページ見出し */
+  .heading-page {
+    @apply text-xl sm:text-2xl lg:text-3xl font-bold text-foreground;
+    letter-spacing: -0.02em;
+  }
+
+  /* セクション見出し */
   .heading-section {
     @apply text-lg lg:text-xl font-bold text-foreground;
+    letter-spacing: -0.01em;
   }
 
+  /* カード見出し */
   .heading-card {
     @apply text-base lg:text-lg font-bold text-foreground;
   }
 
+  /* セクションラベル（上部の小さいラベル） */
+  .section-label {
+    @apply text-sm font-bold text-foreground;
+    letter-spacing: 0.01em;
+  }
+
+  /* サブタイトル */
+  .subtitle {
+    @apply text-base text-muted-foreground leading-relaxed;
+    letter-spacing: 0.02em;
+  }
+
+  /* 本文 */
   .text-body {
-    @apply text-sm text-foreground/80 leading-relaxed font-sans;
+    @apply text-sm sm:text-base text-foreground/90 leading-relaxed;
+    letter-spacing: 0.02em;
   }
 
+  /* 補足テキスト */
   .text-muted {
-    @apply text-xs text-muted-foreground font-sans;
+    @apply text-xs sm:text-sm text-muted-foreground;
   }
 
+  /* ラベル（大文字） */
   .label-uppercase {
-    @apply text-[10px] font-bold tracking-wider uppercase text-muted-foreground/80 font-sans;
+    @apply text-[10px] font-bold tracking-wider uppercase text-muted-foreground/80;
   }
 
+  /* フィールドラベル */
   .label-field {
-    @apply text-sm font-medium text-foreground/80 font-sans;
+    @apply text-sm font-medium text-foreground/80;
   }
 
   /* ========================================

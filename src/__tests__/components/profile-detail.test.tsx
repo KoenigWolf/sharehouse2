@@ -106,13 +106,13 @@ describe("ProfileDetail", () => {
       ).not.toBeInTheDocument();
     });
 
-    it("applies dashed border for mock profiles", () => {
+    it("does not apply special border for mock profiles", () => {
       const mockMockProfile = { ...mockProfile, id: "mock-301" };
       const { container } = render(
         <ProfileDetail profile={mockMockProfile} isOwnProfile={false} />
       );
       const card = container.querySelector(".border-dashed");
-      expect(card).toBeInTheDocument();
+      expect(card).not.toBeInTheDocument();
     });
   });
 
