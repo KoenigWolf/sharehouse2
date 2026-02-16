@@ -34,6 +34,11 @@ export const en: Translations = {
     brand: "SHARE HOUSE",
   },
 
+  home: {
+    heroTitle: "Welcome Home",
+    heroSubtitle: "Discover the amazing people who make this place special.",
+  },
+
   nav: {
     home: "Home",
     residents: "Residents",
@@ -741,6 +746,8 @@ export const en: Translations = {
     placeholder: "What's your vibe?",
     post: "Post",
     update: "Update",
+    updateVibe: "Update Vibe",
+    placeholderVibe: "What's your vibe today?",
     empty: "No posts yet",
     deleteConfirm: "Delete this post?",
     maxLength: "{{max}} characters max",

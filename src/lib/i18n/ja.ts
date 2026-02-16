@@ -33,6 +33,11 @@ export const ja = {
     brand: "SHARE HOUSE",
   },
 
+  home: {
+    heroTitle: "おかえりなさい",
+    heroSubtitle: "この場所を特別にする、素敵な住人たち。",
+  },
+
   nav: {
     home: "Home",
     residents: "住民",
@@ -739,6 +744,8 @@ export const ja = {
     placeholder: "What's your vibe?",
     post: "投稿",
     update: "更新",
+    updateVibe: "今の気分を更新",
+    placeholderVibe: "今の気分はどうですか？",
     empty: "まだ投稿がありません",
     deleteConfirm: "この投稿を削除しますか？",
     maxLength: "{{max}}文字以内",
@@ -998,8 +1005,8 @@ export const ja = {
 type DeepStringify<T> = T extends string
   ? string
   : T extends object
-    ? { [K in keyof T]: DeepStringify<T[K]> }
-    : T;
+  ? { [K in keyof T]: DeepStringify<T[K]> }
+  : T;
 
 /**
  * Translations type for type-safe i18n.

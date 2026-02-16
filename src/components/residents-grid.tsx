@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
-import { m, motion, AnimatePresence } from "framer-motion";
+import { useState, useMemo } from "react";
+import { m, AnimatePresence } from "framer-motion";
 import {
   LayoutGrid,
   Layers,
@@ -10,6 +10,7 @@ import {
   X,
   ChevronRight,
   Coffee,
+  MessageCircle,
 } from "lucide-react";
 import { ResidentCard } from "@/components/resident-card";
 import { Profile } from "@/domain/profile";
@@ -20,7 +21,7 @@ import Link from "next/link";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
 import { getFloorFromRoom, isNewResident, FLOOR_COLORS, type FloorId } from "@/lib/utils/residents";
-import { VibeInput } from "@/components/vibe-input";
+import { VibeUpdateModal } from "@/components/vibe-update-modal";
 import { ICON_STROKE, ICON_GAP } from "@/lib/constants/icons";
 
 interface ResidentsGridProps {
@@ -29,31 +30,28 @@ interface ResidentsGridProps {
   teaTimeParticipants?: string[];
 }
 
-type SortOption = "name" | "room_number" | "move_in_date";
 type ViewMode = "grid" | "floor" | "list";
-type FloorFilter = "all" | "2F" | "3F" | "4F" | "5F";
 
 const SEARCH_VISIBLE_THRESHOLD = 30;
 
-// Animation variants
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.04,
-      delayChildren: 0.1,
+      staggerChildren: 0.03,
+      delayChildren: 0.05,
     },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 12 },
+  hidden: { opacity: 0, y: 8 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.35,
+      duration: 0.3,
       ease: [0.25, 0.46, 0.45, 0.94] as const,
     },
   },
@@ -66,20 +64,10 @@ export function ResidentsGrid({
 }: ResidentsGridProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
-  const [sortBy, setSortBy] = useState<SortOption>("room_number");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
-  const [floorFilter, setFloorFilter] = useState<FloorFilter>("all");
+  const [isVibeModalOpen, setIsVibeModalOpen] = useState(false);
   const t = useI18n();
   const locale = useLocale();
-
-  const sortOptions = useMemo(
-    () => [
-      { value: "room_number" as const, label: t("residents.sortByRoom") },
-      { value: "name" as const, label: t("residents.sortByName") },
-      { value: "move_in_date" as const, label: t("residents.sortByMoveIn") },
-    ],
-    [t]
-  );
 
   const viewModeOptions = useMemo(
     () => [
@@ -89,8 +77,6 @@ export function ResidentsGrid({
     ],
     [t]
   );
-
-  const floors: FloorFilter[] = ["all", "2F", "3F", "4F", "5F"];
 
   const floorStats = useMemo(() => {
     const registered = profiles.filter((p) => !p.id.startsWith("mock-"));
@@ -109,19 +95,8 @@ export function ResidentsGrid({
     return result;
   }, [profiles]);
 
-  const handleSortChange = useCallback((sort: SortOption) => {
-    setSortBy(sort);
-  }, []);
-
   const filteredAndSortedProfiles = useMemo(() => {
     let result = [...profiles];
-
-    if (floorFilter !== "all") {
-      result = result.filter((profile) => {
-        const floor = getFloorFromRoom(profile.room_number);
-        return floor === floorFilter;
-      });
-    }
 
     if (debouncedSearchQuery.trim()) {
       const query = debouncedSearchQuery.toLowerCase();
@@ -139,28 +114,13 @@ export function ResidentsGrid({
     }
 
     result.sort((a, b) => {
-      switch (sortBy) {
-        case "name":
-          if (a.id === currentUserId) return -1;
-          if (b.id === currentUserId) return 1;
-          return a.name.localeCompare(b.name, locale);
-        case "room_number":
-          const roomA = a.room_number || "999";
-          const roomB = b.room_number || "999";
-          return roomA.localeCompare(roomB, locale, { numeric: true });
-        case "move_in_date":
-          if (a.id === currentUserId) return -1;
-          if (b.id === currentUserId) return 1;
-          const dateA = a.move_in_date || "9999-12-31";
-          const dateB = b.move_in_date || "9999-12-31";
-          return dateA.localeCompare(dateB);
-        default:
-          return 0;
-      }
+      const roomA = a.room_number || "999";
+      const roomB = b.room_number || "999";
+      return roomA.localeCompare(roomB, locale, { numeric: true });
     });
 
     return result;
-  }, [profiles, debouncedSearchQuery, sortBy, floorFilter, currentUserId, locale]);
+  }, [profiles, debouncedSearchQuery, locale]);
 
   const groupedByFloor = useMemo(() => {
     const groups: Record<string, Profile[]> = {
@@ -181,7 +141,6 @@ export function ResidentsGrid({
   const teaTimeSet = useMemo(() => new Set(teaTimeParticipants), [teaTimeParticipants]);
 
   const totalCount = profiles.length;
-  const displayCount = filteredAndSortedProfiles.length;
 
   const currentUserProfile = useMemo(
     () => profiles.find((p) => p.id === currentUserId),
@@ -197,46 +156,46 @@ export function ResidentsGrid({
   }
 
   return (
-    // Golden ratio spacing: space-y-10 ≈ 40px (Fibonacci)
     <m.div
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-10"
+      className="space-y-3"
     >
-      {/* ═══════════════════════════════════════════════════════════════════
-          VIBE INPUT - Personal expression zone
-      ═══════════════════════════════════════════════════════════════════ */}
+      {/* FAB for Vibe Update */}
       {currentUserId && (
-        <m.div variants={itemVariants} className="max-w-2xl mx-auto w-full">
-          <VibeInput
+        <>
+          <m.button
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.4, type: "spring", stiffness: 400, damping: 25 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setIsVibeModalOpen(true)}
+            className="fixed bottom-24 sm:bottom-8 right-5 sm:right-8 z-40 h-14 w-14 rounded-full bg-foreground text-background shadow-lg shadow-foreground/20 flex items-center justify-center"
+            aria-label={t("bulletin.updateVibe")}
+          >
+            <MessageCircle size={22} />
+          </m.button>
+
+          <VibeUpdateModal
+            isOpen={isVibeModalOpen}
+            onClose={() => setIsVibeModalOpen(false)}
             currentVibe={currentUserProfile?.vibe?.message}
-            isLoggedIn={!!currentUserId}
+            userProfile={currentUserProfile ? {
+              name: currentUserProfile.name,
+              nickname: currentUserProfile.nickname ?? null,
+              avatar_url: currentUserProfile.avatar_url,
+            } : undefined}
           />
-        </m.div>
+        </>
       )}
 
-      {/* ═══════════════════════════════════════════════════════════════════
-          HEADER & CONTROLS
-          - Clear visual hierarchy
-          - Grouped by function (title, view mode)
-      ═══════════════════════════════════════════════════════════════════ */}
-      <m.section variants={itemVariants} className="space-y-6">
-        {/* Title row with view mode toggle */}
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <h2 className="text-xl sm:text-2xl text-foreground tracking-tight font-semibold">
-              {t("residents.title")}
-            </h2>
-            <p className="text-sm text-muted-foreground mt-1.5">
-              {t("residents.countLabel", { count: displayCount })}
-              {(searchQuery || floorFilter !== "all") &&
-                ` ${t("residents.countOf", { total: totalCount })}`}
-            </p>
-          </div>
-
-          {/* View mode toggle - touch target 44px+ */}
-          <div className="flex gap-1 p-1 bg-muted/60 rounded-xl">
+      {/* Controls Section - Minimal */}
+      <m.section variants={itemVariants} className="space-y-2">
+        {/* View mode toggle */}
+        <div className="flex items-center justify-end gap-3">
+          <div className="flex gap-0.5 p-0.5 bg-muted/50 rounded-lg">
             {viewModeOptions.map((option) => {
               const isActive = viewMode === option.value;
               const Icon = option.icon;
@@ -245,154 +204,68 @@ export function ResidentsGrid({
                   key={option.value}
                   type="button"
                   onClick={() => setViewMode(option.value)}
-                  className={`w-10 h-10 flex items-center justify-center rounded-lg transition-all duration-200 ${
-                    isActive
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
+                  className={`w-9 h-9 flex items-center justify-center rounded-md transition-all ${isActive
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                    }`}
                   title={option.label}
                   aria-label={option.label}
                   aria-pressed={isActive}
                 >
-                  <Icon size={18} strokeWidth={1.5} />
+                  <Icon size={16} strokeWidth={1.5} />
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* ═══════════════════════════════════════════════════════════════════
-            FLOOR FILTERS - Horizontal scroll with clear states
-        ═══════════════════════════════════════════════════════════════════ */}
-        <div className="sticky top-[64px] z-30 -mx-4 px-4 py-4 sm:relative sm:top-0 sm:mx-0 sm:px-0 sm:py-0 bg-background/95 backdrop-blur-sm sm:bg-transparent sm:backdrop-blur-none">
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-            {floors.map((floor, i) => {
-              const isAll = floor === "all";
-              const isActive = floorFilter === floor;
-              const floorStat = isAll ? null : floorStats[floor];
-              const colors = isAll ? null : FLOOR_COLORS[floor as keyof typeof FLOOR_COLORS];
-
-              return (
-                <m.button
-                  key={floor}
-                  type="button"
-                  onClick={() => setFloorFilter(floor)}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.2, delay: i * 0.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  className={`
-                    shrink-0 h-12 px-5 sm:px-6 rounded-xl
-                    flex items-center gap-2.5
-                    text-sm font-semibold tracking-tight
-                    transition-all duration-200
-                    ${isActive
-                      ? isAll
-                        ? "bg-foreground text-background shadow-lg"
-                        : `${colors?.bg} ${colors?.text} shadow-sm`
-                      : "bg-muted/60 text-foreground/70 hover:bg-muted hover:text-foreground"
-                    }
-                  `}
-                >
-                  <span>{isAll ? t("residents.filterAll") : floor}</span>
-                  {floorStat && (
-                    <span className={`text-xs tabular-nums ${isActive ? "opacity-70" : "text-muted-foreground"}`}>
-                      {floorStat.registered}/{floorStat.total}
-                    </span>
-                  )}
-                </m.button>
-              );
-            })}
+        {/* Search (only for large lists) */}
+        {totalCount >= SEARCH_VISIBLE_THRESHOLD && (
+          <div className="relative">
+            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
+            <input
+              type="search"
+              placeholder={t("residents.searchPlaceholder")}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full sm:w-72 h-10 pl-10 pr-9 bg-muted/40 border border-border/40 rounded-full text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-muted-foreground hover:text-foreground"
+              >
+                <X size={14} />
+              </button>
+            )}
           </div>
-        </div>
-
-        {/* ═══════════════════════════════════════════════════════════════════
-            SEARCH & SORT CONTROLS
-        ═══════════════════════════════════════════════════════════════════ */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/50">
-          {/* Search field - only show when needed */}
-          {totalCount >= SEARCH_VISIBLE_THRESHOLD && (
-            <div className="relative">
-              <Search size={18} strokeWidth={1.5} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/60" />
-              <input
-                type="search"
-                placeholder={t("residents.searchPlaceholder")}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full sm:w-80 h-12 pl-12 pr-10 bg-muted/50 border border-border/50 rounded-xl text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all duration-200"
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <X size={16} />
-                </button>
-              )}
-            </div>
-          )}
-
-          {/* Sort options - underline style */}
-          <div className="flex overflow-x-auto scrollbar-hide -mx-1 px-1 sm:mx-0 sm:px-0">
-            {sortOptions.map((option) => {
-              const isActive = sortBy === option.value;
-              return (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => handleSortChange(option.value)}
-                  className="relative px-4 py-2.5 whitespace-nowrap shrink-0 group"
-                >
-                  <span className={`text-sm transition-colors ${
-                    isActive
-                      ? "text-foreground font-medium"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}>
-                    {option.label}
-                  </span>
-                  {isActive && (
-                    <motion.span
-                      layoutId="residents-sort-underline"
-                      className="absolute bottom-0 left-4 right-4 h-0.5 bg-foreground rounded-full"
-                      transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
-                    />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+        )}
       </m.section>
 
-      {/* ═══════════════════════════════════════════════════════════════════
-          CONTENT AREA
-      ═══════════════════════════════════════════════════════════════════ */}
+      {/* Content */}
       <AnimatePresence mode="wait">
         {filteredAndSortedProfiles.length === 0 ? (
           <m.div
             key="empty"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="py-20 flex flex-col items-center text-center"
+            exit={{ opacity: 0, y: -8 }}
+            className="py-16 flex flex-col items-center text-center"
           >
-            <div className="w-20 h-20 mb-8 rounded-2xl bg-muted/80 flex items-center justify-center">
-              <Search size={32} className="text-muted-foreground/40" />
+            <div className="w-16 h-16 mb-6 rounded-2xl bg-muted/60 flex items-center justify-center">
+              <Search size={28} className="text-muted-foreground/40" />
             </div>
-            <h3 className="text-xl font-semibold text-foreground mb-2">
+            <h3 className="text-lg font-semibold text-foreground mb-1">
               {t("residents.noMatch")}
             </h3>
-            <p className="text-sm text-muted-foreground mb-6 max-w-sm">
+            <p className="text-sm text-muted-foreground mb-5 max-w-xs">
               {t("residents.tryDifferentSearch")}
             </p>
             <button
               type="button"
-              onClick={() => {
-                setSearchQuery("");
-                setFloorFilter("all");
-              }}
-              className="h-11 px-6 rounded-xl bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors"
+              onClick={() => setSearchQuery("")}
+              className="h-10 px-5 rounded-full bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors"
             >
               {t("residents.clearSearch")}
             </button>
@@ -427,11 +300,7 @@ export function ResidentsGrid({
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   GRID VIEW
-   - Golden ratio grid gaps (gap-5 ≈ 20px, gap-6 ≈ 24px)
-   - Responsive columns following content-aware breakpoints
-═══════════════════════════════════════════════════════════════════════════ */
+/* Grid View - Denser for more faces visible */
 function GridView({
   profiles,
   currentUserId,
@@ -446,17 +315,17 @@ function GridView({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 sm:gap-6"
+      className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5"
     >
       {profiles.map((profile, index) => (
         <m.div
           key={profile.id}
           className="h-full"
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 12, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{
             duration: 0.35,
-            delay: Math.min(index * 0.03, 0.3),
+            delay: Math.min(index * 0.025, 0.25),
             ease: [0.25, 0.46, 0.45, 0.94],
           }}
         >
@@ -472,11 +341,7 @@ function GridView({
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   FLOOR VIEW
-   - Clear section separation with golden ratio spacing (space-y-16 ≈ 64px)
-   - Visual hierarchy: Floor label → Progress → Cards
-═══════════════════════════════════════════════════════════════════════════ */
+/* Floor View */
 function FloorView({
   groupedByFloor,
   currentUserId,
@@ -497,7 +362,7 @@ function FloorView({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="space-y-14 sm:space-y-16"
+      className="space-y-10 sm:space-y-12"
     >
       {floorsOrder.map((floor, floorIndex) => {
         const profiles = groupedByFloor[floor] || [];
@@ -509,39 +374,35 @@ function FloorView({
         return (
           <m.section
             key={floor}
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
-              duration: 0.4,
-              delay: floorIndex * 0.08,
+              duration: 0.35,
+              delay: floorIndex * 0.06,
               ease: [0.25, 0.46, 0.45, 0.94],
             }}
-            className="space-y-6"
+            className="space-y-4"
           >
-            {/* Floor header with progress indicator */}
-            <div className="flex items-center gap-5 pb-5 border-b border-border/50">
+            {/* Floor header */}
+            <div className="flex items-center gap-4 pb-3 border-b border-border/40">
               <div
-                className={`w-14 h-14 flex items-center justify-center rounded-2xl ${colors.bg} ${colors.border} border`}
+                className={`w-12 h-12 flex items-center justify-center rounded-xl ${colors.bg} ${colors.border} border`}
               >
-                <span className={`text-xl font-bold tracking-tight ${colors.text}`}>{floor}</span>
+                <span className={`text-lg font-bold ${colors.text}`}>{floor}</span>
               </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="text-lg font-semibold text-foreground">
+              <div className="flex-1">
+                <h3 className="text-base font-semibold text-foreground">
                   {t("residents.floorLabel", { floor: floor.replace("F", "") })}
                 </h3>
-                <div className="flex items-center gap-4 mt-2">
-                  <span className="text-xs font-medium text-muted-foreground tabular-nums">
-                    {floorStat.registered}/{floorStat.total} {t("residents.registeredShort")}
+                <div className="flex items-center gap-3 mt-1">
+                  <span className="text-xs text-muted-foreground tabular-nums">
+                    {floorStat.registered}/{floorStat.total}
                   </span>
-                  <div className="flex-1 max-w-48 h-1.5 bg-muted rounded-full overflow-hidden">
+                  <div className="flex-1 max-w-32 h-1 bg-muted rounded-full overflow-hidden">
                     <m.div
                       initial={{ width: 0 }}
                       animate={{ width: `${(floorStat.registered / floorStat.total) * 100}%` }}
-                      transition={{
-                        duration: 0.8,
-                        ease: [0.25, 0.46, 0.45, 0.94],
-                        delay: floorIndex * 0.1 + 0.2,
-                      }}
+                      transition={{ duration: 0.6, delay: floorIndex * 0.08 + 0.1 }}
                       className={`h-full rounded-full ${colors.accent}`}
                     />
                   </div>
@@ -549,18 +410,17 @@ function FloorView({
               </div>
             </div>
 
-            {/* Cards grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 sm:gap-6">
+            {/* Cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5">
               {profiles.map((profile, index) => (
                 <m.div
                   key={profile.id}
                   className="h-full"
-                  initial={{ opacity: 0, y: 12 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{
-                    duration: 0.3,
-                    delay: index * 0.04,
-                    ease: [0.25, 0.46, 0.45, 0.94],
+                    duration: 0.25,
+                    delay: index * 0.03,
                   }}
                 >
                   <ResidentCard
@@ -580,11 +440,7 @@ function FloorView({
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   LIST VIEW
-   - Compact rows with clear touch targets
-   - F-pattern info layout (avatar → name → details → arrow)
-═══════════════════════════════════════════════════════════════════════════ */
+/* List View */
 function ListView({
   profiles,
   currentUserId,
@@ -606,12 +462,11 @@ function ListView({
       {profiles.map((profile, index) => (
         <m.div
           key={profile.id}
-          initial={{ opacity: 0, x: -8 }}
+          initial={{ opacity: 0, x: -6 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{
-            duration: 0.25,
-            delay: Math.min(index * 0.02, 0.15),
-            ease: [0.25, 0.46, 0.45, 0.94],
+            duration: 0.2,
+            delay: Math.min(index * 0.015, 0.12),
           }}
         >
           <ResidentListItem
@@ -626,11 +481,7 @@ function ListView({
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   LIST ITEM
-   - Touch target: full row (minimum 64px height)
-   - Visual hierarchy: Avatar → Name/Room → Meta → Arrow
-═══════════════════════════════════════════════════════════════════════════ */
+/* List Item */
 function ResidentListItem({
   profile,
   isCurrentUser,
@@ -655,79 +506,79 @@ function ResidentListItem({
     >
       <article
         className={`
-          flex items-center gap-4 p-4 sm:p-5
+          flex items-center gap-3 sm:gap-4 p-3 sm:p-4
           bg-card rounded-xl border
           transition-all duration-200
           hover:shadow-md hover:-translate-y-0.5
           ${isCurrentUser
-            ? "ring-2 ring-brand-500/20 border-brand-500"
-            : "border-border/50 hover:border-border"
+            ? "ring-2 ring-brand-500/20 border-brand-500/40"
+            : "border-border/40 hover:border-border/60"
           }
         `}
       >
-        {/* Avatar with badge */}
+        {/* Avatar */}
         <div className="relative shrink-0">
-          <Avatar className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl border border-border/50">
+          <Avatar className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl border border-border/30 shadow-sm">
             <OptimizedAvatarImage
               src={profile.avatar_url}
               alt={profile.name}
               context="card"
               className="w-full h-full"
               fallback={getInitials(profile.name)}
-              fallbackClassName="bg-muted text-muted-foreground text-base sm:text-lg font-semibold rounded-xl w-full h-full flex items-center justify-center"
+              fallbackClassName="bg-muted text-muted-foreground text-sm font-semibold rounded-xl w-full h-full flex items-center justify-center"
             />
           </Avatar>
           {isCurrentUser && (
-            <span className="absolute -top-1.5 -right-1.5 bg-foreground text-background text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase">
-              {t("common.you")}
+            <span className="absolute -top-1 -right-1 bg-foreground text-background text-[8px] px-1.5 py-0.5 rounded-full font-bold uppercase">
+              You
             </span>
           )}
         </div>
 
-        {/* Main content */}
+        {/* Content */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2.5 flex-wrap">
-            <h3 className="text-base sm:text-lg text-foreground font-semibold tracking-tight truncate">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h3 className="text-sm sm:text-base text-foreground font-semibold truncate">
               {profile.nickname || profile.name}
             </h3>
             {profile.room_number && (
-              <span className={`text-xs px-2 py-0.5 rounded-lg font-medium ${colors.bg} ${colors.text}`}>
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-medium ${colors.bg} ${colors.text}`}>
                 {profile.room_number}
               </span>
             )}
             {isNew && !isMockProfile && (
-              <span className="text-[10px] px-2 py-0.5 bg-brand-500 text-white rounded-full font-bold tracking-wider">
+              <span className="text-[9px] px-1.5 py-0.5 bg-brand-500 text-white rounded-full font-bold">
                 NEW
               </span>
             )}
             {isTeaTimeParticipant && !isMockProfile && (
-              <span className={`text-[10px] px-2 py-0.5 bg-warning-bg text-warning rounded-lg font-bold flex items-center ${ICON_GAP.xs} border border-warning-border/50`}>
-                <Coffee size={10} strokeWidth={ICON_STROKE.normal} />
+              <span className={`text-[9px] px-1.5 py-0.5 bg-warning-bg text-warning rounded-md font-bold flex items-center ${ICON_GAP.xs} border border-warning-border/50`}>
+                <Coffee size={9} strokeWidth={ICON_STROKE.normal} />
               </span>
             )}
             {isMockProfile && (
-              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">
+              <span className="text-[9px] text-muted-foreground/60 font-medium uppercase">
                 {t("common.unregistered")}
               </span>
             )}
           </div>
 
-          {/* Meta info */}
-          <div className="flex items-center gap-2.5 mt-1.5">
+          {/* Meta */}
+          <div className="flex items-center gap-2 mt-1">
             {profile.occupation && (
-              <span className="text-xs text-muted-foreground bg-muted/60 px-2 py-0.5 rounded-md">
+              <span className="text-[11px] text-muted-foreground truncate max-w-[120px]">
                 {t(`profileOptions.occupation.${profile.occupation}` as Parameters<typeof t>[0])}
               </span>
             )}
             {profile.mbti && (
-              <span className="text-xs text-brand-500 font-semibold">{profile.mbti}</span>
+              <span className="text-[11px] text-foreground/60 font-medium">{profile.mbti}</span>
             )}
           </div>
         </div>
 
-        {/* Arrow indicator */}
-        <div className="text-muted-foreground/50 group-hover:text-foreground transition-colors shrink-0">
-          <ChevronRight size={20} strokeWidth={1.5} />
+        {/* Arrow */}
+        <div className="text-muted-foreground/40 group-hover:text-foreground transition-colors shrink-0">
+          <ChevronRight size={18} strokeWidth={1.5} />
         </div>
       </article>
     </Link>
