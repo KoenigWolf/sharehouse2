@@ -53,6 +53,9 @@ export const ja = {
     more: "その他",
     menu: "Menu",
     brand: "Share House Portal v1.0",
+    sectionMain: "Main",
+    sectionUtilities: "Utilities",
+    sectionAccount: "Account",
   },
 
   auth: {
@@ -560,6 +563,7 @@ export const ja = {
     deleteSuccess: "削除しました",
     saveSuccess: "保存しました",
     collectionNote: "※ 必ず収集日の朝8時までに集積所にお出しください",
+    swipeHint: "← Swipe →",
   },
 
   info: {

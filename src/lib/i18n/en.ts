@@ -54,6 +54,9 @@ export const en: Translations = {
     more: "More",
     menu: "Menu",
     brand: "Share House Portal v1.0",
+    sectionMain: "Main",
+    sectionUtilities: "Utilities",
+    sectionAccount: "Account",
   },
 
   auth: {
@@ -560,6 +563,7 @@ export const en: Translations = {
     deleteSuccess: "Deleted",
     saveSuccess: "Saved",
     collectionNote: "* Please put out garbage by 8 AM on collection day",
+    swipeHint: "← Swipe →",
   },
 
   info: {

@@ -271,7 +271,7 @@ export const MobileNav = memo(function MobileNav() {
                   {/* Main Navigation */}
                   <section>
                     <h3 className="px-4 mb-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                      Main
+                      {t("mobileNav.sectionMain")}
                     </h3>
                     <div className="space-y-1">
                       {PRIMARY_NAV_ITEMS.map((item) => (
@@ -288,7 +288,7 @@ export const MobileNav = memo(function MobileNav() {
                   {/* Utilities */}
                   <section>
                     <h3 className="px-4 mb-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                      Utilities
+                      {t("mobileNav.sectionUtilities")}
                     </h3>
                     <div className="space-y-1">
                       {SECONDARY_NAV_ITEMS.map((item) => (
@@ -305,7 +305,7 @@ export const MobileNav = memo(function MobileNav() {
                   {/* Account */}
                   <section>
                     <h3 className="px-4 mb-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                      Account
+                      {t("mobileNav.sectionAccount")}
                     </h3>
                     <div className="space-y-1">
                       <DrawerNavItem
