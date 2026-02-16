@@ -1,0 +1,102 @@
+export const en = {
+  common: {
+    loading: "Loading...",
+    error: "An error occurred",
+    cancel: "Cancel",
+    confirm: "Confirm",
+    delete: "Delete",
+    save: "Save",
+    edit: "Edit",
+    room: "Room",
+    you: "YOU",
+  },
+  auth: {
+    appName: "Share House",
+    subtitle: "Resident Portal",
+    email: "Email",
+    emailPlaceholder: "your@email.com",
+    password: "Password",
+    passwordPlaceholder: "••••••••",
+    signIn: "Sign In",
+    signOut: "Sign Out",
+    forgotPassword: "Forgot password?",
+    residentsOnly: "For house residents only",
+    errorEmptyFields: "Please enter email and password",
+    errorLoginFailed: "Login failed",
+    signOutTitle: "Sign Out",
+    signOutMessage: "Are you sure you want to sign out?",
+  },
+  tabs: {
+    residents: "Residents",
+    bulletin: "Bulletin",
+    events: "Events",
+    share: "Share",
+    settings: "Settings",
+  },
+  residents: {
+    title: "Residents",
+    searchPlaceholder: "Search by name or room...",
+    empty: "No residents found",
+  },
+  bulletin: {
+    title: "Bulletin",
+    subtitle: "Share vibes with housemates",
+    empty: "No messages yet",
+    emptySubtitle: "Be the first to post!",
+    placeholder: "What's on your mind?",
+    deleteTitle: "Delete Message",
+    deleteMessage: "Are you sure you want to delete this message?",
+    deleteError: "Failed to delete message",
+  },
+  events: {
+    title: "Events",
+    subtitle: "Upcoming house events",
+    empty: "No upcoming events",
+    going: "going",
+    join: "Join",
+    cancel: "Cancel",
+    by: "by",
+  },
+  share: {
+    title: "Share Board",
+    subtitle: "Share items with housemates",
+    empty: "No items available",
+    emptySubtitle: "Share something!",
+    claim: "Claim",
+    claimError: "Failed to claim item",
+    hoursLeft: "{{hours}}h left",
+    expiresSoon: "Expires soon",
+  },
+  settings: {
+    title: "Settings",
+    viewProfile: "View Profile →",
+    noRoom: "No room assigned",
+    account: "Account",
+    editProfile: "Edit Profile",
+    notifications: "Notifications",
+    language: "Language",
+    about: "About",
+    termsOfService: "Terms of Service",
+    privacyPolicy: "Privacy Policy",
+    version: "Version",
+    footer: "Share House Portal",
+    footerSubtitle: "Made with ❤️ for housemates",
+  },
+  profile: {
+    notFound: "Profile not found",
+    work: "Work",
+    lifestyle: "Lifestyle",
+    movedIn: "Moved in",
+  },
+  errors: {
+    fetchFailed: "Failed to load data",
+    networkError: "Network error. Please try again.",
+  },
+} as const;
+
+// Type that allows any string values while keeping the same structure
+type DeepStringify<T> = {
+  [K in keyof T]: T[K] extends object ? DeepStringify<T[K]> : string;
+};
+
+export type TranslationKeys = DeepStringify<typeof en>;
