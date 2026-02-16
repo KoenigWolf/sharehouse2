@@ -6,16 +6,10 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  Animated,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Animated, {
-  FadeInDown,
-  FadeInUp,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { useAuth } from "../../lib/auth";
 import { Button } from "../../components/ui/Button";
@@ -31,12 +25,6 @@ export default function LoginScreen() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const logoScale = useSharedValue(1);
-
-  const logoStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: logoScale.value }],
-  }));
-
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
       setError("Please enter email and password");
@@ -46,11 +34,6 @@ export default function LoginScreen() {
 
     setIsLoading(true);
     setError(null);
-
-    // Animate logo
-    logoScale.value = withSpring(0.95, {}, () => {
-      logoScale.value = withSpring(1);
-    });
 
     const result = await signIn(email.trim(), password);
 
@@ -75,11 +58,7 @@ export default function LoginScreen() {
         style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
       >
         {/* Logo */}
-        <Animated.View
-          entering={FadeInDown.duration(600).springify()}
-          style={logoStyle}
-          className="items-center mb-12"
-        >
+        <View className="items-center mb-12">
           <View className="w-20 h-20 bg-brand-500 rounded-2xl items-center justify-center mb-4">
             <Text className="text-white text-4xl">🏠</Text>
           </View>
@@ -89,20 +68,15 @@ export default function LoginScreen() {
           <Text className="text-muted-foreground text-sm mt-1">
             Resident Portal
           </Text>
-        </Animated.View>
+        </View>
 
         {/* Form */}
-        <Animated.View
-          entering={FadeInUp.delay(200).duration(600).springify()}
-        >
+        <View>
           {/* Error Message */}
           {error && (
-            <Animated.View
-              entering={FadeInDown.duration(300)}
-              className="bg-error/10 rounded-xl px-4 py-3 mb-4"
-            >
+            <View className="bg-error/10 rounded-xl px-4 py-3 mb-4">
               <Text className="text-error text-sm text-center">{error}</Text>
-            </Animated.View>
+            </View>
           )}
 
           {/* Email Input */}
@@ -146,18 +120,17 @@ export default function LoginScreen() {
           <Pressable className="mt-4 items-center">
             <Text className="text-brand-500 text-sm">Forgot password?</Text>
           </Pressable>
-        </Animated.View>
+        </View>
 
         {/* Footer */}
-        <Animated.View
-          entering={FadeInUp.delay(400).duration(600)}
+        <View
           className="absolute bottom-8 left-0 right-0 items-center"
           style={{ paddingBottom: insets.bottom }}
         >
           <Text className="text-muted-foreground text-xs">
             For house residents only
           </Text>
-        </Animated.View>
+        </View>
       </View>
     </KeyboardAvoidingView>
   );
