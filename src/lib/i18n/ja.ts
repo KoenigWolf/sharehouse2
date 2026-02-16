@@ -27,6 +27,7 @@ export const ja = {
     formerResident: "退去済み",
     processing: "処理中...",
     copy: "Copy",
+    new: "NEW",
   },
 
   header: {

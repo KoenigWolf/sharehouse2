@@ -28,6 +28,7 @@ export const en: Translations = {
     formerResident: "Former resident",
     processing: "Processing...",
     copy: "Copy",
+    new: "NEW",
   },
 
   header: {

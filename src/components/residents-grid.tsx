@@ -525,7 +525,7 @@ function ResidentListItem({
             )}
             {isNew && !isMockProfile && (
               <span className="text-[9px] px-1.5 py-0.5 bg-brand-500 text-white rounded-full font-bold">
-                NEW
+                {t("common.new")}
               </span>
             )}
             {isMockProfile && (
