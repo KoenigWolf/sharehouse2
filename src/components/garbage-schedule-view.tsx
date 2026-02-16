@@ -57,13 +57,12 @@ const WeekRow = memo(function WeekRow({
   schedule,
   todayIndex,
   dayNames,
-  swipeHint,
 }: {
   schedule: Map<number, GarbageSchedule[]>;
   todayIndex: number;
   dayNames: readonly string[];
-  swipeHint: string;
 }) {
+  const t = useI18n();
   const getTypeStyle = (type: string) => GARBAGE_TYPE_STYLES[type] ?? DEFAULT_STYLE;
 
   return (
@@ -115,7 +114,7 @@ const WeekRow = memo(function WeekRow({
       </div>
       {/* Mobile scroll hint text */}
       <p className="sm:hidden text-[10px] text-muted-foreground text-center mt-1">
-        {swipeHint}
+        {t("garbage.swipeHint")}
       </p>
     </div>
   );
@@ -250,7 +249,7 @@ export function GarbageScheduleView({
           <h3 className="font-semibold">{t("garbage.weeklySchedule")}</h3>
         </div>
 
-        <WeekRow schedule={scheduleByDay} todayIndex={today} dayNames={dayNames} swipeHint={t("garbage.swipeHint")} />
+        <WeekRow schedule={scheduleByDay} todayIndex={today} dayNames={dayNames} />
 
         <p className="text-[10px] text-muted-foreground mt-2">
           {t("garbage.collectionNote")}
