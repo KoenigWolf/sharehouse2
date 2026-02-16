@@ -807,6 +807,8 @@ export const en: Translations = {
     attend: "Attend",
     attending: "Attending",
     attendees: "{{count}} attending",
+    attendeesTitle: "Attendees",
+    viewAttendees: "View attendees",
     noAttendees: "No attendees yet",
     empty: "No upcoming events",
     deleteConfirm: "Delete this event?",

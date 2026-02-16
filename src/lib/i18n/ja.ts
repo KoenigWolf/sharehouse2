@@ -805,6 +805,8 @@ export const ja = {
     attend: "参加する",
     attending: "参加中",
     attendees: "{{count}}人参加",
+    attendeesTitle: "参加者",
+    viewAttendees: "参加者を見る",
     noAttendees: "まだ参加者はいません",
     empty: "予定されているイベントはありません",
     deleteConfirm: "このイベントを削除しますか？",
