@@ -1,29 +1,207 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, memo } from "react";
 import { m } from "framer-motion";
 import Image from "next/image";
+import { Check, User, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
 import { completeDuty } from "@/lib/garbage/actions";
 import { DAY_NAMES_JA, DAY_NAMES_EN } from "@/domain/garbage";
 import type { GarbageSchedule, GarbageDutyWithProfile } from "@/domain/garbage";
+import { cn } from "@/lib/utils";
 
-const GARBAGE_TYPE_STYLES: Record<string, { bg: string; text: string; border: string }> = {
-  可燃ごみ: { bg: "garbage-combustible-bg", text: "garbage-combustible-text", border: "border-[var(--garbage-combustible)]/20" },
-  不燃ごみ: { bg: "bg-muted", text: "text-foreground/80", border: "border-border" },
-  資源: { bg: "bg-primary/10", text: "text-primary", border: "border-primary/20" },
-  資源プラスチック: { bg: "garbage-plastic-bg", text: "garbage-plastic-text", border: "border-[var(--garbage-plastic)]/20" },
-  資源ごみ: { bg: "bg-primary/10", text: "text-primary", border: "border-primary/20" },
+const GARBAGE_TYPE_STYLES: Record<
+  string,
+  { bg: string; text: string; border: string; dot: string }
+> = {
+  可燃ごみ: {
+    bg: "bg-rose-500/10",
+    text: "text-rose-700 dark:text-rose-300",
+    border: "border-rose-200/50 dark:border-rose-800/50",
+    dot: "bg-rose-500",
+  },
+  不燃ごみ: {
+    bg: "bg-slate-500/10",
+    text: "text-slate-700 dark:text-slate-300",
+    border: "border-slate-200/50 dark:border-slate-700/50",
+    dot: "bg-slate-500",
+  },
+  資源: {
+    bg: "bg-blue-500/10",
+    text: "text-blue-700 dark:text-blue-300",
+    border: "border-blue-200/50 dark:border-blue-800/50",
+    dot: "bg-blue-500",
+  },
+  資源プラスチック: {
+    bg: "bg-yellow-500/10",
+    text: "text-yellow-700 dark:text-yellow-300",
+    border: "border-yellow-200/50 dark:border-yellow-700/50",
+    dot: "bg-yellow-500",
+  },
+  資源ごみ: {
+    bg: "bg-blue-500/10",
+    text: "text-blue-700 dark:text-blue-300",
+    border: "border-blue-200/50 dark:border-blue-800/50",
+    dot: "bg-blue-500",
+  },
 };
 
-const DEFAULT_STYLE = { bg: "bg-secondary", text: "text-muted-foreground", border: "border-border" };
+const DEFAULT_STYLE = {
+  bg: "bg-muted/50",
+  text: "text-muted-foreground",
+  border: "border-border/50",
+  dot: "bg-muted-foreground",
+};
 
 interface GarbageScheduleViewProps {
   schedule: GarbageSchedule[];
   duties: GarbageDutyWithProfile[];
   currentUserId: string;
 }
+
+const WeekRow = memo(function WeekRow({
+  schedule,
+  todayIndex,
+  dayNames,
+}: {
+  schedule: Map<number, GarbageSchedule[]>;
+  todayIndex: number;
+  dayNames: string[];
+}) {
+  const t = useI18n();
+  const getTypeStyle = (type: string) => GARBAGE_TYPE_STYLES[type] ?? DEFAULT_STYLE;
+
+  return (
+    <div className="grid grid-cols-7 gap-px bg-border/40 rounded-lg overflow-hidden border border-border/40">
+      {Array.from({ length: 7 }, (_, i) => i).map((dayIndex) => {
+        const items = schedule.get(dayIndex) ?? [];
+        const isToday = dayIndex === todayIndex;
+
+        return (
+          <div
+            key={dayIndex}
+            className={cn(
+              "bg-card p-2 sm:p-3 min-h-[80px] sm:min-h-[100px] flex flex-col gap-2",
+              isToday && "bg-primary/5"
+            )}
+          >
+            <div className={cn(
+              "text-xs font-bold text-center mb-1",
+              isToday ? "text-primary" : "text-muted-foreground"
+            )}>
+              {dayNames[dayIndex]}
+            </div>
+
+            <div className="flex flex-col gap-1.5 flex-1">
+              {items.map((item) => {
+                const style = getTypeStyle(item.garbage_type);
+                return (
+                  <div
+                    key={item.id}
+                    className={cn(
+                      "text-[10px] sm:text-xs font-medium px-1.5 py-1 rounded border break-words leading-tight text-center",
+                      style.bg,
+                      style.text,
+                      style.border
+                    )}
+                  >
+                    {item.garbage_type}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+});
+WeekRow.displayName = "WeekRow";
+
+interface DutyRowProps {
+  duty: GarbageDutyWithProfile;
+  isOwn: boolean;
+  dateStr: string;
+  onComplete: (id: string) => void;
+  isCompleting: boolean;
+}
+
+const DutyRow = memo(function DutyRow({
+  duty,
+  isOwn,
+  dateStr,
+  onComplete,
+  isCompleting,
+}: DutyRowProps) {
+  const t = useI18n();
+  const style = GARBAGE_TYPE_STYLES[duty.garbage_type] ?? DEFAULT_STYLE;
+
+  return (
+    <div
+      className={cn(
+        "group flex items-center gap-4 py-3 border-b border-border/40 last:border-0",
+        duty.is_completed && "opacity-50 grayscale"
+      )}
+    >
+      <div className="w-12 text-xs font-mono text-muted-foreground flex-shrink-0">
+        {dateStr}
+      </div>
+
+      <div className="flex-1 flex items-center gap-3">
+        <div className="w-8 h-8 rounded-full overflow-hidden bg-muted flex-shrink-0">
+          {duty.profile?.avatar_url ? (
+            <Image
+              src={duty.profile.avatar_url}
+              alt={duty.profile.name}
+              width={32}
+              height={32}
+              className="object-cover w-full h-full"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <User size={14} className="text-muted-foreground" />
+            </div>
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span className={cn("text-sm font-medium", isOwn && "text-primary font-bold")}>
+              {duty.profile?.name ?? "Unknown"}
+            </span>
+            {isOwn && <span className="text-[10px] bg-primary/10 text-primary px-1.5 rounded font-bold">YOU</span>}
+          </div>
+        </div>
+      </div>
+
+      <span
+        className={cn(
+          "text-[10px] font-bold px-2 py-0.5 rounded border whitespace-nowrap",
+          style.bg, style.text, style.border
+        )}
+      >
+        {duty.garbage_type}
+      </span>
+
+      {isOwn && !duty.is_completed ? (
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => onComplete(duty.id)}
+          disabled={isCompleting}
+          className="h-8 rounded-full px-3 text-xs"
+        >
+          {isCompleting ? "..." : "Done"}
+        </Button>
+      ) : (
+        <div className="w-8 flex justify-center">
+          {duty.is_completed && <Check size={16} className="text-green-500" />}
+        </div>
+      )}
+    </div>
+  );
+});
+DutyRow.displayName = "DutyRow";
 
 export function GarbageScheduleView({
   schedule,
@@ -35,6 +213,8 @@ export function GarbageScheduleView({
   const dayNames = locale === "ja" ? DAY_NAMES_JA : DAY_NAMES_EN;
   const [completingId, setCompletingId] = useState<string | null>(null);
   const [error, setError] = useState("");
+
+  const today = new Date().getDay();
 
   const scheduleByDay = useMemo(() => {
     const grouped = new Map<number, GarbageSchedule[]>();
@@ -57,176 +237,66 @@ export function GarbageScheduleView({
     setCompletingId(null);
   }, []);
 
-  const getTypeStyle = (type: string) => GARBAGE_TYPE_STYLES[type] ?? DEFAULT_STYLE;
-
   return (
-    <div className="space-y-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
       {error && (
-        <div className="py-3 px-4 border-l-2 border-error-border bg-error-bg text-sm text-error">
+        <div className="col-span-full py-3 px-4 rounded bg-error-bg/50 text-sm text-error">
           {error}
         </div>
       )}
 
+      {/* Weekly Schedule - Left Column */}
       <section>
-        <h2 className="text-xs text-muted-foreground tracking-wide uppercase mb-3">
-          {t("garbage.weeklySchedule")}
-        </h2>
+        <div className="mb-4 flex items-center gap-2">
+          <Calendar size={18} className="text-muted-foreground" />
+          <h3 className="font-semibold">{t("garbage.weeklySchedule")}</h3>
+        </div>
 
-        {schedule.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-sm text-muted-foreground">{t("garbage.noSchedule")}</p>
-          </div>
-        ) : (
-          <div className="grid gap-2">
-            {Array.from({ length: 7 }, (_, i) => i).map((dayIndex) => {
-              const daySchedule = scheduleByDay.get(dayIndex);
-              if (!daySchedule || daySchedule.length === 0) return null;
+        <WeekRow schedule={scheduleByDay} todayIndex={today} dayNames={dayNames} />
 
-              return (
-                <div
-                  key={dayIndex}
-                  className="bg-card border border-border rounded-lg px-4 py-3"
-                >
-                  <div className="flex items-center gap-4">
-                    <div
-                      className={`w-10 h-10 flex items-center justify-center flex-shrink-0 ${
-                        dayIndex === 0
-                          ? "day-sunday-bg day-sunday-text"
-                          : dayIndex === 6
-                            ? "day-saturday-bg day-saturday-text"
-                            : "bg-secondary text-foreground"
-                      }`}
-                    >
-                      <span className="text-sm font-medium">{dayNames[dayIndex]}</span>
-                    </div>
-
-                    {daySchedule.map((entry) => {
-                      const style = getTypeStyle(entry.garbage_type);
-                      return (
-                        <span
-                          key={entry.id}
-                          className={`inline-flex items-center px-3 py-1.5 text-sm font-medium border ${style.bg} ${style.text} ${style.border}`}
-                        >
-                          {entry.garbage_type}
-                        </span>
-                      );
-                    })}
-
-                    {daySchedule[0]?.notes && (
-                      <span className="text-xs text-muted-foreground ml-auto">
-                        {daySchedule[0].notes}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        <p className="text-[10px] text-muted-foreground mt-3 tracking-wide">
+        <p className="text-[10px] text-muted-foreground mt-2">
           {t("garbage.collectionNote")}
         </p>
       </section>
 
+      {/* Duties - Right Column */}
       <section>
-        <h2 className="text-xs text-muted-foreground tracking-wide uppercase mb-3">
-          {t("garbage.upcomingDuties")}
-        </h2>
-
-        {duties.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-sm text-muted-foreground">{t("garbage.noDuties")}</p>
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <User size={18} className="text-muted-foreground" />
+            <h3 className="font-semibold">{t("garbage.upcomingDuties")}</h3>
           </div>
-        ) : (
-          <div className="space-y-2">
-            {duties.map((duty, index) => {
-              const isOwn = duty.user_id === currentUserId;
-              const dutyDate = new Date(duty.duty_date + "T00:00:00");
-              const dateStr = dutyDate.toLocaleDateString(
-                locale === "ja" ? "ja-JP" : "en-US",
-                { month: "short", day: "numeric", weekday: "short" }
-              );
-              const style = getTypeStyle(duty.garbage_type);
+        </div>
 
-              return (
-                <m.div
-                  key={duty.id}
-                  initial={{ opacity: 0, y: 4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.15, delay: index * 0.03 }}
-                  className={`flex items-center gap-3 px-4 py-3 bg-card border rounded-lg ${
-                    isOwn ? "border-foreground" : "border-border"
-                  } ${duty.is_completed ? "opacity-50" : ""}`}
-                >
-                  {isOwn && !duty.is_completed ? (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => handleComplete(duty.id)}
-                      disabled={completingId === duty.id}
-                      className="w-5 h-5 p-0 border-border hover:border-foreground flex-shrink-0"
-                      aria-label={t("garbage.markComplete")}
-                    >
-                      {completingId === duty.id && (
-                        <span className="w-2 h-2 bg-muted-foreground animate-pulse" />
-                      )}
-                    </Button>
-                  ) : (
-                    <div
-                      className={`w-5 h-5 flex items-center justify-center flex-shrink-0 ${
-                        duty.is_completed ? "bg-secondary border border-border" : ""
-                      }`}
-                    >
-                      {duty.is_completed && (
-                        <span className="text-[10px] text-muted-foreground">✓</span>
-                      )}
-                    </div>
-                  )}
+        <div className="bg-card rounded-xl border border-border/60">
+          {duties.length === 0 ? (
+            <div className="p-8 text-center text-sm text-muted-foreground">
+              {t("garbage.noDuties")}
+            </div>
+          ) : (
+            <div className="px-4">
+              {duties.map((duty) => {
+                const isOwn = duty.user_id === currentUserId;
+                const dutyDate = new Date(duty.duty_date + "T00:00:00");
+                const dateStr = dutyDate.toLocaleDateString(
+                  locale === "ja" ? "ja-JP" : "en-US",
+                  { month: "short", day: "numeric" }
+                );
 
-                  {duty.profile?.avatar_url ? (
-                    <Image
-                      src={duty.profile.avatar_url}
-                      alt={duty.profile.name}
-                      width={24}
-                      height={24}
-                      className="rounded-full object-cover flex-shrink-0"
-                    />
-                  ) : (
-                    <div className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
-                      <span className="text-[9px] text-muted-foreground">
-                        {duty.profile?.name?.[0] ?? "?"}
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="flex-1 min-w-0">
-                    <span
-                      className={`text-sm ${
-                        isOwn ? "text-foreground font-medium" : "text-muted-foreground"
-                      }`}
-                    >
-                      {duty.profile?.name || t("garbage.unknownUser")}
-                    </span>
-                    {isOwn && (
-                      <span className="text-[10px] text-muted-foreground ml-1">
-                        ({t("garbage.you")})
-                      </span>
-                    )}
-                  </div>
-
-                  <span
-                    className={`text-[10px] px-2 py-0.5 border ${style.bg} ${style.text} ${style.border} flex-shrink-0`}
-                  >
-                    {duty.garbage_type}
-                  </span>
-
-                  <span className="text-xs text-muted-foreground flex-shrink-0">{dateStr}</span>
-                </m.div>
-              );
-            })}
-          </div>
-        )}
+                return (
+                  <DutyRow
+                    key={duty.id}
+                    duty={duty}
+                    isOwn={isOwn}
+                    dateStr={dateStr}
+                    onComplete={handleComplete}
+                    isCompleting={completingId === duty.id}
+                  />
+                )
+              })}
+            </div>
+          )}
+        </div>
       </section>
     </div>
   );
