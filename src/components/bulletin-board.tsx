@@ -28,16 +28,27 @@ function formatTimestamp(dateString: string, locale: string): string {
   const date = new Date(dateString);
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
+  const diffSecs = Math.floor(diffMs / 1000);
   const diffMins = Math.floor(diffMs / 60000);
   const diffHours = Math.floor(diffMs / 3600000);
   const diffDays = Math.floor(diffMs / 86400000);
+  // For dates >= 7 days, use localized date format
+  if (diffDays >= 7) {
+    return date.toLocaleDateString(locale, { month: "short", day: "numeric" });
+  }
 
-  if (diffMins < 1) return locale === "ja" ? "たった今" : "now";
-  if (diffMins < 60) return `${diffMins}m`;
-  if (diffHours < 24) return `${diffHours}h`;
-  if (diffDays < 7) return `${diffDays}d`;
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto", style: "narrow" });
 
-  return date.toLocaleDateString(locale, { month: "short", day: "numeric" });
+  if (diffSecs < 60) {
+    return rtf.format(0, "second");
+  }
+  if (diffMins < 60) {
+    return rtf.format(-diffMins, "minute");
+  }
+  if (diffHours < 24) {
+    return rtf.format(-diffHours, "hour");
+  }
+  return rtf.format(-diffDays, "day");
 }
 
 const EASE = [0.23, 1, 0.32, 1] as const;
@@ -59,6 +70,11 @@ function ComposeModal({ isOpen, onClose, onSubmit, isSubmitting, userProfile }: 
   const id = useId();
   const [message, setMessage] = useState("");
 
+  const handleClose = useCallback(() => {
+    setMessage("");
+    onClose();
+  }, [onClose]);
+
   const handleSubmit = async () => {
     if (!message.trim()) return;
     await onSubmit(message.trim());
@@ -67,9 +83,9 @@ function ComposeModal({ isOpen, onClose, onSubmit, isSubmitting, userProfile }: 
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !isSubmitting) onClose();
+      if (e.key === "Escape" && !isSubmitting) handleClose();
     },
-    [isSubmitting, onClose],
+    [isSubmitting, handleClose],
   );
 
   useEffect(() => {
@@ -101,7 +117,7 @@ function ComposeModal({ isOpen, onClose, onSubmit, isSubmitting, userProfile }: 
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           className="fixed inset-0 z-50 bg-background sm:bg-black/50 sm:backdrop-blur-sm"
-          onClick={isSubmitting ? undefined : onClose}
+          onClick={isSubmitting ? undefined : handleClose}
         >
           <m.div
             role="dialog"
@@ -118,7 +134,7 @@ function ComposeModal({ isOpen, onClose, onSubmit, isSubmitting, userProfile }: 
             <div className="flex items-center justify-between px-4 h-14 border-b border-border/50 shrink-0">
               <button
                 type="button"
-                onClick={onClose}
+                onClick={handleClose}
                 disabled={isSubmitting}
                 className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted transition-colors"
                 aria-label={t("common.close")}
