@@ -98,12 +98,15 @@ function MBTIDetail({ mbti }: { mbti: string }) {
   const colors = MBTI_COLORS[group];
   const label = t(`mbtiTypes.${mbti}.label` as Parameters<typeof t>[0]);
   const summary = t(`mbtiTypes.${mbti}.summary` as Parameters<typeof t>[0]);
-  // TODO: Long-term fix is to store traits as an array in i18n files to avoid separator assumptions
+
+  /** 
+   * @todo Long-term fix is to store traits as an array in i18n files to avoid separator assumptions 
+   */
   const traitsStr = t(`mbtiTypes.${mbti}.traits` as Parameters<typeof t>[0]);
   const traits = traitsStr.split(/\s*,\s*/);
   const groupLabel = t(`mbtiGroups.${group}` as Parameters<typeof t>[0]);
 
-  // Extract first sentence for lead text (supports both Japanese "。" and ASCII ".")
+  /** Extract first sentence for lead text (supports both Japanese "。" and ASCII ".") */
   const jpPeriodIndex = summary.indexOf("。");
   const enPeriodIndex = summary.indexOf(".");
   const periodIndex = jpPeriodIndex !== -1 && enPeriodIndex !== -1
@@ -416,11 +419,16 @@ export function ProfileDetail({
       {isMockProfile && (
         <m.div
           variants={itemVariants}
-          className="mb-6 py-3 px-4 border border-dashed border-border bg-secondary rounded-xl"
+          className="mb-6 py-4 px-5 border border-primary/10 bg-primary/5 rounded-xl flex items-start gap-4 shadow-sm"
           role="alert"
         >
-          <p className="text-sm text-muted-foreground">{t("profile.mockProfileBanner")}</p>
-          <p className="text-xs text-muted-foreground mt-1">{t("profile.mockProfileSubtext")}</p>
+          <div className="p-2 bg-primary/10 rounded-full text-primary shrink-0">
+            <Sparkles size={ICON_SIZE.sm} />
+          </div>
+          <div>
+            <p className="text-sm font-bold text-foreground">{t("profile.mockProfileBanner")}</p>
+            <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{t("profile.mockProfileSubtext")}</p>
+          </div>
         </m.div>
       )}
 
@@ -437,7 +445,7 @@ export function ProfileDetail({
 
       <m.div
         variants={itemVariants}
-        className={`premium-surface rounded-2xl overflow-hidden ${isMockProfile ? "border-dashed border-border" : ""}`}
+        className="premium-surface rounded-2xl overflow-hidden"
       >
         <div className="relative aspect-2/1 sm:aspect-21/8 bg-secondary overflow-hidden">
           {coverUrl ? (

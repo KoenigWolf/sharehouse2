@@ -48,8 +48,9 @@ const NEW_RESIDENT_THRESHOLD_MONTHS = 3;
 
 /**
  * 入居期間を計算する
+ * 
  * @param moveInDate - 入居日（ISO形式文字列）
- * @returns 入居期間情報、または入居日が未設定の場合はnull
+ * @returns 入居期間情報（入居日未設定時はnull）
  */
 function calculateResidenceDuration(moveInDate: string | null | undefined): ResidenceDuration | null {
   if (!moveInDate) return null;
@@ -98,7 +99,7 @@ function isMockProfile(profileId: string): boolean {
 
 function getCardBorderClass(isCurrentUser: boolean, isMock: boolean): string {
   if (isCurrentUser) return "border-primary";
-  if (isMock) return "border-dashed border-border hover:border-primary/50";
+  if (isMock) return "border-border hover:border-primary/70"; // Make it solid, just slightly less aggressive hover than real users
   return "border-border hover:border-primary";
 }
 
@@ -256,16 +257,6 @@ function useResidentCardData(profile: Profile, t: Translator) {
  *
  * 住民一覧で使用するプロフィールカード。
  * ホバー時に追加情報を表示し、クリックで詳細ページへ遷移する。
- *
- * @example
- * ```tsx
- * <ResidentCard
- *   profile={profile}
- *   isCurrentUser={profile.id === currentUserId}
- *   showTeaTime
- *   teaTimeEnabled={teaTimeParticipants.has(profile.id)}
- * />
- * ```
  */
 export const ResidentCard = memo(function ResidentCard({
   profile,
@@ -320,7 +311,7 @@ export const ResidentCard = memo(function ResidentCard({
 
           <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
             {isMock && !isCurrentUser && (
-              <Badge variant="muted" className="bg-card/80 backdrop-blur-sm border-none text-[10px] font-medium uppercase tracking-wider">{t("common.unregistered")}</Badge>
+              <Badge variant="muted" className="bg-primary/5 text-primary border border-primary/20 backdrop-blur-md text-[10px] font-bold uppercase tracking-wider">{t("common.unregistered")}</Badge>
             )}
             {isNewResident && !isMock && (
               <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-brand-500 text-white text-[10px] font-bold tracking-wider">{t("residents.badgeNew")}</span>
