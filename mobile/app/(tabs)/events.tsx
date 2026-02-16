@@ -2,7 +2,6 @@ import { useEffect, useState, useCallback } from "react";
 import { View, Text, FlatList, RefreshControl, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Animated, { FadeInDown, FadeIn } from "react-native-reanimated";
 import { Image } from "expo-image";
 import * as Haptics from "expo-haptics";
 import { supabase, type Event } from "../../lib/supabase";
@@ -66,19 +65,15 @@ export default function EventsScreen() {
   };
 
   const renderItem = useCallback(
-    ({ item, index }: { item: Event; index: number }) => {
+    ({ item }: { item: Event }) => {
       const isAttending = item.attendees?.some((a) => a.user_id === user?.id);
       return (
-        <Animated.View
-          entering={FadeInDown.delay(index * 50).duration(400).springify()}
-        >
-          <EventCard
-            event={item}
-            isAttending={isAttending}
-            onAttend={() => handleAttend(item.id, isAttending)}
-            onPress={() => router.push(`/events/${item.id}`)}
-          />
-        </Animated.View>
+        <EventCard
+          event={item}
+          isAttending={isAttending}
+          onAttend={() => handleAttend(item.id, isAttending)}
+          onPress={() => router.push(`/events/${item.id}`)}
+        />
       );
     },
     [user, router]
@@ -124,10 +119,7 @@ export default function EventsScreen() {
       />
 
       {/* FAB */}
-      <Animated.View
-        entering={FadeIn.delay(300)}
-        className="absolute bottom-24 right-4"
-      >
+      <View className="absolute bottom-24 right-4">
         <Pressable
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -137,7 +129,7 @@ export default function EventsScreen() {
         >
           <Text className="text-white text-2xl">+</Text>
         </Pressable>
-      </Animated.View>
+      </View>
     </View>
   );
 }

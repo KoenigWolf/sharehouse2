@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { View, Text, FlatList, RefreshControl, Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Animated, { FadeInDown, FadeIn, ZoomIn } from "react-native-reanimated";
 import { Image } from "expo-image";
 import * as Haptics from "expo-haptics";
 import { supabase, type ShareItem } from "../../lib/supabase";
@@ -10,7 +9,6 @@ import { Avatar } from "../../components/ui/Avatar";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { Colors } from "../../constants/colors";
-import { formatDistanceToNow } from "../../lib/utils";
 
 export default function ShareScreen() {
   const insets = useSafeAreaInsets();
@@ -60,17 +58,14 @@ export default function ShareScreen() {
   };
 
   const renderItem = useCallback(
-    ({ item, index }: { item: ShareItem; index: number }) => (
-      <Animated.View
-        entering={FadeInDown.delay(index * 50).duration(400).springify()}
-        className="flex-1"
-      >
+    ({ item }: { item: ShareItem }) => (
+      <View className="flex-1">
         <ShareItemCard
           item={item}
           isOwn={item.user_id === user?.id}
           onClaim={() => handleClaim(item.id)}
         />
-      </Animated.View>
+      </View>
     ),
     [user]
   );
@@ -120,10 +115,7 @@ export default function ShareScreen() {
       />
 
       {/* FAB */}
-      <Animated.View
-        entering={ZoomIn.delay(300).springify()}
-        className="absolute bottom-24 right-4"
-      >
+      <View className="absolute bottom-24 right-4">
         <Pressable
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -133,7 +125,7 @@ export default function ShareScreen() {
         >
           <Text className="text-white text-2xl">+</Text>
         </Pressable>
-      </Animated.View>
+      </View>
     </View>
   );
 }

@@ -10,19 +10,10 @@ import {
   Platform,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Animated, {
-  FadeInDown,
-  FadeInUp,
-  SlideInRight,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { supabase, type BulletinMessage } from "../../lib/supabase";
 import { useAuth } from "../../lib/auth";
 import { Avatar } from "../../components/ui/Avatar";
-import { Button } from "../../components/ui/Button";
 import { Colors } from "../../constants/colors";
 import { formatDistanceToNow } from "../../lib/utils";
 
@@ -101,18 +92,12 @@ export default function BulletinScreen() {
   };
 
   const renderItem = useCallback(
-    ({ item, index }: { item: BulletinMessage; index: number }) => (
-      <Animated.View
-        entering={FadeInDown.delay(index * 30)
-          .duration(300)
-          .springify()}
-      >
-        <MessageCard
-          message={item}
-          isOwn={item.user_id === user?.id}
-          onDelete={() => handleDelete(item.id)}
-        />
-      </Animated.View>
+    ({ item }: { item: BulletinMessage }) => (
+      <MessageCard
+        message={item}
+        isOwn={item.user_id === user?.id}
+        onDelete={() => handleDelete(item.id)}
+      />
     ),
     [user]
   );
@@ -163,8 +148,7 @@ export default function BulletinScreen() {
       />
 
       {/* Compose Bar */}
-      <Animated.View
-        entering={SlideInRight.duration(300)}
+      <View
         className="absolute bottom-0 left-0 right-0 bg-card border-t border-border/40"
         style={{ paddingBottom: insets.bottom + 8 }}
       >
@@ -193,7 +177,7 @@ export default function BulletinScreen() {
             </Text>
           </Pressable>
         </View>
-      </Animated.View>
+      </View>
     </KeyboardAvoidingView>
   );
 }

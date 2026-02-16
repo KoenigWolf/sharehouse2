@@ -2,22 +2,12 @@ import { useEffect, useState } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Animated, {
-  FadeIn,
-  FadeInDown,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  interpolate,
-  useAnimatedScrollHandler,
-} from "react-native-reanimated";
 import { Image } from "expo-image";
 import * as Haptics from "expo-haptics";
 import { supabase, type Profile } from "../../lib/supabase";
 import { useAuth } from "../../lib/auth";
 import { Avatar } from "../../components/ui/Avatar";
 import { Card } from "../../components/ui/Card";
-import { Button } from "../../components/ui/Button";
 import { Colors } from "../../constants/colors";
 
 const HEADER_HEIGHT = 280;
@@ -29,8 +19,6 @@ export default function ProfileScreen() {
   const { profile: currentProfile } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  const scrollY = useSharedValue(0);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -48,34 +36,6 @@ export default function ProfileScreen() {
 
     fetchProfile();
   }, [id]);
-
-  const scrollHandler = useAnimatedScrollHandler({
-    onScroll: (event) => {
-      scrollY.value = event.contentOffset.y;
-    },
-  });
-
-  const headerStyle = useAnimatedStyle(() => {
-    const scale = interpolate(scrollY.value, [-100, 0], [1.2, 1], "clamp");
-    const opacity = interpolate(scrollY.value, [0, HEADER_HEIGHT - 100], [1, 0]);
-    return {
-      transform: [{ scale }],
-      opacity,
-    };
-  });
-
-  const avatarStyle = useAnimatedStyle(() => {
-    const translateY = interpolate(
-      scrollY.value,
-      [0, HEADER_HEIGHT],
-      [0, -50],
-      "clamp"
-    );
-    const scale = interpolate(scrollY.value, [0, HEADER_HEIGHT], [1, 0.8], "clamp");
-    return {
-      transform: [{ translateY }, { scale }],
-    };
-  });
 
   const isOwnProfile = currentProfile?.id === id;
 
@@ -129,14 +89,12 @@ export default function ProfileScreen() {
         }}
       />
 
-      <Animated.ScrollView
-        onScroll={scrollHandler}
-        scrollEventThrottle={16}
+      <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
       >
         {/* Cover Image */}
-        <Animated.View style={headerStyle}>
+        <View>
           {profile.cover_url ? (
             <Image
               source={{ uri: profile.cover_url }}
@@ -145,30 +103,24 @@ export default function ProfileScreen() {
             />
           ) : (
             <View
-              className="w-full bg-gradient-to-b from-brand-400 to-brand-600"
-              style={{ height: HEADER_HEIGHT }}
+              className="w-full"
+              style={{ height: HEADER_HEIGHT, backgroundColor: Colors.brand[400] }}
             />
           )}
           <View className="absolute inset-0 bg-black/20" />
-        </Animated.View>
+        </View>
 
         {/* Avatar */}
-        <Animated.View
-          style={avatarStyle}
-          className="items-center -mt-16 z-10"
-        >
+        <View className="items-center -mt-16 z-10">
           <View className="border-4 border-background rounded-full">
             <Avatar src={profile.avatar_url} name={profile.name} size={120} />
           </View>
-        </Animated.View>
+        </View>
 
         {/* Profile Info */}
         <View className="px-4 -mt-4">
           {/* Name & Room */}
-          <Animated.View
-            entering={FadeInDown.delay(100).duration(400)}
-            className="items-center mt-4"
-          >
+          <View className="items-center mt-4">
             <Text className="text-foreground text-2xl font-bold">
               {profile.nickname ?? profile.name}
             </Text>
@@ -182,14 +134,11 @@ export default function ProfileScreen() {
                 </Text>
               </View>
             )}
-          </Animated.View>
+          </View>
 
           {/* MBTI & Tags */}
           {(profile.mbti || profile.hobbies?.length) && (
-            <Animated.View
-              entering={FadeInDown.delay(200).duration(400)}
-              className="flex-row flex-wrap justify-center gap-2 mt-4"
-            >
+            <View className="flex-row flex-wrap justify-center gap-2 mt-4">
               {profile.mbti && (
                 <View className="bg-muted rounded-full px-3 py-1">
                   <Text className="text-foreground text-sm font-medium">
@@ -202,26 +151,20 @@ export default function ProfileScreen() {
                   <Text className="text-foreground text-sm">{hobby}</Text>
                 </View>
               ))}
-            </Animated.View>
+            </View>
           )}
 
           {/* Bio */}
           {profile.bio && (
-            <Animated.View
-              entering={FadeInDown.delay(300).duration(400)}
-              className="mt-6"
-            >
+            <View className="mt-6">
               <Card className="p-4">
                 <Text className="text-foreground leading-6">{profile.bio}</Text>
               </Card>
-            </Animated.View>
+            </View>
           )}
 
           {/* Details */}
-          <Animated.View
-            entering={FadeInDown.delay(400).duration(400)}
-            className="mt-6"
-          >
+          <View className="mt-6">
             <Card className="p-4">
               {profile.occupation && (
                 <DetailRow icon="💼" label="Work" value={profile.occupation} />
@@ -240,9 +183,9 @@ export default function ProfileScreen() {
                 />
               )}
             </Card>
-          </Animated.View>
+          </View>
         </View>
-      </Animated.ScrollView>
+      </ScrollView>
     </View>
   );
 }

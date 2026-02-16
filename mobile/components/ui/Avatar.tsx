@@ -1,10 +1,5 @@
 import { View, Text } from "react-native";
 import { Image } from "expo-image";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from "react-native-reanimated";
 import { Colors } from "../../constants/colors";
 
 interface AvatarProps {
@@ -14,15 +9,7 @@ interface AvatarProps {
   className?: string;
 }
 
-const AnimatedImage = Animated.createAnimatedComponent(Image);
-
 export function Avatar({ src, name, size = 48, className = "" }: AvatarProps) {
-  const scale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
   const initials = name
     .split(" ")
     .map((n) => n[0])
@@ -50,8 +37,8 @@ export function Avatar({ src, name, size = 48, className = "" }: AvatarProps) {
   }
 
   return (
-    <Animated.View
-      style={[animatedStyle, { width: size, height: size }]}
+    <View
+      style={{ width: size, height: size }}
       className={`rounded-full overflow-hidden ${className}`}
     >
       <Image
@@ -62,6 +49,6 @@ export function Avatar({ src, name, size = 48, className = "" }: AvatarProps) {
         placeholder={"|L9H,DRi~Vof-:RjM{of~qj[ayay"}
         placeholderContentFit="cover"
       />
-    </Animated.View>
+    </View>
   );
 }

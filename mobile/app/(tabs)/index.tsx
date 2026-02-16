@@ -9,24 +9,12 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Animated, {
-  FadeInDown,
-  FadeInUp,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  interpolate,
-  useAnimatedScrollHandler,
-} from "react-native-reanimated";
-import { Image } from "expo-image";
 import * as Haptics from "expo-haptics";
 import { supabase, type Profile } from "../../lib/supabase";
 import { useAuth } from "../../lib/auth";
 import { Avatar } from "../../components/ui/Avatar";
 import { Card } from "../../components/ui/Card";
 import { Colors } from "../../constants/colors";
-
-const AnimatedFlatList = Animated.createAnimatedComponent(FlatList<Profile>);
 
 export default function ResidentsScreen() {
   const router = useRouter();
@@ -37,8 +25,6 @@ export default function ResidentsScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-
-  const scrollY = useSharedValue(0);
 
   const fetchProfiles = async () => {
     const { data } = await supabase
@@ -79,35 +65,13 @@ export default function ResidentsScreen() {
     setIsRefreshing(false);
   }, []);
 
-  const scrollHandler = useAnimatedScrollHandler({
-    onScroll: (event) => {
-      scrollY.value = event.contentOffset.y;
-    },
-  });
-
-  const headerStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(scrollY.value, [0, 100], [1, 0.9]);
-    const translateY = interpolate(scrollY.value, [0, 100], [0, -10]);
-    return {
-      opacity,
-      transform: [{ translateY }],
-    };
-  });
-
   const renderItem = useCallback(
-    ({ item, index }: { item: Profile; index: number }) => (
-      <Animated.View
-        entering={FadeInDown.delay(index * 50)
-          .duration(400)
-          .springify()
-          .damping(20)}
-      >
-        <ResidentCard
-          profile={item}
-          onPress={() => router.push(`/profile/${item.id}`)}
-          isCurrentUser={item.user_id === currentProfile?.user_id}
-        />
-      </Animated.View>
+    ({ item }: { item: Profile }) => (
+      <ResidentCard
+        profile={item}
+        onPress={() => router.push(`/profile/${item.id}`)}
+        isCurrentUser={item.user_id === currentProfile?.user_id}
+      />
     ),
     [router, currentProfile]
   );
@@ -115,8 +79,8 @@ export default function ResidentsScreen() {
   return (
     <View className="flex-1 bg-background">
       {/* Header */}
-      <Animated.View
-        style={[headerStyle, { paddingTop: insets.top }]}
+      <View
+        style={{ paddingTop: insets.top }}
         className="px-4 pb-4 bg-background border-b border-border/40"
       >
         <Text className="text-3xl font-bold text-foreground mb-4">
@@ -141,10 +105,10 @@ export default function ResidentsScreen() {
             </Pressable>
           )}
         </View>
-      </Animated.View>
+      </View>
 
       {/* Profiles Grid */}
-      <AnimatedFlatList
+      <FlatList
         data={filteredProfiles}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
@@ -155,8 +119,6 @@ export default function ResidentsScreen() {
         }}
         columnWrapperStyle={{ gap: 8 }}
         ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
-        onScroll={scrollHandler}
-        scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -191,14 +153,8 @@ function ResidentCard({
   onPress: () => void;
   isCurrentUser: boolean;
 }) {
-  const scale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
   return (
-    <Animated.View style={animatedStyle} className="flex-1">
+    <View className="flex-1">
       <Card onPress={onPress} className="p-3">
         {/* Avatar */}
         <View className="items-center mb-3">
@@ -236,6 +192,6 @@ function ResidentCard({
           )}
         </View>
       </Card>
-    </Animated.View>
+    </View>
   );
 }

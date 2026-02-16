@@ -1,13 +1,11 @@
 import { View, Text, Pressable, ScrollView, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Animated, { FadeInDown } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { useAuth } from "../../lib/auth";
 import { Avatar } from "../../components/ui/Avatar";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
-import { Colors } from "../../constants/colors";
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -47,7 +45,7 @@ export default function SettingsScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Profile Card */}
-        <Animated.View entering={FadeInDown.duration(400).springify()}>
+        <View>
           <Card
             onPress={() => router.push(`/profile/${profile?.id}`)}
             className="p-4"
@@ -73,13 +71,10 @@ export default function SettingsScreen() {
               </View>
             </View>
           </Card>
-        </Animated.View>
+        </View>
 
         {/* Settings Sections */}
-        <Animated.View
-          entering={FadeInDown.delay(100).duration(400).springify()}
-          className="mt-6"
-        >
+        <View className="mt-6">
           <Text className="text-muted-foreground text-sm font-semibold uppercase tracking-wider mb-3 px-2">
             Account
           </Text>
@@ -103,12 +98,9 @@ export default function SettingsScreen() {
               onPress={() => {}}
             />
           </Card>
-        </Animated.View>
+        </View>
 
-        <Animated.View
-          entering={FadeInDown.delay(200).duration(400).springify()}
-          className="mt-6"
-        >
+        <View className="mt-6">
           <Text className="text-muted-foreground text-sm font-semibold uppercase tracking-wider mb-3 px-2">
             About
           </Text>
@@ -125,30 +117,24 @@ export default function SettingsScreen() {
               showArrow={false}
             />
           </Card>
-        </Animated.View>
+        </View>
 
         {/* Sign Out */}
-        <Animated.View
-          entering={FadeInDown.delay(300).duration(400).springify()}
-          className="mt-8"
-        >
+        <View className="mt-8">
           <Button variant="ghost" onPress={handleSignOut}>
             <Text className="text-error font-semibold">Sign Out</Text>
           </Button>
-        </Animated.View>
+        </View>
 
         {/* Footer */}
-        <Animated.View
-          entering={FadeInDown.delay(400).duration(400)}
-          className="items-center mt-8"
-        >
+        <View className="items-center mt-8">
           <Text className="text-muted-foreground text-xs">
             Share House Portal
           </Text>
           <Text className="text-muted-foreground/50 text-xs mt-1">
             Made with ❤️ for housemates
           </Text>
-        </Animated.View>
+        </View>
       </ScrollView>
     </View>
   );

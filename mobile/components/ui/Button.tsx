@@ -1,9 +1,4 @@
 import { Text, Pressable, ActivityIndicator } from "react-native";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { Colors } from "../../constants/colors";
 
@@ -17,8 +12,6 @@ interface ButtonProps {
   className?: string;
 }
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-
 export function Button({
   children,
   onPress,
@@ -28,22 +21,6 @@ export function Button({
   disabled = false,
   className = "",
 }: ButtonProps) {
-  const scale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  const handlePressIn = () => {
-    if (!disabled) {
-      scale.value = withSpring(0.96, { damping: 20, stiffness: 400 });
-    }
-  };
-
-  const handlePressOut = () => {
-    scale.value = withSpring(1, { damping: 20, stiffness: 400 });
-  };
-
   const handlePress = () => {
     if (!disabled && !isLoading) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -76,14 +53,11 @@ export function Button({
   };
 
   return (
-    <AnimatedPressable
+    <Pressable
       onPress={handlePress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
       disabled={disabled || isLoading}
-      style={animatedStyle}
       className={`
-        rounded-xl items-center justify-center flex-row
+        rounded-xl items-center justify-center flex-row active:opacity-80
         ${variantStyles[variant]}
         ${sizeStyles[size]}
         ${disabled ? "opacity-50" : ""}
@@ -102,6 +76,6 @@ export function Button({
           {children}
         </Text>
       )}
-    </AnimatedPressable>
+    </Pressable>
   );
 }
