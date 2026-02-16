@@ -75,11 +75,15 @@ const CopyButton = memo(function CopyButton({
   const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(
-    (e: React.MouseEvent) => {
+    async (e: React.MouseEvent) => {
       e.stopPropagation();
-      navigator.clipboard.writeText(value);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      try {
+        await navigator.clipboard.writeText(value);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch {
+        setCopied(false);
+      }
     },
     [value]
   );
@@ -91,7 +95,7 @@ const CopyButton = memo(function CopyButton({
       size="icon"
       onClick={handleCopy}
       className={cn(
-        "w-6 h-6 sm:w-8 sm:h-8 rounded-full transition-all duration-200",
+        "w-10 h-10 rounded-full transition-all duration-200",
         copied
           ? "bg-green-500/10 text-green-600"
           : "hover:bg-muted text-muted-foreground",
@@ -127,17 +131,22 @@ CopyButton.displayName = "CopyButton";
 
 const FloorSection = memo(function FloorSection({ floorData }: { floorData: FloorData }) {
   const t = useI18n();
-  const password = floorData.wifiInfos[0]?.password ?? "";
   const isShared = floorData.floor === 0;
+
+  // Check if all Wi-Fi networks share the same password
+  const passwords = floorData.wifiInfos.map((w) => w.password).filter(Boolean);
+  const uniquePasswords = [...new Set(passwords)];
+  const hasCommonPassword = uniquePasswords.length === 1;
+  const commonPassword = hasCommonPassword ? uniquePasswords[0] : null;
 
   return (
     <m.div variants={itemVariants} className="group">
       <div className="flex items-baseline gap-4 mb-4 border-b border-border/50 pb-2">
         <h3 className="text-xl font-semibold tracking-tight text-foreground font-sans">
-          {isShared ? "田中ビル" : `${floorData.floor}F`}
+          {isShared ? t("info.buildingName") : `${floorData.floor}F`}
         </h3>
         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-          {isShared ? "共用設備" : "フロア情報"}
+          {isShared ? t("info.sharedFacilities") : t("info.floorInfo")}
         </span>
       </div>
 
@@ -147,7 +156,7 @@ const FloorSection = memo(function FloorSection({ floorData }: { floorData: Floo
           <div className="rounded-xl border border-border/60 bg-card p-5 hover:border-border transition-colors">
             <div className="flex items-center gap-2 mb-4 text-muted-foreground">
               <Wifi size={18} />
-              <span className="text-xs font-bold uppercase tracking-wider">Wi-Fi</span>
+              <span className="text-xs font-bold uppercase tracking-wider">{t("info.wifi")}</span>
             </div>
 
             <div className="space-y-4">
@@ -160,21 +169,45 @@ const FloorSection = memo(function FloorSection({ floorData }: { floorData: Floo
                 ))}
               </div>
 
-              <div className="pt-3 border-t border-border/40 flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-0.5">Password</span>
-                  {password ? (
+              {/* Show common password if all SSIDs share the same one */}
+              {hasCommonPassword && commonPassword && (
+                <div className="pt-3 border-t border-border/40 flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-0.5">{t("info.password")}</span>
                     <code className="text-sm font-mono font-bold text-foreground bg-muted/50 px-2 py-0.5 rounded">
-                      {password}
+                      {commonPassword}
                     </code>
-                  ) : (
-                    <span className="text-sm font-medium text-muted-foreground">
-                      No Password
-                    </span>
-                  )}
+                  </div>
+                  <CopyButton value={commonPassword} label={t("common.copy")} />
                 </div>
-                {password && <CopyButton value={password} label={t("common.copy")} />}
-              </div>
+              )}
+
+              {/* Show per-SSID passwords if they differ */}
+              {!hasCommonPassword && passwords.length > 0 && (
+                <div className="pt-3 border-t border-border/40 space-y-2">
+                  {floorData.wifiInfos.map((wifi) => wifi.password && (
+                    <div key={wifi.id} className="flex items-center justify-between">
+                      <div>
+                        <span className="text-[10px] text-muted-foreground block">{wifi.ssid}</span>
+                        <code className="text-sm font-mono font-bold text-foreground bg-muted/50 px-2 py-0.5 rounded">
+                          {wifi.password}
+                        </code>
+                      </div>
+                      <CopyButton value={wifi.password} label={t("common.copy")} />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* No password case */}
+              {passwords.length === 0 && (
+                <div className="pt-3 border-t border-border/40">
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-0.5">{t("info.password")}</span>
+                  <span className="text-sm font-medium text-muted-foreground">
+                    {t("info.noPassword")}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -184,13 +217,13 @@ const FloorSection = memo(function FloorSection({ floorData }: { floorData: Floo
           <div className="rounded-xl border border-border/60 bg-card p-5 hover:border-border transition-colors">
             <div className="flex items-center gap-2 mb-4 text-muted-foreground">
               <Mailbox size={18} />
-              <span className="text-xs font-bold uppercase tracking-wider">Mailbox</span>
+              <span className="text-xs font-bold uppercase tracking-wider">{t("info.mailbox")}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-lg font-bold text-foreground font-mono">
                 {floorData.mailboxInfo.content}
               </span>
-              <CopyButton value={floorData.mailboxInfo.content} label="Copy Mailbox Code" />
+              <CopyButton value={floorData.mailboxInfo.content} label={t("common.copy")} />
             </div>
             {floorData.mailboxInfo.notes && (
               <p className="text-xs text-muted-foreground mt-3 pt-3 border-t border-border/40">
@@ -205,13 +238,13 @@ const FloorSection = memo(function FloorSection({ floorData }: { floorData: Floo
           <div className="rounded-xl border border-border/60 bg-card p-5 hover:border-border transition-colors md:col-span-2 lg:col-span-1">
             <div className="flex items-center gap-2 mb-4 text-muted-foreground">
               <MapPin size={18} />
-              <span className="text-xs font-bold uppercase tracking-wider">Address</span>
+              <span className="text-xs font-bold uppercase tracking-wider">{t("info.address")}</span>
             </div>
             <div className="flex items-start justify-between gap-4">
               <p className="text-sm font-medium text-foreground leading-relaxed">
                 {floorData.addressInfo.content}
               </p>
-              <CopyButton value={floorData.addressInfo.content} label="Copy Address" className="-mt-1" />
+              <CopyButton value={floorData.addressInfo.content} label={t("common.copy")} className="-mt-1" />
             </div>
           </div>
         )}
@@ -260,8 +293,21 @@ export function InfoPageContent({
 
   const floorDataList = useMemo(() => {
     const floorSet = new Set<number>();
-    wifiInfos.forEach((w) => w.floor !== null && floorSet.add(w.floor));
-    sharedInfos.forEach((i) => i.floor !== null && floorSet.add(i.floor));
+
+    // Derive floors from wifiInfos only (SharedInfo doesn't have floor in its type)
+    for (const w of wifiInfos) {
+      if (w.floor !== null) {
+        floorSet.add(w.floor);
+      }
+    }
+
+    // Also check sharedInfos for floor field (added via migration)
+    for (const info of sharedInfos) {
+      const infoFloor = (info as { floor?: number | null }).floor;
+      if (infoFloor !== null && infoFloor !== undefined) {
+        floorSet.add(infoFloor);
+      }
+    }
 
     const floors = Array.from(floorSet).sort((a, b) => {
       if (a === 0) return 1;
@@ -274,15 +320,18 @@ export function InfoPageContent({
         .filter((w) => w.floor === floor)
         .sort((a, b) => a.display_order - b.display_order);
 
+      // Find mailbox/address by checking the floor field on sharedInfos
       const mailboxInfo =
-        sharedInfos.find(
-          (info) => info.floor === floor && info.info_key.startsWith("mailbox_code")
-        ) ?? null;
+        sharedInfos.find((info) => {
+          const infoFloor = (info as { floor?: number | null }).floor;
+          return infoFloor === floor && info.info_key.startsWith("mailbox_code");
+        }) ?? null;
 
       const addressInfo =
-        sharedInfos.find(
-          (info) => info.floor === floor && info.info_key.startsWith("address")
-        ) ?? null;
+        sharedInfos.find((info) => {
+          const infoFloor = (info as { floor?: number | null }).floor;
+          return infoFloor === floor && info.info_key.startsWith("address");
+        }) ?? null;
 
       return { floor, wifiInfos: floorWifi, mailboxInfo, addressInfo };
     });
@@ -328,7 +377,7 @@ export function InfoPageContent({
           <div className="flex items-center gap-2 text-muted-foreground mb-6">
             <KeyRound size={20} />
             <h2 className="text-sm font-bold uppercase tracking-widest">
-              Floor Guide
+              {t("info.floorGuide")}
             </h2>
           </div>
 
@@ -345,7 +394,7 @@ export function InfoPageContent({
         <div className="flex items-center gap-2 text-muted-foreground border-b border-border/50 pb-2 mb-6">
           <Trash2 size={20} />
           <h2 className="text-sm font-bold uppercase tracking-widest">
-            Garbage & Duties
+            {t("info.garbageAndDuties")}
           </h2>
         </div>
 
@@ -369,7 +418,7 @@ export function InfoPageContent({
           <div className="flex items-center gap-2 text-muted-foreground border-b border-border/50 pb-2 mb-6">
             <Building2 size={20} />
             <h2 className="text-sm font-bold uppercase tracking-widest">
-              General Information
+              {t("info.generalInformation")}
             </h2>
           </div>
 
