@@ -29,6 +29,7 @@ export const en: Translations = {
     processing: "Processing...",
     copy: "Copy",
     new: "NEW",
+    remove: "Remove",
   },
 
   header: {
@@ -826,6 +827,10 @@ export const en: Translations = {
     unknownCreator: "Unknown creator",
     unknownAttendee: "Unknown attendee",
     createdByLabel: "Created by",
+    coverImageLabel: "Cover image (optional)",
+    addCoverImage: "Add image",
+    coverImageHint: "JPG, PNG, HEIC supported",
+    coverImagePreview: "Cover image preview",
   },
 
   digest: {

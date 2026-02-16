@@ -28,6 +28,7 @@ export const ja = {
     processing: "処理中...",
     copy: "Copy",
     new: "NEW",
+    remove: "削除",
   },
 
   header: {
@@ -824,6 +825,10 @@ export const ja = {
     unknownCreator: "不明な作成者",
     unknownAttendee: "不明な参加者",
     createdByLabel: "作成者",
+    coverImageLabel: "カバー画像（任意）",
+    addCoverImage: "画像を追加",
+    coverImageHint: "JPG、PNG、HEIC対応",
+    coverImagePreview: "カバー画像プレビュー",
   },
 
   digest: {

@@ -5,13 +5,15 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { m, AnimatePresence } from "framer-motion";
-import { MapPin, Clock, Calendar, Plus, X, CalendarDays, Users, Sparkles, Pencil, Trash2 } from "lucide-react";
+import { MapPin, Clock, Calendar, Plus, X, CalendarDays, Users, Sparkles, Pencil, Trash2, ImagePlus } from "lucide-react";
 import { Avatar, AvatarFallback, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { TimeSelect } from "@/components/ui/time-select";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
-import { createEvent, updateEvent, toggleAttendance, deleteEvent } from "@/lib/events/actions";
-import { EVENTS } from "@/lib/constants/config";
+import { createEvent, updateEvent, toggleAttendance, deleteEvent, uploadEventCover } from "@/lib/events/actions";
+import { prepareImageForUpload } from "@/lib/utils/image-compression";
+import { FILE_UPLOAD, EVENTS } from "@/lib/constants/config";
 import { getInitials } from "@/lib/utils";
+import { logError } from "@/lib/errors";
 import type { EventWithDetails } from "@/domain/event";
 
 const MODAL_EASE = [0.23, 1, 0.32, 1] as const;
@@ -22,6 +24,7 @@ interface EventFormData {
   eventTime: string;
   location: string;
   description: string;
+  imageFile: File | null;
 }
 
 interface EventComposeModalProps {
@@ -35,6 +38,7 @@ interface EventComposeModalProps {
 function EventComposeModal({ isOpen, onClose, onSubmit, isSubmitting, editingEvent }: EventComposeModalProps) {
   const t = useI18n();
   const id = useId();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isEditMode = editingEvent !== null && editingEvent !== undefined;
 
@@ -43,6 +47,8 @@ function EventComposeModal({ isOpen, onClose, onSubmit, isSubmitting, editingEve
   const [eventTime, setEventTime] = useState(editingEvent?.event_time ?? "");
   const [location, setLocation] = useState(editingEvent?.location ?? "");
   const [description, setDescription] = useState(editingEvent?.description ?? "");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const handleClose = useCallback(() => {
     setTitle("");
@@ -50,12 +56,34 @@ function EventComposeModal({ isOpen, onClose, onSubmit, isSubmitting, editingEve
     setEventTime("");
     setLocation("");
     setDescription("");
+    setImageFile(null);
+    setImagePreview(null);
     onClose();
   }, [onClose]);
 
+  const handleImageSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setImageFile(file);
+    const objectUrl = URL.createObjectURL(file);
+    setImagePreview(objectUrl);
+  }, []);
+
+  const handleRemoveImage = useCallback(() => {
+    setImageFile(null);
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }, [imagePreview]);
+
   const handleSubmit = async () => {
     if (!title.trim() || !eventDate) return;
-    await onSubmit({ title: title.trim(), eventDate, eventTime, location, description });
+    await onSubmit({ title: title.trim(), eventDate, eventTime, location, description, imageFile });
   };
 
   const handleKeyDown = useCallback(
@@ -235,6 +263,60 @@ function EventComposeModal({ isOpen, onClose, onSubmit, isSubmitting, editingEve
                     className="w-full px-5 py-4 bg-muted/50 border border-border/50 rounded-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all duration-200 resize-none leading-relaxed"
                   />
                 </div>
+
+                {/* Cover Image - Only for new events (editing uses event detail page) */}
+                {!isEditMode && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
+                      {t("events.coverImageLabel")}
+                    </label>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept={FILE_UPLOAD.inputAccept}
+                      onChange={handleImageSelect}
+                      className="hidden"
+                      aria-label={t("events.coverImageLabel")}
+                    />
+
+                    {imagePreview ? (
+                      <div className="relative rounded-xl overflow-hidden bg-muted">
+                        <div className="relative aspect-[1.618/1]">
+                          <Image
+                            src={imagePreview}
+                            alt={t("events.coverImagePreview")}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleRemoveImage}
+                          className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center transition-colors"
+                          aria-label={t("common.remove")}
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="w-full aspect-[2/1] rounded-xl border-2 border-dashed border-border/60 hover:border-foreground/30 bg-muted/30 hover:bg-muted/50 flex flex-col items-center justify-center gap-2 transition-all duration-200 group"
+                      >
+                        <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center group-hover:bg-muted/80 transition-colors">
+                          <ImagePlus size={24} className="text-muted-foreground" />
+                        </div>
+                        <span className="text-sm font-medium text-muted-foreground">
+                          {t("events.addCoverImage")}
+                        </span>
+                        <span className="text-xs text-muted-foreground/60">
+                          {t("events.coverImageHint")}
+                        </span>
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </m.div>
@@ -404,14 +486,44 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
       location: data.location || null,
     };
 
-    const result = editingEvent
-      ? await updateEvent(editingEvent.id, payload)
-      : await createEvent(payload);
+    if (editingEvent) {
+      const result = await updateEvent(editingEvent.id, payload);
+      setIsSubmitting(false);
+      if ("error" in result) {
+        setFeedback({ type: "error", message: result.error });
+        return;
+      }
+    } else {
+      const result = await createEvent(payload);
+      if ("error" in result) {
+        setIsSubmitting(false);
+        setFeedback({ type: "error", message: result.error });
+        return;
+      }
 
-    setIsSubmitting(false);
-    if ("error" in result) {
-      setFeedback({ type: "error", message: result.error });
-      return;
+      // Upload cover image if provided
+      if (data.imageFile && result.eventId) {
+        try {
+          const prepared = await prepareImageForUpload(data.imageFile);
+          const formData = new FormData();
+          formData.append("cover", prepared.file);
+
+          const uploadResult = await uploadEventCover(result.eventId, formData);
+          if ("error" in uploadResult) {
+            // Event created but image upload failed - show warning but don't fail
+            setFeedback({ type: "error", message: uploadResult.error });
+            setIsSubmitting(false);
+            handleCloseCompose();
+            router.refresh();
+            return;
+          }
+        } catch (error) {
+          logError(error, { action: "handleSubmit:uploadEventCover" });
+          // Continue even if image upload fails
+        }
+      }
+
+      setIsSubmitting(false);
     }
 
     handleCloseCompose();
