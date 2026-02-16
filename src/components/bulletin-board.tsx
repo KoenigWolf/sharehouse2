@@ -4,11 +4,11 @@ import { useState, useCallback, useEffect, useId, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { m, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Feather, X, Trash2, MessageCircle } from "lucide-react";
+import { Feather, X, Trash2, MessageCircle, Pencil, Check } from "lucide-react";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
-import { createBulletin, deleteBulletin, getBulletinsPaginated } from "@/lib/bulletin/actions";
+import { createBulletin, deleteBulletin, updateBulletin, getBulletinsPaginated } from "@/lib/bulletin/actions";
 import { BULLETIN } from "@/lib/constants/config";
 import { getInitials } from "@/lib/utils";
 import { logError } from "@/lib/errors";
@@ -82,6 +82,7 @@ interface BulletinItemProps {
   isTeaser: boolean;
   isNew: boolean;
   onDelete: (id: string) => void;
+  onEdit: (id: string, message: string) => Promise<boolean>;
   isDeleting: boolean;
   locale: string;
 }
@@ -92,14 +93,75 @@ function BulletinItem({
   isTeaser,
   isNew,
   onDelete,
+  onEdit,
   isDeleting,
   locale,
 }: BulletinItemProps) {
   const t = useI18n();
   const shouldReduceMotion = useReducedMotion();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const displayName = bulletin.profiles?.nickname ?? bulletin.profiles?.name ?? t("common.formerResident");
   const isMine = bulletin.user_id === currentUserId;
   const profileHref = bulletin.profiles ? `/profile/${bulletin.user_id}` : undefined;
+
+  // Edit state
+  const [isEditing, setIsEditing] = useState(false);
+  const [editMessage, setEditMessage] = useState(bulletin.message);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Check if message was edited
+  const isEdited = bulletin.updated_at && bulletin.updated_at !== bulletin.created_at;
+
+  // Start editing
+  const handleStartEdit = useCallback(() => {
+    setEditMessage(bulletin.message);
+    setIsEditing(true);
+  }, [bulletin.message]);
+
+  // Cancel editing
+  const handleCancelEdit = useCallback(() => {
+    setEditMessage(bulletin.message);
+    setIsEditing(false);
+  }, [bulletin.message]);
+
+  // Save edit
+  const handleSaveEdit = useCallback(async () => {
+    const trimmed = editMessage.trim();
+    if (!trimmed || trimmed === bulletin.message) {
+      setIsEditing(false);
+      return;
+    }
+
+    setIsSaving(true);
+    const success = await onEdit(bulletin.id, trimmed);
+    setIsSaving(false);
+
+    if (success) {
+      setIsEditing(false);
+    }
+  }, [editMessage, bulletin.id, bulletin.message, onEdit]);
+
+  // Auto-focus textarea when editing starts
+  useEffect(() => {
+    if (isEditing && textareaRef.current) {
+      textareaRef.current.focus();
+      textareaRef.current.setSelectionRange(textareaRef.current.value.length, textareaRef.current.value.length);
+    }
+  }, [isEditing]);
+
+  // Handle keyboard shortcuts
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === "Escape") {
+      handleCancelEdit();
+    } else if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      handleSaveEdit();
+    }
+  }, [handleCancelEdit, handleSaveEdit]);
+
+  const charCount = editMessage.length;
+  const isOverLimit = charCount > BULLETIN.maxMessageLength;
+  const canSave = editMessage.trim() && editMessage.trim() !== bulletin.message && !isOverLimit;
 
   return (
     <m.article
@@ -108,7 +170,7 @@ function BulletinItem({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, height: 0, marginTop: 0, marginBottom: 0, paddingTop: 0, paddingBottom: 0 }}
       transition={isNew ? SPRING : { duration: 0.2 }}
-      className="py-4 px-1 hover:bg-muted/30 transition-colors group border-b border-border/40 last:border-b-0"
+      className={`py-4 px-1 transition-colors group border-b border-border/40 last:border-b-0 ${isEditing ? "bg-muted/20" : "hover:bg-muted/30"}`}
     >
       <div className="flex gap-3">
         {/* Avatar */}
@@ -167,30 +229,156 @@ function BulletinItem({
               <span className="min-w-0 truncate text-sm text-muted-foreground leading-5">
                 {bulletin.profiles?.room_number && `· ${bulletin.profiles.room_number} `}
                 · {formatTimestamp(bulletin.created_at, locale)}
+                {isEdited && !isEditing && (
+                  <span className="ml-1 text-xs text-muted-foreground/60">({t("bulletin.edited")})</span>
+                )}
               </span>
             </div>
 
-            {/* Delete button with smooth reveal */}
-            {isMine && !bulletin.id.startsWith("temp-") && (
-              <m.button
-                type="button"
-                onClick={() => onDelete(bulletin.id)}
-                disabled={isDeleting}
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileHover={{ scale: 1.1, backgroundColor: "rgba(239, 68, 68, 0.1)" }}
-                whileTap={{ scale: 0.9 }}
-                className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-muted-foreground/60 hover:text-error sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 transition-opacity"
-                aria-label={t("common.delete")}
-              >
-                <Trash2 size={15} />
-              </m.button>
+            {/* Action buttons */}
+            {isMine && !bulletin.id.startsWith("temp-") && !isEditing && (
+              <div className="flex items-center gap-0.5 shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                {/* Edit button */}
+                <m.button
+                  type="button"
+                  onClick={handleStartEdit}
+                  disabled={isDeleting || isSaving}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileHover={{ scale: 1.1, backgroundColor: "rgba(59, 130, 246, 0.1)" }}
+                  whileTap={{ scale: 0.9 }}
+                  className="w-8 h-8 flex items-center justify-center rounded-full text-muted-foreground/60 hover:text-blue-500 focus:opacity-100 transition-opacity"
+                  aria-label={t("bulletin.edit")}
+                >
+                  <Pencil size={14} />
+                </m.button>
+
+                {/* Delete button */}
+                <m.button
+                  type="button"
+                  onClick={() => onDelete(bulletin.id)}
+                  disabled={isDeleting}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileHover={{ scale: 1.1, backgroundColor: "rgba(239, 68, 68, 0.1)" }}
+                  whileTap={{ scale: 0.9 }}
+                  className="w-8 h-8 flex items-center justify-center rounded-full text-muted-foreground/60 hover:text-error focus:opacity-100 transition-opacity"
+                  aria-label={t("common.delete")}
+                >
+                  <Trash2 size={15} />
+                </m.button>
+              </div>
             )}
           </div>
 
-          {/* Message */}
-          <p className={`text-[15px] text-foreground leading-relaxed whitespace-pre-wrap break-words ${isTeaser ? "blur-[2.5px] select-none" : ""}`}>
-            {bulletin.message}
-          </p>
+          {/* Message or Edit form */}
+          <AnimatePresence mode="wait">
+            {isEditing ? (
+              <m.div
+                key="edit-form"
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.2, ease: EASE_OUT }}
+                className="space-y-3"
+              >
+                {/* Textarea */}
+                <div className="relative">
+                  <textarea
+                    ref={textareaRef}
+                    value={editMessage}
+                    onChange={(e) => setEditMessage(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    disabled={isSaving}
+                    rows={3}
+                    className={`w-full px-3 py-2.5 bg-card border rounded-xl text-[15px] text-foreground leading-relaxed resize-none focus:outline-none focus:ring-2 transition-all ${
+                      isOverLimit
+                        ? "border-error focus:ring-error/20"
+                        : "border-border focus:ring-brand-500/20 focus:border-brand-500/50"
+                    }`}
+                    placeholder={t("bulletin.placeholderVibe")}
+                  />
+                </div>
+
+                {/* Footer: Character count + Actions */}
+                <div className="flex items-center justify-between">
+                  {/* Character counter with circular progress */}
+                  <div className="flex items-center gap-2">
+                    <div className="relative w-6 h-6">
+                      <svg className="w-6 h-6 -rotate-90" viewBox="0 0 24 24">
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          className="text-muted/30"
+                        />
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          className={isOverLimit ? "text-error" : charCount > BULLETIN.maxMessageLength * 0.9 ? "text-amber-500" : "text-brand-500"}
+                          style={{
+                            strokeDasharray: 62.83,
+                            strokeDashoffset: 62.83 - (Math.min(charCount / BULLETIN.maxMessageLength, 1) * 62.83),
+                          }}
+                        />
+                      </svg>
+                    </div>
+                    <span className={`text-xs font-medium ${isOverLimit ? "text-error" : "text-muted-foreground"}`}>
+                      {charCount}/{BULLETIN.maxMessageLength}
+                    </span>
+                  </div>
+
+                  {/* Action buttons */}
+                  <div className="flex items-center gap-2">
+                    <m.button
+                      type="button"
+                      onClick={handleCancelEdit}
+                      disabled={isSaving}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="h-8 px-3 rounded-full text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    >
+                      {t("bulletin.editCancel")}
+                    </m.button>
+                    <m.button
+                      type="button"
+                      onClick={handleSaveEdit}
+                      disabled={!canSave || isSaving}
+                      whileHover={canSave ? { scale: 1.02 } : undefined}
+                      whileTap={canSave ? { scale: 0.98 } : undefined}
+                      className="h-8 px-4 rounded-full bg-brand-500 hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                    >
+                      {isSaving ? (
+                        t("bulletin.saving")
+                      ) : (
+                        <>
+                          <Check size={14} />
+                          {t("bulletin.editConfirm")}
+                        </>
+                      )}
+                    </m.button>
+                  </div>
+                </div>
+              </m.div>
+            ) : (
+              <m.p
+                key="message"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                className={`text-[15px] text-foreground leading-relaxed whitespace-pre-wrap break-words ${isTeaser ? "blur-[2.5px] select-none" : ""}`}
+              >
+                {bulletin.message}
+              </m.p>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </m.article>
@@ -546,6 +734,32 @@ export function BulletinBoard({
     }
   }, [t, router]);
 
+  const handleEdit = useCallback(async (bulletinId: string, message: string): Promise<boolean> => {
+    try {
+      const result = await updateBulletin(bulletinId, message);
+
+      if ("error" in result) {
+        setFeedback({ type: "error", message: result.error });
+        return false;
+      }
+
+      // Update local state with new message
+      setBulletins((prev) =>
+        prev.map((b) =>
+          b.id === bulletinId
+            ? { ...b, message, updated_at: new Date().toISOString() }
+            : b
+        )
+      );
+      router.refresh();
+      return true;
+    } catch (error) {
+      logError(error, { action: "handleEdit failed" });
+      setFeedback({ type: "error", message: t("errors.serverError") });
+      return false;
+    }
+  }, [t, router]);
+
   // Calculate stagger delay for loaded items
   const getStaggerDelay = useCallback((bulletinId: string) => {
     if (loadedBatch.has(bulletinId)) {
@@ -620,6 +834,7 @@ export function BulletinBoard({
                     isTeaser={isTeaser}
                     isNew={newBulletinIds.has(bulletin.id)}
                     onDelete={handleDelete}
+                    onEdit={handleEdit}
                     isDeleting={isSubmitting}
                     locale={locale}
                   />

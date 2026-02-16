@@ -756,6 +756,12 @@ export const ja = {
     postHint: "共有したいことを書いてください",
     emptyHint: "最初の投稿をしてみましょう",
     noMorePosts: "これ以上の投稿はありません",
+    edit: "編集",
+    editing: "編集中",
+    saving: "保存中...",
+    editConfirm: "変更を保存",
+    editCancel: "キャンセル",
+    edited: "編集済み",
   },
 
   share: {

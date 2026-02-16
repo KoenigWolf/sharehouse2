@@ -758,6 +758,12 @@ export const en: Translations = {
     postHint: "Share what's on your mind",
     emptyHint: "Be the first to post something",
     noMorePosts: "No more posts",
+    edit: "Edit",
+    editing: "Editing",
+    saving: "Saving...",
+    editConfirm: "Save changes",
+    editCancel: "Cancel",
+    edited: "Edited",
   },
 
   share: {

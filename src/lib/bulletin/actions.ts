@@ -169,6 +169,58 @@ export async function createBulletin(message: string): Promise<ActionResponse> {
 }
 
 /**
+ * 投稿を編集（自分の投稿のみ編集可能）
+ */
+export async function updateBulletin(bulletinId: string, message: string): Promise<ActionResponse> {
+  const t = await getServerTranslator();
+  const originError = await enforceAllowedOrigin(t, "updateBulletin");
+  if (originError) return { error: originError };
+
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: t("errors.unauthorized") };
+
+    const trimmed = message.trim();
+    if (!trimmed) return { error: t("errors.invalidInput") };
+    if (trimmed.length > BULLETIN.maxMessageLength) {
+      return { error: t("errors.invalidInput") };
+    }
+
+    const { data, error } = await supabase
+      .from("bulletins")
+      .update({
+        message: trimmed,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", bulletinId)
+      .eq("user_id", user.id)
+      .select("id")
+      .maybeSingle();
+
+    if (error) {
+      logError(error, { action: "updateBulletin", userId: user.id, metadata: { bulletinId } });
+      return { error: t("errors.saveFailed") };
+    }
+
+    if (!data) {
+      logError(new Error("Bulletin not found or not owned by user"), {
+        action: "updateBulletin:notFound",
+        userId: user.id,
+        metadata: { bulletinId },
+      });
+      return { error: t("errors.saveFailed") };
+    }
+
+    CacheStrategy.afterBulletinUpdate();
+    return { success: true };
+  } catch (error) {
+    logError(error, { action: "updateBulletin" });
+    return { error: t("errors.serverError") };
+  }
+}
+
+/**
  * 投稿を削除（自分の投稿のみ削除可能）
  */
 export async function deleteBulletin(bulletinId: string): Promise<ActionResponse> {
