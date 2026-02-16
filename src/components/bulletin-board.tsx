@@ -164,12 +164,8 @@ function BulletinItem({
                   {displayName}
                 </span>
               )}
-              {bulletin.profiles?.room_number && (
-                <span className="text-sm text-muted-foreground shrink-0 leading-5">
-                  · {bulletin.profiles.room_number}
-                </span>
-              )}
-              <span className="text-sm text-muted-foreground shrink-0 leading-5">
+              <span className="min-w-0 truncate text-sm text-muted-foreground leading-5">
+                {bulletin.profiles?.room_number && `· ${bulletin.profiles.room_number} `}
                 · {formatTimestamp(bulletin.created_at, locale)}
               </span>
             </div>
