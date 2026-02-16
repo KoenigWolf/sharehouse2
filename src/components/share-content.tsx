@@ -22,10 +22,12 @@ interface ShareFormData {
   imageFile: File | null;
 }
 
+type SubmitResult = { success: true } | { success: false; error: string };
+
 interface ShareComposeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: ShareFormData) => Promise<void>;
+  onSubmit: (data: ShareFormData) => Promise<SubmitResult>;
   isSubmitting: boolean;
   editingItem?: ShareItemWithProfile | null;
 }
@@ -41,6 +43,7 @@ function ShareComposeModalInner({ isOpen, onClose, onSubmit, isSubmitting, editi
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(editingItem?.image_url ?? null);
   const [existingImageUrl] = useState<string | null>(editingItem?.image_url ?? null);
+  const [imageUploadError, setImageUploadError] = useState<string | null>(null);
 
   const handleClose = useCallback(() => {
     if (imagePreview && imagePreview !== existingImageUrl) {
@@ -53,10 +56,14 @@ function ShareComposeModalInner({ isOpen, onClose, onSubmit, isSubmitting, editi
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (imagePreview && imagePreview !== existingImageUrl) {
+      URL.revokeObjectURL(imagePreview);
+    }
     setImageFile(file);
+    setImageUploadError(null);
     const objectUrl = URL.createObjectURL(file);
     setImagePreview(objectUrl);
-  }, []);
+  }, [imagePreview, existingImageUrl]);
 
   const handleRemoveImage = useCallback(() => {
     setImageFile(null);
@@ -71,7 +78,12 @@ function ShareComposeModalInner({ isOpen, onClose, onSubmit, isSubmitting, editi
 
   const handleSubmit = async () => {
     if (!title.trim()) return;
-    await onSubmit({ title: title.trim(), description: description.trim() || null, imageFile });
+    setImageUploadError(null);
+    const result = await onSubmit({ title: title.trim(), description: description.trim() || null, imageFile });
+    if (!result.success) {
+      setImageUploadError(result.error);
+      return;
+    }
     if (imagePreview && imagePreview !== existingImageUrl) {
       URL.revokeObjectURL(imagePreview);
     }
@@ -228,6 +240,13 @@ function ShareComposeModalInner({ isOpen, onClose, onSubmit, isSubmitting, editi
                       </span>
                     </button>
                   )}
+
+                  {/* Image upload error */}
+                  {imageUploadError && (
+                    <p className="text-sm text-error mt-2">
+                      {imageUploadError}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -325,8 +344,8 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
     setFeedback(null);
   }, []);
 
-  const handleSubmit = useCallback(async (data: ShareFormData) => {
-    if (!data.title.trim() || isSubmitting) return;
+  const handleSubmit = useCallback(async (data: ShareFormData): Promise<SubmitResult> => {
+    if (!data.title.trim() || isSubmitting) return { success: false, error: "" };
     setIsSubmitting(true);
     setFeedback(null);
 
@@ -338,7 +357,7 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
       if ("error" in result) {
         setIsSubmitting(false);
         setFeedback({ type: "error", message: result.error });
-        return;
+        return { success: false, error: result.error };
       }
       itemId = editingItem.id;
     } else {
@@ -347,7 +366,7 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
       if ("error" in result) {
         setIsSubmitting(false);
         setFeedback({ type: "error", message: result.error });
-        return;
+        return { success: false, error: result.error };
       }
       itemId = result.itemId;
     }
@@ -361,15 +380,20 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
         const uploadResult = await uploadShareItemImage(itemId, formData);
         if ("error" in uploadResult) {
           logError(new Error(uploadResult.error), { action: "handleSubmit:imageUpload" });
+          setIsSubmitting(false);
+          return { success: false, error: uploadResult.error };
         }
       } catch (error) {
         logError(error, { action: "handleSubmit:imageUpload" });
+        setIsSubmitting(false);
+        return { success: false, error: String(error) };
       }
     }
 
     setIsSubmitting(false);
     handleCloseCompose();
     router.refresh();
+    return { success: true };
   }, [isSubmitting, editingItem, handleCloseCompose, router]);
 
   const handleClaim = useCallback(async (itemId: string) => {

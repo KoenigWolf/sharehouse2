@@ -374,9 +374,8 @@ export async function uploadShareItemImage(
       return { error: fileResult.error };
     }
 
-    if (item.image_url) {
-      await deleteStorageImage(supabase, item.image_url);
-    }
+    // Save old image URL before upload - we'll delete it only after successful upload
+    const oldImageUrl = item.image_url;
 
     const uploadResult = await uploadAndPersistImage(
       supabase,
@@ -390,6 +389,11 @@ export async function uploadShareItemImage(
 
     if ("error" in uploadResult) {
       return uploadResult;
+    }
+
+    // Delete old image only after successful upload and DB update
+    if (oldImageUrl) {
+      await deleteStorageImage(supabase, oldImageUrl);
     }
 
     CacheStrategy.afterShareUpdate();
