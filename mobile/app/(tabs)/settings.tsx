@@ -1,0 +1,194 @@
+import { View, Text, Pressable, ScrollView, Alert } from "react-native";
+import { useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Animated, { FadeInDown } from "react-native-reanimated";
+import * as Haptics from "expo-haptics";
+import { useAuth } from "../../lib/auth";
+import { Avatar } from "../../components/ui/Avatar";
+import { Card } from "../../components/ui/Card";
+import { Button } from "../../components/ui/Button";
+import { Colors } from "../../constants/colors";
+
+export default function SettingsScreen() {
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const { profile, signOut } = useAuth();
+
+  const handleSignOut = () => {
+    Alert.alert("Sign Out", "Are you sure you want to sign out?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Sign Out",
+        style: "destructive",
+        onPress: async () => {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          await signOut();
+          router.replace("/(auth)/login");
+        },
+      },
+    ]);
+  };
+
+  return (
+    <View className="flex-1 bg-background">
+      {/* Header */}
+      <View
+        style={{ paddingTop: insets.top }}
+        className="px-4 pb-4 bg-background border-b border-border/40"
+      >
+        <Text className="text-3xl font-bold text-foreground">Settings</Text>
+      </View>
+
+      <ScrollView
+        contentContainerStyle={{
+          padding: 16,
+          paddingBottom: insets.bottom + 100,
+        }}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Profile Card */}
+        <Animated.View entering={FadeInDown.duration(400).springify()}>
+          <Card
+            onPress={() => router.push(`/profile/${profile?.id}`)}
+            className="p-4"
+          >
+            <View className="flex-row items-center">
+              <Avatar
+                src={profile?.avatar_url}
+                name={profile?.name ?? ""}
+                size={60}
+              />
+              <View className="ml-4 flex-1">
+                <Text className="text-foreground text-lg font-bold">
+                  {profile?.nickname ?? profile?.name}
+                </Text>
+                <Text className="text-muted-foreground text-sm">
+                  {profile?.room_number
+                    ? `Room ${profile.room_number}`
+                    : "No room assigned"}
+                </Text>
+                <Text className="text-brand-500 text-sm mt-1">
+                  View Profile →
+                </Text>
+              </View>
+            </View>
+          </Card>
+        </Animated.View>
+
+        {/* Settings Sections */}
+        <Animated.View
+          entering={FadeInDown.delay(100).duration(400).springify()}
+          className="mt-6"
+        >
+          <Text className="text-muted-foreground text-sm font-semibold uppercase tracking-wider mb-3 px-2">
+            Account
+          </Text>
+          <Card>
+            <SettingsRow
+              icon="✏️"
+              label="Edit Profile"
+              onPress={() => router.push(`/profile/${profile?.id}/edit`)}
+            />
+            <Divider />
+            <SettingsRow
+              icon="🔔"
+              label="Notifications"
+              onPress={() => {}}
+            />
+            <Divider />
+            <SettingsRow
+              icon="🌐"
+              label="Language"
+              value="English"
+              onPress={() => {}}
+            />
+          </Card>
+        </Animated.View>
+
+        <Animated.View
+          entering={FadeInDown.delay(200).duration(400).springify()}
+          className="mt-6"
+        >
+          <Text className="text-muted-foreground text-sm font-semibold uppercase tracking-wider mb-3 px-2">
+            About
+          </Text>
+          <Card>
+            <SettingsRow icon="📋" label="Terms of Service" onPress={() => {}} />
+            <Divider />
+            <SettingsRow icon="🔒" label="Privacy Policy" onPress={() => {}} />
+            <Divider />
+            <SettingsRow
+              icon="ℹ️"
+              label="Version"
+              value="1.0.0"
+              onPress={() => {}}
+              showArrow={false}
+            />
+          </Card>
+        </Animated.View>
+
+        {/* Sign Out */}
+        <Animated.View
+          entering={FadeInDown.delay(300).duration(400).springify()}
+          className="mt-8"
+        >
+          <Button variant="ghost" onPress={handleSignOut}>
+            <Text className="text-error font-semibold">Sign Out</Text>
+          </Button>
+        </Animated.View>
+
+        {/* Footer */}
+        <Animated.View
+          entering={FadeInDown.delay(400).duration(400)}
+          className="items-center mt-8"
+        >
+          <Text className="text-muted-foreground text-xs">
+            Share House Portal
+          </Text>
+          <Text className="text-muted-foreground/50 text-xs mt-1">
+            Made with ❤️ for housemates
+          </Text>
+        </Animated.View>
+      </ScrollView>
+    </View>
+  );
+}
+
+function SettingsRow({
+  icon,
+  label,
+  value,
+  onPress,
+  showArrow = true,
+}: {
+  icon: string;
+  label: string;
+  value?: string;
+  onPress: () => void;
+  showArrow?: boolean;
+}) {
+  return (
+    <Pressable
+      onPress={() => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        onPress();
+      }}
+      className="flex-row items-center justify-between px-4 py-3.5 active:bg-muted/50"
+    >
+      <View className="flex-row items-center">
+        <Text className="text-lg mr-3">{icon}</Text>
+        <Text className="text-foreground text-base">{label}</Text>
+      </View>
+      <View className="flex-row items-center">
+        {value && (
+          <Text className="text-muted-foreground text-sm mr-2">{value}</Text>
+        )}
+        {showArrow && <Text className="text-muted-foreground">›</Text>}
+      </View>
+    </Pressable>
+  );
+}
+
+function Divider() {
+  return <View className="h-px bg-border/40 mx-4" />;
+}
