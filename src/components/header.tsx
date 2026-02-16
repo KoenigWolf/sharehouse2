@@ -227,7 +227,7 @@ export const Header = memo(function Header() {
             aria-label={t("a11y.goHome")}
           >
             <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors tracking-wide">
-              {t("nav.residents")}
+              SHARE HOUSE
             </span>
           </Link>
 
