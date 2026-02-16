@@ -10,6 +10,7 @@ import { useI18n, useLocale } from "@/hooks/use-i18n";
 import { createBulletin, deleteBulletin } from "@/lib/bulletin/actions";
 import { BULLETIN } from "@/lib/constants/config";
 import { getInitials } from "@/lib/utils";
+import { logError } from "@/lib/errors";
 import type { BulletinWithProfile } from "@/domain/bulletin";
 
 interface BulletinBoardProps {
@@ -255,7 +256,8 @@ export function BulletinBoard({ bulletins: initialBulletins, currentUserId, curr
       setBulletins((prev) => [newBulletin, ...prev]);
       setIsComposeOpen(false);
       router.refresh();
-    } catch {
+    } catch (error) {
+      logError(error, { action: "handlePost failed" });
       setFeedback({ type: "error", message: t("errors.serverError") });
     } finally {
       setIsSubmitting(false);
@@ -276,7 +278,8 @@ export function BulletinBoard({ bulletins: initialBulletins, currentUserId, curr
         setBulletins((prev) => prev.filter((b) => b.id !== bulletinId));
         router.refresh();
       }
-    } catch {
+    } catch (error) {
+      logError(error, { action: "handleDelete failed" });
       setFeedback({ type: "error", message: t("errors.serverError") });
     } finally {
       setIsSubmitting(false);
