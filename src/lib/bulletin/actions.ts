@@ -89,15 +89,6 @@ export async function getBulletinsPaginated(
 }
 
 /**
- * 全ての投稿を取得（/bulletin ページ用、Twitter型）
- * @deprecated getBulletinsPaginated を使用してください
- */
-export async function getBulletins(): Promise<BulletinWithProfile[]> {
-  const result = await getBulletinsPaginated(null, BULLETIN.maxDisplayOnBulletinPage);
-  return result.bulletins;
-}
-
-/**
  * 各ユーザーの最新投稿のみ取得（/residents ページ用、上書き型）
  * 
  * DB側で DISTINCT ON により重複排除済み

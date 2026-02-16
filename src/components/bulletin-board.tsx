@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useId, useRef, useMemo } from "react";
+import { useState, useCallback, useEffect, useId, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { m, AnimatePresence, useReducedMotion } from "framer-motion";
@@ -547,7 +547,7 @@ export function BulletinBoard({
   }, [t, router]);
 
   // Calculate stagger delay for loaded items
-  const getStaggerDelay = useCallback((bulletinId: string, index: number) => {
+  const getStaggerDelay = useCallback((bulletinId: string) => {
     if (loadedBatch.has(bulletinId)) {
       const batchIndex = Array.from(loadedBatch).indexOf(bulletinId);
       return batchIndex * 0.05; // 50ms stagger
@@ -604,14 +604,14 @@ export function BulletinBoard({
           /* Timeline */
           <div>
             <AnimatePresence initial={false} mode="popLayout">
-              {bulletins.map((bulletin, index) => (
+              {bulletins.map((bulletin) => (
                 <m.div
                   key={bulletin.id}
                   initial={loadedBatch.has(bulletin.id) ? { opacity: 0, y: 20 } : false}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{
                     ...SPRING_SOFT,
-                    delay: getStaggerDelay(bulletin.id, index),
+                    delay: getStaggerDelay(bulletin.id),
                   }}
                 >
                   <BulletinItem

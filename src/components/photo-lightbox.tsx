@@ -58,10 +58,6 @@ function getInitialSize() {
   return { width: size, height: size };
 }
 
-interface LightboxImageProps {
-  photo: PhotoWithProfile;
-}
-
 interface LightboxSlideProps {
   photo: PhotoWithProfile;
   isVisible: boolean;
