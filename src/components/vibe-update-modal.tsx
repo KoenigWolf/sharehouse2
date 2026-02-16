@@ -10,6 +10,7 @@ import { BULLETIN } from "@/lib/constants/config";
 import { Spinner } from "@/components/ui/spinner";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
+import { logError } from "@/lib/errors";
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 
@@ -60,10 +61,7 @@ export function VibeUpdateModal({
       setError(null);
 
       try {
-         const result = await createBulletin(trimmed); // Re-using bulletin action for vibe? 
-         // Note: Original VibeInput used createBulletin. 
-         // Verify if there's a specific 'updateVibe' action or if vibe is just the latest bulletin.
-         // Looking at VibeInput source: it calls createBulletin(trimmed). Use that.
+         const result = await createBulletin(trimmed);
 
          if ("error" in result) {
             setError(result.error);
@@ -72,7 +70,8 @@ export function VibeUpdateModal({
             onClose();
             router.refresh();
          }
-      } catch {
+      } catch (error) {
+         logError(error);
          setError(t("errors.serverError"));
       } finally {
          setIsSubmitting(false);
