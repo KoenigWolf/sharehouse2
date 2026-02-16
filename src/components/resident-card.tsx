@@ -1,14 +1,16 @@
 "use client";
 
-import { memo, useMemo } from "react";
+import { memo, useMemo, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { m } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import type { Profile } from "@/domain/profile";
 import { getInitials } from "@/lib/utils";
 import { getOptimizedImageUrl, getResponsiveImageSizes } from "@/lib/utils/image";
 import { isNewResident } from "@/lib/utils/residents";
 import { useI18n } from "@/hooks/use-i18n";
+import { usePrefetch } from "@/hooks/use-prefetch";
+import { SharedAvatar } from "@/components/shared-element";
 import { Sparkles } from "lucide-react";
 
 interface ResidentCardProps {
@@ -25,21 +27,45 @@ export const ResidentCard = memo(function ResidentCard({
   isCurrentUser = false,
 }: ResidentCardProps) {
   const t = useI18n();
+  const profileHref = `/profile/${profile.id}`;
+  const prefetch = usePrefetch(profileHref);
+  const [isPressed, setIsPressed] = useState(false);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const isMock = isMockProfile(profile.id);
   const isNew = useMemo(() => isNewResident(profile.move_in_date), [profile.move_in_date]);
   const displayName = profile.nickname || profile.name;
   const optimizedSrc = getOptimizedImageUrl(profile.avatar_url);
 
+  const handleTouchStart = useCallback(() => {
+    setIsPressed(true);
+    prefetch.onTouchStart();
+  }, [prefetch]);
+
+  const handleTouchEnd = useCallback(() => {
+    setTimeout(() => setIsPressed(false), 100);
+  }, []);
+
+  const handleImageLoad = useCallback(() => {
+    setIsImageLoaded(true);
+  }, []);
+
   return (
     <Link
-      href={`/profile/${profile.id}`}
+      href={profileHref}
       className="block group outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 rounded-2xl"
       aria-label={t("a11y.viewProfile", { name: profile.name })}
+      onMouseEnter={prefetch.onMouseEnter}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onFocus={prefetch.onFocus}
     >
       <m.article
+        animate={{
+          scale: isPressed ? 0.97 : 1,
+        }}
         whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
+        whileTap={{ scale: 0.97 }}
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
         className={`
           relative aspect-[3/4] rounded-2xl overflow-hidden
@@ -50,16 +76,39 @@ export const ResidentCard = memo(function ResidentCard({
           ${isCurrentUser ? "ring-2 ring-brand-500 ring-offset-2 ring-offset-background" : ""}
         `}
       >
-        {/* Photo or Fallback */}
-        <div className="absolute inset-0">
+        {/* Photo or Fallback with SharedAvatar for smooth transitions */}
+        <SharedAvatar id={profile.id} className="absolute inset-0">
+          {/* Shimmer loading state */}
+          <AnimatePresence>
+            {!isImageLoaded && optimizedSrc && (
+              <m.div
+                initial={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="absolute inset-0 z-10"
+              >
+                <div className="absolute inset-0 bg-muted" />
+                <div className="absolute inset-0 shimmer" />
+              </m.div>
+            )}
+          </AnimatePresence>
+
           {optimizedSrc ? (
-            <Image
-              src={optimizedSrc}
-              alt={profile.name}
-              fill
-              className="object-cover"
-              sizes={getResponsiveImageSizes("card")}
-            />
+            <m.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: isImageLoaded ? 1 : 0 }}
+              transition={{ duration: 0.3 }}
+              className="w-full h-full"
+            >
+              <Image
+                src={optimizedSrc}
+                alt={profile.name}
+                fill
+                className="object-cover"
+                sizes={getResponsiveImageSizes("card")}
+                onLoad={handleImageLoad}
+              />
+            </m.div>
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-muted-foreground/20">
               <span className="text-muted-foreground text-3xl font-bold">
@@ -74,7 +123,7 @@ export const ResidentCard = memo(function ResidentCard({
               </span>
             </div>
           )}
-        </div>
+        </SharedAvatar>
 
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
