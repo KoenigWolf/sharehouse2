@@ -6,6 +6,8 @@ import { Image } from "expo-image";
 import * as Haptics from "expo-haptics";
 import { supabase, type Profile } from "../../lib/supabase";
 import { useAuth } from "../../lib/auth";
+import { useI18n } from "../../lib/i18n";
+import { logError } from "../../lib/utils/log-error";
 import { Avatar } from "../../components/ui/Avatar";
 import { Card } from "../../components/ui/Card";
 import { Colors } from "../../constants/colors";
@@ -17,21 +19,37 @@ export default function ProfileScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { profile: currentProfile } = useAuth();
+  const { t } = useI18n();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      const { data } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", id)
-        .single();
-
-      if (data) {
-        setProfile(data);
-      }
+    if (!id) {
       setIsLoading(false);
+      return;
+    }
+
+    const fetchProfile = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", id)
+          .single();
+
+        if (error) {
+          logError(error, { fn: "fetchProfile", id });
+          return;
+        }
+
+        if (data) {
+          setProfile(data);
+        }
+      } catch (error) {
+        logError(error, { fn: "fetchProfile", id });
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchProfile();
@@ -42,7 +60,7 @@ export default function ProfileScreen() {
   if (isLoading) {
     return (
       <View className="flex-1 bg-background items-center justify-center">
-        <Text className="text-muted-foreground">Loading...</Text>
+        <Text className="text-muted-foreground">{t("common.loading")}</Text>
       </View>
     );
   }
@@ -50,7 +68,7 @@ export default function ProfileScreen() {
   if (!profile) {
     return (
       <View className="flex-1 bg-background items-center justify-center">
-        <Text className="text-muted-foreground">Profile not found</Text>
+        <Text className="text-muted-foreground">{t("profile.notFound")}</Text>
       </View>
     );
   }
@@ -130,14 +148,14 @@ export default function ProfileScreen() {
             {profile.room_number && (
               <View className="bg-brand-50 rounded-full px-3 py-1 mt-2">
                 <Text className="text-brand-600 font-medium">
-                  Room {profile.room_number}
+                  {t("common.room")} {profile.room_number}
                 </Text>
               </View>
             )}
           </View>
 
           {/* MBTI & Tags */}
-          {(profile.mbti || profile.hobbies?.length) && (
+          {(profile.mbti || (profile.hobbies && profile.hobbies.length > 0)) && (
             <View className="flex-row flex-wrap justify-center gap-2 mt-4">
               {profile.mbti && (
                 <View className="bg-muted rounded-full px-3 py-1">
@@ -167,15 +185,15 @@ export default function ProfileScreen() {
           <View className="mt-6">
             <Card className="p-4">
               {profile.occupation && (
-                <DetailRow icon="💼" label="Work" value={profile.occupation} />
+                <DetailRow icon="💼" label={t("profile.work")} value={profile.occupation} />
               )}
               {profile.lifestyle && (
-                <DetailRow icon="🌙" label="Lifestyle" value={profile.lifestyle} />
+                <DetailRow icon="🌙" label={t("profile.lifestyle")} value={profile.lifestyle} />
               )}
               {profile.move_in_date && (
                 <DetailRow
                   icon="📅"
-                  label="Moved in"
+                  label={t("profile.movedIn")}
                   value={new Date(profile.move_in_date).toLocaleDateString(
                     "en-US",
                     { month: "long", year: "numeric" }

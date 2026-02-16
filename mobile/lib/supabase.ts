@@ -1,10 +1,20 @@
 import "react-native-url-polyfill";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createClient } from "@supabase/supabase-js";
 import * as SecureStore from "expo-secure-store";
 
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!;
+// Runtime validation of required environment variables
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  const missing = [];
+  if (!supabaseUrl) missing.push("EXPO_PUBLIC_SUPABASE_URL");
+  if (!supabaseAnonKey) missing.push("EXPO_PUBLIC_SUPABASE_ANON_KEY");
+  throw new Error(
+    `Missing required environment variables: ${missing.join(", ")}. ` +
+      "Please create a .env.local file with these values."
+  );
+}
 
 // Secure storage adapter for auth tokens
 const SecureStoreAdapter = {

@@ -6,12 +6,12 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
-  Animated,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
 import { useAuth } from "../../lib/auth";
+import { useI18n } from "../../lib/i18n";
 import { Button } from "../../components/ui/Button";
 import { Colors } from "../../constants/colors";
 
@@ -19,6 +19,7 @@ export default function LoginScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { signIn } = useAuth();
+  const { t } = useI18n();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,7 +28,7 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
-      setError("Please enter email and password");
+      setError(t("auth.errorEmptyFields"));
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       return;
     }
@@ -35,17 +36,22 @@ export default function LoginScreen() {
     setIsLoading(true);
     setError(null);
 
-    const result = await signIn(email.trim(), password);
+    try {
+      const result = await signIn(email.trim(), password);
 
-    if (result.error) {
-      setError(result.error);
+      if (result.error) {
+        setError(result.error);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      } else {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        router.replace("/(tabs)");
+      }
+    } catch (err) {
+      setError(t("auth.errorLoginFailed"));
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-    } else {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      router.replace("/(tabs)");
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   return (
@@ -63,10 +69,10 @@ export default function LoginScreen() {
             <Text className="text-white text-4xl">🏠</Text>
           </View>
           <Text className="text-foreground text-2xl font-bold">
-            Share House
+            {t("auth.appName")}
           </Text>
           <Text className="text-muted-foreground text-sm mt-1">
-            Resident Portal
+            {t("auth.subtitle")}
           </Text>
         </View>
 
@@ -82,12 +88,12 @@ export default function LoginScreen() {
           {/* Email Input */}
           <View className="mb-4">
             <Text className="text-foreground text-sm font-medium mb-2 ml-1">
-              Email
+              {t("auth.email")}
             </Text>
             <TextInput
               value={email}
               onChangeText={setEmail}
-              placeholder="your@email.com"
+              placeholder={t("auth.emailPlaceholder")}
               placeholderTextColor={Colors.mutedForeground}
               keyboardType="email-address"
               autoCapitalize="none"
@@ -99,12 +105,12 @@ export default function LoginScreen() {
           {/* Password Input */}
           <View className="mb-6">
             <Text className="text-foreground text-sm font-medium mb-2 ml-1">
-              Password
+              {t("auth.password")}
             </Text>
             <TextInput
               value={password}
               onChangeText={setPassword}
-              placeholder="••••••••"
+              placeholder={t("auth.passwordPlaceholder")}
               placeholderTextColor={Colors.mutedForeground}
               secureTextEntry
               className="bg-muted rounded-xl px-4 py-3.5 text-foreground text-base"
@@ -113,12 +119,12 @@ export default function LoginScreen() {
 
           {/* Login Button */}
           <Button onPress={handleLogin} isLoading={isLoading} size="lg">
-            Sign In
+            {t("auth.signIn")}
           </Button>
 
           {/* Forgot Password */}
           <Pressable className="mt-4 items-center">
-            <Text className="text-brand-500 text-sm">Forgot password?</Text>
+            <Text className="text-brand-500 text-sm">{t("auth.forgotPassword")}</Text>
           </Pressable>
         </View>
 
@@ -128,7 +134,7 @@ export default function LoginScreen() {
           style={{ paddingBottom: insets.bottom }}
         >
           <Text className="text-muted-foreground text-xs">
-            For house residents only
+            {t("auth.residentsOnly")}
           </Text>
         </View>
       </View>

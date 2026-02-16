@@ -10,12 +10,15 @@ interface AvatarProps {
 }
 
 export function Avatar({ src, name, size = 48, className = "" }: AvatarProps) {
+  // Safely compute initials from name
   const initials = name
     .split(" ")
-    .map((n) => n[0])
+    .filter(Boolean)
+    .map((segment) => segment[0] ?? "")
+    .filter(Boolean)
     .join("")
     .slice(0, 2)
-    .toUpperCase();
+    .toUpperCase() || "?";
 
   if (!src) {
     return (
