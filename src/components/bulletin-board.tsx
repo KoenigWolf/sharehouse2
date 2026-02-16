@@ -385,25 +385,27 @@ export function BulletinBoard({ bulletins: initialBulletins, currentUserId, curr
                     <div className="flex-1 min-w-0">
                       {/* Header row */}
                       <div className="flex items-center gap-1.5 mb-0.5">
-                        {profileHref ? (
-                          <Link href={profileHref} className="hover:underline">
-                            <span className="text-[15px] font-bold text-foreground truncate">
+                        <div className="flex items-baseline gap-1.5 min-w-0 flex-1">
+                          {profileHref ? (
+                            <Link href={profileHref} className="hover:underline shrink-0 max-w-[45%]">
+                              <span className="text-[15px] font-bold text-foreground truncate block leading-5">
+                                {displayName}
+                              </span>
+                            </Link>
+                          ) : (
+                            <span className="text-[15px] font-bold text-foreground truncate shrink-0 max-w-[45%] leading-5">
                               {displayName}
                             </span>
-                          </Link>
-                        ) : (
-                          <span className="text-[15px] font-bold text-foreground truncate">
-                            {displayName}
+                          )}
+                          {bulletin.profiles?.room_number && (
+                            <span className="text-sm text-muted-foreground shrink-0 leading-5">
+                              · {bulletin.profiles.room_number}
+                            </span>
+                          )}
+                          <span className="text-sm text-muted-foreground shrink-0 leading-5">
+                            · {formatTimestamp(bulletin.created_at, locale)}
                           </span>
-                        )}
-                        {bulletin.profiles?.room_number && (
-                          <span className="text-sm text-muted-foreground">
-                            · {bulletin.profiles.room_number}
-                          </span>
-                        )}
-                        <span className="text-sm text-muted-foreground">
-                          · {formatTimestamp(bulletin.created_at, locale)}
-                        </span>
+                        </div>
 
                         {/* Delete button */}
                         {isMine && !bulletin.id.startsWith("temp-") && (
@@ -411,7 +413,7 @@ export function BulletinBoard({ bulletins: initialBulletins, currentUserId, curr
                             type="button"
                             onClick={() => handleDelete(bulletin.id)}
                             disabled={isSubmitting}
-                            className="ml-auto w-8 h-8 flex items-center justify-center rounded-full text-muted-foreground/40 hover:text-error hover:bg-error/10 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all"
+                            className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-muted-foreground/40 hover:text-error hover:bg-error/10 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all"
                             aria-label={t("common.delete")}
                           >
                             <Trash2 size={15} />
