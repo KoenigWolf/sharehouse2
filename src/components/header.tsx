@@ -6,15 +6,6 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
-  Users,
-  MessageCircle,
-  Gift,
-  Calendar,
-  Image as ImageIcon,
-  Info,
-  Coffee,
-  LayoutGrid,
-  BarChart3,
   User,
   Settings,
   LogOut,
@@ -31,32 +22,19 @@ import { createClient } from "@/lib/supabase/client";
 import { useI18n } from "@/hooks/use-i18n";
 import { useUser } from "@/hooks/use-user";
 import { getOptimizedImageUrl } from "@/lib/utils/image";
-import type { TranslationKey } from "@/lib/i18n";
+import {
+  ALL_NAV_ITEMS,
+  isNavItemActive,
+  type NavItem,
+} from "@/lib/constants/navigation";
 
-interface NavItem {
-  href: string;
-  labelKey: TranslationKey;
-  icon: typeof Users;
-}
-
-const NAV_ITEMS: NavItem[] = [
-  { href: "/residents", labelKey: "nav.residents", icon: Users },
-  { href: "/events", labelKey: "nav.events", icon: Calendar },
-  { href: "/bulletin", labelKey: "bulletin.title", icon: MessageCircle },
-  { href: "/share", labelKey: "nav.share", icon: Gift },
-  { href: "/room-photos", labelKey: "nav.gallery", icon: ImageIcon },
-  { href: "/stats", labelKey: "nav.stats", icon: BarChart3 },
-  { href: "/info", labelKey: "nav.info", icon: Info },
-  { href: "/tea-time", labelKey: "nav.teaTime", icon: Coffee },
-  { href: "/floor-plan", labelKey: "nav.floorPlan", icon: LayoutGrid },
-];
-
-interface NavLinkProps {
+const NavLink = memo(function NavLink({
+  item,
+  isActive,
+}: {
   item: NavItem;
   isActive: boolean;
-}
-
-const NavLink = memo(function NavLink({ item, isActive }: NavLinkProps) {
+}) {
   const t = useI18n();
   const Icon = item.icon;
 
@@ -207,11 +185,6 @@ export const Header = memo(function Header() {
   const pathname = usePathname();
   const t = useI18n();
 
-  const isPathActive = useCallback(
-    (item: NavItem) => pathname === item.href,
-    [pathname]
-  );
-
   return (
     <header
       className="sticky top-0 z-40 bg-card border-b border-border/30"
@@ -237,7 +210,9 @@ export const Header = memo(function Header() {
           {/* Current section indicator */}
           <span className="hidden sm:block text-sm font-bold text-foreground tracking-wide">
             {(() => {
-              const activeItem = NAV_ITEMS.find((item) => isPathActive(item));
+              const activeItem = ALL_NAV_ITEMS.find((item) =>
+                isNavItemActive(pathname, item)
+              );
               return activeItem ? t(activeItem.labelKey) : t("header.brand");
             })()}
           </span>
@@ -248,11 +223,11 @@ export const Header = memo(function Header() {
           aria-label={t("a11y.mainNavigation")}
           className="hidden lg:flex items-center gap-1"
         >
-          {NAV_ITEMS.map((item) => (
+          {ALL_NAV_ITEMS.map((item) => (
             <NavLink
               key={item.href}
               item={item}
-              isActive={isPathActive(item)}
+              isActive={isNavItemActive(pathname, item)}
             />
           ))}
         </nav>
