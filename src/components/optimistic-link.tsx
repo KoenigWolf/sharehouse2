@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useCallback, useRef, type MouseEvent, memo } from "react";
+import { useState, useCallback, useRef, useEffect, type MouseEvent, memo } from "react";
 import Link, { type LinkProps } from "next/link";
-import { useRouter } from "next/navigation";
 import { m } from "framer-motion";
+import { usePrefetch } from "@/hooks/use-prefetch";
 
 interface OptimisticLinkProps extends Omit<LinkProps, "onMouseEnter" | "onTouchStart"> {
   children: React.ReactNode;
@@ -35,35 +35,43 @@ export const OptimisticLink = memo(function OptimisticLink({
   "aria-label": ariaLabel,
   ...linkProps
 }: OptimisticLinkProps) {
-  const router = useRouter();
   const [isPressed, setIsPressed] = useState(false);
-  const prefetchedRef = useRef(false);
   const pressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hrefString = typeof href === "string" ? href : href.pathname ?? "";
+  const prefetch = usePrefetch(hrefString);
 
-  const handlePrefetch = useCallback(() => {
-    if (!prefetchedRef.current && typeof href === "string" && !href.startsWith("http")) {
-      router.prefetch(href);
-      prefetchedRef.current = true;
-    }
-  }, [href, router]);
+  // Clean up timer on unmount
+  useEffect(() => {
+    return () => {
+      if (pressTimerRef.current) {
+        clearTimeout(pressTimerRef.current);
+        pressTimerRef.current = null;
+      }
+    };
+  }, []);
 
   const handleMouseEnter = useCallback(() => {
     if (prefetchOnHover) {
-      handlePrefetch();
+      prefetch();
     }
-  }, [prefetchOnHover, handlePrefetch]);
+  }, [prefetchOnHover, prefetch]);
 
   const handleTouchStart = useCallback(() => {
-    handlePrefetch();
+    prefetch();
     if (showFeedback) {
       setIsPressed(true);
     }
-  }, [handlePrefetch, showFeedback]);
+  }, [prefetch, showFeedback]);
 
   const handleTouchEnd = useCallback(() => {
+    // Clear any existing timer before starting a new one
+    if (pressTimerRef.current) {
+      clearTimeout(pressTimerRef.current);
+    }
     // Small delay before releasing press state for visual feedback
     pressTimerRef.current = setTimeout(() => {
       setIsPressed(false);
+      pressTimerRef.current = null;
     }, 100);
   }, []);
 
@@ -81,7 +89,6 @@ export const OptimisticLink = memo(function OptimisticLink({
     setIsPressed(false);
   }, []);
 
-  // Clean up timer on unmount
   const linkRef = useRef<HTMLAnchorElement>(null);
 
   if (!showFeedback) {
@@ -151,22 +158,26 @@ export const CardLink = memo(function CardLink({
   "aria-label": ariaLabel,
   ...linkProps
 }: CardLinkProps) {
-  const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
-  const prefetchedRef = useRef(false);
+  const pressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hrefString = typeof href === "string" ? href : href.pathname ?? "";
+  const prefetch = usePrefetch(hrefString);
 
-  const handlePrefetch = useCallback(() => {
-    if (!prefetchedRef.current && typeof href === "string" && !href.startsWith("http")) {
-      router.prefetch(href);
-      prefetchedRef.current = true;
-    }
-  }, [href, router]);
+  // Clean up timer on unmount
+  useEffect(() => {
+    return () => {
+      if (pressTimeoutRef.current) {
+        clearTimeout(pressTimeoutRef.current);
+        pressTimeoutRef.current = null;
+      }
+    };
+  }, []);
 
   const handleMouseEnter = useCallback(() => {
-    handlePrefetch();
+    prefetch();
     setIsHovered(true);
-  }, [handlePrefetch]);
+  }, [prefetch]);
 
   const handleMouseLeave = useCallback(() => {
     setIsHovered(false);
@@ -182,12 +193,19 @@ export const CardLink = memo(function CardLink({
   }, []);
 
   const handleTouchStart = useCallback(() => {
-    handlePrefetch();
+    prefetch();
     setIsPressed(true);
-  }, [handlePrefetch]);
+  }, [prefetch]);
 
   const handleTouchEnd = useCallback(() => {
-    setTimeout(() => setIsPressed(false), 100);
+    // Clear any existing timer before starting a new one
+    if (pressTimeoutRef.current) {
+      clearTimeout(pressTimeoutRef.current);
+    }
+    pressTimeoutRef.current = setTimeout(() => {
+      setIsPressed(false);
+      pressTimeoutRef.current = null;
+    }, 100);
   }, []);
 
   return (

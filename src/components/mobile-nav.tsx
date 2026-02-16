@@ -46,7 +46,7 @@ const NavItemButton = memo(function NavItemButton({
       href={item.href}
       aria-current={isActive ? "page" : undefined}
       className="relative flex flex-col items-center justify-center min-w-[48px] min-h-[48px] px-2 py-1.5 transition-all active:scale-95 group"
-      onTouchStart={prefetch.onTouchStart}
+      onTouchStart={prefetch}
     >
       <div className="relative">
         <Icon
@@ -100,8 +100,8 @@ const DrawerNavItem = memo(function DrawerNavItem({
     <Link
       href={item.href}
       onClick={onClick}
-      onTouchStart={prefetch.onTouchStart}
-      onMouseEnter={prefetch.onMouseEnter}
+      onTouchStart={prefetch}
+      onMouseEnter={prefetch}
       className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all min-h-[56px] ${
         isActive
           ? "bg-primary/10 text-primary"

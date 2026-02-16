@@ -39,7 +39,7 @@ export const ResidentCard = memo(function ResidentCard({
 
   const handleTouchStart = useCallback(() => {
     setIsPressed(true);
-    prefetch.onTouchStart();
+    prefetch();
   }, [prefetch]);
 
   const handleTouchEnd = useCallback(() => {
@@ -55,10 +55,10 @@ export const ResidentCard = memo(function ResidentCard({
       href={profileHref}
       className="block group outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 rounded-2xl"
       aria-label={t("a11y.viewProfile", { name: profile.name })}
-      onMouseEnter={prefetch.onMouseEnter}
+      onMouseEnter={prefetch}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      onFocus={prefetch.onFocus}
+      onFocus={prefetch}
     >
       <m.article
         animate={{

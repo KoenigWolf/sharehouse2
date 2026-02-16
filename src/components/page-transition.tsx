@@ -1,8 +1,16 @@
 "use client";
 
-import { useRef, useEffect, useCallback } from "react";
+import { useRef, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { m, AnimatePresence, useReducedMotion } from "framer-motion";
+
+/**
+ * View Transitions API type (progressive enhancement)
+ * Returns ViewTransition object but we discard it since we only need the callback execution
+ */
+interface ViewTransitionDocument {
+  startViewTransition(callback: () => void | Promise<void>): unknown;
+}
 
 /**
  * Instagram-style page transition variants
@@ -89,8 +97,7 @@ export function useViewTransition() {
   const startTransition = useCallback(
     (callback: () => void | Promise<void>) => {
       if (isSupported) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (document as any).startViewTransition(callback);
+        (document as unknown as ViewTransitionDocument).startViewTransition(callback);
       } else {
         callback();
       }
@@ -99,47 +106,6 @@ export function useViewTransition() {
   );
 
   return { isSupported, startTransition };
-}
-
-/**
- * Scroll Position Manager Hook
- *
- * Preserves and restores scroll position when navigating back,
- * providing Instagram-like instant back navigation feel.
- */
-export function useScrollRestoration() {
-  const pathname = usePathname();
-  const scrollPositions = useRef<Map<string, number>>(new Map());
-  const prevPathname = useRef<string>(pathname);
-
-  useEffect(() => {
-    // Save current scroll position before navigation
-    const handleScroll = () => {
-      scrollPositions.current.set(prevPathname.current, window.scrollY);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
-    if (pathname !== prevPathname.current) {
-      // Check if this is a "back" navigation (we have saved position)
-      const savedPosition = scrollPositions.current.get(pathname);
-
-      if (savedPosition !== undefined) {
-        // Restore scroll position after a micro-delay to allow render
-        requestAnimationFrame(() => {
-          window.scrollTo({ top: savedPosition, behavior: "instant" });
-        });
-      } else {
-        // New page - scroll to top
-        window.scrollTo({ top: 0, behavior: "instant" });
-      }
-
-      prevPathname.current = pathname;
-    }
-  }, [pathname]);
 }
 
 /**

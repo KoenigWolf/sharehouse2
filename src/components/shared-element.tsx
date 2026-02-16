@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useRef, useCallback, useMemo, useState, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
 /**
@@ -9,79 +9,19 @@ import { motion, useReducedMotion } from "framer-motion";
  * Provides Instagram-like shared element transitions where elements
  * (like profile images) smoothly animate from their source position
  * to their destination position during page navigation.
+ *
+ * Currently uses Framer Motion's layoutId for automatic shared element
+ * transitions. The SharedElementProvider is a simple pass-through wrapper
+ * that can be extended in the future for custom transition effects.
  */
 
-interface SharedElementRect {
-  top: number;
-  left: number;
-  width: number;
-  height: number;
-}
-
-interface SharedElementData {
-  id: string;
-  rect: SharedElementRect;
-  src?: string;
-}
-
-interface SharedElementContextValue {
-  register: (id: string, element: HTMLElement, src?: string) => void;
-  unregister: (id: string) => void;
-  getElement: (id: string) => SharedElementData | null;
-  isTransitioning: boolean;
-}
-
-const SharedElementContext = createContext<SharedElementContextValue | null>(null);
-
+/**
+ * Provider for shared element transitions.
+ * Currently a pass-through wrapper - extend this to add custom
+ * transition tracking/coordination if needed.
+ */
 export function SharedElementProvider({ children }: { children: ReactNode }) {
-  const elementsRef = useRef<Map<string, SharedElementData>>(new Map());
-  const [isTransitioning] = useState(false);
-
-  const register = useCallback((id: string, element: HTMLElement, src?: string) => {
-    const rect = element.getBoundingClientRect();
-    elementsRef.current.set(id, {
-      id,
-      rect: {
-        top: rect.top + window.scrollY,
-        left: rect.left + window.scrollX,
-        width: rect.width,
-        height: rect.height,
-      },
-      src,
-    });
-  }, []);
-
-  const unregister = useCallback((id: string) => {
-    elementsRef.current.delete(id);
-  }, []);
-
-  const getElement = useCallback((id: string) => {
-    return elementsRef.current.get(id) ?? null;
-  }, []);
-
-  const value = useMemo(
-    () => ({
-      register,
-      unregister,
-      getElement,
-      isTransitioning,
-    }),
-    [register, unregister, getElement, isTransitioning]
-  );
-
-  return (
-    <SharedElementContext.Provider value={value}>
-      {children}
-    </SharedElementContext.Provider>
-  );
-}
-
-export function useSharedElement() {
-  const context = useContext(SharedElementContext);
-  if (!context) {
-    throw new Error("useSharedElement must be used within SharedElementProvider");
-  }
-  return context;
+  return <>{children}</>;
 }
 
 interface SharedElementProps {
