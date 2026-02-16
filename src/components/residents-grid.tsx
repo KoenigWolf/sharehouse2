@@ -507,7 +507,7 @@ function ResidentListItem({
           </Avatar>
           {isCurrentUser && (
             <span className="absolute -top-1 -right-1 bg-foreground text-background text-[8px] px-1.5 py-0.5 rounded-full font-bold uppercase">
-              You
+              {t("common.you")}
             </span>
           )}
         </div>
