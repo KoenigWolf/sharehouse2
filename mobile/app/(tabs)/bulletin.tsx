@@ -8,11 +8,14 @@ import {
   Pressable,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
 import { supabase, type BulletinMessage } from "../../lib/supabase";
 import { useAuth } from "../../lib/auth";
+import { useI18n } from "../../lib/i18n";
+import { logError } from "../../lib/utils/log-error";
 import { Avatar } from "../../components/ui/Avatar";
 import { Colors } from "../../constants/colors";
 import { formatDistanceToNow } from "../../lib/utils";
@@ -20,6 +23,7 @@ import { formatDistanceToNow } from "../../lib/utils";
 export default function BulletinScreen() {
   const insets = useSafeAreaInsets();
   const { user, profile } = useAuth();
+  const { t } = useI18n();
   const [messages, setMessages] = useState<BulletinMessage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -27,16 +31,26 @@ export default function BulletinScreen() {
   const [isPosting, setIsPosting] = useState(false);
 
   const fetchMessages = async () => {
-    const { data } = await supabase
-      .from("bulletin_messages")
-      .select("*, profiles(*)")
-      .order("created_at", { ascending: false })
-      .limit(50);
+    try {
+      const { data, error } = await supabase
+        .from("bulletin_messages")
+        .select("*, profiles(*)")
+        .order("created_at", { ascending: false })
+        .limit(50);
 
-    if (data) {
-      setMessages(data as BulletinMessage[]);
+      if (error) {
+        logError(error, { fn: "fetchMessages" });
+        return;
+      }
+
+      if (data) {
+        setMessages(data as BulletinMessage[]);
+      }
+    } catch (error) {
+      logError(error, { fn: "fetchMessages" });
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -72,23 +86,58 @@ export default function BulletinScreen() {
     setIsPosting(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
-    const { error } = await supabase.from("bulletin_messages").insert({
-      user_id: user.id,
-      message: newMessage.trim(),
-    });
+    try {
+      const { error } = await supabase.from("bulletin_messages").insert({
+        user_id: user.id,
+        message: newMessage.trim(),
+      });
 
-    if (!error) {
+      if (error) {
+        logError(error, { fn: "handlePost" });
+        return;
+      }
+
       setNewMessage("");
       await fetchMessages();
+    } catch (error) {
+      logError(error, { fn: "handlePost" });
+    } finally {
+      setIsPosting(false);
     }
-
-    setIsPosting(false);
   };
 
   const handleDelete = async (id: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    await supabase.from("bulletin_messages").delete().eq("id", id);
-    await fetchMessages();
+    Alert.alert(
+      t("bulletin.deleteTitle"),
+      t("bulletin.deleteMessage"),
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: t("common.delete"),
+          style: "destructive",
+          onPress: async () => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+            try {
+              const { error } = await supabase
+                .from("bulletin_messages")
+                .delete()
+                .eq("id", id);
+
+              if (error) {
+                logError(error, { fn: "handleDelete", id });
+                Alert.alert(t("common.error"), t("bulletin.deleteError"));
+                return;
+              }
+
+              await fetchMessages();
+            } catch (error) {
+              logError(error, { fn: "handleDelete", id });
+              Alert.alert(t("common.error"), t("bulletin.deleteError"));
+            }
+          },
+        },
+      ]
+    );
   };
 
   const renderItem = useCallback(
@@ -97,9 +146,10 @@ export default function BulletinScreen() {
         message={item}
         isOwn={item.user_id === user?.id}
         onDelete={() => handleDelete(item.id)}
+        deleteLabel={t("common.delete")}
       />
     ),
-    [user]
+    [user, t]
   );
 
   return (
@@ -112,9 +162,9 @@ export default function BulletinScreen() {
         style={{ paddingTop: insets.top }}
         className="px-4 pb-4 bg-background border-b border-border/40"
       >
-        <Text className="text-3xl font-bold text-foreground">Bulletin</Text>
+        <Text className="text-3xl font-bold text-foreground">{t("bulletin.title")}</Text>
         <Text className="text-muted-foreground text-sm mt-1">
-          Share vibes with housemates
+          {t("bulletin.subtitle")}
         </Text>
       </View>
 
@@ -139,9 +189,9 @@ export default function BulletinScreen() {
         ListEmptyComponent={
           <View className="items-center justify-center py-20">
             <Text className="text-4xl mb-4">💬</Text>
-            <Text className="text-muted-foreground">No messages yet</Text>
+            <Text className="text-muted-foreground">{t("bulletin.empty")}</Text>
             <Text className="text-muted-foreground text-sm">
-              Be the first to post!
+              {t("bulletin.emptySubtitle")}
             </Text>
           </View>
         }
@@ -158,7 +208,7 @@ export default function BulletinScreen() {
             <TextInput
               value={newMessage}
               onChangeText={setNewMessage}
-              placeholder="What's on your mind?"
+              placeholder={t("bulletin.placeholder")}
               placeholderTextColor={Colors.mutedForeground}
               className="text-foreground text-base"
               multiline
@@ -186,10 +236,12 @@ function MessageCard({
   message,
   isOwn,
   onDelete,
+  deleteLabel,
 }: {
   message: BulletinMessage;
   isOwn: boolean;
   onDelete: () => void;
+  deleteLabel: string;
 }) {
   return (
     <View className="bg-card rounded-2xl p-4 border border-border/40">
@@ -213,7 +265,7 @@ function MessageCard({
           </Text>
           {isOwn && (
             <Pressable onPress={onDelete} className="mt-2">
-              <Text className="text-error text-xs">Delete</Text>
+              <Text className="text-error text-xs">{deleteLabel}</Text>
             </Pressable>
           )}
         </View>

@@ -1,10 +1,12 @@
 import { useEffect, useState, useCallback } from "react";
-import { View, Text, FlatList, RefreshControl, Pressable } from "react-native";
+import { View, Text, FlatList, RefreshControl, Pressable, Alert } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Image } from "expo-image";
 import * as Haptics from "expo-haptics";
 import { supabase, type ShareItem } from "../../lib/supabase";
 import { useAuth } from "../../lib/auth";
+import { useI18n } from "../../lib/i18n";
+import { logError } from "../../lib/utils/log-error";
 import { Avatar } from "../../components/ui/Avatar";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
@@ -13,22 +15,33 @@ import { Colors } from "../../constants/colors";
 export default function ShareScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
+  const { t } = useI18n();
   const [items, setItems] = useState<ShareItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const fetchItems = async () => {
-    const { data } = await supabase
-      .from("share_items")
-      .select("*, profiles(*)")
-      .eq("status", "available")
-      .gt("expires_at", new Date().toISOString())
-      .order("created_at", { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from("share_items")
+        .select("*, profiles(*)")
+        .eq("status", "available")
+        .gt("expires_at", new Date().toISOString())
+        .order("created_at", { ascending: false });
 
-    if (data) {
-      setItems(data as ShareItem[]);
+      if (error) {
+        logError(error, { fn: "fetchItems" });
+        return;
+      }
+
+      if (data) {
+        setItems(data as ShareItem[]);
+      }
+    } catch (error) {
+      logError(error, { fn: "fetchItems" });
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -44,17 +57,28 @@ export default function ShareScreen() {
 
   const handleClaim = async (itemId: string) => {
     if (!user) return;
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
-    await supabase
-      .from("share_items")
-      .update({
-        status: "claimed",
-        claimed_by: user.id,
-      })
-      .eq("id", itemId);
+    try {
+      const { error } = await supabase
+        .from("share_items")
+        .update({
+          status: "claimed",
+          claimed_by: user.id,
+        })
+        .eq("id", itemId);
 
-    await fetchItems();
+      if (error) {
+        logError(error, { fn: "handleClaim", itemId });
+        Alert.alert(t("common.error"), t("share.claimError"));
+        return;
+      }
+
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await fetchItems();
+    } catch (error) {
+      logError(error, { fn: "handleClaim", itemId });
+      Alert.alert(t("common.error"), t("share.claimError"));
+    }
   };
 
   const renderItem = useCallback(
@@ -64,10 +88,14 @@ export default function ShareScreen() {
           item={item}
           isOwn={item.user_id === user?.id}
           onClaim={() => handleClaim(item.id)}
+          claimLabel={t("share.claim")}
+          hoursLeftLabel={(hours: number) =>
+            hours > 0 ? t("share.hoursLeft", { hours }) : t("share.expiresSoon")
+          }
         />
       </View>
     ),
-    [user]
+    [user, t]
   );
 
   return (
@@ -77,9 +105,9 @@ export default function ShareScreen() {
         style={{ paddingTop: insets.top }}
         className="px-4 pb-4 bg-background border-b border-border/40"
       >
-        <Text className="text-3xl font-bold text-foreground">Share Board</Text>
+        <Text className="text-3xl font-bold text-foreground">{t("share.title")}</Text>
         <Text className="text-muted-foreground text-sm mt-1">
-          Share items with housemates
+          {t("share.subtitle")}
         </Text>
       </View>
 
@@ -106,9 +134,9 @@ export default function ShareScreen() {
         ListEmptyComponent={
           <View className="items-center justify-center py-20">
             <Text className="text-4xl mb-4">🎁</Text>
-            <Text className="text-muted-foreground">No items available</Text>
+            <Text className="text-muted-foreground">{t("share.empty")}</Text>
             <Text className="text-muted-foreground text-sm">
-              Share something!
+              {t("share.emptySubtitle")}
             </Text>
           </View>
         }
@@ -134,10 +162,14 @@ function ShareItemCard({
   item,
   isOwn,
   onClaim,
+  claimLabel,
+  hoursLeftLabel,
 }: {
   item: ShareItem;
   isOwn: boolean;
   onClaim: () => void;
+  claimLabel: string;
+  hoursLeftLabel: (hours: number) => string;
 }) {
   const expiresAt = new Date(item.expires_at);
   const hoursLeft = Math.max(
@@ -175,7 +207,7 @@ function ShareItemCard({
 
         {/* Expiry */}
         <Text className="text-muted-foreground text-xs mt-1">
-          {hoursLeft > 0 ? `${hoursLeft}h left` : "Expires soon"}
+          {hoursLeftLabel(hoursLeft)}
         </Text>
 
         {/* Owner */}
@@ -194,7 +226,7 @@ function ShareItemCard({
         {!isOwn && (
           <View className="mt-3">
             <Button variant="primary" size="sm" onPress={onClaim}>
-              Claim
+              {claimLabel}
             </Button>
           </View>
         )}

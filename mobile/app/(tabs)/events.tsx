@@ -6,6 +6,8 @@ import { Image } from "expo-image";
 import * as Haptics from "expo-haptics";
 import { supabase, type Event } from "../../lib/supabase";
 import { useAuth } from "../../lib/auth";
+import { useI18n } from "../../lib/i18n";
+import { logError } from "../../lib/utils/log-error";
 import { Avatar } from "../../components/ui/Avatar";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
@@ -16,21 +18,32 @@ export default function EventsScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
+  const { t } = useI18n();
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const fetchEvents = async () => {
-    const { data } = await supabase
-      .from("events")
-      .select("*, profiles(*), attendees:event_attendees(user_id, profiles(*))")
-      .gte("event_date", new Date().toISOString().split("T")[0])
-      .order("event_date", { ascending: true });
+    try {
+      const { data, error } = await supabase
+        .from("events")
+        .select("*, profiles(*), attendees:event_attendees(user_id, profiles(*))")
+        .gte("event_date", new Date().toISOString().split("T")[0])
+        .order("event_date", { ascending: true });
 
-    if (data) {
-      setEvents(data as Event[]);
+      if (error) {
+        logError(error, { fn: "fetchEvents", query: "events" });
+        return;
+      }
+
+      if (data) {
+        setEvents(data as Event[]);
+      }
+    } catch (error) {
+      logError(error, { fn: "fetchEvents" });
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -48,20 +61,34 @@ export default function EventsScreen() {
     if (!user) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
-    if (isAttending) {
-      await supabase
-        .from("event_attendees")
-        .delete()
-        .eq("event_id", eventId)
-        .eq("user_id", user.id);
-    } else {
-      await supabase.from("event_attendees").insert({
-        event_id: eventId,
-        user_id: user.id,
-      });
-    }
+    try {
+      if (isAttending) {
+        const { error } = await supabase
+          .from("event_attendees")
+          .delete()
+          .eq("event_id", eventId)
+          .eq("user_id", user.id);
 
-    await fetchEvents();
+        if (error) {
+          logError(error, { fn: "handleAttend", eventId, action: "delete" });
+          return;
+        }
+      } else {
+        const { error } = await supabase.from("event_attendees").insert({
+          event_id: eventId,
+          user_id: user.id,
+        });
+
+        if (error) {
+          logError(error, { fn: "handleAttend", eventId, action: "insert" });
+          return;
+        }
+      }
+
+      await fetchEvents();
+    } catch (error) {
+      logError(error, { fn: "handleAttend", eventId });
+    }
   };
 
   const renderItem = useCallback(
@@ -73,10 +100,14 @@ export default function EventsScreen() {
           isAttending={isAttending}
           onAttend={() => handleAttend(item.id, isAttending)}
           onPress={() => router.push(`/events/${item.id}`)}
+          goingLabel={t("events.going")}
+          joinLabel={t("events.join")}
+          cancelLabel={t("events.cancel")}
+          byLabel={t("events.by")}
         />
       );
     },
-    [user, router]
+    [user, router, t]
   );
 
   return (
@@ -86,9 +117,9 @@ export default function EventsScreen() {
         style={{ paddingTop: insets.top }}
         className="px-4 pb-4 bg-background border-b border-border/40"
       >
-        <Text className="text-3xl font-bold text-foreground">Events</Text>
+        <Text className="text-3xl font-bold text-foreground">{t("events.title")}</Text>
         <Text className="text-muted-foreground text-sm mt-1">
-          Upcoming house events
+          {t("events.subtitle")}
         </Text>
       </View>
 
@@ -113,7 +144,7 @@ export default function EventsScreen() {
         ListEmptyComponent={
           <View className="items-center justify-center py-20">
             <Text className="text-4xl mb-4">📅</Text>
-            <Text className="text-muted-foreground">No upcoming events</Text>
+            <Text className="text-muted-foreground">{t("events.empty")}</Text>
           </View>
         }
       />
@@ -139,11 +170,19 @@ function EventCard({
   isAttending,
   onAttend,
   onPress,
+  goingLabel,
+  joinLabel,
+  cancelLabel,
+  byLabel,
 }: {
   event: Event;
   isAttending: boolean;
   onAttend: () => void;
   onPress: () => void;
+  goingLabel: string;
+  joinLabel: string;
+  cancelLabel: string;
+  byLabel: string;
 }) {
   return (
     <Card onPress={onPress}>
@@ -193,14 +232,14 @@ function EventCard({
               size={24}
             />
             <Text className="text-muted-foreground text-sm ml-2">
-              by {event.profiles.nickname ?? event.profiles.name}
+              {byLabel} {event.profiles.nickname ?? event.profiles.name}
             </Text>
           </View>
 
           {/* Attendees Count */}
           <View className="flex-row items-center">
             <Text className="text-muted-foreground text-sm mr-2">
-              {event.attendees?.length ?? 0} going
+              {event.attendees?.length ?? 0} {goingLabel}
             </Text>
           </View>
         </View>
@@ -210,12 +249,9 @@ function EventCard({
           <Button
             variant={isAttending ? "secondary" : "primary"}
             size="sm"
-            onPress={(e) => {
-              e?.stopPropagation?.();
-              onAttend();
-            }}
+            onPress={onAttend}
           >
-            {isAttending ? "Cancel" : "Join"}
+            {isAttending ? cancelLabel : joinLabel}
           </Button>
         </View>
       </View>

@@ -2,6 +2,7 @@ import { Tabs } from "expo-router";
 import { View, Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
+import { useI18n } from "../../lib/i18n";
 import { Colors } from "../../constants/colors";
 
 // Tab bar icons as simple components
@@ -36,6 +37,7 @@ function TabIcon({
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
+  const { t } = useI18n();
 
   const handleTabPress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -64,7 +66,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Residents",
+          title: t("tabs.residents"),
           tabBarIcon: ({ focused }) => (
             <TabIcon name="residents" focused={focused} />
           ),
@@ -76,7 +78,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="bulletin"
         options={{
-          title: "Bulletin",
+          title: t("tabs.bulletin"),
           tabBarIcon: ({ focused }) => (
             <TabIcon name="bulletin" focused={focused} />
           ),
@@ -88,7 +90,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="events"
         options={{
-          title: "Events",
+          title: t("tabs.events"),
           tabBarIcon: ({ focused }) => (
             <TabIcon name="events" focused={focused} />
           ),
@@ -100,7 +102,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="share"
         options={{
-          title: "Share",
+          title: t("tabs.share"),
           tabBarIcon: ({ focused }) => <TabIcon name="share" focused={focused} />,
         }}
         listeners={{
@@ -110,7 +112,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: "Settings",
+          title: t("tabs.settings"),
           tabBarIcon: ({ focused }) => (
             <TabIcon name="profile" focused={focused} />
           ),
