@@ -135,3 +135,5 @@ export function t(
 
 export { en, ja };
 export type { Translations };
+export { mbtiTypesJa, mbtiTypesEn } from "./mbti-types";
+export type { MbtiTypeKey, MbtiTypeTranslation } from "./mbti-types";
