@@ -5,7 +5,6 @@ import { Footer } from "@/components/footer";
 import { MobileNav } from "@/components/mobile-nav";
 import { Spinner } from "@/components/ui/spinner";
 import { getAllRoomPhotos } from "@/lib/room-photos/actions";
-import { getServerTranslator } from "@/lib/i18n/server";
 import { getCachedUser } from "@/lib/supabase/cached-queries";
 
 const RoomPhotosGallery = dynamic(
@@ -14,7 +13,6 @@ const RoomPhotosGallery = dynamic(
 );
 
 export default async function RoomPhotosPage() {
-  const t = await getServerTranslator();
   const { user } = await getCachedUser();
 
   if (!user) {
@@ -28,16 +26,7 @@ export default async function RoomPhotosPage() {
       <Header />
 
       <main className="flex-1 pb-20 sm:pb-12">
-        <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-10 max-w-5xl">
-          <div className="mb-8">
-            <h1 className="heading-page">
-              {t("roomPhotos.title")}
-            </h1>
-            <p className="subtitle mt-2">
-              {t("roomPhotos.subtitle")}
-            </p>
-          </div>
-
+        <div className="container mx-auto px-4 sm:px-6 pt-2 sm:pt-6 pb-4 max-w-5xl">
           <RoomPhotosGallery photos={photos} />
         </div>
       </main>

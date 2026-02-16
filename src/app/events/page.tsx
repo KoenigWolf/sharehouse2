@@ -4,7 +4,6 @@ import { Footer } from "@/components/footer";
 import { MobileNav } from "@/components/mobile-nav";
 import { EventsContent } from "@/components/events-content";
 import { getUpcomingEvents } from "@/lib/events/actions";
-import { getServerTranslator } from "@/lib/i18n/server";
 import { getCachedUser } from "@/lib/supabase/cached-queries";
 
 interface EventsPageProps {
@@ -13,7 +12,6 @@ interface EventsPageProps {
 
 export default async function EventsPage({ searchParams }: EventsPageProps) {
   const { edit: editEventId } = await searchParams;
-  const t = await getServerTranslator();
   const { user } = await getCachedUser();
 
   if (!user) {
@@ -27,16 +25,7 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
       <Header />
 
       <main className="flex-1 pb-20 sm:pb-12">
-        <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-10 max-w-4xl">
-          <div className="mb-8">
-            <h1 className="heading-page">
-              {t("events.title")}
-            </h1>
-            <p className="subtitle mt-2">
-              {t("events.subtitle")}
-            </p>
-          </div>
-
+        <div className="container mx-auto px-4 sm:px-6 pt-2 sm:pt-6 pb-4 max-w-4xl">
           <EventsContent
             events={events}
             currentUserId={user.id}

@@ -359,18 +359,8 @@ export function InfoPageContent({
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-8 sm:space-y-12 max-w-5xl mx-auto px-4 sm:px-6"
+      className="space-y-8 sm:space-y-10"
     >
-      {/* Header */}
-      <m.div variants={itemVariants} className="pb-4 sm:pb-6 border-b border-border">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-2">
-          {t("info.title")}
-        </h1>
-        <p className="text-muted-foreground text-base sm:text-lg">
-          {t("info.subtitle")}
-        </p>
-      </m.div>
-
       {/* Floors Section */}
       {floorDataList.length > 0 && (
         <section className="space-y-6 sm:space-y-10">
