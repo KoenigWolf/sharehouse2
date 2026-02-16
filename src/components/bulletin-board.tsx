@@ -288,6 +288,7 @@ function BulletinItem({
                     onChange={(e) => setEditMessage(e.target.value)}
                     onKeyDown={handleKeyDown}
                     disabled={isSaving}
+                    maxLength={BULLETIN.maxMessageLength}
                     rows={3}
                     className={`w-full px-3 py-2.5 bg-card border rounded-xl text-[15px] text-foreground leading-relaxed resize-none focus:outline-none focus:ring-2 transition-all ${
                       isOverLimit
