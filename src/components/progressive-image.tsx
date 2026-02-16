@@ -45,8 +45,19 @@ export const ProgressiveImage = memo(function ProgressiveImage({
     setHasError(true);
   }, []);
 
-  if (hasError && fallback) {
-    return <>{fallback}</>;
+  // Handle error state
+  if (hasError) {
+    if (fallback) {
+      return <>{fallback}</>;
+    }
+    // No fallback provided - render a placeholder
+    return (
+      <div className={`relative overflow-hidden ${wrapperClassName}`}>
+        <div className={`bg-muted flex items-center justify-center ${className}`}>
+          <span className="text-muted-foreground text-xs">Image unavailable</span>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -185,17 +196,21 @@ export const ProgressiveAvatar = memo(function ProgressiveAvatar({
  * For images that should appear instantly (already cached/prefetched).
  * No loading animation - assumes image is immediately available.
  */
+interface InstantImageProps extends Omit<ImageProps, "loading"> {
+  alt: string;
+}
+
 export const InstantImage = memo(function InstantImage({
   className = "",
   alt,
   ...props
-}: ImageProps) {
+}: InstantImageProps) {
   return (
     <Image
+      {...props}
       className={className}
       loading="eager"
       alt={alt}
-      {...props}
     />
   );
 });

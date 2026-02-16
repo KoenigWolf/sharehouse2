@@ -58,11 +58,12 @@ function NavigationProgressInner() {
     if (pathname !== prevPathRef.current) {
       prevPathRef.current = pathname;
       clearTimers();
-      // Use microtask to avoid synchronous setState in effect
-      queueMicrotask(() => setProgress(100));
-
-      // Fade out after completion
-      timersRef.current.push(setTimeout(() => setProgress(0), 200));
+      // Two-step completion: first animate to 100%, then reset after delay
+      queueMicrotask(() => {
+        setProgress(100);
+        // Fade out after completion animation renders
+        timersRef.current.push(setTimeout(() => setProgress(0), 300));
+      });
     }
   }, [pathname, searchParams]);
 
