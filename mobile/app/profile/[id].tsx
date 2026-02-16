@@ -10,7 +10,8 @@ import { useI18n } from "../../lib/i18n";
 import { logError } from "../../lib/utils/log-error";
 import { Avatar } from "../../components/ui/Avatar";
 import { Card } from "../../components/ui/Card";
-import { Colors } from "../../constants/colors";
+import { Badge } from "../../components/ui/Badge";
+import { Colors, Shadows } from "../../constants/colors";
 
 const HEADER_HEIGHT = 280;
 
@@ -86,7 +87,8 @@ export default function ProfileScreen() {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 router.back();
               }}
-              className="w-10 h-10 rounded-full bg-black/30 items-center justify-center"
+              className="w-10 h-10 rounded-full bg-black/40 items-center justify-center backdrop-blur-sm"
+              style={Shadows.sm}
             >
               <Text className="text-white text-lg">←</Text>
             </Pressable>
@@ -98,7 +100,8 @@ export default function ProfileScreen() {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                     router.push(`/profile/${id}/edit`);
                   }}
-                  className="w-10 h-10 rounded-full bg-black/30 items-center justify-center"
+                  className="w-10 h-10 rounded-full bg-black/40 items-center justify-center backdrop-blur-sm"
+                  style={Shadows.sm}
                 >
                   <Text className="text-white text-lg">✏️</Text>
                 </Pressable>
@@ -139,17 +142,20 @@ export default function ProfileScreen() {
         <View className="px-4 -mt-4">
           {/* Name & Room */}
           <View className="items-center mt-4">
-            <Text className="text-foreground text-2xl font-bold">
+            <Text
+              className="text-foreground text-2xl font-bold"
+              style={{ letterSpacing: -0.5 }}
+            >
               {profile.nickname ?? profile.name}
             </Text>
             {profile.nickname && (
-              <Text className="text-muted-foreground">{profile.name}</Text>
+              <Text className="text-muted-foreground mt-0.5">{profile.name}</Text>
             )}
             {profile.room_number && (
-              <View className="bg-brand-50 rounded-full px-3 py-1 mt-2">
-                <Text className="text-brand-600 font-medium">
+              <View className="mt-3">
+                <Badge variant="primary">
                   {t("common.room")} {profile.room_number}
-                </Text>
+                </Badge>
               </View>
             )}
           </View>
@@ -158,16 +164,10 @@ export default function ProfileScreen() {
           {(profile.mbti || (profile.hobbies && profile.hobbies.length > 0)) && (
             <View className="flex-row flex-wrap justify-center gap-2 mt-4">
               {profile.mbti && (
-                <View className="bg-muted rounded-full px-3 py-1">
-                  <Text className="text-foreground text-sm font-medium">
-                    {profile.mbti}
-                  </Text>
-                </View>
+                <Badge variant="secondary">{profile.mbti}</Badge>
               )}
               {profile.hobbies?.slice(0, 3).map((hobby, i) => (
-                <View key={i} className="bg-muted rounded-full px-3 py-1">
-                  <Text className="text-foreground text-sm">{hobby}</Text>
-                </View>
+                <Badge key={i} variant="outline">{hobby}</Badge>
               ))}
             </View>
           )}
@@ -175,7 +175,7 @@ export default function ProfileScreen() {
           {/* Bio */}
           {profile.bio && (
             <View className="mt-6">
-              <Card className="p-4">
+              <Card variant="elevated" className="p-5">
                 <Text className="text-foreground leading-6">{profile.bio}</Text>
               </Card>
             </View>
@@ -183,7 +183,7 @@ export default function ProfileScreen() {
 
           {/* Details */}
           <View className="mt-6">
-            <Card className="p-4">
+            <Card variant="elevated" className="p-4">
               {profile.occupation && (
                 <DetailRow icon="💼" label={t("profile.work")} value={profile.occupation} />
               )}
@@ -218,11 +218,15 @@ function DetailRow({
   value: string;
 }) {
   return (
-    <View className="flex-row items-center py-2">
-      <Text className="text-lg mr-3">{icon}</Text>
-      <View>
-        <Text className="text-muted-foreground text-xs">{label}</Text>
-        <Text className="text-foreground">{value}</Text>
+    <View className="flex-row items-center py-3">
+      <View className="w-10 h-10 rounded-xl bg-secondary items-center justify-center mr-3">
+        <Text className="text-lg">{icon}</Text>
+      </View>
+      <View className="flex-1">
+        <Text className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
+          {label}
+        </Text>
+        <Text className="text-foreground font-medium mt-0.5">{value}</Text>
       </View>
     </View>
   );

@@ -16,7 +16,8 @@ import { useI18n } from "../../lib/i18n";
 import { logError } from "../../lib/utils/log-error";
 import { Avatar } from "../../components/ui/Avatar";
 import { Card } from "../../components/ui/Card";
-import { Colors } from "../../constants/colors";
+import { Badge } from "../../components/ui/Badge";
+import { Colors, Shadows } from "../../constants/colors";
 
 export default function ResidentsScreen() {
   const router = useRouter();
@@ -95,28 +96,37 @@ export default function ResidentsScreen() {
     <View className="flex-1 bg-background">
       {/* Header */}
       <View
-        style={{ paddingTop: insets.top }}
-        className="px-4 pb-4 bg-background border-b border-border/40"
+        style={[{ paddingTop: insets.top + 8 }, Shadows.sm]}
+        className="px-4 pb-4 bg-card border-b border-border/40"
       >
-        <Text className="text-3xl font-bold text-foreground mb-4">
+        <Text
+          className="text-2xl font-bold text-foreground mb-4"
+          style={{ letterSpacing: -0.5 }}
+        >
           {t("residents.title")}
         </Text>
 
         {/* Search Bar */}
-        <View className="flex-row items-center bg-muted rounded-xl px-4 py-3">
-          <Text className="text-muted-foreground mr-2">🔍</Text>
+        <View
+          className="flex-row items-center bg-secondary rounded-xl px-4 h-12 border border-border/50"
+        >
+          <Text className="text-muted-foreground mr-3">🔍</Text>
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholder={t("residents.searchPlaceholder")}
             placeholderTextColor={Colors.mutedForeground}
-            className="flex-1 text-foreground text-base"
+            className="flex-1 text-foreground text-[15px]"
+            style={{ fontWeight: "500" }}
             autoCapitalize="none"
             autoCorrect={false}
           />
           {searchQuery.length > 0 && (
-            <Pressable onPress={() => setSearchQuery("")}>
-              <Text className="text-muted-foreground text-lg">✕</Text>
+            <Pressable
+              onPress={() => setSearchQuery("")}
+              className="w-6 h-6 rounded-full bg-muted-foreground/20 items-center justify-center"
+            >
+              <Text className="text-muted-foreground text-xs">✕</Text>
             </Pressable>
           )}
         </View>
@@ -129,17 +139,17 @@ export default function ResidentsScreen() {
         keyExtractor={(item) => item.id}
         numColumns={2}
         contentContainerStyle={{
-          padding: 8,
-          paddingBottom: insets.bottom + 100,
+          padding: 12,
+          paddingBottom: insets.bottom + 80,
         }}
-        columnWrapperStyle={{ gap: 8 }}
-        ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
+        columnWrapperStyle={{ gap: 12 }}
+        ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
-            tintColor={Colors.brand[500]}
+            tintColor={Colors.primary}
           />
         }
         ListEmptyComponent={
@@ -149,6 +159,7 @@ export default function ResidentsScreen() {
             </View>
           ) : (
             <View className="items-center justify-center py-20">
+              <Text className="text-4xl mb-3">👥</Text>
               <Text className="text-muted-foreground">{t("residents.empty")}</Text>
             </View>
           )
@@ -174,17 +185,19 @@ function ResidentCard({
 }) {
   return (
     <View className="flex-1">
-      <Card onPress={onPress} className="p-3">
+      <Card onPress={onPress} className="p-4">
         {/* Avatar */}
-        <View className="items-center mb-3">
+        <View className="items-center mb-3 relative">
           <Avatar
             src={profile.avatar_url}
             name={profile.name}
-            size={80}
+            size={72}
           />
           {isCurrentUser && (
-            <View className="absolute -top-1 -right-1 bg-brand-500 rounded-full px-2 py-0.5">
-              <Text className="text-white text-[10px] font-bold">{youLabel}</Text>
+            <View className="absolute -top-1 -right-1">
+              <Badge variant="primary" size="sm">
+                {youLabel}
+              </Badge>
             </View>
           )}
         </View>
@@ -192,21 +205,22 @@ function ResidentCard({
         {/* Info */}
         <View className="items-center">
           <Text
-            className="text-foreground font-semibold text-base"
+            className="text-foreground font-bold text-base"
+            style={{ letterSpacing: -0.3 }}
             numberOfLines={1}
           >
             {profile.nickname ?? profile.name}
           </Text>
           {profile.room_number && (
-            <Text className="text-muted-foreground text-sm">
+            <Text className="text-muted-foreground text-sm mt-0.5">
               {roomLabel} {profile.room_number}
             </Text>
           )}
           {profile.mbti && (
-            <View className="bg-brand-50 rounded-full px-2 py-0.5 mt-1">
-              <Text className="text-brand-600 text-xs font-medium">
+            <View className="mt-2">
+              <Badge variant="default">
                 {profile.mbti}
-              </Text>
+              </Badge>
             </View>
           )}
         </View>

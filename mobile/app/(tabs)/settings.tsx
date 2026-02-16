@@ -6,6 +6,9 @@ import { useAuth } from "../../lib/auth";
 import { useI18n } from "../../lib/i18n";
 import { Avatar } from "../../components/ui/Avatar";
 import { Card } from "../../components/ui/Card";
+import { Badge } from "../../components/ui/Badge";
+import { Button } from "../../components/ui/Button";
+import { Shadows } from "../../constants/colors";
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -42,10 +45,15 @@ export default function SettingsScreen() {
     <View className="flex-1 bg-background">
       {/* Header */}
       <View
-        style={{ paddingTop: insets.top }}
-        className="px-4 pb-4 bg-background border-b border-border/40"
+        style={[{ paddingTop: insets.top + 8 }, Shadows.sm]}
+        className="px-4 pb-4 bg-card border-b border-border/40"
       >
-        <Text className="text-3xl font-bold text-foreground">{t("settings.title")}</Text>
+        <Text
+          className="text-2xl font-bold text-foreground"
+          style={{ letterSpacing: -0.5 }}
+        >
+          {t("settings.title")}
+        </Text>
       </View>
 
       <ScrollView
@@ -56,40 +64,41 @@ export default function SettingsScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Profile Card */}
-        <View>
-          <Card
-            onPress={handleProfilePress}
-            className="p-4"
-          >
-            <View className="flex-row items-center">
-              <Avatar
-                src={profile?.avatar_url}
-                name={profile?.name ?? ""}
-                size={60}
-              />
-              <View className="ml-4 flex-1">
-                <Text className="text-foreground text-lg font-bold">
-                  {profile?.nickname ?? profile?.name}
-                </Text>
-                <Text className="text-muted-foreground text-sm">
-                  {profile?.room_number
-                    ? `${t("common.room")} ${profile.room_number}`
-                    : t("settings.noRoom")}
-                </Text>
-                <Text className="text-brand-500 text-sm mt-1">
-                  {t("settings.viewProfile")}
-                </Text>
-              </View>
+        <Card onPress={handleProfilePress} variant="elevated" className="p-5">
+          <View className="flex-row items-center">
+            <Avatar
+              src={profile?.avatar_url}
+              name={profile?.name ?? ""}
+              size={64}
+              showRing
+            />
+            <View className="ml-4 flex-1">
+              <Text
+                className="text-foreground text-lg font-bold"
+                style={{ letterSpacing: -0.3 }}
+              >
+                {profile?.nickname ?? profile?.name}
+              </Text>
+              {profile?.room_number && (
+                <View className="mt-1 self-start">
+                  <Badge variant="outline" size="sm">
+                    {t("common.room")} {profile.room_number}
+                  </Badge>
+                </View>
+              )}
+              <Text className="text-brand-500 text-sm font-medium mt-2">
+                {t("settings.viewProfile")} →
+              </Text>
             </View>
-          </Card>
-        </View>
+          </View>
+        </Card>
 
         {/* Settings Sections */}
         <View className="mt-6">
-          <Text className="text-muted-foreground text-sm font-semibold uppercase tracking-wider mb-3 px-2">
+          <Text className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest mb-3 px-2">
             {t("settings.account")}
           </Text>
-          <Card>
+          <Card variant="elevated">
             <SettingsRow
               icon="✏️"
               label={t("settings.editProfile")}
@@ -112,10 +121,10 @@ export default function SettingsScreen() {
         </View>
 
         <View className="mt-6">
-          <Text className="text-muted-foreground text-sm font-semibold uppercase tracking-wider mb-3 px-2">
+          <Text className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest mb-3 px-2">
             {t("settings.about")}
           </Text>
-          <Card>
+          <Card variant="elevated">
             <SettingsRow icon="📋" label={t("settings.termsOfService")} onPress={() => {}} />
             <Divider />
             <SettingsRow icon="🔒" label={t("settings.privacyPolicy")} onPress={() => {}} />
@@ -132,12 +141,9 @@ export default function SettingsScreen() {
 
         {/* Sign Out */}
         <View className="mt-8">
-          <Pressable
-            onPress={handleSignOut}
-            className="items-center py-3 active:opacity-70"
-          >
-            <Text className="text-error font-semibold">{t("auth.signOut")}</Text>
-          </Pressable>
+          <Button variant="destructive" size="lg" onPress={handleSignOut}>
+            {t("auth.signOut")}
+          </Button>
         </View>
 
         {/* Footer */}
@@ -173,17 +179,19 @@ function SettingsRow({
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         onPress();
       }}
-      className="flex-row items-center justify-between px-4 py-3.5 active:bg-muted/50"
+      className="flex-row items-center justify-between px-4 py-4 active:bg-muted/50"
     >
       <View className="flex-row items-center">
-        <Text className="text-lg mr-3">{icon}</Text>
-        <Text className="text-foreground text-base">{label}</Text>
+        <View className="w-8 h-8 rounded-lg bg-secondary items-center justify-center mr-3">
+          <Text className="text-base">{icon}</Text>
+        </View>
+        <Text className="text-foreground text-[15px] font-medium">{label}</Text>
       </View>
       <View className="flex-row items-center">
         {value && (
           <Text className="text-muted-foreground text-sm mr-2">{value}</Text>
         )}
-        {showArrow && <Text className="text-muted-foreground">›</Text>}
+        {showArrow && <Text className="text-muted-foreground text-lg">›</Text>}
       </View>
     </Pressable>
   );

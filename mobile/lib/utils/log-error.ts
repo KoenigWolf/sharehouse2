@@ -6,8 +6,22 @@ export function logError(
   error: unknown,
   context?: Record<string, unknown>
 ): void {
-  const errorMessage = error instanceof Error ? error.message : String(error);
-  const errorStack = error instanceof Error ? error.stack : undefined;
+  let errorMessage: string;
+  let errorStack: string | undefined;
+
+  if (error instanceof Error) {
+    errorMessage = error.message;
+    errorStack = error.stack;
+  } else if (
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error
+  ) {
+    // Handle Supabase errors and other objects with message property
+    errorMessage = String((error as { message: unknown }).message);
+  } else {
+    errorMessage = String(error);
+  }
 
   // In development, log to console for debugging
   if (__DEV__) {
