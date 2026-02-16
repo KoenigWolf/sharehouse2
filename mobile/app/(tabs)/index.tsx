@@ -96,7 +96,7 @@ export default function ResidentsScreen() {
     <View className="flex-1 bg-background">
       {/* Header */}
       <View
-        style={{ paddingTop: insets.top + 8 }}
+        style={[{ paddingTop: insets.top + 8 }, Shadows.sm]}
         className="px-4 pb-4 bg-card border-b border-border/40"
       >
         <Text
