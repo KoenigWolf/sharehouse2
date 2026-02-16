@@ -7,23 +7,13 @@ import { m } from "framer-motion";
 import type { Profile } from "@/domain/profile";
 import { getInitials } from "@/lib/utils";
 import { getOptimizedImageUrl, getResponsiveImageSizes } from "@/lib/utils/image";
+import { isNewResident } from "@/lib/utils/residents";
 import { useI18n } from "@/hooks/use-i18n";
 import { Sparkles } from "lucide-react";
 
 interface ResidentCardProps {
   profile: Profile;
   isCurrentUser?: boolean;
-}
-
-const NEW_RESIDENT_THRESHOLD_MONTHS = 3;
-
-function calculateIsNewResident(moveInDate: string | null | undefined): boolean {
-  if (!moveInDate) return false;
-  const moveIn = new Date(moveInDate);
-  if (Number.isNaN(moveIn.getTime())) return false;
-  const diffMs = Date.now() - moveIn.getTime();
-  const months = Math.floor(diffMs / (1000 * 60 * 60 * 24 * 30));
-  return months <= NEW_RESIDENT_THRESHOLD_MONTHS;
 }
 
 function isMockProfile(profileId: string): boolean {
@@ -37,7 +27,7 @@ export const ResidentCard = memo(function ResidentCard({
   const t = useI18n();
 
   const isMock = isMockProfile(profile.id);
-  const isNewResident = useMemo(() => calculateIsNewResident(profile.move_in_date), [profile.move_in_date]);
+  const isNew = useMemo(() => isNewResident(profile.move_in_date), [profile.move_in_date]);
   const displayName = profile.nickname || profile.name;
   const optimizedSrc = getOptimizedImageUrl(profile.avatar_url);
 
@@ -105,7 +95,7 @@ export const ResidentCard = memo(function ResidentCard({
                 {t("residents.badgeYou")}
               </span>
             )}
-            {isNewResident && !isMock && !isCurrentUser && (
+            {isNew && !isMock && !isCurrentUser && (
               <span className="flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-bold text-white bg-gradient-to-r from-amber-500 to-orange-500 rounded-md">
                 <Sparkles size={10} />
                 {t("residents.badgeNew")}
