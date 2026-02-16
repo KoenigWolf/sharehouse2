@@ -93,7 +93,7 @@ export const ResidentCard = memo(function ResidentCard({
         <div className="absolute top-2.5 left-2.5 right-2.5 flex items-start justify-between">
           {/* Room number */}
           {profile.room_number && (
-            <span className="px-2 py-0.5 text-[11px] font-bold text-white bg-black/40 backdrop-blur-sm rounded-md">
+            <span className="px-2 py-0.5 text-[11px] font-bold text-white bg-black/60 rounded-md shadow-sm">
               {profile.room_number}
             </span>
           )}
@@ -102,13 +102,13 @@ export const ResidentCard = memo(function ResidentCard({
           <div className="flex items-center gap-1.5">
             {isCurrentUser && (
               <span className="px-2 py-0.5 text-[10px] font-bold text-white bg-brand-500 rounded-md uppercase tracking-wide">
-                You
+                {t("residents.badgeYou")}
               </span>
             )}
             {isNewResident && !isMock && !isCurrentUser && (
               <span className="flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-bold text-white bg-gradient-to-r from-amber-500 to-orange-500 rounded-md">
                 <Sparkles size={10} />
-                New
+                {t("residents.badgeNew")}
               </span>
             )}
           </div>
@@ -144,13 +144,13 @@ export const ResidentCard = memo(function ResidentCard({
               {profile.interests.slice(0, 2).map((interest, i) => (
                 <span
                   key={i}
-                  className="px-1.5 py-0.5 text-[10px] font-medium text-white/90 bg-white/20 backdrop-blur-sm rounded truncate max-w-[70px]"
+                  className="px-1.5 py-0.5 text-[10px] font-medium text-white bg-black/40 rounded truncate max-w-[70px]"
                 >
                   {interest}
                 </span>
               ))}
               {profile.interests.length > 2 && (
-                <span className="text-[10px] text-white/60">
+                <span className="px-1.5 py-0.5 text-[10px] font-medium text-white bg-black/40 rounded">
                   +{profile.interests.length - 2}
                 </span>
               )}
