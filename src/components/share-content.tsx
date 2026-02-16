@@ -380,13 +380,16 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
         const uploadResult = await uploadShareItemImage(itemId, formData);
         if ("error" in uploadResult) {
           logError(new Error(uploadResult.error), { action: "handleSubmit:imageUpload" });
+          setFeedback({ type: "error", message: uploadResult.error });
           setIsSubmitting(false);
           return { success: false, error: uploadResult.error };
         }
       } catch (error) {
         logError(error, { action: "handleSubmit:imageUpload" });
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        setFeedback({ type: "error", message: errorMessage });
         setIsSubmitting(false);
-        return { success: false, error: String(error) };
+        return { success: false, error: errorMessage };
       }
     }
 
