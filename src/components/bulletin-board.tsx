@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useCallback, useEffect, useId } from "react";
+import { useState, useCallback, useEffect, useId, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { m, AnimatePresence } from "framer-motion";
-import { Feather, X, Trash2, MessageCircle } from "lucide-react";
+import { Feather, X, Trash2, MessageCircle, Loader2 } from "lucide-react";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
-import { createBulletin, deleteBulletin } from "@/lib/bulletin/actions";
+import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
+import { createBulletin, deleteBulletin, getBulletinsPaginated } from "@/lib/bulletin/actions";
 import { BULLETIN } from "@/lib/constants/config";
 import { getInitials } from "@/lib/utils";
 import { logError } from "@/lib/errors";
@@ -23,6 +24,10 @@ interface BulletinBoardProps {
     room_number: string | null;
   };
   isTeaser?: boolean;
+  /** Cursor for pagination (created_at of the last bulletin) */
+  initialCursor?: string | null;
+  /** Whether there are more bulletins to load */
+  initialHasMore?: boolean;
 }
 
 function formatTimestamp(dateString: string, locale: string): string {
@@ -216,7 +221,14 @@ function ComposeModal({ isOpen, onClose, onSubmit, isSubmitting, userProfile }: 
   );
 }
 
-export function BulletinBoard({ bulletins: initialBulletins, currentUserId, currentUserProfile, isTeaser = false }: BulletinBoardProps) {
+export function BulletinBoard({
+  bulletins: initialBulletins,
+  currentUserId,
+  currentUserProfile,
+  isTeaser = false,
+  initialCursor = null,
+  initialHasMore = false,
+}: BulletinBoardProps) {
   const t = useI18n();
   const locale = useLocale();
   const router = useRouter();
@@ -226,9 +238,48 @@ export function BulletinBoard({ bulletins: initialBulletins, currentUserId, curr
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
+  // Infinite scroll state
+  const [cursor, setCursor] = useState<string | null>(initialCursor);
+  const [hasMore, setHasMore] = useState(initialHasMore);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const loadMoreRef = useRef(false);
+
+  // Intersection observer for infinite scroll
+  const [sentinelRef, isIntersecting] = useIntersectionObserver({
+    rootMargin: "200px",
+    threshold: 0,
+  });
+
   useEffect(() => {
     setBulletins(initialBulletins);
-  }, [initialBulletins]);
+    setCursor(initialCursor);
+    setHasMore(initialHasMore);
+  }, [initialBulletins, initialCursor, initialHasMore]);
+
+  // Load more bulletins when sentinel is visible
+  const loadMore = useCallback(async () => {
+    if (loadMoreRef.current || !hasMore || !cursor || isTeaser) return;
+    loadMoreRef.current = true;
+    setIsLoadingMore(true);
+
+    try {
+      const result = await getBulletinsPaginated(cursor);
+      setBulletins((prev) => [...prev, ...result.bulletins]);
+      setCursor(result.nextCursor);
+      setHasMore(result.hasMore);
+    } catch (error) {
+      logError(error, { action: "loadMoreBulletins" });
+    } finally {
+      setIsLoadingMore(false);
+      loadMoreRef.current = false;
+    }
+  }, [cursor, hasMore, isTeaser]);
+
+  useEffect(() => {
+    if (isIntersecting && hasMore && !isLoadingMore) {
+      loadMore();
+    }
+  }, [isIntersecting, hasMore, isLoadingMore, loadMore]);
 
   const handlePost = useCallback(async (message: string) => {
     if (!message.trim() || isSubmitting) return;
@@ -430,6 +481,27 @@ export function BulletinBoard({ bulletins: initialBulletins, currentUserId, curr
                 </m.article>
               );
             })}
+          </div>
+        )}
+
+        {/* Infinite scroll sentinel & loading indicator */}
+        {!isTeaser && (
+          <div ref={sentinelRef} className="py-6 flex justify-center">
+            {isLoadingMore && (
+              <m.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex items-center gap-2 text-muted-foreground"
+              >
+                <Loader2 size={18} className="animate-spin" />
+                <span className="text-sm">{t("common.loading")}</span>
+              </m.div>
+            )}
+            {!hasMore && bulletins.length > 0 && (
+              <p className="text-sm text-muted-foreground/60">
+                {t("bulletin.noMorePosts")}
+              </p>
+            )}
           </div>
         )}
       </div>

@@ -755,6 +755,7 @@ export const ja = {
     postMessage: "メッセージを投稿",
     postHint: "共有したいことを書いてください",
     emptyHint: "最初の投稿をしてみましょう",
+    noMorePosts: "これ以上の投稿はありません",
   },
 
   share: {

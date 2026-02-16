@@ -757,6 +757,7 @@ export const en: Translations = {
     postMessage: "Post a message",
     postHint: "Share what's on your mind",
     emptyHint: "Be the first to post something",
+    noMorePosts: "No more posts",
   },
 
   share: {
