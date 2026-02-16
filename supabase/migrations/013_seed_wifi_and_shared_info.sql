@@ -101,6 +101,7 @@ values (
 );
 
 -- 住所情報（notes は省略で NULL）
+-- 注: 階数(5F等)は floor カラムで管理するため、住所文字列からは意図的に除外
 insert into public.shared_info (info_key, title, content, display_order)
 values (
   'address',
