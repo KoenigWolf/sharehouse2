@@ -7,6 +7,7 @@ import { MotionProvider } from "@/components/motion-provider";
 import { UserProvider } from "@/hooks/use-user";
 import { ThemeProvider, ThemeScript, type ThemeStyle, type ColorMode } from "@/hooks/use-theme";
 import { WebVitalsReporter } from "@/components/web-vitals-reporter";
+import { NavigationProgress } from "@/components/navigation-progress";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -83,7 +84,10 @@ export default async function RootLayout({
           isLoggedIn={!!userId}
         >
           <UserProvider userId={userId} avatarUrl={avatarUrl} isAdmin={isAdmin}>
-            <MotionProvider>{children}</MotionProvider>
+            <MotionProvider>
+              <NavigationProgress />
+              {children}
+            </MotionProvider>
           </UserProvider>
         </ThemeProvider>
         <WebVitalsReporter />
