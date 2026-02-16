@@ -782,8 +782,14 @@ export const ja = {
     deleteConfirm: "この出品を削除しますか？",
     posting: "出品中...",
     createItem: "アイテムを出品",
+    editItem: "アイテムを編集",
     createHint: "余っているものをシェアしよう",
     emptyHint: "最初に何かをシェアしてみましょう",
+    update: "更新する",
+    imageLabel: "写真（任意）",
+    addImage: "写真を追加",
+    imageHint: "商品の写真を追加できます",
+    imagePreview: "プレビュー",
   },
 
   events: {

@@ -784,8 +784,14 @@ export const en: Translations = {
     deleteConfirm: "Delete this item?",
     posting: "Posting...",
     createItem: "Post an item",
+    editItem: "Edit item",
     createHint: "Share something you have extra",
     emptyHint: "Be the first to share something",
+    update: "Update",
+    imageLabel: "Photo (optional)",
+    addImage: "Add photo",
+    imageHint: "Add a photo of the item",
+    imagePreview: "Preview",
   },
 
   events: {
