@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 import { useAuth } from "../../lib/auth";
 import { useI18n } from "../../lib/i18n";
