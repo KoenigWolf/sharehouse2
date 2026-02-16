@@ -210,6 +210,34 @@ export const Header = memo(function Header() {
           {/* Current section indicator */}
           <span className="hidden sm:block text-sm font-bold text-foreground tracking-wide">
             {(() => {
+              // Profile edit page (more specific, check first)
+              if (pathname.includes("/profile/") && pathname.endsWith("/edit")) {
+                return t("profile.editTitle");
+              }
+              // Profile pages
+              if (pathname.startsWith("/profile/")) {
+                return t("profile.title");
+              }
+              // Settings pages
+              if (pathname.startsWith("/settings")) {
+                return t("nav.settings");
+              }
+              // Admin pages
+              if (pathname.startsWith("/admin")) {
+                return t("nav.admin");
+              }
+              // Legal pages
+              if (pathname === "/legal/privacy") {
+                return t("legal.privacyTitle");
+              }
+              if (pathname === "/legal/terms") {
+                return t("legal.termsTitle");
+              }
+              // Event detail pages (match parent nav item)
+              if (pathname.startsWith("/events/")) {
+                return t("nav.events");
+              }
+              // Check navigation items
               const activeItem = ALL_NAV_ITEMS.find((item) =>
                 isNavItemActive(pathname, item)
               );
