@@ -30,6 +30,10 @@ export const en: Translations = {
     copy: "Copy",
   },
 
+  header: {
+    brand: "SHARE HOUSE",
+  },
+
   nav: {
     home: "Home",
     residents: "Residents",

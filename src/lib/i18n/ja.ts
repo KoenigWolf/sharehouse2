@@ -29,6 +29,10 @@ export const ja = {
     copy: "コピー",
   },
 
+  header: {
+    brand: "SHARE HOUSE",
+  },
+
   nav: {
     home: "ホーム",
     residents: "住民",

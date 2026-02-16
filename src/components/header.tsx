@@ -217,9 +217,9 @@ export const Header = memo(function Header() {
       className="sticky top-0 z-40 bg-card border-b border-border/30"
       role="banner"
     >
-      <div className="container mx-auto px-4 sm:px-8 h-14 flex items-center justify-between max-w-6xl">
+      <div className="container mx-auto px-4 sm:px-8 h-14 flex items-center max-w-6xl">
         {/* Left: Navigation text links */}
-        <div className="flex items-center gap-6">
+        <div className="flex-1 flex items-center gap-6">
           {/* Brand - Clean text style */}
           <Link
             href="/residents"
@@ -227,7 +227,7 @@ export const Header = memo(function Header() {
             aria-label={t("a11y.goHome")}
           >
             <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors tracking-wide">
-              SHARE HOUSE
+              {t("header.brand")}
             </span>
           </Link>
 
@@ -236,9 +236,10 @@ export const Header = memo(function Header() {
 
           {/* Current section indicator */}
           <span className="hidden sm:block text-sm font-bold text-foreground tracking-wide">
-            {NAV_ITEMS.find((item) => isPathActive(item))?.labelKey
-              ? t(NAV_ITEMS.find((item) => isPathActive(item))!.labelKey)
-              : "ShareHouse"}
+            {(() => {
+              const activeItem = NAV_ITEMS.find((item) => isPathActive(item));
+              return activeItem ? t(activeItem.labelKey) : t("header.brand");
+            })()}
           </span>
         </div>
 
@@ -257,7 +258,7 @@ export const Header = memo(function Header() {
         </nav>
 
         {/* Right: User Menu */}
-        <div className="flex items-center">
+        <div className="flex-1 flex items-center justify-end">
           <UserAvatarMenu />
         </div>
       </div>
