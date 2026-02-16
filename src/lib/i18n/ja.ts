@@ -574,6 +574,17 @@ export const ja = {
       "SSIDは隠蔽されているため、各自のデバイスから手動で検索してください。自室に別途Wi-Fiルーターを設置すると混線するため、極力設置は避けてください。",
     securityType: "セキュリティ: WPA2",
     wifiPassword: "Wi-Fi パスワード",
+    buildingName: "田中ビル",
+    sharedFacilities: "共用設備",
+    floorInfo: "フロア情報",
+    floorGuide: "フロアガイド",
+    garbageAndDuties: "ゴミ出し＆当番",
+    generalInformation: "共通情報",
+    wifi: "Wi-Fi",
+    password: "パスワード",
+    noPassword: "パスワードなし",
+    mailbox: "郵便受け",
+    address: "住所",
   },
 
   sharedInfo: {

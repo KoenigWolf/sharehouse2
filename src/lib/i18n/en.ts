@@ -574,6 +574,17 @@ export const en: Translations = {
       "SSIDs are hidden, so please manually search from your device. Please avoid setting up additional Wi-Fi routers in your room as it may cause interference.",
     securityType: "Security: WPA2",
     wifiPassword: "Wi-Fi Password",
+    buildingName: "Tanaka Building",
+    sharedFacilities: "Shared Facilities",
+    floorInfo: "Floor Info",
+    floorGuide: "Floor Guide",
+    garbageAndDuties: "Garbage & Duties",
+    generalInformation: "General Information",
+    wifi: "Wi-Fi",
+    password: "Password",
+    noPassword: "No Password",
+    mailbox: "Mailbox",
+    address: "Address",
   },
 
   sharedInfo: {
