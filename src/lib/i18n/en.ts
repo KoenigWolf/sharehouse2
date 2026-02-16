@@ -29,6 +29,7 @@ export const en: Translations = {
     processing: "Processing...",
     copy: "Copy",
     new: "NEW",
+    remove: "Remove",
   },
 
   header: {
@@ -757,6 +758,13 @@ export const en: Translations = {
     postMessage: "Post a message",
     postHint: "Share what's on your mind",
     emptyHint: "Be the first to post something",
+    noMorePosts: "No more posts",
+    edit: "Edit",
+    editing: "Editing",
+    saving: "Saving...",
+    editConfirm: "Save changes",
+    editCancel: "Cancel",
+    edited: "Edited",
   },
 
   share: {
@@ -776,8 +784,14 @@ export const en: Translations = {
     deleteConfirm: "Delete this item?",
     posting: "Posting...",
     createItem: "Post an item",
+    editItem: "Edit item",
     createHint: "Share something you have extra",
     emptyHint: "Be the first to share something",
+    update: "Update",
+    imageLabel: "Photo (optional)",
+    addImage: "Add photo",
+    imageHint: "Add a photo of the item",
+    imagePreview: "Preview",
   },
 
   events: {
@@ -799,6 +813,8 @@ export const en: Translations = {
     attend: "Attend",
     attending: "Attending",
     attendees: "{{count}} attending",
+    attendeesTitle: "Attendees",
+    viewAttendees: "View attendees",
     noAttendees: "No attendees yet",
     empty: "No upcoming events",
     deleteConfirm: "Delete this event?",
@@ -819,6 +835,10 @@ export const en: Translations = {
     unknownCreator: "Unknown creator",
     unknownAttendee: "Unknown attendee",
     createdByLabel: "Created by",
+    coverImageLabel: "Cover image (optional)",
+    addCoverImage: "Add image",
+    coverImageHint: "JPG, PNG, HEIC supported",
+    coverImagePreview: "Cover image preview",
   },
 
   digest: {

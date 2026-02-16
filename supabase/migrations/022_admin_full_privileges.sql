@@ -53,11 +53,11 @@ CREATE POLICY "自分または管理者が掲示板メッセージを削除可�
   USING (auth.uid() = user_id OR public.is_admin());
 
 -- ----------------------------------------
--- share_items: 管理者は全シェア品を削除可能
+-- share_items: 管理者は全Share品を削除可能
 -- ----------------------------------------
-DROP POLICY IF EXISTS "自分のおすそわけのみ削除可能" ON public.share_items;
-DROP POLICY IF EXISTS "自分または管理者がおすそわけを削除可能" ON public.share_items;
-CREATE POLICY "自分または管理者がおすそわけを削除可能"
+DROP POLICY IF EXISTS "自分のShareのみ削除可能" ON public.share_items;
+DROP POLICY IF EXISTS "自分または管理者がShareを削除可能" ON public.share_items;
+CREATE POLICY "自分または管理者がShareを削除可能"
   ON public.share_items FOR DELETE TO authenticated
   USING (auth.uid() = user_id OR public.is_admin());
 

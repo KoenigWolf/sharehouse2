@@ -1,5 +1,5 @@
 -- ============================================
--- おすそわけ（Share Items）公開チラ見せ用ビューの作成
+-- Share（Share Items）公開チラ見せ用ビューの作成
 -- ============================================
 
 drop view if exists public.share_items_public_teaser cascade;

@@ -13,6 +13,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Translator } from "@/lib/i18n";
 
 type ActionResponse = { success: true } | { error: string };
+type CreateEventResponse = { success: true; eventId: string } | { error: string };
 type UploadResponse = { success: true; url: string } | { error: string };
 
 type FileValidationResult =
@@ -169,7 +170,7 @@ export async function createEvent(input: {
   event_date: string;
   event_time: string | null;
   location: string | null;
-}): Promise<ActionResponse> {
+}): Promise<CreateEventResponse> {
   const t = await getServerTranslator();
   const originError = await enforceAllowedOrigin(t, "createEvent");
   if (originError) return { error: originError };
@@ -192,22 +193,22 @@ export async function createEvent(input: {
       return { error: t("errors.invalidInput") };
     }
 
-    const { error } = await supabase.from("events").insert({
+    const { data, error } = await supabase.from("events").insert({
       user_id: user.id,
       title: trimmedTitle,
       description: trimmedDesc,
       event_date: input.event_date,
       event_time: input.event_time?.trim() || null,
       location: input.location?.trim() || null,
-    });
+    }).select("id").single();
 
-    if (error) {
-      logError(error, { action: "createEvent", userId: user.id });
+    if (error || !data) {
+      if (error) logError(error, { action: "createEvent", userId: user.id });
       return { error: t("errors.saveFailed") };
     }
 
     CacheStrategy.afterEventUpdate();
-    return { success: true };
+    return { success: true, eventId: data.id };
   } catch (error) {
     logError(error, { action: "createEvent" });
     return { error: t("errors.serverError") };

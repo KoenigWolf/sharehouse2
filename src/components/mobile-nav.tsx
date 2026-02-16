@@ -4,6 +4,7 @@ import { useState, memo, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { m, motion, AnimatePresence } from "framer-motion";
+import { usePrefetch } from "@/hooks/use-prefetch";
 import {
   MoreHorizontal,
   X,
@@ -38,12 +39,14 @@ const NavItemButton = memo(function NavItemButton({
 }: NavItemButtonProps) {
   const t = useI18n();
   const Icon = item.icon;
+  const prefetch = usePrefetch(item.href);
 
   return (
     <Link
       href={item.href}
       aria-current={isActive ? "page" : undefined}
       className="relative flex flex-col items-center justify-center min-w-[48px] min-h-[48px] px-2 py-1.5 transition-all active:scale-95 group"
+      onTouchStart={prefetch}
     >
       <div className="relative">
         <Icon
@@ -91,11 +94,14 @@ const DrawerNavItem = memo(function DrawerNavItem({
 }: DrawerNavItemProps) {
   const t = useI18n();
   const Icon = item.icon;
+  const prefetch = usePrefetch(item.href);
 
   return (
     <Link
       href={item.href}
       onClick={onClick}
+      onTouchStart={prefetch}
+      onMouseEnter={prefetch}
       className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all min-h-[56px] ${
         isActive
           ? "bg-primary/10 text-primary"

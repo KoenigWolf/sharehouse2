@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { usePrefetch } from "@/hooks/use-prefetch";
 import {
   User,
   Settings,
@@ -37,6 +38,7 @@ const NavLink = memo(function NavLink({
 }) {
   const t = useI18n();
   const Icon = item.icon;
+  const prefetch = usePrefetch(item.href);
 
   return (
     <Link
@@ -45,6 +47,9 @@ const NavLink = memo(function NavLink({
       aria-label={t(item.labelKey)}
       title={t(item.labelKey)}
       className="relative w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 group"
+      onMouseEnter={prefetch}
+      onTouchStart={prefetch}
+      onFocus={prefetch}
     >
       <Icon
         size={20}

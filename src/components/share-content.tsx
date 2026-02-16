@@ -1,42 +1,92 @@
 "use client";
 
-import { useState, useCallback, useEffect, useId } from "react";
+import { useState, useCallback, useEffect, useId, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { m, AnimatePresence } from "framer-motion";
-import { Gift, Plus, X, Clock, Trash2, Check } from "lucide-react";
+import { Gift, Plus, X, Clock, Trash2, Check, ImagePlus } from "lucide-react";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { useI18n } from "@/hooks/use-i18n";
-import { createShareItem, claimShareItem, deleteShareItem } from "@/lib/share/actions";
-import { SHARE_ITEMS } from "@/lib/constants/config";
+import { createShareItem, claimShareItem, deleteShareItem, updateShareItem, uploadShareItemImage } from "@/lib/share/actions";
+import { prepareImageForUpload } from "@/lib/utils/image-compression";
+import { SHARE_ITEMS, FILE_UPLOAD } from "@/lib/constants/config";
 import { getInitials } from "@/lib/utils";
+import { logError } from "@/lib/errors";
 import type { ShareItemWithProfile } from "@/domain/share-item";
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 
+interface ShareFormData {
+  title: string;
+  description: string | null;
+  imageFile: File | null;
+}
+
+type SubmitResult = { success: true } | { success: false; error: string };
+
 interface ShareComposeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (title: string, description: string | null) => Promise<void>;
+  onSubmit: (data: ShareFormData) => Promise<SubmitResult>;
   isSubmitting: boolean;
+  editingItem?: ShareItemWithProfile | null;
 }
 
-function ShareComposeModal({ isOpen, onClose, onSubmit, isSubmitting }: ShareComposeModalProps) {
+function ShareComposeModalInner({ isOpen, onClose, onSubmit, isSubmitting, editingItem }: ShareComposeModalProps) {
   const t = useI18n();
   const id = useId();
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const isEditMode = editingItem !== null && editingItem !== undefined;
+
+  const [title, setTitle] = useState(editingItem?.title ?? "");
+  const [description, setDescription] = useState(editingItem?.description ?? "");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(editingItem?.image_url ?? null);
+  const [existingImageUrl] = useState<string | null>(editingItem?.image_url ?? null);
+  const [imageUploadError, setImageUploadError] = useState<string | null>(null);
 
   const handleClose = useCallback(() => {
-    setTitle("");
-    setDescription("");
+    if (imagePreview && imagePreview !== existingImageUrl) {
+      URL.revokeObjectURL(imagePreview);
+    }
     onClose();
-  }, [onClose]);
+  }, [onClose, imagePreview, existingImageUrl]);
+
+  const handleImageSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (imagePreview && imagePreview !== existingImageUrl) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    setImageFile(file);
+    setImageUploadError(null);
+    const objectUrl = URL.createObjectURL(file);
+    setImagePreview(objectUrl);
+  }, [imagePreview, existingImageUrl]);
+
+  const handleRemoveImage = useCallback(() => {
+    setImageFile(null);
+    if (imagePreview && imagePreview !== existingImageUrl) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }, [imagePreview, existingImageUrl]);
 
   const handleSubmit = async () => {
     if (!title.trim()) return;
-    await onSubmit(title.trim(), description.trim() || null);
-    setTitle("");
-    setDescription("");
+    setImageUploadError(null);
+    const result = await onSubmit({ title: title.trim(), description: description.trim() || null, imageFile });
+    if (!result.success) {
+      setImageUploadError(result.error);
+      return;
+    }
+    if (imagePreview && imagePreview !== existingImageUrl) {
+      URL.revokeObjectURL(imagePreview);
+    }
   };
 
   const handleKeyDown = useCallback(
@@ -100,32 +150,15 @@ function ShareComposeModal({ isOpen, onClose, onSubmit, isSubmitting }: ShareCom
               </button>
 
               <h2 id={`${id}-title`} className="text-sm font-bold text-foreground">
-                {t("share.createItem")}
+                {isEditMode ? t("share.editItem") : t("share.createItem")}
               </h2>
 
-              <m.button
-                type="button"
-                onClick={handleSubmit}
-                disabled={!canSubmit}
-                whileHover={canSubmit ? { scale: 1.02 } : undefined}
-                whileTap={canSubmit ? { scale: 0.98 } : undefined}
-                className="h-9 px-5 rounded-full bg-foreground text-background text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
-              >
-                {isSubmitting ? t("common.processing") : t("share.post")}
-              </m.button>
+              {/* Spacer for layout balance */}
+              <div className="w-10" />
             </div>
 
             {/* Form area */}
             <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center shrink-0">
-                  <Gift size={20} className="text-brand-500" />
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  {t("share.createHint")}
-                </p>
-              </div>
-
               <div className="space-y-5">
                 <div className="space-y-2">
                   <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
@@ -155,13 +188,100 @@ function ShareComposeModal({ isOpen, onClose, onSubmit, isSubmitting }: ShareCom
                     className="w-full px-5 py-4 bg-muted/50 border border-border/50 rounded-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all duration-200 resize-none leading-relaxed"
                   />
                 </div>
+
+                {/* Image upload */}
+                <div className="space-y-2">
+                  <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
+                    {t("share.imageLabel")}
+                  </label>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept={FILE_UPLOAD.inputAccept}
+                    onChange={handleImageSelect}
+                    className="sr-only"
+                    aria-label={t("share.addImage")}
+                  />
+                  {imagePreview ? (
+                    <div className="relative">
+                      <div className="relative aspect-[16/10] rounded-xl overflow-hidden bg-muted">
+                        <Image
+                          src={imagePreview}
+                          alt={t("share.imagePreview")}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <m.button
+                        type="button"
+                        onClick={handleRemoveImage}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm text-white flex items-center justify-center hover:bg-black/80 transition-colors"
+                        aria-label={t("common.remove")}
+                      >
+                        <X size={16} />
+                      </m.button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="w-full aspect-[16/10] rounded-xl border-2 border-dashed border-border/60 hover:border-foreground/30 bg-muted/30 hover:bg-muted/50 flex flex-col items-center justify-center gap-2 transition-all duration-200 group"
+                    >
+                      <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center group-hover:bg-muted/80 transition-colors">
+                        <ImagePlus size={24} className="text-muted-foreground" />
+                      </div>
+                      <span className="text-sm font-medium text-muted-foreground">
+                        {t("share.addImage")}
+                      </span>
+                      <span className="text-xs text-muted-foreground/60">
+                        {t("share.imageHint")}
+                      </span>
+                    </button>
+                  )}
+
+                  {/* Image upload error */}
+                  {imageUploadError && (
+                    <p className="text-sm text-error mt-2">
+                      {imageUploadError}
+                    </p>
+                  )}
+                </div>
               </div>
+            </div>
+
+            {/* Footer */}
+            <div className="px-4 py-4 border-t border-border/50 shrink-0 flex justify-end">
+              <m.button
+                type="button"
+                onClick={handleSubmit}
+                disabled={!canSubmit}
+                whileHover={canSubmit ? { scale: 1.02 } : undefined}
+                whileTap={canSubmit ? { scale: 0.98 } : undefined}
+                className={`h-11 px-6 rounded-xl text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed transition-opacity ${
+                  isEditMode
+                    ? "bg-amber-500 text-white"
+                    : "bg-foreground text-background"
+                }`}
+              >
+                {isSubmitting
+                  ? t("common.processing")
+                  : isEditMode ? t("share.update") : t("share.post")
+                }
+              </m.button>
             </div>
           </m.div>
         </m.div>
       )}
     </AnimatePresence>
   );
+}
+
+function ShareComposeModal(props: ShareComposeModalProps) {
+  // Use key to remount component when editingItem changes, resetting all state
+  const key = props.editingItem?.id ?? "new";
+  return <ShareComposeModalInner key={key} {...props} />;
 }
 
 interface ShareContentProps {
@@ -209,24 +329,75 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
   const t = useI18n();
   const router = useRouter();
   const [isComposeOpen, setIsComposeOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<ShareItemWithProfile | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
-  const handlePost = useCallback(async (title: string, description: string | null) => {
-    if (!title.trim() || isSubmitting) return;
+  const handleCloseCompose = useCallback(() => {
+    setIsComposeOpen(false);
+    setEditingItem(null);
+  }, []);
+
+  const handleEdit = useCallback((item: ShareItemWithProfile) => {
+    setEditingItem(item);
+    setIsComposeOpen(true);
+    setFeedback(null);
+  }, []);
+
+  const handleSubmit = useCallback(async (data: ShareFormData): Promise<SubmitResult> => {
+    if (!data.title.trim() || isSubmitting) return { success: false, error: "" };
     setIsSubmitting(true);
     setFeedback(null);
 
-    const result = await createShareItem(title, description);
-    setIsSubmitting(false);
+    let itemId: string;
 
-    if ("error" in result) {
-      setFeedback({ type: "error", message: result.error });
-      return;
+    if (editingItem) {
+      // Update existing item
+      const result = await updateShareItem(editingItem.id, data.title, data.description);
+      if ("error" in result) {
+        setIsSubmitting(false);
+        setFeedback({ type: "error", message: result.error });
+        return { success: false, error: result.error };
+      }
+      itemId = editingItem.id;
+    } else {
+      // Create new item
+      const result = await createShareItem(data.title, data.description);
+      if ("error" in result) {
+        setIsSubmitting(false);
+        setFeedback({ type: "error", message: result.error });
+        return { success: false, error: result.error };
+      }
+      itemId = result.itemId;
     }
-    setIsComposeOpen(false);
+
+    // Upload image if provided
+    if (data.imageFile) {
+      try {
+        const prepared = await prepareImageForUpload(data.imageFile);
+        const formData = new FormData();
+        formData.append("image", prepared.file);
+        const uploadResult = await uploadShareItemImage(itemId, formData);
+        if ("error" in uploadResult) {
+          logError(new Error(uploadResult.error), { action: "handleSubmit:imageUpload" });
+          setFeedback({ type: "error", message: uploadResult.error });
+          setIsSubmitting(false);
+          return { success: false, error: uploadResult.error };
+        }
+      } catch (error) {
+        logError(error, { action: "handleSubmit:imageUpload" });
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        setFeedback({ type: "error", message: errorMessage });
+        setIsSubmitting(false);
+        return { success: false, error: errorMessage };
+      }
+    }
+
+    setIsSubmitting(false);
+    handleCloseCompose();
     router.refresh();
-  }, [isSubmitting, router]);
+    return { success: true };
+  }, [isSubmitting, editingItem, handleCloseCompose, router]);
 
   const handleClaim = useCallback(async (itemId: string) => {
     setIsSubmitting(true);
@@ -256,9 +427,10 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
       {/* Compose Modal */}
       <ShareComposeModal
         isOpen={isComposeOpen}
-        onClose={() => setIsComposeOpen(false)}
-        onSubmit={handlePost}
+        onClose={handleCloseCompose}
+        onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
+        editingItem={editingItem}
       />
 
       <m.div
@@ -323,6 +495,8 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
             const isClaimed = item.status === "claimed";
             const timeLeft = formatTimeRemaining(item.expires_at);
 
+            const isEditable = isMine && !isClaimed && !isTeaser;
+
             return (
               <m.article
                 key={item.id}
@@ -334,9 +508,10 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                   ease: [0.25, 0.46, 0.45, 0.94],
                 }}
                 whileHover={!isClaimed ? { y: -3, transition: { duration: 0.2 } } : {}}
+                onClick={isEditable ? () => handleEdit(item) : undefined}
                 className={`premium-surface rounded-2xl p-5 sm:p-6 flex flex-col group ${
                   isClaimed ? "opacity-60" : ""
-                }`}
+                } ${isEditable ? "cursor-pointer" : ""}`}
               >
                 {/* Header */}
                 <div className="flex items-center justify-between mb-4">
@@ -376,6 +551,21 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                   )}
                 </div>
 
+                {/* Item image */}
+                {item.image_url && (
+                  <div className="relative aspect-[16/10] rounded-xl overflow-hidden bg-muted mb-4 -mx-1">
+                    <Image
+                      src={item.image_url}
+                      alt={item.title}
+                      fill
+                      className={`object-cover transition-all duration-300 ${
+                        isClaimed ? "grayscale opacity-60" : "group-hover:scale-[1.02]"
+                      } ${isTeaser ? "blur-[6px]" : ""}`}
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                  </div>
+                )}
+
                 {/* Content */}
                 <div className="flex-1 space-y-2 mb-5">
                   <h4 className={`text-base font-bold ${
@@ -402,7 +592,10 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                   ) : !isMine ? (
                     <m.button
                       type="button"
-                      onClick={() => !isTeaser && handleClaim(item.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (!isTeaser) handleClaim(item.id);
+                      }}
                       disabled={isSubmitting || isTeaser}
                       whileHover={!isTeaser ? { scale: 1.03 } : {}}
                       whileTap={!isTeaser ? { scale: 0.97 } : {}}
@@ -419,9 +612,12 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                   {isMine && !isClaimed && (
                     <button
                       type="button"
-                      onClick={() => handleDelete(item.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(item.id);
+                      }}
                       disabled={isSubmitting}
-                      className="w-9 h-9 flex items-center justify-center rounded-lg text-muted-foreground/40 hover:text-error hover:bg-error/10 opacity-0 group-hover:opacity-100 transition-all"
+                      className="w-9 h-9 flex items-center justify-center rounded-lg text-muted-foreground/60 hover:text-error hover:bg-error/10 sm:opacity-0 sm:group-hover:opacity-100 transition-all"
                       aria-label={t("common.delete")}
                     >
                       <Trash2 size={16} />

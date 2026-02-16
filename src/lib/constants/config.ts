@@ -86,6 +86,7 @@ export const BULLETIN = {
   maxMessageLength: 200,
   maxDisplayOnHome: 5,
   maxDisplayOnBulletinPage: 100,
+  pageSize: 15,
 } as const;
 
 export const SHARE_ITEMS = {

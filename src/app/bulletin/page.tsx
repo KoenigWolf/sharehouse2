@@ -3,7 +3,7 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { MobileNav } from "@/components/mobile-nav";
 import { BulletinBoard } from "@/components/bulletin-board";
-import { getBulletins } from "@/lib/bulletin/actions";
+import { getBulletinsPaginated } from "@/lib/bulletin/actions";
 import { getCachedUser } from "@/lib/supabase/cached-queries";
 import { logError } from "@/lib/errors";
 
@@ -16,8 +16,8 @@ export default async function BulletinPage() {
     redirect("/login");
   }
 
-  const [bulletins, profileResult] = await Promise.all([
-    getBulletins(),
+  const [bulletinsResult, profileResult] = await Promise.all([
+    getBulletinsPaginated(),
     supabase.from("profiles").select("name, nickname, avatar_url, room_number").eq("id", user.id).single(),
   ]);
 
@@ -34,9 +34,11 @@ export default async function BulletinPage() {
       <main className="flex-1 pb-20 sm:pb-0">
         <div className="container mx-auto px-4 sm:px-6 pt-2 sm:pt-6 pb-4 max-w-4xl">
           <BulletinBoard
-            bulletins={bulletins}
+            bulletins={bulletinsResult.bulletins}
             currentUserId={user.id}
             currentUserProfile={currentUserProfile}
+            initialCursor={bulletinsResult.nextCursor}
+            initialHasMore={bulletinsResult.hasMore}
           />
         </div>
       </main>

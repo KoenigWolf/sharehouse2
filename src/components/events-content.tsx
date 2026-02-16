@@ -5,13 +5,15 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { m, AnimatePresence } from "framer-motion";
-import { MapPin, Clock, Calendar, Plus, X, CalendarDays, Users, Sparkles, Pencil, Trash2 } from "lucide-react";
+import { MapPin, Clock, Calendar, Plus, X, CalendarDays, Users, Sparkles, Pencil, Trash2, ImagePlus } from "lucide-react";
 import { Avatar, AvatarFallback, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { TimeSelect } from "@/components/ui/time-select";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
-import { createEvent, updateEvent, toggleAttendance, deleteEvent } from "@/lib/events/actions";
-import { EVENTS } from "@/lib/constants/config";
+import { createEvent, updateEvent, toggleAttendance, deleteEvent, uploadEventCover } from "@/lib/events/actions";
+import { prepareImageForUpload } from "@/lib/utils/image-compression";
+import { FILE_UPLOAD, EVENTS } from "@/lib/constants/config";
 import { getInitials } from "@/lib/utils";
+import { logError } from "@/lib/errors";
 import type { EventWithDetails } from "@/domain/event";
 
 const MODAL_EASE = [0.23, 1, 0.32, 1] as const;
@@ -22,6 +24,7 @@ interface EventFormData {
   eventTime: string;
   location: string;
   description: string;
+  imageFile: File | null;
 }
 
 interface EventComposeModalProps {
@@ -35,6 +38,7 @@ interface EventComposeModalProps {
 function EventComposeModal({ isOpen, onClose, onSubmit, isSubmitting, editingEvent }: EventComposeModalProps) {
   const t = useI18n();
   const id = useId();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isEditMode = editingEvent !== null && editingEvent !== undefined;
 
@@ -43,6 +47,8 @@ function EventComposeModal({ isOpen, onClose, onSubmit, isSubmitting, editingEve
   const [eventTime, setEventTime] = useState(editingEvent?.event_time ?? "");
   const [location, setLocation] = useState(editingEvent?.location ?? "");
   const [description, setDescription] = useState(editingEvent?.description ?? "");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const handleClose = useCallback(() => {
     setTitle("");
@@ -50,12 +56,40 @@ function EventComposeModal({ isOpen, onClose, onSubmit, isSubmitting, editingEve
     setEventTime("");
     setLocation("");
     setDescription("");
+    setImageFile(null);
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    setImagePreview(null);
     onClose();
-  }, [onClose]);
+  }, [onClose, imagePreview]);
+
+  const handleImageSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    setImageFile(file);
+    const objectUrl = URL.createObjectURL(file);
+    setImagePreview(objectUrl);
+  }, [imagePreview]);
+
+  const handleRemoveImage = useCallback(() => {
+    setImageFile(null);
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }, [imagePreview]);
 
   const handleSubmit = async () => {
     if (!title.trim() || !eventDate) return;
-    await onSubmit({ title: title.trim(), eventDate, eventTime, location, description });
+    await onSubmit({ title: title.trim(), eventDate, eventTime, location, description, imageFile });
   };
 
   const handleKeyDown = useCallback(
@@ -235,7 +269,225 @@ function EventComposeModal({ isOpen, onClose, onSubmit, isSubmitting, editingEve
                     className="w-full px-5 py-4 bg-muted/50 border border-border/50 rounded-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all duration-200 resize-none leading-relaxed"
                   />
                 </div>
+
+                {/* Cover Image - Only for new events (editing uses event detail page) */}
+                {!isEditMode && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
+                      {t("events.coverImageLabel")}
+                    </label>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept={FILE_UPLOAD.inputAccept}
+                      onChange={handleImageSelect}
+                      className="hidden"
+                      aria-label={t("events.coverImageLabel")}
+                    />
+
+                    {imagePreview ? (
+                      <div className="relative rounded-xl overflow-hidden bg-muted">
+                        <div className="relative aspect-[1.618/1]">
+                          <Image
+                            src={imagePreview}
+                            alt={t("events.coverImagePreview")}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleRemoveImage}
+                          className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center transition-colors"
+                          aria-label={t("common.remove")}
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="w-full aspect-[2/1] rounded-xl border-2 border-dashed border-border/60 hover:border-foreground/30 bg-muted/30 hover:bg-muted/50 flex flex-col items-center justify-center gap-2 transition-all duration-200 group"
+                      >
+                        <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center group-hover:bg-muted/80 transition-colors">
+                          <ImagePlus size={24} className="text-muted-foreground" />
+                        </div>
+                        <span className="text-sm font-medium text-muted-foreground">
+                          {t("events.addCoverImage")}
+                        </span>
+                        <span className="text-xs text-muted-foreground/60">
+                          {t("events.coverImageHint")}
+                        </span>
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
+            </div>
+          </m.div>
+        </m.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+interface AttendeesModalProps {
+  event: EventWithDetails | null;
+  onClose: () => void;
+  isTeaser: boolean;
+}
+
+function AttendeesModal({ event, onClose, isTeaser }: AttendeesModalProps) {
+  const t = useI18n();
+  const id = useId();
+  const isOpen = event !== null;
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    },
+    [onClose],
+  );
+
+  useEffect(() => {
+    if (!isOpen) return;
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, handleKeyDown]);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  const attendees = event?.event_attendees ?? [];
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <m.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+          onClick={onClose}
+        >
+          <m.div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={`${id}-title`}
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ duration: 0.25, ease: MODAL_EASE }}
+            className="fixed inset-x-4 top-1/2 -translate-y-1/2 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-sm rounded-2xl bg-background premium-surface flex flex-col max-h-[70vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 h-14 border-b border-border/50 shrink-0">
+              <h2 id={`${id}-title`} className="text-sm font-bold text-foreground">
+                {t("events.attendeesTitle")}
+              </h2>
+              <button
+                type="button"
+                onClick={onClose}
+                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted transition-colors"
+                aria-label={t("common.close")}
+              >
+                <X size={20} className="text-foreground" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto p-4">
+              {attendees.length === 0 ? (
+                <div className="py-8 text-center">
+                  <Users size={32} className="mx-auto text-muted-foreground/40 mb-3" />
+                  <p className="text-sm text-muted-foreground">
+                    {t("events.noAttendees")}
+                  </p>
+                </div>
+              ) : (
+                <m.ul
+                  className="space-y-2"
+                  initial="hidden"
+                  animate="visible"
+                  variants={{
+                    hidden: { opacity: 0 },
+                    visible: {
+                      opacity: 1,
+                      transition: { staggerChildren: 0.04 },
+                    },
+                  }}
+                >
+                  {attendees.map((attendee) => {
+                    const profile = attendee.profiles;
+                    const displayName = profile?.nickname ?? profile?.name ?? t("common.unregistered");
+                    const avatarUrl = profile?.avatar_url ?? null;
+
+                    return (
+                      <m.li
+                        key={attendee.user_id}
+                        variants={{
+                          hidden: { opacity: 0, x: -8 },
+                          visible: { opacity: 1, x: 0 },
+                        }}
+                      >
+                        {isTeaser ? (
+                          <div className="flex items-center gap-3 p-2 rounded-xl">
+                            <Avatar className="w-10 h-10 ring-2 ring-border/30">
+                              <OptimizedAvatarImage
+                                src={avatarUrl}
+                                alt={displayName}
+                                context="card"
+                                isBlurred={isTeaser}
+                                fallback={
+                                  <AvatarFallback className="text-xs font-semibold bg-muted text-muted-foreground">
+                                    {getInitials(displayName)}
+                                  </AvatarFallback>
+                                }
+                              />
+                            </Avatar>
+                            <span className="text-sm font-medium text-foreground">
+                              {displayName}
+                            </span>
+                          </div>
+                        ) : (
+                          <Link
+                            href={`/residents/${attendee.user_id}`}
+                            onClick={onClose}
+                            className="flex items-center gap-3 p-2 rounded-xl hover:bg-muted/60 transition-colors group"
+                          >
+                            <Avatar className="w-10 h-10 ring-2 ring-border/30 group-hover:ring-brand-500/30 transition-all">
+                              <OptimizedAvatarImage
+                                src={avatarUrl}
+                                alt={displayName}
+                                context="card"
+                                fallback={
+                                  <AvatarFallback className="text-xs font-semibold bg-muted text-muted-foreground">
+                                    {getInitials(displayName)}
+                                  </AvatarFallback>
+                                }
+                              />
+                            </Avatar>
+                            <span className="text-sm font-medium text-foreground group-hover:text-brand-600 transition-colors">
+                              {displayName}
+                            </span>
+                          </Link>
+                        )}
+                      </m.li>
+                    );
+                  })}
+                </m.ul>
+              )}
             </div>
           </m.div>
         </m.div>
@@ -351,6 +603,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [selectedCalendarDate, setSelectedCalendarDate] = useState<string | null>(null);
+  const [showAttendeesEvent, setShowAttendeesEvent] = useState<EventWithDetails | null>(null);
   const calendarRef = useRef<HTMLDivElement>(null);
 
   const locale = useLocale();
@@ -404,14 +657,44 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
       location: data.location || null,
     };
 
-    const result = editingEvent
-      ? await updateEvent(editingEvent.id, payload)
-      : await createEvent(payload);
+    if (editingEvent) {
+      const result = await updateEvent(editingEvent.id, payload);
+      setIsSubmitting(false);
+      if ("error" in result) {
+        setFeedback({ type: "error", message: result.error });
+        return;
+      }
+    } else {
+      const result = await createEvent(payload);
+      if ("error" in result) {
+        setIsSubmitting(false);
+        setFeedback({ type: "error", message: result.error });
+        return;
+      }
 
-    setIsSubmitting(false);
-    if ("error" in result) {
-      setFeedback({ type: "error", message: result.error });
-      return;
+      // Upload cover image if provided
+      if (data.imageFile && result.eventId) {
+        try {
+          const prepared = await prepareImageForUpload(data.imageFile);
+          const formData = new FormData();
+          formData.append("cover", prepared.file);
+
+          const uploadResult = await uploadEventCover(result.eventId, formData);
+          if ("error" in uploadResult) {
+            // Event created but image upload failed - show warning but don't fail
+            setFeedback({ type: "error", message: uploadResult.error });
+            setIsSubmitting(false);
+            handleCloseCompose();
+            router.refresh();
+            return;
+          }
+        } catch (error) {
+          logError(error, { action: "handleSubmit:uploadEventCover" });
+          // Continue even if image upload fails
+        }
+      }
+
+      setIsSubmitting(false);
     }
 
     handleCloseCompose();
@@ -479,22 +762,20 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
         className="space-y-8"
       >
       {/* ═══════════════════════════════════════════════════════════════════
-          CALENDAR STRIP
-          - Touch targets: 48px minimum (Fitts' Law)
+          CALENDAR STRIP (Compact Golden Ratio Design)
+          - Touch targets: 44px minimum (Fitts' Law)
           - Visual hierarchy: Today > Selected > HasEvents > Default
-          - Golden ratio: padding 20px (≈ 21 Fibonacci)
+          - Fibonacci spacing: 8 → 13 → 21
       ═══════════════════════════════════════════════════════════════════ */}
       <m.section
         variants={itemVariants}
-        className="premium-surface rounded-2xl sm:rounded-3xl overflow-hidden"
+        className="premium-surface rounded-2xl overflow-hidden"
       >
-        {/* Header with clear visual hierarchy */}
-        <div className="flex items-center justify-between px-5 sm:px-6 pt-5 pb-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-brand-500/10 flex items-center justify-center">
-              <CalendarDays size={16} className="text-brand-500" />
-            </div>
-            <span className="text-xs font-semibold tracking-wide text-foreground/80">
+        {/* Compact header - inline style */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border/30">
+          <div className="flex items-center gap-2">
+            <CalendarDays size={14} className="text-brand-500" />
+            <span className="text-[11px] font-bold tracking-wider uppercase text-muted-foreground">
               {t("events.nextTwoWeeks")}
             </span>
           </div>
@@ -502,17 +783,17 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
             <button
               type="button"
               onClick={() => setSelectedCalendarDate(null)}
-              className="text-xs font-semibold text-brand-500 hover:text-brand-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-brand-500/5"
+              className="text-[11px] font-bold text-brand-500 hover:text-brand-600 transition-colors"
             >
               {t("events.showAll")}
             </button>
           )}
         </div>
 
-        {/* Calendar scroll area with better proportions */}
+        {/* Calendar scroll - tighter spacing */}
         <div
           ref={calendarRef}
-          className="flex gap-1.5 sm:gap-2 overflow-x-auto px-4 sm:px-5 pb-5 scrollbar-hide"
+          className="flex gap-1 overflow-x-auto px-3 py-3 scrollbar-hide"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {calendarDates.map((d, i) => {
@@ -527,44 +808,46 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
                 id={`date-${d.date}`}
                 type="button"
                 onClick={() => handleCalendarDateClick(d.date)}
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: i * 0.02 }}
-                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.25, delay: i * 0.015 }}
+                whileHover={{ scale: 1.08 }}
                 whileTap={{ scale: 0.95 }}
                 className={`
-                  relative flex-shrink-0 w-[52px] sm:w-14 py-3 rounded-xl sm:rounded-2xl
-                  flex flex-col items-center justify-center gap-0.5
-                  transition-all duration-200
+                  relative flex-shrink-0 w-11 h-[52px] rounded-xl
+                  flex flex-col items-center justify-center
+                  transition-all duration-150
                   ${isSelected
-                    ? "bg-foreground text-background shadow-lg"
+                    ? "bg-foreground text-background shadow-md"
                     : d.isToday
-                      ? "bg-brand-500/10 ring-2 ring-brand-500/30 text-foreground"
-                      : "bg-muted/50 hover:bg-muted text-foreground"
+                      ? "bg-brand-500/15 ring-1 ring-brand-500/40 text-foreground"
+                      : hasEvents
+                        ? "bg-muted/70 text-foreground"
+                        : "bg-muted/40 hover:bg-muted/60 text-foreground"
                   }
                 `}
               >
-                {/* Weekday label */}
+                {/* Weekday - compact */}
                 <span
-                  className={`text-[10px] font-semibold tracking-wide ${
+                  className={`text-[9px] font-bold tracking-wide leading-none ${
                     isSelected
-                      ? "text-background/70"
+                      ? "text-background/60"
                       : isWeekend
-                        ? "text-foreground/60"
-                        : "text-muted-foreground"
+                        ? "text-rose-400/70"
+                        : "text-muted-foreground/70"
                   }`}
                 >
                   {weekdays[d.weekday]}
                 </span>
 
-                {/* Day number - larger for better readability */}
-                <span className={`text-lg font-bold leading-none ${isSelected ? "text-background" : ""}`}>
+                {/* Day number */}
+                <span className={`text-base font-bold leading-tight mt-0.5 ${isSelected ? "text-background" : ""}`}>
                   {d.day}
                 </span>
 
-                {/* Event indicator dot - subtle but clear */}
+                {/* Event indicator - integrated dot */}
                 {hasEvents && !isSelected && (
-                  <span className="absolute bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-brand-500" />
+                  <span className="absolute bottom-1.5 w-1 h-1 rounded-full bg-brand-500" />
                 )}
               </m.button>
             );
@@ -735,7 +1018,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
                               </Link>
                             )}
                             {isMine && (
-                              <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <div className="flex items-center gap-1 shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                 <button
                                   type="button"
                                   onClick={() => handleEdit(event)}
@@ -804,10 +1087,17 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
                             {/* Attendance controls */}
                             <div className="flex items-center gap-3">
                               {attendeeCount > 0 && (
-                                <span className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5 bg-muted/60 px-2.5 py-1.5 rounded-lg">
+                                <m.button
+                                  type="button"
+                                  onClick={() => setShowAttendeesEvent(event)}
+                                  whileHover={{ scale: 1.05 }}
+                                  whileTap={{ scale: 0.95 }}
+                                  className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5 bg-muted/60 hover:bg-muted/80 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer"
+                                  aria-label={t("events.viewAttendees")}
+                                >
                                   <Users size={14} />
                                   {attendeeCount}
-                                </span>
+                                </m.button>
                               )}
                               <m.button
                                 type="button"
@@ -856,6 +1146,13 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
           <CalendarDays size={22} />
         </m.button>
       )}
+
+      {/* Attendees Modal */}
+      <AttendeesModal
+        event={showAttendeesEvent}
+        onClose={() => setShowAttendeesEvent(null)}
+        isTeaser={isTeaser}
+      />
     </>
   );
 }

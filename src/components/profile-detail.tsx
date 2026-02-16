@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { m, type Variants } from "framer-motion";
+import { SharedAvatar } from "@/components/shared-element";
 import {
   Camera,
   MapPin,
@@ -491,7 +492,7 @@ export function ProfileDetail({
 
         <div className="px-4 sm:px-8 pb-4">
           <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4">
-            <div className="shrink-0 -mt-[68px] sm:-mt-[84px]">
+            <SharedAvatar id={profile.id} className="shrink-0 -mt-[68px] sm:-mt-[84px]">
               <div className="w-[136px] h-[136px] sm:w-[168px] sm:h-[168px] rounded-full border-4 border-card bg-secondary overflow-hidden shadow-lg">
                 <Avatar className="size-full rounded-full">
                   <OptimizedAvatarImage
@@ -504,7 +505,7 @@ export function ProfileDetail({
                   />
                 </Avatar>
               </div>
-            </div>
+            </SharedAvatar>
 
             <div className="flex-1 text-center sm:text-left pb-2">
               <h1 className="text-[32px] font-bold text-foreground leading-tight">

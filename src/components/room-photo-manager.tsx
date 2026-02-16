@@ -174,7 +174,7 @@ export function RoomPhotoManager({
                 onClick={() => handleDelete(photo.id)}
                 disabled={deletingId === photo.id}
                 aria-label={t("roomPhotos.delete")}
-                className="absolute top-2 right-2 bg-card/90 backdrop-blur-sm text-muted-foreground opacity-0 group-hover:opacity-100 focus:opacity-100 hover:bg-error-bg hover:text-error shadow-sm transition-all duration-300 rounded-lg scale-90 group-hover:scale-100"
+                className="absolute top-2 right-2 bg-card/90 backdrop-blur-sm text-muted-foreground sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 hover:bg-error-bg hover:text-error shadow-sm transition-all duration-300 rounded-lg sm:scale-90 sm:group-hover:scale-100"
               >
                 {deletingId === photo.id ? (
                   <Spinner size="xs" variant="dark" />

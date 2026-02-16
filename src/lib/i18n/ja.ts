@@ -28,6 +28,7 @@ export const ja = {
     processing: "処理中...",
     copy: "Copy",
     new: "NEW",
+    remove: "削除",
   },
 
   header: {
@@ -49,7 +50,7 @@ export const ja = {
     gallery: "Gallery",
     info: "情報",
     floorPlan: "Floor Map",
-    share: "おすそわけ",
+    share: "Share",
     events: "Events",
     admin: "管理",
     stats: "統計",
@@ -755,11 +756,18 @@ export const ja = {
     postMessage: "メッセージを投稿",
     postHint: "共有したいことを書いてください",
     emptyHint: "最初の投稿をしてみましょう",
+    noMorePosts: "これ以上の投稿はありません",
+    edit: "編集",
+    editing: "編集中",
+    saving: "保存中...",
+    editConfirm: "変更を保存",
+    editCancel: "キャンセル",
+    edited: "編集済み",
   },
 
   share: {
-    title: "おすそわけボード",
-    subtitle: "食材や日用品をシェアしよう",
+    title: "Share Board",
+    subtitle: "食材や日用品をShareしよう",
     post: "出品する",
     titleLabel: "タイトル",
     titlePlaceholder: "卵6個余ってます",
@@ -774,8 +782,14 @@ export const ja = {
     deleteConfirm: "この出品を削除しますか？",
     posting: "出品中...",
     createItem: "アイテムを出品",
-    createHint: "余っているものをシェアしよう",
-    emptyHint: "最初に何かをシェアしてみましょう",
+    editItem: "アイテムを編集",
+    createHint: "余っているものをShareしよう",
+    emptyHint: "最初に何かをShareしてみましょう",
+    update: "更新する",
+    imageLabel: "写真（任意）",
+    addImage: "写真を追加",
+    imageHint: "商品の写真を追加できます",
+    imagePreview: "プレビュー",
   },
 
   events: {
@@ -797,6 +811,8 @@ export const ja = {
     attend: "参加する",
     attending: "参加中",
     attendees: "{{count}}人参加",
+    attendeesTitle: "参加者",
+    viewAttendees: "参加者を見る",
     noAttendees: "まだ参加者はいません",
     empty: "予定されているイベントはありません",
     deleteConfirm: "このイベントを削除しますか？",
@@ -817,6 +833,10 @@ export const ja = {
     unknownCreator: "不明な作成者",
     unknownAttendee: "不明な参加者",
     createdByLabel: "作成者",
+    coverImageLabel: "カバー画像（任意）",
+    addCoverImage: "画像を追加",
+    coverImageHint: "JPG、PNG、HEIC対応",
+    coverImagePreview: "カバー画像プレビュー",
   },
 
   digest: {
@@ -824,7 +844,7 @@ export const ja = {
     garbageToday: "今日は{{type}}の日です",
     newBulletins: "新しいVibe: {{count}}件",
     upcomingEvents: "近日のイベント: {{count}}件",
-    shareItems: "おすそわけ: {{count}}件",
+    shareItems: "Share: {{count}}件",
   },
 
   floorPlan: {
@@ -956,7 +976,7 @@ export const ja = {
     rooms: "部屋",
     totalEvents: "イベント",
     upcoming: "予定",
-    shareItems: "おすそわけ",
+    shareItems: "Share",
     available: "出品中",
     photos: "写真",
     uploaders: "人が投稿",

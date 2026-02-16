@@ -11,29 +11,49 @@ import type { BulletinWithProfile } from "@/domain/bulletin";
 
 type ActionResponse = { success: true } | { error: string };
 
+export interface PaginatedBulletins {
+  bulletins: BulletinWithProfile[];
+  nextCursor: string | null;
+  hasMore: boolean;
+}
+
 /**
- * 全ての投稿を取得（/bulletin ページ用、Twitter型）
+ * 投稿をページネーション付きで取得（cursor-based pagination）
+ * @param cursor - 次のページを取得するためのカーソル（created_at の値）
+ * @param limit - 取得件数（デフォルト: BULLETIN.pageSize）
  */
-export async function getBulletins(): Promise<BulletinWithProfile[]> {
+export async function getBulletinsPaginated(
+  cursor?: string | null,
+  limit: number = BULLETIN.pageSize
+): Promise<PaginatedBulletins> {
   await connection();
 
   try {
     const supabase = await createClient();
 
-    const bulletinsRes = await supabase
+    let query = supabase
       .from("bulletins")
       .select("id, user_id, message, created_at, updated_at")
       .order("created_at", { ascending: false })
-      .limit(BULLETIN.maxDisplayOnBulletinPage);
+      .limit(limit + 1); // +1 to check if there are more
 
-    if (bulletinsRes.error) {
-      logError(bulletinsRes.error, { action: "getBulletins:bulletins" });
-      return [];
+    if (cursor) {
+      query = query.lt("created_at", cursor);
     }
 
-    const bulletins = bulletinsRes.data ?? [];
+    const bulletinsRes = await query;
+
+    if (bulletinsRes.error) {
+      logError(bulletinsRes.error, { action: "getBulletinsPaginated:bulletins" });
+      return { bulletins: [], nextCursor: null, hasMore: false };
+    }
+
+    const allBulletins = bulletinsRes.data ?? [];
+    const hasMore = allBulletins.length > limit;
+    const bulletins = hasMore ? allBulletins.slice(0, limit) : allBulletins;
+
     if (bulletins.length === 0) {
-      return [];
+      return { bulletins: [], nextCursor: null, hasMore: false };
     }
 
     const userIds = [...new Set(bulletins.map((b) => b.user_id))];
@@ -43,20 +63,28 @@ export async function getBulletins(): Promise<BulletinWithProfile[]> {
       .in("id", userIds);
 
     if (profilesError) {
-      logError(profilesError, { action: "getBulletins:profiles" });
+      logError(profilesError, { action: "getBulletinsPaginated:profiles" });
     }
 
     const profilesMap = new Map(
       (profiles ?? []).map((p) => [p.id, p])
     );
 
-    return bulletins.map((bulletin) => ({
+    const bulletinsWithProfiles = bulletins.map((bulletin) => ({
       ...bulletin,
       profiles: profilesMap.get(bulletin.user_id) ?? null,
     })) as BulletinWithProfile[];
+
+    const nextCursor = hasMore ? bulletins[bulletins.length - 1].created_at : null;
+
+    return {
+      bulletins: bulletinsWithProfiles,
+      nextCursor,
+      hasMore,
+    };
   } catch (error) {
-    logError(error, { action: "getBulletins" });
-    return [];
+    logError(error, { action: "getBulletinsPaginated" });
+    return { bulletins: [], nextCursor: null, hasMore: false };
   }
 }
 
@@ -136,6 +164,58 @@ export async function createBulletin(message: string): Promise<ActionResponse> {
     return { success: true };
   } catch (error) {
     logError(error, { action: "createBulletin" });
+    return { error: t("errors.serverError") };
+  }
+}
+
+/**
+ * 投稿を編集（自分の投稿のみ編集可能）
+ */
+export async function updateBulletin(bulletinId: string, message: string): Promise<ActionResponse> {
+  const t = await getServerTranslator();
+  const originError = await enforceAllowedOrigin(t, "updateBulletin");
+  if (originError) return { error: originError };
+
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: t("errors.unauthorized") };
+
+    const trimmed = message.trim();
+    if (!trimmed) return { error: t("errors.invalidInput") };
+    if (trimmed.length > BULLETIN.maxMessageLength) {
+      return { error: t("errors.invalidInput") };
+    }
+
+    const { data, error } = await supabase
+      .from("bulletins")
+      .update({
+        message: trimmed,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", bulletinId)
+      .eq("user_id", user.id)
+      .select("id")
+      .maybeSingle();
+
+    if (error) {
+      logError(error, { action: "updateBulletin", userId: user.id, metadata: { bulletinId } });
+      return { error: t("errors.saveFailed") };
+    }
+
+    if (!data) {
+      logError(new Error("Bulletin not found or not owned by user"), {
+        action: "updateBulletin:notFound",
+        userId: user.id,
+        metadata: { bulletinId },
+      });
+      return { error: t("errors.saveFailed") };
+    }
+
+    CacheStrategy.afterBulletinUpdate();
+    return { success: true };
+  } catch (error) {
+    logError(error, { action: "updateBulletin" });
     return { error: t("errors.serverError") };
   }
 }
