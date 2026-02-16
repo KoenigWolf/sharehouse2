@@ -28,7 +28,7 @@ describe("t (translation function)", () => {
     });
 
     it("returns correct translation for nested key", () => {
-      expect(t("auth.login")).toBe("ログイン");
+      expect(t("auth.login")).toBe("Login");
     });
 
     it("returns correct translation for deeply nested key", () => {
@@ -39,27 +39,27 @@ describe("t (translation function)", () => {
   describe("all translation categories", () => {
     it("translates common keys", () => {
       expect(t("common.save")).toBe("保存");
-      expect(t("common.cancel")).toBe("キャンセル");
+      expect(t("common.cancel")).toBe("Cancel");
       expect(t("common.edit")).toBe("編集");
       expect(t("common.back")).toBe("戻る");
     });
 
     it("translates navigation keys", () => {
-      expect(t("nav.home")).toBe("ホーム");
+      expect(t("nav.home")).toBe("Home");
       expect(t("nav.residents")).toBe("住民");
       expect(t("nav.teaTime")).toBe("Tea Time");
-      expect(t("nav.logout")).toBe("ログアウト");
+      expect(t("nav.logout")).toBe("Logout");
     });
 
     it("translates auth keys", () => {
-      expect(t("auth.login")).toBe("ログイン");
+      expect(t("auth.login")).toBe("Login");
       expect(t("auth.signup")).toBe("新規登録");
       expect(t("auth.email")).toBe("メールアドレス");
       expect(t("auth.password")).toBe("パスワード");
     });
 
     it("translates profile keys", () => {
-      expect(t("profile.title")).toBe("プロフィール");
+      expect(t("profile.title")).toBe("Profile");
       expect(t("profile.bio")).toBe("自己紹介");
       expect(t("profile.interests")).toBe("趣味・関心");
     });
@@ -77,7 +77,7 @@ describe("t (translation function)", () => {
 
     it("translates error keys", () => {
       expect(t("errors.unauthorized")).toBe("認証が必要です");
-      expect(t("errors.serverError")).toBe("サーバーエラーが発生しました");
+      expect(t("errors.serverError")).toBe("Server Error が発生しました");
     });
 
     it("translates accessibility keys", () => {

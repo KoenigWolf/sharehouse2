@@ -31,14 +31,7 @@ export default async function TeaTimePage() {
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
       <main className="flex-1 pb-20 sm:pb-12">
-        <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-10 max-w-lg">
-          <div className="flex items-baseline justify-between mb-8">
-            <h1 className="heading-page">
-              {t("teaTime.title")}
-            </h1>
-            <span className="label-uppercase">{t("teaTime.subtitle")}</span>
-          </div>
-
+        <div className="container mx-auto px-4 sm:px-6 pt-2 sm:pt-6 pb-4 max-w-lg">
           <Link href="/settings" className="block mb-10 group active:scale-[0.99] transition-all">
             <div className="premium-surface rounded-3xl p-6 border-border/50 flex items-center justify-between group-hover:shadow-xl transition-all ring-1 ring-border/50">
               <div className="flex items-center gap-5">

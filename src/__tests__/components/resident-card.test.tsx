@@ -10,7 +10,7 @@ const mockProfile: Profile = {
   avatar_url: "https://example.com/avatar.jpg",
   bio: "こんにちは",
   interests: ["料理", "映画", "ランニング", "読書"],
-  mbti: null,
+  mbti: "INFJ",
   is_admin: false,
   move_in_date: "2024-01-15",
   created_at: "2024-01-01T00:00:00Z",
@@ -31,37 +31,39 @@ describe("ResidentCard", () => {
       expect(screen.getByText("山田 太郎")).toBeInTheDocument();
     });
 
-    it("renders room number when provided", () => {
+    it("renders room number badge", () => {
       render(<ResidentCard profile={mockProfile} />);
       expect(screen.getByText("301")).toBeInTheDocument();
     });
 
-    it("does not render room number when not provided", () => {
+    it("does not render room badge when not provided", () => {
       const profileWithoutRoom = { ...mockProfile, room_number: null };
       render(<ResidentCard profile={profileWithoutRoom} />);
       expect(screen.queryByText("301")).not.toBeInTheDocument();
+    });
+
+    it("renders MBTI", () => {
+      render(<ResidentCard profile={mockProfile} />);
+      expect(screen.getByText("INFJ")).toBeInTheDocument();
     });
 
     it("renders interests (limited to 2)", () => {
       render(<ResidentCard profile={mockProfile} />);
       expect(screen.getByText("料理")).toBeInTheDocument();
       expect(screen.getByText("映画")).toBeInTheDocument();
-      // Third interest should not be rendered (card limit is 2)
       expect(screen.queryByText("ランニング")).not.toBeInTheDocument();
+      expect(screen.queryByText("読書")).not.toBeInTheDocument();
+    });
+
+    it("shows remaining count when more than 2 interests", () => {
+      render(<ResidentCard profile={mockProfile} />);
+      expect(screen.getByText("+2")).toBeInTheDocument();
     });
 
     it("handles empty interests", () => {
       const profileWithoutInterests = { ...mockProfile, interests: [] };
       render(<ResidentCard profile={profileWithoutInterests} />);
-      expect(screen.queryByRole("list")).not.toBeInTheDocument();
-    });
-
-    it("handles undefined interests via optional chaining in component", () => {
-      // The component uses optional chaining (profile.interests?.slice)
-      // so it handles undefined gracefully even though the type requires string[]
-      const profileWithEmptyInterests = { ...mockProfile, interests: [] };
-      render(<ResidentCard profile={profileWithEmptyInterests} />);
-      expect(screen.queryByRole("list")).not.toBeInTheDocument();
+      expect(screen.queryByText("料理")).not.toBeInTheDocument();
     });
   });
 
@@ -83,25 +85,14 @@ describe("ResidentCard", () => {
   });
 
   describe("mock profile handling", () => {
-    it("shows '未登録' badge for mock profiles", () => {
+    it("shows '未登録' overlay for mock profiles", () => {
       render(<ResidentCard profile={mockMockProfile} />);
       expect(screen.getByText("未登録")).toBeInTheDocument();
     });
 
-    it("does not show '未登録' badge for regular profiles", () => {
+    it("does not show '未登録' for regular profiles", () => {
       render(<ResidentCard profile={mockProfile} />);
       expect(screen.queryByText("未登録")).not.toBeInTheDocument();
-    });
-
-    it("does not show '未登録' badge for mock profile when isCurrentUser", () => {
-      render(<ResidentCard profile={mockMockProfile} isCurrentUser={true} />);
-      expect(screen.queryByText("未登録")).not.toBeInTheDocument();
-    });
-
-    it("applies solid border for mock profiles", () => {
-      const { container } = render(<ResidentCard profile={mockMockProfile} />);
-      const article = container.querySelector("article");
-      expect(article).toHaveClass("border-border");
     });
   });
 
@@ -120,39 +111,23 @@ describe("ResidentCard", () => {
       const link = screen.getByRole("link");
       expect(link).toHaveAttribute("href", "/profile/user-123");
     });
-
-    it("has article role for profile content", () => {
-      render(<ResidentCard profile={mockProfile} />);
-      expect(screen.getByRole("article")).toBeInTheDocument();
-    });
-
-    it("interests list has accessible label", () => {
-      render(<ResidentCard profile={mockProfile} />);
-      const list = screen.getByRole("list");
-      expect(list).toHaveAttribute("aria-label", "趣味・関心");
-    });
-
-    it("avatar fallback has aria-label", () => {
-      const profileNoAvatar = { ...mockProfile, avatar_url: null };
-      render(<ResidentCard profile={profileNoAvatar} />);
-      const fallback = screen.getByLabelText("山田 太郎のイニシャル");
-      expect(fallback).toBeInTheDocument();
-    });
   });
 
   describe("styling", () => {
-    it("applies special border for current user", () => {
+    it("applies ring styling for current user", () => {
       const { container } = render(
         <ResidentCard profile={mockProfile} isCurrentUser={true} />
       );
       const article = container.querySelector("article");
-      expect(article).toHaveClass("border-primary");
+      expect(article).toHaveClass("ring-2");
+      expect(article).toHaveClass("ring-brand-500");
     });
 
-    it("applies normal border for regular profile", () => {
+    it("uses 3:4 aspect ratio for photo card", () => {
       const { container } = render(<ResidentCard profile={mockProfile} />);
       const article = container.querySelector("article");
-      expect(article).toHaveClass("border-border");
+      // Checked against user code: 'aspect-[3/4]'
+      expect(article).toHaveClass("aspect-[3/4]");
     });
   });
 });

@@ -62,50 +62,60 @@ const WeekRow = memo(function WeekRow({
   todayIndex: number;
   dayNames: readonly string[];
 }) {
+  const t = useI18n();
   const getTypeStyle = (type: string) => GARBAGE_TYPE_STYLES[type] ?? DEFAULT_STYLE;
 
   return (
-    <div className="grid grid-cols-7 gap-px bg-border/40 rounded-lg overflow-hidden border border-border/40">
-      {Array.from({ length: 7 }, (_, i) => i).map((dayIndex) => {
-        const items = schedule.get(dayIndex) ?? [];
-        const isToday = dayIndex === todayIndex;
+    <div className="relative">
+      {/* Scroll hint gradient for mobile - disappears when scrolled to end if implemented with JS, but CSS-only usually just overlay */}
+      <div className="overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:pb-0 scrollbar-hide">
+        <div className="grid grid-cols-7 gap-px bg-border/40 rounded-lg overflow-hidden border border-border/40 min-w-[600px] sm:min-w-0">
+          {Array.from({ length: 7 }, (_, i) => i).map((dayIndex) => {
+            const items = schedule.get(dayIndex) ?? [];
+            const isToday = dayIndex === todayIndex;
 
-        return (
-          <div
-            key={dayIndex}
-            className={cn(
-              "bg-card p-2 sm:p-3 min-h-[80px] sm:min-h-[100px] flex flex-col gap-2",
-              isToday && "bg-primary/5"
-            )}
-          >
-            <div className={cn(
-              "text-xs font-bold text-center mb-1",
-              isToday ? "text-primary" : "text-muted-foreground"
-            )}>
-              {dayNames[dayIndex]}
-            </div>
+            return (
+              <div
+                key={dayIndex}
+                className={cn(
+                  "bg-card p-2 sm:p-3 min-h-[80px] sm:min-h-[100px] flex flex-col gap-2",
+                  isToday && "bg-primary/5"
+                )}
+              >
+                <div className={cn(
+                  "text-xs font-bold text-center mb-1",
+                  isToday ? "text-primary" : "text-muted-foreground"
+                )}>
+                  {dayNames[dayIndex]}
+                </div>
 
-            <div className="flex flex-col gap-1.5 flex-1">
-              {items.map((item) => {
-                const style = getTypeStyle(item.garbage_type);
-                return (
-                  <div
-                    key={item.id}
-                    className={cn(
-                      "text-[10px] sm:text-xs font-medium px-1.5 py-1 rounded border break-words leading-tight text-center",
-                      style.bg,
-                      style.text,
-                      style.border
-                    )}
-                  >
-                    {item.garbage_type}
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        );
-      })}
+                <div className="flex flex-col gap-1.5 flex-1">
+                  {items.map((item) => {
+                    const style = getTypeStyle(item.garbage_type);
+                    return (
+                      <div
+                        key={item.id}
+                        className={cn(
+                          "text-[10px] sm:text-xs font-medium px-1.5 py-1 rounded border break-words leading-tight text-center",
+                          style.bg,
+                          style.text,
+                          style.border
+                        )}
+                      >
+                        {item.garbage_type}
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      {/* Mobile scroll hint text */}
+      <p className="sm:hidden text-[10px] text-muted-foreground text-center mt-1">
+        {t("garbage.swipeHint")}
+      </p>
     </div>
   );
 });
@@ -132,15 +142,15 @@ const DutyRow = memo(function DutyRow({
   return (
     <div
       className={cn(
-        "group flex items-center gap-4 py-3 border-b border-border/40 last:border-0",
+        "group flex items-center gap-3 sm:gap-4 py-3 border-b border-border/40 last:border-0",
         duty.is_completed && "opacity-50 grayscale"
       )}
     >
-      <div className="w-12 text-xs font-mono text-muted-foreground flex-shrink-0">
+      <div className="w-10 sm:w-12 text-xs font-mono text-muted-foreground flex-shrink-0">
         {dateStr}
       </div>
 
-      <div className="flex-1 flex items-center gap-3">
+      <div className="flex-1 flex items-center gap-2 sm:gap-3 min-w-0">
         <Avatar className="w-8 h-8 flex-shrink-0">
           <OptimizedAvatarImage
             src={duty.profile?.avatar_url}
@@ -152,18 +162,18 @@ const DutyRow = memo(function DutyRow({
           />
         </Avatar>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <span className={cn("text-sm font-medium", isOwn && "text-primary font-bold")}>
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className={cn("text-sm font-medium truncate", isOwn && "text-primary font-bold")}>
               {duty.profile?.name ?? t("garbage.unknownUser")}
             </span>
-            {isOwn && <span className="text-[10px] bg-primary/10 text-primary px-1.5 rounded font-bold">{t("residents.badgeYou")}</span>}
+            {isOwn && <span className="text-[10px] bg-primary/10 text-primary px-1.5 rounded font-bold flex-shrink-0">{t("residents.badgeYou")}</span>}
           </div>
         </div>
       </div>
 
       <span
         className={cn(
-          "text-[10px] font-bold px-2 py-0.5 rounded border whitespace-nowrap",
+          "text-[10px] font-bold px-2 py-0.5 rounded border whitespace-nowrap flex-shrink-0",
           style.bg, style.text, style.border
         )}
       >
@@ -176,7 +186,7 @@ const DutyRow = memo(function DutyRow({
           variant="outline"
           onClick={() => onComplete(duty.id)}
           disabled={isCompleting}
-          className="h-8 rounded-full px-3 text-xs"
+          className="h-8 rounded-full px-3 text-xs flex-shrink-0"
         >
           {isCompleting ? t("common.processing") : t("garbage.markComplete")}
         </Button>

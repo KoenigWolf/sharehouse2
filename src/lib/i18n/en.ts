@@ -28,10 +28,16 @@ export const en: Translations = {
     formerResident: "Former resident",
     processing: "Processing...",
     copy: "Copy",
+    new: "NEW",
   },
 
   header: {
     brand: "SHARE HOUSE",
+  },
+
+  home: {
+    heroTitle: "Welcome Home",
+    heroSubtitle: "Discover the amazing people who make this place special.",
   },
 
   nav: {
@@ -54,6 +60,9 @@ export const en: Translations = {
     more: "More",
     menu: "Menu",
     brand: "Share House Portal v1.0",
+    sectionMain: "Main",
+    sectionUtilities: "Utilities",
+    sectionAccount: "Account",
   },
 
   auth: {
@@ -560,6 +569,7 @@ export const en: Translations = {
     deleteSuccess: "Deleted",
     saveSuccess: "Saved",
     collectionNote: "* Please put out garbage by 8 AM on collection day",
+    swipeHint: "← Swipe →",
   },
 
   info: {
@@ -737,6 +747,8 @@ export const en: Translations = {
     placeholder: "What's your vibe?",
     post: "Post",
     update: "Update",
+    updateVibe: "Update Vibe",
+    placeholderVibe: "What's your vibe today?",
     empty: "No posts yet",
     deleteConfirm: "Delete this post?",
     maxLength: "{{max}} characters max",

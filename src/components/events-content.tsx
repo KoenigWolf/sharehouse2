@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, useRef, useEffect } from "react";
+import { useState, useCallback, useMemo, useRef, useEffect, useId } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,6 +13,236 @@ import { createEvent, updateEvent, toggleAttendance, deleteEvent } from "@/lib/e
 import { EVENTS } from "@/lib/constants/config";
 import { getInitials } from "@/lib/utils";
 import type { EventWithDetails } from "@/domain/event";
+
+const MODAL_EASE = [0.23, 1, 0.32, 1] as const;
+
+interface EventFormData {
+  title: string;
+  eventDate: string;
+  eventTime: string;
+  location: string;
+  description: string;
+}
+
+interface EventComposeModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (data: EventFormData) => Promise<void>;
+  isSubmitting: boolean;
+  editingEvent?: EventWithDetails | null;
+}
+
+function EventComposeModal({ isOpen, onClose, onSubmit, isSubmitting, editingEvent }: EventComposeModalProps) {
+  const t = useI18n();
+  const id = useId();
+
+  const isEditMode = editingEvent !== null && editingEvent !== undefined;
+
+  const [title, setTitle] = useState(editingEvent?.title ?? "");
+  const [eventDate, setEventDate] = useState(editingEvent?.event_date ?? "");
+  const [eventTime, setEventTime] = useState(editingEvent?.event_time ?? "");
+  const [location, setLocation] = useState(editingEvent?.location ?? "");
+  const [description, setDescription] = useState(editingEvent?.description ?? "");
+
+  const handleClose = useCallback(() => {
+    setTitle("");
+    setEventDate("");
+    setEventTime("");
+    setLocation("");
+    setDescription("");
+    onClose();
+  }, [onClose]);
+
+  const handleSubmit = async () => {
+    if (!title.trim() || !eventDate) return;
+    await onSubmit({ title: title.trim(), eventDate, eventTime, location, description });
+  };
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !isSubmitting) handleClose();
+    },
+    [isSubmitting, handleClose],
+  );
+
+  useEffect(() => {
+    if (!isOpen) return;
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, handleKeyDown]);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  const canSubmit = title.trim().length > 0 && eventDate.length > 0 && !isSubmitting;
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <m.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 z-50 bg-background sm:bg-black/50 sm:backdrop-blur-sm"
+          onClick={isSubmitting ? undefined : handleClose}
+        >
+          <m.div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={`${id}-title`}
+            initial={{ opacity: 0, y: "100%" }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: "100%" }}
+            transition={{ duration: 0.3, ease: MODAL_EASE }}
+            className="fixed inset-0 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-lg sm:rounded-2xl bg-background sm:premium-surface flex flex-col sm:max-h-[85vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 h-14 border-b border-border/50 shrink-0">
+              <button
+                type="button"
+                onClick={handleClose}
+                disabled={isSubmitting}
+                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted transition-colors"
+                aria-label={t("common.close")}
+              >
+                <X size={20} className="text-foreground" />
+              </button>
+
+              <h2 id={`${id}-title`} className="text-sm font-bold text-foreground">
+                {isEditMode ? t("events.edit") : t("events.create")}
+              </h2>
+
+              <m.button
+                type="button"
+                onClick={handleSubmit}
+                disabled={!canSubmit}
+                whileHover={canSubmit ? { scale: 1.02 } : undefined}
+                whileTap={canSubmit ? { scale: 0.98 } : undefined}
+                className={`h-9 px-5 rounded-full text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed transition-opacity ${
+                  isEditMode
+                    ? "bg-amber-500 text-white"
+                    : "bg-foreground text-background"
+                }`}
+              >
+                {isSubmitting
+                  ? t("common.processing")
+                  : isEditMode ? t("events.update") : t("events.create")
+                }
+              </m.button>
+            </div>
+
+            {/* Form area */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isEditMode ? "bg-amber-500/10" : "bg-brand-500/10"}`}>
+                  {isEditMode ? (
+                    <Pencil size={20} className="text-amber-500" />
+                  ) : (
+                    <Calendar size={20} className="text-brand-500" />
+                  )}
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  {isEditMode ? t("events.edit") : t("events.createEvent")}
+                </p>
+              </div>
+
+              <div className="space-y-5">
+                {/* Title */}
+                <div className="space-y-2">
+                  <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
+                    {t("events.titleLabel")} <span className="text-error">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder={t("events.titlePlaceholder")}
+                    maxLength={EVENTS.maxTitleLength}
+                    autoFocus
+                    className="w-full h-13 px-5 bg-muted/50 border border-border/50 rounded-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all duration-200"
+                  />
+                </div>
+
+                {/* Date & Time */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
+                      {t("events.dateLabel")} <span className="text-error">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      value={eventDate}
+                      onChange={(e) => setEventDate(e.target.value)}
+                      min={(() => {
+                        const d = new Date();
+                        const year = d.getFullYear();
+                        const month = String(d.getMonth() + 1).padStart(2, '0');
+                        const day = String(d.getDate()).padStart(2, '0');
+                        return `${year}-${month}-${day}`;
+                      })()}
+                      className="w-full h-13 px-5 bg-muted/50 border border-border/50 rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all duration-200"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
+                      {t("events.timeLabel")}
+                    </label>
+                    <TimeSelect
+                      value={eventTime}
+                      onChange={setEventTime}
+                    />
+                  </div>
+                </div>
+
+                {/* Location */}
+                <div className="space-y-2">
+                  <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
+                    {t("events.locationLabel")}
+                  </label>
+                  <div className="relative">
+                    <MapPin size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40" />
+                    <input
+                      type="text"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      placeholder={t("events.locationPlaceholder")}
+                      className="w-full h-13 pl-12 pr-5 bg-muted/50 border border-border/50 rounded-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all duration-200"
+                    />
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div className="space-y-2">
+                  <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
+                    {t("events.descriptionLabel")}
+                  </label>
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder={t("events.descriptionPlaceholder")}
+                    maxLength={EVENTS.maxDescriptionLength}
+                    rows={3}
+                    className="w-full px-5 py-4 bg-muted/50 border border-border/50 rounded-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all duration-200 resize-none leading-relaxed"
+                  />
+                </div>
+              </div>
+            </div>
+          </m.div>
+        </m.div>
+      )}
+    </AnimatePresence>
+  );
+}
 
 interface EventsContentProps {
   events: EventWithDetails[];
@@ -116,19 +346,12 @@ const itemVariants = {
 export function EventsContent({ events, currentUserId, isTeaser = false, initialEditEventId }: EventsContentProps) {
   const t = useI18n();
   const router = useRouter();
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingEventId, setEditingEventId] = useState<string | null>(null);
-  const [title, setTitle] = useState("");
-  const [eventDate, setEventDate] = useState("");
-  const [eventTime, setEventTime] = useState("");
-  const [location, setLocation] = useState("");
-  const [description, setDescription] = useState("");
+  const [isComposeOpen, setIsComposeOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<EventWithDetails | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [selectedCalendarDate, setSelectedCalendarDate] = useState<string | null>(null);
   const calendarRef = useRef<HTMLDivElement>(null);
-
-  const isEditMode = editingEventId !== null;
 
   const locale = useLocale();
   const isJapanese = locale === "ja";
@@ -146,24 +369,14 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
     }
   }, [selectedCalendarDate]);
 
-  const resetForm = useCallback(() => {
-    setIsFormOpen(false);
-    setEditingEventId(null);
-    setTitle("");
-    setEventDate("");
-    setEventTime("");
-    setLocation("");
-    setDescription("");
+  const handleCloseCompose = useCallback(() => {
+    setIsComposeOpen(false);
+    setEditingEvent(null);
   }, []);
 
   const handleEdit = useCallback((event: EventWithDetails) => {
-    setEditingEventId(event.id);
-    setTitle(event.title);
-    setEventDate(event.event_date);
-    setEventTime(event.event_time ?? "");
-    setLocation(event.location ?? "");
-    setDescription(event.description ?? "");
-    setIsFormOpen(true);
+    setEditingEvent(event);
+    setIsComposeOpen(true);
     setFeedback(null);
   }, []);
 
@@ -178,21 +391,21 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
     }
   }, [initialEditEventId, events, handleEdit]);
 
-  const handleSubmit = useCallback(async () => {
-    if (!title.trim() || !eventDate || isSubmitting) return;
+  const handleSubmit = useCallback(async (data: EventFormData) => {
+    if (!data.title.trim() || !data.eventDate || isSubmitting) return;
     setIsSubmitting(true);
     setFeedback(null);
 
     const payload = {
-      title,
-      description: description || null,
-      event_date: eventDate,
-      event_time: eventTime || null,
-      location: location || null,
+      title: data.title,
+      description: data.description || null,
+      event_date: data.eventDate,
+      event_time: data.eventTime || null,
+      location: data.location || null,
     };
 
-    const result = editingEventId
-      ? await updateEvent(editingEventId, payload)
+    const result = editingEvent
+      ? await updateEvent(editingEvent.id, payload)
       : await createEvent(payload);
 
     setIsSubmitting(false);
@@ -201,9 +414,9 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
       return;
     }
 
-    resetForm();
+    handleCloseCompose();
     router.refresh();
-  }, [title, eventDate, eventTime, location, description, isSubmitting, editingEventId, resetForm, router]);
+  }, [isSubmitting, editingEvent, handleCloseCompose, router]);
 
   const handleToggleAttendance = useCallback(async (eventId: string) => {
     const result = await toggleAttendance(eventId);
@@ -247,13 +460,24 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
   }, [grouped, selectedCalendarDate]);
 
   return (
-    // Main container: Golden ratio vertical rhythm (space-y-8 ≈ 32px)
-    <m.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="space-y-8"
-    >
+    <>
+      {/* Compose Modal - key forces re-mount when editingEvent changes */}
+      <EventComposeModal
+        key={editingEvent?.id ?? "new"}
+        isOpen={isComposeOpen}
+        onClose={handleCloseCompose}
+        onSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+        editingEvent={editingEvent}
+      />
+
+      {/* Main container: Golden ratio vertical rhythm (space-y-8 ≈ 32px) */}
+      <m.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="space-y-8"
+      >
       {/* ═══════════════════════════════════════════════════════════════════
           CALENDAR STRIP
           - Touch targets: 48px minimum (Fitts' Law)
@@ -349,24 +573,6 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
       </m.section>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          CREATE BUTTON - Floating action position
-      ═══════════════════════════════════════════════════════════════════ */}
-      {!isTeaser && !isFormOpen && (
-        <m.div variants={itemVariants} className="flex justify-end">
-          <m.button
-            type="button"
-            onClick={() => { resetForm(); setIsFormOpen(true); setFeedback(null); }}
-            whileHover={{ scale: 1.03, y: -1 }}
-            whileTap={{ scale: 0.97 }}
-            className="h-12 px-7 rounded-full bg-foreground text-background text-sm font-semibold tracking-wide transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2.5"
-          >
-            <Plus size={18} strokeWidth={2.5} />
-            {t("events.create")}
-          </m.button>
-        </m.div>
-      )}
-
-      {/* ═══════════════════════════════════════════════════════════════════
           FEEDBACK MESSAGE
       ═══════════════════════════════════════════════════════════════════ */}
       <AnimatePresence>
@@ -384,163 +590,6 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
           >
             {feedback.message}
           </m.div>
-        )}
-      </AnimatePresence>
-
-      {/* ═══════════════════════════════════════════════════════════════════
-          EVENT CREATION FORM
-          - Grouped fields by relationship
-          - Golden ratio spacing (space-y-6 ≈ 24px)
-          - Clear visual hierarchy
-      ═══════════════════════════════════════════════════════════════════ */}
-      <AnimatePresence>
-        {isFormOpen && (
-          <m.section
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="overflow-hidden"
-          >
-            <div className="premium-surface rounded-2xl sm:rounded-3xl p-6 sm:p-8 relative">
-              {/* Close button */}
-              <button
-                type="button"
-                onClick={resetForm}
-                className="absolute top-5 right-5 w-9 h-9 rounded-full bg-muted/80 hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <X size={18} />
-              </button>
-
-              {/* Form header */}
-              <div className="flex items-center gap-4 mb-8">
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isEditMode ? "bg-amber-500/10" : "bg-brand-500/10"}`}>
-                  {isEditMode ? (
-                    <Pencil size={22} className="text-amber-500" />
-                  ) : (
-                    <Calendar size={22} className="text-brand-500" />
-                  )}
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-foreground">
-                    {isEditMode ? t("events.edit") : t("events.create")}
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    {isEditMode ? t("events.edit") : t("events.createEvent")}
-                  </p>
-                </div>
-              </div>
-
-              {/* Form fields with golden ratio spacing */}
-              <div className="space-y-6">
-                {/* Title - Primary field, full width */}
-                <div className="space-y-2">
-                  <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
-                    {t("events.titleLabel")} <span className="text-error">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder={t("events.titlePlaceholder")}
-                    maxLength={EVENTS.maxTitleLength}
-                    className="w-full h-13 px-5 bg-muted/50 border border-border/50 rounded-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all duration-200"
-                  />
-                </div>
-
-                {/* Date & Time - Grouped related fields */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
-                      {t("events.dateLabel")} <span className="text-error">*</span>
-                    </label>
-                    <input
-                      type="date"
-                      value={eventDate}
-                      onChange={(e) => setEventDate(e.target.value)}
-                      min={(() => {
-                        const d = new Date();
-                        const year = d.getFullYear();
-                        const month = String(d.getMonth() + 1).padStart(2, '0');
-                        const day = String(d.getDate()).padStart(2, '0');
-                        return `${year}-${month}-${day}`;
-                      })()}
-                      className="w-full h-13 px-5 bg-muted/50 border border-border/50 rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all duration-200"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
-                      {t("events.timeLabel")}
-                    </label>
-                    <TimeSelect
-                      value={eventTime}
-                      onChange={setEventTime}
-                    />
-                  </div>
-                </div>
-
-                {/* Location - Secondary info */}
-                <div className="space-y-2">
-                  <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
-                    {t("events.locationLabel")}
-                  </label>
-                  <div className="relative">
-                    <MapPin size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40" />
-                    <input
-                      type="text"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      placeholder={t("events.locationPlaceholder")}
-                      className="w-full h-13 pl-12 pr-5 bg-muted/50 border border-border/50 rounded-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all duration-200"
-                    />
-                  </div>
-                </div>
-
-                {/* Description - Tertiary info */}
-                <div className="space-y-2">
-                  <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
-                    {t("events.descriptionLabel")}
-                  </label>
-                  <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder={t("events.descriptionPlaceholder")}
-                    maxLength={EVENTS.maxDescriptionLength}
-                    rows={3}
-                    className="w-full px-5 py-4 bg-muted/50 border border-border/50 rounded-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all duration-200 resize-none leading-relaxed"
-                  />
-                </div>
-
-                {/* Action buttons - Clear visual hierarchy */}
-                <div className="flex justify-end gap-3 pt-4">
-                  <button
-                    type="button"
-                    onClick={resetForm}
-                    className="h-12 px-6 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-all duration-200"
-                  >
-                    {t("common.cancel")}
-                  </button>
-                  <m.button
-                    type="button"
-                    onClick={handleSubmit}
-                    disabled={!title.trim() || !eventDate || isSubmitting}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className={`h-12 px-8 rounded-xl text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 ${
-                      isEditMode
-                        ? "bg-amber-500 hover:bg-amber-600 text-white"
-                        : "bg-foreground hover:bg-foreground/90 text-background"
-                    }`}
-                  >
-                    {isSubmitting
-                      ? (isEditMode ? t("events.updating") : t("events.creating"))
-                      : (isEditMode ? t("events.update") : t("events.create"))
-                    }
-                  </m.button>
-                </div>
-              </div>
-            </div>
-          </m.section>
         )}
       </AnimatePresence>
 
@@ -566,10 +615,10 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
           <p className="text-sm text-muted-foreground mb-8 max-w-sm leading-relaxed">
             {t("events.createAndInvite")}
           </p>
-          {!isTeaser && !isFormOpen && (
+          {!isTeaser && (
             <m.button
               type="button"
-              onClick={() => setIsFormOpen(true)}
+              onClick={() => { setEditingEvent(null); setIsComposeOpen(true); setFeedback(null); }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="h-12 px-7 rounded-full bg-foreground text-background text-sm font-semibold tracking-wide transition-all duration-200 shadow-lg inline-flex items-center gap-2.5"
@@ -789,6 +838,24 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
           })}
         </div>
       )}
-    </m.div>
+      </m.div>
+
+      {/* FAB - Floating Action Button */}
+      {!isTeaser && (
+        <m.button
+          type="button"
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 400, damping: 25, delay: 0.2 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => { setEditingEvent(null); setIsComposeOpen(true); setFeedback(null); }}
+          className="fixed bottom-24 sm:bottom-8 right-5 sm:right-8 z-40 w-14 h-14 rounded-full bg-foreground text-background shadow-lg shadow-foreground/20 flex items-center justify-center"
+          aria-label={t("events.create")}
+        >
+          <CalendarDays size={22} />
+        </m.button>
+      )}
+    </>
   );
 }

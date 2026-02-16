@@ -2,7 +2,7 @@
 
 import { memo, useCallback, useEffect, useRef } from "react";
 import { m, AnimatePresence } from "framer-motion";
-import { Camera } from "lucide-react";
+import { Camera, ImagePlus } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useI18n } from "@/hooks/use-i18n";
 import { useUser } from "@/hooks/use-user";
@@ -11,9 +11,10 @@ import { usePhotoGallery } from "@/hooks/use-photo-gallery";
 import { useLightbox } from "@/hooks/use-lightbox";
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 import { BulkUploadProgress } from "@/components/bulk-upload-progress";
-import { PhotoCard, UploadCard } from "@/components/gallery";
+import { PhotoCard } from "@/components/gallery";
 import { Spinner } from "@/components/ui/spinner";
 import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
+import { FILE_UPLOAD } from "@/lib/constants/config";
 import type { PhotoWithProfile } from "@/domain/room-photo";
 
 const PhotoLightbox = dynamic(
@@ -194,6 +195,22 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
   );
 
   const canUpload = !!userId && !isUploading;
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFabClick = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = e.target.files;
+      if (files && files.length > 0) {
+        handleSelectFiles(Array.from(files));
+      }
+      e.target.value = "";
+    },
+    [handleSelectFiles]
+  );
 
   return (
     <>
@@ -232,14 +249,6 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
           role="list"
           aria-label={t("roomPhotos.gallery")}
         >
-          {canUpload && (
-            <div className="break-inside-avoid mb-2 md:mb-4" role="listitem">
-              <UploadCard
-                onSelectFiles={handleSelectFiles}
-                isUploading={isUploading}
-              />
-            </div>
-          )}
           {visiblePhotos.map((photo, index) => (
             <div key={photo.id} className="break-inside-avoid mb-2 md:mb-4" role="listitem">
               <PhotoCard
@@ -277,6 +286,35 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
         onDelete={actionHandlers.onDelete}
         onUpdateCaption={actionHandlers.onUpdateCaption}
       />
+
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={FILE_UPLOAD.inputAccept}
+        multiple
+        onChange={handleFileChange}
+        disabled={!canUpload}
+        className="hidden"
+        aria-label={t("roomPhotos.uploadButton")}
+      />
+
+      {/* FAB - Floating Action Button */}
+      {canUpload && (
+        <m.button
+          type="button"
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 400, damping: 25, delay: 0.2 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleFabClick}
+          className="fixed bottom-24 sm:bottom-8 right-5 sm:right-8 z-40 w-14 h-14 rounded-full bg-foreground text-background shadow-lg shadow-foreground/20 flex items-center justify-center"
+          aria-label={t("roomPhotos.uploadButton")}
+        >
+          <ImagePlus size={22} />
+        </m.button>
+      )}
     </>
   );
 }

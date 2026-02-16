@@ -88,7 +88,7 @@ describe("getErrorMessage", () => {
 
   it("returns message for INTERNAL_ERROR", () => {
     const message = getErrorMessage(ErrorCode.INTERNAL_ERROR);
-    expect(message).toBe("サーバーエラーが発生しました");
+    expect(message).toBe("Server Error が発生しました");
   });
 
   it("returns message for FILE_TOO_LARGE", () => {

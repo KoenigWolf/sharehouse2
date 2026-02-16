@@ -153,7 +153,7 @@ const FloorSection = memo(function FloorSection({ floorData }: { floorData: Floo
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Wi-Fi Card */}
         {floorData.wifiInfos.length > 0 && (
-          <div className="rounded-xl border border-border/60 bg-card p-5 hover:border-border transition-colors">
+          <div className="rounded-xl border border-border/60 bg-card p-4 sm:p-5 hover:border-border transition-colors">
             <div className="flex items-center gap-2 mb-4 text-muted-foreground">
               <Wifi size={18} />
               <span className="text-xs font-bold uppercase tracking-wider">{t("info.wifi")}</span>
@@ -163,8 +163,8 @@ const FloorSection = memo(function FloorSection({ floorData }: { floorData: Floo
               <div className="space-y-2">
                 {floorData.wifiInfos.map((wifi) => (
                   <div key={wifi.id} className="flex items-center justify-between text-sm">
-                    <span className="font-mono text-foreground/80">{wifi.ssid}</span>
-                    <Signal size={14} className="text-emerald-500" />
+                    <span className="font-mono text-foreground/80 break-all mr-2">{wifi.ssid}</span>
+                    <Signal size={14} className="text-emerald-500 flex-shrink-0" />
                   </div>
                 ))}
               </div>
@@ -214,7 +214,7 @@ const FloorSection = memo(function FloorSection({ floorData }: { floorData: Floo
 
         {/* Mailbox Card */}
         {floorData.mailboxInfo && (
-          <div className="rounded-xl border border-border/60 bg-card p-5 hover:border-border transition-colors">
+          <div className="rounded-xl border border-border/60 bg-card p-4 sm:p-5 hover:border-border transition-colors">
             <div className="flex items-center gap-2 mb-4 text-muted-foreground">
               <Mailbox size={18} />
               <span className="text-xs font-bold uppercase tracking-wider">{t("info.mailbox")}</span>
@@ -235,7 +235,7 @@ const FloorSection = memo(function FloorSection({ floorData }: { floorData: Floo
 
         {/* Address Card */}
         {floorData.addressInfo && (
-          <div className="rounded-xl border border-border/60 bg-card p-5 hover:border-border transition-colors md:col-span-2 lg:col-span-1">
+          <div className="rounded-xl border border-border/60 bg-card p-4 sm:p-5 hover:border-border transition-colors md:col-span-2 lg:col-span-1">
             <div className="flex items-center gap-2 mb-4 text-muted-foreground">
               <MapPin size={18} />
               <span className="text-xs font-bold uppercase tracking-wider">{t("info.address")}</span>
@@ -258,7 +258,7 @@ const CommonInfoCard = memo(function CommonInfoCard({ info }: { info: SharedInfo
   return (
     <m.div
       variants={itemVariants}
-      className="p-5 rounded-xl border border-border/60 bg-card hover:border-border transition-colors"
+      className="p-4 sm:p-5 rounded-xl border border-border/60 bg-card hover:border-border transition-colors"
     >
       <div className="flex items-center gap-2 mb-3 text-muted-foreground">
         <Info size={18} />
@@ -359,29 +359,19 @@ export function InfoPageContent({
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-12 max-w-5xl mx-auto"
+      className="space-y-8 sm:space-y-10"
     >
-      {/* Header */}
-      <m.div variants={itemVariants} className="pb-6 border-b border-border">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl mb-2">
-          {t("info.title")}
-        </h1>
-        <p className="text-muted-foreground text-lg">
-          {t("info.subtitle")}
-        </p>
-      </m.div>
-
       {/* Floors Section */}
       {floorDataList.length > 0 && (
-        <section className="space-y-10">
-          <div className="flex items-center gap-2 text-muted-foreground mb-6">
+        <section className="space-y-6 sm:space-y-10">
+          <div className="flex items-center gap-2 text-muted-foreground mb-4 sm:mb-6">
             <KeyRound size={20} />
             <h2 className="text-sm font-bold uppercase tracking-widest">
               {t("info.floorGuide")}
             </h2>
           </div>
 
-          <div className="space-y-12">
+          <div className="space-y-8 sm:space-y-12">
             {floorDataList.map((floorData) => (
               <FloorSection key={floorData.floor} floorData={floorData} />
             ))}
@@ -390,8 +380,8 @@ export function InfoPageContent({
       )}
 
       {/* Garbage Section */}
-      <section className="space-y-6">
-        <div className="flex items-center gap-2 text-muted-foreground border-b border-border/50 pb-2 mb-6">
+      <section className="space-y-4 sm:space-y-6">
+        <div className="flex items-center gap-2 text-muted-foreground border-b border-border/50 pb-2 mb-4 sm:mb-6">
           <Trash2 size={20} />
           <h2 className="text-sm font-bold uppercase tracking-widest">
             {t("info.garbageAndDuties")}
@@ -414,8 +404,8 @@ export function InfoPageContent({
 
       {/* Common Layout */}
       {(commonInfos.length > 0 || wifiNote) && (
-        <section className="space-y-6">
-          <div className="flex items-center gap-2 text-muted-foreground border-b border-border/50 pb-2 mb-6">
+        <section className="space-y-4 sm:space-y-6">
+          <div className="flex items-center gap-2 text-muted-foreground border-b border-border/50 pb-2 mb-4 sm:mb-6">
             <Building2 size={20} />
             <h2 className="text-sm font-bold uppercase tracking-widest">
               {t("info.generalInformation")}
@@ -427,7 +417,7 @@ export function InfoPageContent({
             {wifiNote && (
               <m.div
                 variants={itemVariants}
-                className="md:col-span-2 p-5 rounded-xl border border-blue-200/50 bg-blue-50/50 dark:bg-blue-950/20 dark:border-blue-900/50"
+                className="md:col-span-2 p-4 sm:p-5 rounded-xl border border-blue-200/50 bg-blue-50/50 dark:bg-blue-950/20 dark:border-blue-900/50"
               >
                 <div className="flex gap-4">
                   <div className="text-blue-600 dark:text-blue-400 mt-1">
