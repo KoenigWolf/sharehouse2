@@ -1,6 +1,6 @@
 # Share House Portal
 
-20人規模のシェアハウス住民専用ポータル。Modern Homestead（現代的な農家スタイル）なデザイン。
+20人規模のシェアハウス住民専用ポータル。immedio スタイル（シンプル＆モダン）なデザイン。
 
 ## コマンド
 
@@ -24,8 +24,8 @@ Next.js 16 (App Router) / TypeScript / Tailwind CSS 4 / shadcn/ui / Supabase / F
 
 - スタイル値は `src/styles/tokens.css`、ユーティリティは `src/styles/utilities.css` で一元管理
 - 直接 Tailwind クラスを羅列せず用途別クラスを使う（`card-base`, `input-base`, `alert-success` 等）
-- 背景 Cream (`#FDFCF8`) / 見出し Dark Earth (`#2F3E33`) / ブランド Deep Olive (`#4A6741`)
-- フォント: Lato（全体）- 柔らかく親しみやすいサンセリフ
+- 背景 Cream (`#FDFCF8`) / 見出し Dark Earth (`#2F3E33`) / ブランド Cyan (`#06b6d4`)
+- フォント: Noto Sans JP（全体）- 日本語に最適化された読みやすいサンセリフ
 - 詳細: @docs/design-guidelines.md
 
 ## レイアウト設計原則（人間工学・黄金比）
