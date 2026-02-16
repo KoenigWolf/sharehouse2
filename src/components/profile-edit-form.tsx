@@ -426,7 +426,7 @@ export function ProfileEditForm({
                     />
                   </Avatar>
 
-                  <div className="absolute inset-0 bg-brand-900/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col items-center justify-center gap-2">
+                  <div className="absolute inset-0 bg-brand-900/40 backdrop-blur-sm opacity-50 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-500 flex flex-col items-center justify-center gap-2">
                     <Camera size={ICON_SIZE.xl} strokeWidth={ICON_STROKE.normal} className="text-white" />
                     <span className="text-white text-[10px] font-bold tracking-widest uppercase">
                       {isUploading ? t("profile.uploadingPhoto") : t("profile.changePhoto")}
