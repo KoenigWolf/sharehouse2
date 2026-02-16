@@ -34,15 +34,13 @@ on conflict (info_key) do update set
   notes = excluded.notes,
   floor = excluded.floor;
 
--- 田中ビル全体用（floor = 0）
+-- 田中ビル全体用（floor = 0）サンプルデータ
+-- 注: 実際の暗証番号は管理画面から設定してください
+-- 既存データがある場合は上書きしない（DO NOTHING）
 insert into public.shared_info (info_key, title, content, notes, display_order, floor)
 values
-  ('building_entrance', 'エントランス', '暗証番号: 1234#', '夜間（22:00〜7:00）はオートロック', 1, 0),
+  ('building_entrance', 'エントランス', '【要設定】管理画面から実際の暗証番号を入力してください', '夜間（22:00〜7:00）はオートロック', 1, 0),
   ('building_garbage', 'ゴミ集積所', '1Fエントランス横', '収集日の朝8時までに出してください', 2, 0)
-on conflict (info_key) do update set
-  title = excluded.title,
-  content = excluded.content,
-  notes = excluded.notes,
-  floor = excluded.floor;
+on conflict (info_key) do nothing;
 
 -- Wi-Fi注意事項は全階共通（floor = null）のまま
