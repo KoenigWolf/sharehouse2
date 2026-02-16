@@ -17,7 +17,7 @@ import { useAuth } from "../../lib/auth";
 import { useI18n } from "../../lib/i18n";
 import { logError } from "../../lib/utils/log-error";
 import { Avatar } from "../../components/ui/Avatar";
-import { Colors } from "../../constants/colors";
+import { Colors, Shadows } from "../../constants/colors";
 import { formatDistanceToNow } from "../../lib/utils";
 
 export default function BulletinScreen() {
@@ -159,10 +159,15 @@ export default function BulletinScreen() {
     >
       {/* Header */}
       <View
-        style={{ paddingTop: insets.top }}
-        className="px-4 pb-4 bg-background border-b border-border/40"
+        style={[{ paddingTop: insets.top + 8 }, Shadows.sm]}
+        className="px-4 pb-4 bg-card border-b border-border/40"
       >
-        <Text className="text-3xl font-bold text-foreground">{t("bulletin.title")}</Text>
+        <Text
+          className="text-2xl font-bold text-foreground"
+          style={{ letterSpacing: -0.5 }}
+        >
+          {t("bulletin.title")}
+        </Text>
         <Text className="text-muted-foreground text-sm mt-1">
           {t("bulletin.subtitle")}
         </Text>
@@ -199,18 +204,19 @@ export default function BulletinScreen() {
 
       {/* Compose Bar */}
       <View
-        className="absolute bottom-0 left-0 right-0 bg-card border-t border-border/40"
-        style={{ paddingBottom: insets.bottom + 8 }}
+        className="absolute bottom-0 left-0 right-0 bg-card border-t border-border/60"
+        style={[{ paddingBottom: insets.bottom + 8 }, Shadows.elevated]}
       >
         <View className="flex-row items-end gap-3 px-4 py-3">
-          <Avatar src={profile?.avatar_url} name={profile?.name ?? ""} size={36} />
-          <View className="flex-1 bg-muted rounded-2xl px-4 py-2">
+          <Avatar src={profile?.avatar_url} name={profile?.name ?? ""} size={36} showRing />
+          <View className="flex-1 bg-secondary rounded-xl px-4 py-3 border border-border/50">
             <TextInput
               value={newMessage}
               onChangeText={setNewMessage}
               placeholder={t("bulletin.placeholder")}
               placeholderTextColor={Colors.mutedForeground}
-              className="text-foreground text-base"
+              className="text-foreground text-[15px]"
+              style={{ fontWeight: "500" }}
               multiline
               maxLength={280}
             />
@@ -218,12 +224,15 @@ export default function BulletinScreen() {
           <Pressable
             onPress={handlePost}
             disabled={!newMessage.trim() || isPosting}
-            className={`p-2 rounded-full ${
+            className={`w-10 h-10 rounded-full items-center justify-center ${
               newMessage.trim() ? "bg-brand-500" : "bg-muted"
             }`}
+            style={newMessage.trim() ? Shadows.sm : undefined}
           >
-            <Text className={newMessage.trim() ? "text-white" : "text-muted-foreground"}>
-              {isPosting ? "..." : "→"}
+            <Text
+              className={`text-lg ${newMessage.trim() ? "text-white" : "text-muted-foreground"}`}
+            >
+              {isPosting ? "…" : "↑"}
             </Text>
           </Pressable>
         </View>
@@ -244,28 +253,35 @@ function MessageCard({
   deleteLabel: string;
 }) {
   return (
-    <View className="bg-card rounded-2xl p-4 border border-border/40">
+    <View
+      className="bg-card rounded-2xl p-4 border border-border/60"
+      style={Shadows.card}
+    >
       <View className="flex-row items-start gap-3">
         <Avatar
           src={message.profiles.avatar_url}
           name={message.profiles.name}
           size={40}
+          showRing
         />
         <View className="flex-1">
           <View className="flex-row items-center justify-between">
-            <Text className="font-semibold text-foreground">
+            <Text
+              className="font-bold text-foreground"
+              style={{ letterSpacing: -0.3 }}
+            >
               {message.profiles.nickname ?? message.profiles.name}
             </Text>
             <Text className="text-muted-foreground text-xs">
               {formatDistanceToNow(new Date(message.created_at))}
             </Text>
           </View>
-          <Text className="text-foreground mt-1 leading-5">
+          <Text className="text-foreground mt-2 leading-6">
             {message.message}
           </Text>
           {isOwn && (
-            <Pressable onPress={onDelete} className="mt-2">
-              <Text className="text-error text-xs">{deleteLabel}</Text>
+            <Pressable onPress={onDelete} className="mt-3 self-start">
+              <Text className="text-error text-xs font-medium">{deleteLabel}</Text>
             </Pressable>
           )}
         </View>

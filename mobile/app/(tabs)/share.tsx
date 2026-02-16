@@ -10,7 +10,8 @@ import { logError } from "../../lib/utils/log-error";
 import { Avatar } from "../../components/ui/Avatar";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
-import { Colors } from "../../constants/colors";
+import { Badge } from "../../components/ui/Badge";
+import { Colors, Shadows } from "../../constants/colors";
 
 export default function ShareScreen() {
   const insets = useSafeAreaInsets();
@@ -102,10 +103,15 @@ export default function ShareScreen() {
     <View className="flex-1 bg-background">
       {/* Header */}
       <View
-        style={{ paddingTop: insets.top }}
-        className="px-4 pb-4 bg-background border-b border-border/40"
+        style={[{ paddingTop: insets.top + 8 }, Shadows.sm]}
+        className="px-4 pb-4 bg-card border-b border-border/40"
       >
-        <Text className="text-3xl font-bold text-foreground">{t("share.title")}</Text>
+        <Text
+          className="text-2xl font-bold text-foreground"
+          style={{ letterSpacing: -0.5 }}
+        >
+          {t("share.title")}
+        </Text>
         <Text className="text-muted-foreground text-sm mt-1">
           {t("share.subtitle")}
         </Text>
@@ -149,9 +155,10 @@ export default function ShareScreen() {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             // TODO: Open create item modal
           }}
-          className="w-14 h-14 rounded-full bg-brand-500 items-center justify-center shadow-lg"
+          className="w-14 h-14 rounded-full bg-brand-500 items-center justify-center"
+          style={Shadows.elevated}
         >
-          <Text className="text-white text-2xl">+</Text>
+          <Text className="text-white text-2xl font-light">+</Text>
         </Pressable>
       </View>
     </View>
@@ -176,48 +183,57 @@ function ShareItemCard({
     0,
     Math.floor((expiresAt.getTime() - Date.now()) / (1000 * 60 * 60))
   );
+  const isExpiringSoon = hoursLeft <= 6;
 
   return (
-    <Card className="flex-1">
+    <Card className="flex-1" variant="elevated">
       {/* Image */}
-      {item.image_url ? (
-        <Image
-          source={{ uri: item.image_url }}
-          style={{ width: "100%", aspectRatio: 1 }}
-          contentFit="cover"
-          transition={200}
-        />
-      ) : (
-        <View
-          className="w-full bg-muted items-center justify-center"
-          style={{ aspectRatio: 1 }}
-        >
-          <Text className="text-4xl">📦</Text>
-        </View>
-      )}
+      <View className="overflow-hidden rounded-t-2xl">
+        {item.image_url ? (
+          <Image
+            source={{ uri: item.image_url }}
+            style={{ width: "100%", aspectRatio: 1 }}
+            contentFit="cover"
+            transition={200}
+          />
+        ) : (
+          <View
+            className="w-full bg-secondary items-center justify-center"
+            style={{ aspectRatio: 1 }}
+          >
+            <Text className="text-4xl">📦</Text>
+          </View>
+        )}
+      </View>
 
       <View className="p-3">
         {/* Title */}
         <Text
-          className="text-foreground font-semibold"
+          className="text-foreground font-bold"
+          style={{ letterSpacing: -0.3 }}
           numberOfLines={2}
         >
           {item.title}
         </Text>
 
-        {/* Expiry */}
-        <Text className="text-muted-foreground text-xs mt-1">
-          {hoursLeftLabel(hoursLeft)}
-        </Text>
+        {/* Expiry Badge */}
+        <View className="mt-2">
+          <Badge variant={isExpiringSoon ? "warning" : "outline"} size="sm">
+            {hoursLeftLabel(hoursLeft)}
+          </Badge>
+        </View>
 
         {/* Owner */}
-        <View className="flex-row items-center mt-2">
+        <View className="flex-row items-center mt-3">
           <Avatar
             src={item.profiles.avatar_url}
             name={item.profiles.name}
-            size={20}
+            size={22}
           />
-          <Text className="text-muted-foreground text-xs ml-1.5" numberOfLines={1}>
+          <Text
+            className="text-muted-foreground text-xs ml-1.5 flex-1"
+            numberOfLines={1}
+          >
             {item.profiles.nickname ?? item.profiles.name}
           </Text>
         </View>
@@ -225,7 +241,7 @@ function ShareItemCard({
         {/* Claim Button */}
         {!isOwn && (
           <View className="mt-3">
-            <Button variant="primary" size="sm" onPress={onClaim}>
+            <Button variant="default" size="sm" onPress={onClaim}>
               {claimLabel}
             </Button>
           </View>

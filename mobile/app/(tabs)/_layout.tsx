@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { View, Text } from "react-native";
+import { View, Text, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
 import { useI18n } from "../../lib/i18n";
@@ -18,14 +18,18 @@ function TabIcon({
     bulletin: "💬",
     events: "📅",
     share: "🎁",
-    profile: "👤",
+    profile: "⚙️",
   };
 
   return (
-    <View className="items-center justify-center">
+    <View
+      className={`items-center justify-center w-12 h-8 rounded-full ${
+        focused ? "bg-primary/10" : ""
+      }`}
+    >
       <Text
         style={{
-          fontSize: 24,
+          fontSize: 20,
           opacity: focused ? 1 : 0.5,
         }}
       >
@@ -47,19 +51,31 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: Colors.brand[500],
+        tabBarActiveTintColor: Colors.primary,
         tabBarInactiveTintColor: Colors.mutedForeground,
         tabBarStyle: {
-          backgroundColor: Colors.card,
+          position: "absolute",
+          backgroundColor: Platform.OS === "ios" ? "rgba(255,255,255,0.92)" : Colors.card,
           borderTopColor: Colors.border,
           borderTopWidth: 0.5,
-          height: 60 + insets.bottom,
+          height: 56 + insets.bottom,
           paddingBottom: insets.bottom,
-          paddingTop: 8,
+          paddingTop: 6,
+          // Shadow for elevated appearance
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.05,
+          shadowRadius: 8,
+          elevation: 8,
         },
         tabBarLabelStyle: {
           fontSize: 10,
           fontWeight: "600",
+          letterSpacing: 0.2,
+          marginTop: 2,
+        },
+        tabBarItemStyle: {
+          paddingTop: 4,
         },
       }}
     >
