@@ -479,22 +479,20 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
         className="space-y-8"
       >
       {/* ═══════════════════════════════════════════════════════════════════
-          CALENDAR STRIP
-          - Touch targets: 48px minimum (Fitts' Law)
+          CALENDAR STRIP (Compact Golden Ratio Design)
+          - Touch targets: 44px minimum (Fitts' Law)
           - Visual hierarchy: Today > Selected > HasEvents > Default
-          - Golden ratio: padding 20px (≈ 21 Fibonacci)
+          - Fibonacci spacing: 8 → 13 → 21
       ═══════════════════════════════════════════════════════════════════ */}
       <m.section
         variants={itemVariants}
-        className="premium-surface rounded-2xl sm:rounded-3xl overflow-hidden"
+        className="premium-surface rounded-2xl overflow-hidden"
       >
-        {/* Header with clear visual hierarchy */}
-        <div className="flex items-center justify-between px-5 sm:px-6 pt-5 pb-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-brand-500/10 flex items-center justify-center">
-              <CalendarDays size={16} className="text-brand-500" />
-            </div>
-            <span className="text-xs font-semibold tracking-wide text-foreground/80">
+        {/* Compact header - inline style */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border/30">
+          <div className="flex items-center gap-2">
+            <CalendarDays size={14} className="text-brand-500" />
+            <span className="text-[11px] font-bold tracking-wider uppercase text-muted-foreground">
               {t("events.nextTwoWeeks")}
             </span>
           </div>
@@ -502,17 +500,17 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
             <button
               type="button"
               onClick={() => setSelectedCalendarDate(null)}
-              className="text-xs font-semibold text-brand-500 hover:text-brand-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-brand-500/5"
+              className="text-[11px] font-bold text-brand-500 hover:text-brand-600 transition-colors"
             >
               {t("events.showAll")}
             </button>
           )}
         </div>
 
-        {/* Calendar scroll area with better proportions */}
+        {/* Calendar scroll - tighter spacing */}
         <div
           ref={calendarRef}
-          className="flex gap-1.5 sm:gap-2 overflow-x-auto px-4 sm:px-5 pb-5 scrollbar-hide"
+          className="flex gap-1 overflow-x-auto px-3 py-3 scrollbar-hide"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {calendarDates.map((d, i) => {
@@ -527,44 +525,46 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
                 id={`date-${d.date}`}
                 type="button"
                 onClick={() => handleCalendarDateClick(d.date)}
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: i * 0.02 }}
-                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.25, delay: i * 0.015 }}
+                whileHover={{ scale: 1.08 }}
                 whileTap={{ scale: 0.95 }}
                 className={`
-                  relative flex-shrink-0 w-[52px] sm:w-14 py-3 rounded-xl sm:rounded-2xl
-                  flex flex-col items-center justify-center gap-0.5
-                  transition-all duration-200
+                  relative flex-shrink-0 w-11 h-[52px] rounded-xl
+                  flex flex-col items-center justify-center
+                  transition-all duration-150
                   ${isSelected
-                    ? "bg-foreground text-background shadow-lg"
+                    ? "bg-foreground text-background shadow-md"
                     : d.isToday
-                      ? "bg-brand-500/10 ring-2 ring-brand-500/30 text-foreground"
-                      : "bg-muted/50 hover:bg-muted text-foreground"
+                      ? "bg-brand-500/15 ring-1 ring-brand-500/40 text-foreground"
+                      : hasEvents
+                        ? "bg-muted/70 text-foreground"
+                        : "bg-muted/40 hover:bg-muted/60 text-foreground"
                   }
                 `}
               >
-                {/* Weekday label */}
+                {/* Weekday - compact */}
                 <span
-                  className={`text-[10px] font-semibold tracking-wide ${
+                  className={`text-[9px] font-bold tracking-wide leading-none ${
                     isSelected
-                      ? "text-background/70"
+                      ? "text-background/60"
                       : isWeekend
-                        ? "text-foreground/60"
-                        : "text-muted-foreground"
+                        ? "text-rose-400/70"
+                        : "text-muted-foreground/70"
                   }`}
                 >
                   {weekdays[d.weekday]}
                 </span>
 
-                {/* Day number - larger for better readability */}
-                <span className={`text-lg font-bold leading-none ${isSelected ? "text-background" : ""}`}>
+                {/* Day number */}
+                <span className={`text-base font-bold leading-tight mt-0.5 ${isSelected ? "text-background" : ""}`}>
                   {d.day}
                 </span>
 
-                {/* Event indicator dot - subtle but clear */}
+                {/* Event indicator - integrated dot */}
                 {hasEvents && !isSelected && (
-                  <span className="absolute bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-brand-500" />
+                  <span className="absolute bottom-1.5 w-1 h-1 rounded-full bg-brand-500" />
                 )}
               </m.button>
             );
