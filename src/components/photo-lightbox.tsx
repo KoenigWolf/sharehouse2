@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useState, useRef, memo, useEffect } from "react";
-import { m, AnimatePresence } from "framer-motion";
+import { useCallback, useState, useRef, memo, useEffect, useMemo } from "react";
+import { m, AnimatePresence, useMotionValue, animate } from "framer-motion";
 import Image from "next/image";
 import { X, ChevronLeft, ChevronRight, Trash2, Pencil } from "lucide-react";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
@@ -62,6 +62,54 @@ interface LightboxImageProps {
   photo: PhotoWithProfile;
 }
 
+interface LightboxSlideProps {
+  photo: PhotoWithProfile;
+  isVisible: boolean;
+  style?: React.CSSProperties;
+}
+
+const LightboxSlide = memo(function LightboxSlide({ photo, isVisible, style }: LightboxSlideProps) {
+  const t = useI18n();
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [size, setSize] = useState(getInitialSize);
+
+  const handleLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    setSize(computeDisplaySize(img.naturalWidth, img.naturalHeight));
+    setIsLoaded(true);
+  }, []);
+
+  return (
+    <div
+      className="absolute inset-0 flex items-center justify-center will-change-transform"
+      style={style}
+    >
+      <div
+        className="relative overflow-hidden rounded-lg bg-black/20"
+        style={{ width: size.width, height: size.height }}
+      >
+        {!isLoaded && isVisible && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Spinner size="lg" variant="light" aria-label={t("common.loading")} />
+          </div>
+        )}
+        <Image
+          src={photo.photo_url}
+          alt={t("roomPhotos.photoAlt")}
+          fill
+          sizes="94vw"
+          className={`object-contain transition-opacity duration-150 ${isLoaded ? "opacity-100" : "opacity-0"
+            }`}
+          onLoad={handleLoad}
+          priority={isVisible}
+        />
+      </div>
+    </div>
+  );
+});
+
+LightboxSlide.displayName = "LightboxSlide";
+
 const LightboxImage = memo(function LightboxImage({ photo }: LightboxImageProps) {
   const t = useI18n();
   const [isLoaded, setIsLoaded] = useState(false);
@@ -88,9 +136,8 @@ const LightboxImage = memo(function LightboxImage({ photo }: LightboxImageProps)
         alt={t("roomPhotos.photoAlt")}
         fill
         sizes="94vw"
-        className={`object-contain transition-opacity duration-300 ${
-          isLoaded ? "opacity-100" : "opacity-0"
-        }`}
+        className={`object-contain transition-opacity duration-300 ${isLoaded ? "opacity-100" : "opacity-0"
+          }`}
         onLoad={handleLoad}
         priority
       />
@@ -99,6 +146,109 @@ const LightboxImage = memo(function LightboxImage({ photo }: LightboxImageProps)
 });
 
 LightboxImage.displayName = "LightboxImage";
+
+interface PhotoCarouselProps {
+  photos: PhotoWithProfile[];
+  selectedIndex: number;
+  onNavigate: (index: number) => void;
+  isEditingCaption: boolean;
+}
+
+const PhotoCarousel = memo(function PhotoCarousel({
+  photos,
+  selectedIndex,
+  onNavigate,
+  isEditingCaption,
+}: PhotoCarouselProps) {
+  const x = useMotionValue(0);
+  const [containerHeight, setContainerHeight] = useState(600);
+
+  // Calculate container height on mount and resize
+  useEffect(() => {
+    const updateHeight = () => {
+      setContainerHeight(window.innerHeight * VH_FRACTION);
+    };
+    updateHeight();
+    window.addEventListener("resize", updateHeight);
+    return () => window.removeEventListener("resize", updateHeight);
+  }, []);
+
+  // Visible slides: current, prev, next for smooth transitions
+  const visibleIndices = useMemo(() => {
+    const indices: number[] = [];
+    if (selectedIndex > 0) indices.push(selectedIndex - 1);
+    indices.push(selectedIndex);
+    if (selectedIndex < photos.length - 1) indices.push(selectedIndex + 1);
+    return indices;
+  }, [selectedIndex, photos.length]);
+
+  // Animate to center when selectedIndex changes
+  useEffect(() => {
+    animate(x, 0, {
+      type: "spring",
+      stiffness: 300,
+      damping: 30,
+    });
+  }, [selectedIndex, x]);
+
+  const handleDragEnd = useCallback(
+    (_: unknown, info: { offset: { x: number }; velocity: { x: number } }) => {
+      if (isEditingCaption) return;
+
+      const { x: swipeDelta } = info.offset;
+      const { x: swipeVelocity } = info.velocity;
+
+      if (swipeDelta < -SWIPE_THRESHOLD || swipeVelocity < -SWIPE_VELOCITY_THRESHOLD) {
+        if (selectedIndex < photos.length - 1) {
+          onNavigate(selectedIndex + 1);
+        } else {
+          animate(x, 0, { type: "spring", stiffness: 400, damping: 30 });
+        }
+      } else if (swipeDelta > SWIPE_THRESHOLD || swipeVelocity > SWIPE_VELOCITY_THRESHOLD) {
+        if (selectedIndex > 0) {
+          onNavigate(selectedIndex - 1);
+        } else {
+          animate(x, 0, { type: "spring", stiffness: 400, damping: 30 });
+        }
+      } else {
+        animate(x, 0, { type: "spring", stiffness: 400, damping: 30 });
+      }
+    },
+    [isEditingCaption, selectedIndex, photos.length, onNavigate, x]
+  );
+
+  return (
+    <div
+      className="relative w-full overflow-hidden touch-none"
+      style={{ height: containerHeight }}
+    >
+      <m.div
+        drag={isEditingCaption ? false : "x"}
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.15}
+        onDragEnd={handleDragEnd}
+        style={{ x }}
+        className="relative w-full h-full"
+      >
+        {visibleIndices.map((index) => {
+          const offset = index - selectedIndex;
+          return (
+            <LightboxSlide
+              key={photos[index].id}
+              photo={photos[index]}
+              isVisible={index === selectedIndex}
+              style={{
+                transform: `translateX(${offset * 100}%)`,
+              }}
+            />
+          );
+        })}
+      </m.div>
+    </div>
+  );
+});
+
+PhotoCarousel.displayName = "PhotoCarousel";
 
 interface NavigationButtonProps {
   direction: "prev" | "next";
@@ -120,9 +270,8 @@ const NavigationButton = memo(function NavigationButton({
         e.stopPropagation();
         onClick();
       }}
-      className={`absolute ${
-        isPrev ? "left-3 sm:left-5" : "right-3 sm:right-5"
-      } z-20 w-12 h-12 flex items-center justify-center rounded-full text-white/40 hover:text-white hover:bg-white/10 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50`}
+      className={`absolute ${isPrev ? "left-3 sm:left-5" : "right-3 sm:right-5"
+        } z-20 w-12 h-12 flex items-center justify-center rounded-full text-white/40 hover:text-white hover:bg-white/10 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50`}
       aria-label={label}
     >
       {isPrev ? (
@@ -253,13 +402,11 @@ const PhotoInfoPanel = memo(function PhotoInfoPanel({
               onKeyDown={isOwner ? (e) => e.key === "Enter" && onStartEdit() : undefined}
               tabIndex={isOwner ? 0 : undefined}
               role={isOwner ? "button" : undefined}
-              className={`text-sm leading-relaxed ${
-                photo.caption ? "text-white/70" : "text-white/30 italic"
-              } ${
-                isOwner
+              className={`text-sm leading-relaxed ${photo.caption ? "text-white/70" : "text-white/30 italic"
+                } ${isOwner
                   ? `cursor-text hover:text-white/90 transition-colors inline-flex items-center ${ICON_GAP.xs} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded`
                   : ""
-              }`}
+                }`}
             >
               {photo.caption || t("roomPhotos.captionPlaceholder")}
               {isOwner && !photo.caption && <Pencil size={ICON_SIZE.sm} strokeWidth={ICON_STROKE.thin} aria-hidden="true" />}
