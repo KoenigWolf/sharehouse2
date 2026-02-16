@@ -5,6 +5,7 @@ export interface ShareItem {
   user_id: string | null;
   title: string;
   description: string | null;
+  image_url: string | null;
   status: ShareItemStatus;
   claimed_by: string | null;
   expires_at: string;
