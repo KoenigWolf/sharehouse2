@@ -421,7 +421,7 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                       type="button"
                       onClick={() => handleDelete(item.id)}
                       disabled={isSubmitting}
-                      className="w-9 h-9 flex items-center justify-center rounded-lg text-muted-foreground/40 hover:text-error hover:bg-error/10 opacity-0 group-hover:opacity-100 transition-all"
+                      className="w-9 h-9 flex items-center justify-center rounded-lg text-muted-foreground/60 hover:text-error hover:bg-error/10 sm:opacity-0 sm:group-hover:opacity-100 transition-all"
                       aria-label={t("common.delete")}
                     >
                       <Trash2 size={16} />

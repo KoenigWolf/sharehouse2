@@ -183,7 +183,7 @@ function BulletinItem({
                 initial={{ opacity: 0, scale: 0.8 }}
                 whileHover={{ scale: 1.1, backgroundColor: "rgba(239, 68, 68, 0.1)" }}
                 whileTap={{ scale: 0.9 }}
-                className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-muted-foreground/40 hover:text-error opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+                className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-muted-foreground/60 hover:text-error sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 transition-opacity"
                 aria-label={t("common.delete")}
               >
                 <Trash2 size={15} />

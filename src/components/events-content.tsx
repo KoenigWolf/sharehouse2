@@ -735,7 +735,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
                               </Link>
                             )}
                             {isMine && (
-                              <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <div className="flex items-center gap-1 shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                 <button
                                   type="button"
                                   onClick={() => handleEdit(event)}
