@@ -67,7 +67,7 @@ const WeekRow = memo(function WeekRow({
 }: {
   schedule: Map<number, GarbageSchedule[]>;
   todayIndex: number;
-  dayNames: string[];
+  dayNames: readonly string[];
 }) {
   const t = useI18n();
   const getTypeStyle = (type: string) => GARBAGE_TYPE_STYLES[type] ?? DEFAULT_STYLE;
