@@ -140,15 +140,60 @@ export function sanitizeEmail(email: string): string {
 export function hasSqlInjectionPattern(input: string): boolean {
   if (!input || typeof input !== "string") return false;
 
+  // 正規化: 大文字化、連続空白を単一空白に
+  const normalized = input.toUpperCase().replace(/\s+/g, " ");
+
   const sqlPatterns = [
-    /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|TRUNCATE)\b)/i,
-    /(\b(UNION|JOIN|WHERE|FROM|INTO|VALUES)\b)/i,
-    /(--|;|\/\*|\*\/)/,
-    /('|")\s*(OR|AND)\s*('|")?/i,
-    /(\b(EXEC|EXECUTE|XP_)\b)/i,
+    // DML/DDL キーワード
+    /\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|TRUNCATE)\b/,
+    /\b(UNION|JOIN|WHERE|FROM|INTO|VALUES|SET)\b/,
+    /\b(HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|OFFSET)\b/,
+    /\b(GRANT|REVOKE|COMMIT|ROLLBACK|SAVEPOINT)\b/,
+
+    // 関数・演算子
+    /\b(CONCAT|SUBSTRING|CHAR|ASCII|HEX|UNHEX)\s*\(/,
+    /\b(SLEEP|BENCHMARK|WAITFOR|DELAY)\s*\(/,
+    /\b(LOAD_FILE|INTO\s+OUTFILE|INTO\s+DUMPFILE)\b/,
+
+    // コメント構文（複数DB対応）
+    /--/,                          // SQL標準
+    /#/,                           // MySQL
+    /\/\*/,                        // ブロックコメント開始
+    /\*\//,                        // ブロックコメント終了
+
+    // 論理演算子を使った条件操作
+    /['"`]\s*(OR|AND)\s/,           // ' OR, " AND など
+    /\b(OR|AND)\s+\d+\s*=\s*\d+/,   // OR 1=1, AND 1=1
+    /\b(OR|AND)\s+['"`]/,           // OR '..., AND "...
+
+    // ストアドプロシージャ
+    /\b(EXEC|EXECUTE|XP_|SP_)\b/,
+
+    // NULL バイト・エスケープシーケンス
+    /\\x00|\\0|%00/,
+
+    // Hex エンコーディング（SQL インジェクション回避手法）
+    /0x[0-9a-f]{4,}/i,
+
+    // 文字列連結による回避
+    /['"`]\s*\+\s*['"`]/,          // '+' 連結
+    /['"`]\s*\|\|\s*['"`]/,        // '||' 連結
+    /CHAR\s*\(\s*\d+/i,            // CHAR(65) など
+
+    // 条件分岐
+    /\bCASE\s+WHEN\b/,
+    /\bIF\s*\(/,
+
+    // 情報スキーマアクセス
+    /INFORMATION_SCHEMA/,
+    /SYS\.(ALL_|DBA_|USER_)/,
+    /PG_CATALOG/,
+
+    // サブクエリパターン
+    /\(\s*SELECT\b/,
   ];
 
-  return sqlPatterns.some((pattern) => pattern.test(input));
+  return sqlPatterns.some((pattern) => pattern.test(normalized));
 }
 
 /**

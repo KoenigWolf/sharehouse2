@@ -106,8 +106,8 @@ describe("Rate Limiting", () => {
     });
 
     it("upload limiter uses correct configuration", () => {
-      // Upload limiter should have 100 uploads per hour
-      for (let i = 0; i < 100; i++) {
+      // Upload limiter should have 30 uploads per hour (stricter limit)
+      for (let i = 0; i < 30; i++) {
         expect(RateLimiters.upload("user-id").success).toBe(true);
       }
       expect(RateLimiters.upload("user-id").success).toBe(false);

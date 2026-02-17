@@ -260,8 +260,19 @@ export const RateLimiters = {
     }),
 
   /**
+   * Rate limiter for read operations (prevent scraping/enumeration)
+   * Standard: 120 requests per minute
+   */
+  read: (identifier: string) =>
+    checkRateLimit(identifier, {
+      limit: RATE_LIMIT.read.maxRequestsPerMinute,
+      windowMs: RATE_LIMIT.read.windowMs,
+      prefix: "read",
+    }),
+
+  /**
    * Rate limiter for file uploads
-   * Conservative: 10 uploads per hour
+   * Strict: 30 uploads per hour
    */
   upload: (identifier: string) =>
     checkRateLimit(identifier, {

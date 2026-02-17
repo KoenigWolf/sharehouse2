@@ -59,8 +59,14 @@ export const RATE_LIMIT = {
   api: {
     maxRequestsPerMinute: 60,
   },
+  /** File uploads: 30 per hour (stricter to prevent storage abuse) */
   upload: {
-    maxUploadsPerHour: 100,
+    maxUploadsPerHour: 30,
+  },
+  /** Read operations: 120 per minute (prevent scraping/enumeration) */
+  read: {
+    maxRequestsPerMinute: 120,
+    windowMs: 60 * 1000,
   },
   /** Bulletin POST: 10 messages per minute */
   bulletin: {
