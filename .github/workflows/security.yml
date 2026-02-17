@@ -54,35 +54,18 @@ jobs:
             echo "has_issues=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Comment on PR
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v8
-        with:
-          script: |
-            const webHigh = parseInt('${{ steps.audit-web.outputs.high }}') || 0;
-            const webCritical = parseInt('${{ steps.audit-web.outputs.critical }}') || 0;
-            const mobileHigh = parseInt('${{ steps.audit-mobile.outputs.high }}') || 0;
-            const mobileCritical = parseInt('${{ steps.audit-mobile.outputs.critical }}') || 0;
+      - name: Report results
+        run: |
+          echo "=== Web Audit Results ==="
+          echo "High: ${{ steps.audit-web.outputs.high }}"
+          echo "Critical: ${{ steps.audit-web.outputs.critical }}"
+          echo ""
+          echo "=== Mobile Audit Results ==="
+          echo "High: ${{ steps.audit-mobile.outputs.high }}"
+          echo "Critical: ${{ steps.audit-mobile.outputs.critical }}"
 
-            const hasIssues = webHigh > 0 || webCritical > 0 || mobileHigh > 0 || mobileCritical > 0;
-
-            if (!hasIssues) {
-              console.log('No high/critical vulnerabilities found');
-              return;
-            }
-
-            const body = `## ⚠️ Security Audit Results
-
-            | Package | Critical | High |
-            |---------|----------|------|
-            | Web | ${webCritical} | ${webHigh} |
-            | Mobile | ${mobileCritical} | ${mobileHigh} |
-
-            Run \`npm audit\` locally to see details and \`npm audit fix\` to auto-fix.`;
-
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: body
-            });
+      - name: Fail if critical vulnerabilities
+        if: steps.audit-web.outputs.critical > 0 || steps.audit-mobile.outputs.critical > 0
+        run: |
+          echo "::error::Critical vulnerabilities found!"
+          exit 1
