@@ -3,6 +3,7 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { AuthProvider } from "../lib/auth";
+import { Colors } from "../constants/colors";
 import "../global.css";
 
 export default function RootLayout() {
@@ -14,7 +15,7 @@ export default function RootLayout() {
           screenOptions={{
             headerShown: false,
             animation: "slide_from_right",
-            contentStyle: { backgroundColor: "#FDFCF8" },
+            contentStyle: { backgroundColor: Colors.background },
           }}
         />
       </AuthProvider>

@@ -36,7 +36,8 @@ describe("Audit Logging", () => {
       auditLog(entry);
 
       expect(consoleInfoSpy).toHaveBeenCalledWith(
-        expect.stringContaining("[AUDIT:INFO]")
+        "[AppInfo]",
+        expect.stringContaining("AUTH_LOGIN_SUCCESS")
       );
     });
 
@@ -99,7 +100,7 @@ describe("Audit Logging", () => {
     });
 
     it("logs failed login", () => {
-      AuditActions.loginFailure("test@example.com", "Invalid password");
+      AuditActions.loginFailure("Invalid password");
       expect(consoleWarnSpy).toHaveBeenCalled();
     });
 

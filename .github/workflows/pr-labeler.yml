@@ -1,0 +1,137 @@
+name: PR Labeler
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  size-label:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Label PR by size
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+
+            let additions = 0;
+            let deletions = 0;
+            for (const file of files) {
+              additions += file.additions;
+              deletions += file.deletions;
+            }
+            const totalChanges = additions + deletions;
+
+            // Size thresholds
+            const sizes = [
+              { label: 'size/XS', max: 10 },
+              { label: 'size/S', max: 50 },
+              { label: 'size/M', max: 200 },
+              { label: 'size/L', max: 500 },
+              { label: 'size/XL', max: Infinity },
+            ];
+
+            const sizeLabels = sizes.map(s => s.label);
+            const newLabel = sizes.find(s => totalChanges <= s.max).label;
+
+            // Remove old size labels
+            const { data: currentLabels } = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            for (const label of currentLabels) {
+              if (sizeLabels.includes(label.name) && label.name !== newLabel) {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue.number,
+                  name: label.name,
+                });
+              }
+            }
+
+            // Add new size label
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: [newLabel],
+            });
+
+            console.log(`PR has ${totalChanges} changes (${additions}+ / ${deletions}-), labeled as ${newLabel}`);
+
+  type-label:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Label PR by file types
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+
+            const labelsToAdd = new Set();
+
+            for (const file of files) {
+              const path = file.filename;
+
+              // Frontend (Next.js web app)
+              if (path.startsWith('src/') && !path.startsWith('src/__tests__/')) {
+                labelsToAdd.add('frontend');
+              }
+
+              // Mobile (Expo app)
+              if (path.startsWith('mobile/')) {
+                labelsToAdd.add('mobile');
+              }
+
+              // Tests
+              if (path.includes('__tests__') || path.includes('.test.') || path.includes('.spec.')) {
+                labelsToAdd.add('tests');
+              }
+
+              // Documentation
+              if (path.endsWith('.md') || path.startsWith('docs/')) {
+                labelsToAdd.add('docs');
+              }
+
+              // Config/DevOps
+              if (path.startsWith('.github/') || path.includes('config') ||
+                  path === 'package.json' || path === 'tsconfig.json' ||
+                  path.startsWith('supabase/')) {
+                labelsToAdd.add('config');
+              }
+
+              // Database/Migrations
+              if (path.includes('migrations') || path.includes('supabase/')) {
+                labelsToAdd.add('database');
+              }
+            }
+
+            if (labelsToAdd.size > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: Array.from(labelsToAdd),
+              });
+
+              console.log(`Added labels: ${Array.from(labelsToAdd).join(', ')}`);
+            }

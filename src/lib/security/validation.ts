@@ -5,6 +5,7 @@
 
 import { z } from "zod";
 import { t } from "@/lib/i18n";
+import { timingSafeEqual as cryptoTimingSafeEqual } from "crypto";
 
 /**
  * UUID v4 validation regex
@@ -140,27 +141,67 @@ export function sanitizeEmail(email: string): string {
 export function hasSqlInjectionPattern(input: string): boolean {
   if (!input || typeof input !== "string") return false;
 
+  // 正規化: 大文字化、連続空白を単一空白に
+  const normalized = input.toUpperCase().replace(/\s+/g, " ");
+
   const sqlPatterns = [
-    /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|TRUNCATE)\b)/i,
-    /(\b(UNION|JOIN|WHERE|FROM|INTO|VALUES)\b)/i,
-    /(--|;|\/\*|\*\/)/,
-    /('|")\s*(OR|AND)\s*('|")?/i,
-    /(\b(EXEC|EXECUTE|XP_)\b)/i,
+    // DML/DDL キーワード（典型的な攻撃パターン）
+    /\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|TRUNCATE)\s+\S/,
+    /\bUNION\s+(ALL\s+)?SELECT\b/,
+    /\bINTO\s+(OUTFILE|DUMPFILE)\b/,
+
+    // 危険な関数呼び出し
+    /\b(SLEEP|BENCHMARK|WAITFOR|DELAY|LOAD_FILE)\s*\(/,
+    /\bCHAR\s*\(\s*\d+(\s*,\s*\d+)+\s*\)/i, // CHAR(65,66,67) - 文字列構築
+
+    // コメント構文（攻撃的コンテキスト）
+    /--\s*$/m,                      // 行末SQLコメント
+    /\/\*.*\*\//,                   // ブロックコメント（完結）
+    /\/\*[^*]*$/,                   // 未閉じブロックコメント
+
+    // 論理演算子を使った条件操作
+    /['"`]\s*(OR|AND)\s+['"`\d]/,   // ' OR '..., " AND 1 など
+    /\b(OR|AND)\s+\d+\s*=\s*\d+/,   // OR 1=1, AND 1=1
+    /\b(OR|AND)\s+['"`]\w*['"`]\s*=\s*['"`]/,  // OR 'a'='a'
+
+    // ストアドプロシージャ（MSSQL）
+    /\b(EXEC|EXECUTE)\s+\w/,
+    /\bXP_\w+/,
+    /\bSP_\w+\s*\(/,
+
+    // NULL バイト・エスケープシーケンス
+    /\\x00|%00/,
+
+    // Hex エンコーディング（長い16進数列は攻撃の可能性）
+    /0x[0-9a-f]{8,}/i,
+
+    // 文字列連結による回避
+    /['"`]\s*\|\|\s*['"`]/,        // '||' 連結（Oracle/PostgreSQL）
+    /CONCAT\s*\([^)]*['"`]/i,      // CONCAT関数での文字列操作
+
+    // 情報スキーマアクセス
+    /INFORMATION_SCHEMA\.\w+/,
+    /SYS\.(ALL_|DBA_|USER_)\w+/,
+    /PG_CATALOG\.\w+/,
+
+    // サブクエリパターン
+    /\(\s*SELECT\s+\S/,
   ];
 
-  return sqlPatterns.some((pattern) => pattern.test(input));
+  return sqlPatterns.some((pattern) => pattern.test(normalized));
 }
 
 /**
  * Validate content doesn't contain injection patterns
  * @param input - String to validate
- * @param fieldName - Field name for error
+ * @param fieldName - Field name for error (uses i18n fallback if not provided)
  * @returns Validated string
  * @throws Error if suspicious patterns found
  */
-export function validateNoInjection(input: string, fieldName = "入力"): string {
+export function validateNoInjection(input: string, fieldName?: string): string {
   if (hasSqlInjectionPattern(input)) {
-    throw new Error(t("errors.invalidCharacters", { field: fieldName }));
+    const field = fieldName ?? t("common.input");
+    throw new Error(t("errors.invalidCharacters", { field }));
   }
   return input;
 }
@@ -224,4 +265,47 @@ export function validateOrigin(
   } catch {
     return false;
   }
+}
+
+/**
+ * Timing-safe string comparison to prevent timing attacks
+ * Uses Node.js crypto.timingSafeEqual for constant-time comparison
+ *
+ * @param a - First string to compare
+ * @param b - Second string to compare
+ * @returns true if strings are equal
+ */
+export function timingSafeEqual(a: string, b: string): boolean {
+  if (typeof a !== "string" || typeof b !== "string") {
+    return false;
+  }
+
+  // Create UTF-8 buffers first to compare actual byte lengths
+  const bufA = Buffer.from(a, "utf8");
+  const bufB = Buffer.from(b, "utf8");
+
+  // Different byte lengths are always unequal (but we still do constant-time work)
+  if (bufA.length !== bufB.length) {
+    // Perform dummy comparison to prevent timing leaks
+    cryptoTimingSafeEqual(bufA, bufA);
+    return false;
+  }
+
+  return cryptoTimingSafeEqual(bufA, bufB);
+}
+
+/**
+ * Validate CRON secret with timing-safe comparison
+ *
+ * @param authHeader - Authorization header value
+ * @returns true if valid CRON secret
+ */
+export function validateCronSecret(authHeader: string | null): boolean {
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret || !authHeader) {
+    return false;
+  }
+
+  const expected = `Bearer ${cronSecret}`;
+  return timingSafeEqual(authHeader, expected);
 }

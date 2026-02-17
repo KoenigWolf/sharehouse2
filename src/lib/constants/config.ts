@@ -59,8 +59,14 @@ export const RATE_LIMIT = {
   api: {
     maxRequestsPerMinute: 60,
   },
+  /** File uploads: 30 per hour (stricter to prevent storage abuse) */
   upload: {
-    maxUploadsPerHour: 100,
+    maxUploadsPerHour: 30,
+  },
+  /** Read operations: 120 per minute (prevent scraping/enumeration) */
+  read: {
+    maxRequestsPerMinute: 120,
+    windowMs: 60 * 1000,
   },
   /** Bulletin POST: 10 messages per minute */
   bulletin: {
@@ -96,6 +102,26 @@ export const GARBAGE = {
   dutyRotationWeeks: 4,
   reminderHoursBefore: 12,
 } as const;
+
+/**
+ * Allowed redirect paths after authentication
+ * Used to prevent open redirect attacks
+ */
+export const ALLOWED_REDIRECT_PATHS = [
+  "/",
+  "/profile",
+  "/settings",
+  "/events",
+  "/bulletin",
+  "/share",
+  "/residents",
+  "/tea-time",
+  "/floor-plan",
+  "/room-photos",
+  "/admin",
+  "/stats",
+  "/info",
+] as const;
 
 export const BULLETIN = {
   maxMessageLength: 200,

@@ -3,6 +3,7 @@
  * Provides consistent error handling across the application
  */
 
+import { createHash } from "crypto";
 import { t } from "@/lib/i18n";
 import { AUTH } from "@/lib/constants/config";
 
@@ -127,6 +128,113 @@ export function handleError(err: unknown): { error: string; code?: ErrorCodeType
 /**
  * Sentryにエラー/警告を送信する（内部ヘルパー）
  */
+/**
+ * Sensitive keys that should be redacted before sending to Sentry
+ */
+const SENSITIVE_KEYS = [
+  "password",
+  "token",
+  "secret",
+  "apiKey",
+  "api_key",
+  "authorization",
+  "cookie",
+  "session",
+  "creditCard",
+  "credit_card",
+  "ssn",
+  "email",
+  "phone",
+  "address",
+];
+
+const MAX_SANITIZE_DEPTH = 10;
+
+/**
+ * Sanitize metadata before sending to Sentry
+ * Redacts sensitive information to prevent PII leakage
+ *
+ * @param data - Object to sanitize
+ * @param depth - Current recursion depth (internal use)
+ */
+function sanitizeForSentry(
+  data: Record<string, unknown>,
+  depth = 0
+): Record<string, unknown> {
+  // Prevent stack overflow from deeply nested objects
+  if (depth >= MAX_SANITIZE_DEPTH) {
+    return { "[max_depth_exceeded]": true };
+  }
+
+  const sanitized: Record<string, unknown> = {};
+
+  for (const [key, value] of Object.entries(data)) {
+    const lowerKey = key.toLowerCase();
+
+    // Check if key contains sensitive patterns
+    const isSensitive = SENSITIVE_KEYS.some(
+      (sensitiveKey) =>
+        lowerKey.includes(sensitiveKey.toLowerCase())
+    );
+
+    if (isSensitive) {
+      sanitized[key] = "[REDACTED]";
+    } else if (Array.isArray(value)) {
+      // Handle arrays
+      sanitized[key] = value.slice(0, 20).map((item) =>
+        typeof item === "object" && item !== null
+          ? sanitizeForSentry(item as Record<string, unknown>, depth + 1)
+          : item
+      );
+    } else if (typeof value === "object" && value !== null) {
+      // Recursively sanitize nested objects
+      sanitized[key] = sanitizeForSentry(value as Record<string, unknown>, depth + 1);
+    } else if (typeof value === "string" && value.length > 100) {
+      // Truncate long strings
+      sanitized[key] = value.slice(0, 100) + "...[truncated]";
+    } else {
+      sanitized[key] = value;
+    }
+  }
+
+  return sanitized;
+}
+
+/**
+ * Hash user ID for Sentry to prevent PII leakage
+ * Uses SHA-256 and takes first 12 chars of hex output
+ */
+function hashUserId(userId: string): string {
+  return createHash("sha256").update(userId).digest("hex").slice(0, 12);
+}
+
+/**
+ * Redact sensitive patterns from error message
+ */
+function redactErrorMessage(message: string): string {
+  let redacted = message;
+
+  // Redact email patterns
+  redacted = redacted.replace(
+    /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g,
+    "[EMAIL]"
+  );
+
+  // Redact potential tokens/secrets (long alphanumeric strings)
+  redacted = redacted.replace(
+    /\b[a-zA-Z0-9]{32,}\b/g,
+    "[REDACTED]"
+  );
+
+  // Redact UUIDs
+  redacted = redacted.replace(
+    /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi,
+    "[UUID]"
+  );
+
+  return redacted;
+}
+
 async function sendToSentry(
   error: unknown,
   errorData: Record<string, unknown>,
@@ -145,17 +253,22 @@ async function sendToSentry(
       scope.setTag("action", context.action);
     }
     if (context?.userId) {
-      scope.setUser({ id: context.userId });
+      // Use SHA-256 hash to prevent PII correlation
+      scope.setUser({ id: `user_${hashUserId(context.userId)}` });
     }
     if (context?.metadata) {
-      scope.setExtra("metadata", context.metadata);
+      scope.setExtra("metadata", sanitizeForSentry(context.metadata));
     }
 
     if (error instanceof Error) {
-      Sentry.captureException(error);
+      // Redact sensitive data from error message before sending
+      const sanitizedError = new Error(redactErrorMessage(error.message));
+      sanitizedError.name = error.name;
+      sanitizedError.stack = error.stack;
+      Sentry.captureException(sanitizedError);
     } else {
       Sentry.captureMessage(
-        typeof error === "string" ? error : JSON.stringify(errorData),
+        typeof error === "string" ? redactErrorMessage(error) : JSON.stringify(sanitizeForSentry(errorData)),
         level
       );
     }
@@ -232,4 +345,29 @@ export function logWarning(
   sendToSentry(message, { message }, context, "warning").catch(() => {
     // Sentry not available, skip silently
   });
+}
+
+/**
+ * Log info with context (for server-side use)
+ *
+ * Info level logs are not sent to Sentry, only to console.
+ */
+export function logInfo(
+  message: string,
+  context?: {
+    action?: string;
+    userId?: string;
+    metadata?: Record<string, unknown>;
+  }
+): void {
+  const timestamp = new Date().toISOString();
+
+  const infoData = {
+    timestamp,
+    level: "info",
+    message,
+    ...context,
+  };
+
+  console.info("[AppInfo]", JSON.stringify(infoData, null, 2));
 }

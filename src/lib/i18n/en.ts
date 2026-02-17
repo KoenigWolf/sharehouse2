@@ -30,6 +30,7 @@ export const en: Translations = {
     copy: "Copy",
     new: "NEW",
     remove: "Remove",
+    input: "input",
   },
 
   header: {
@@ -401,6 +402,12 @@ export const en: Translations = {
     nameSuffix: "",
   },
 
+  errorBoundary: {
+    title: "An error occurred while loading",
+    message: "A temporary issue may have occurred.",
+    reload: "Reload",
+  },
+
   errors: {
     unauthorized: "Authentication required",
     forbidden: "Access denied",
@@ -415,6 +422,7 @@ export const en: Translations = {
     fileRequired: "Please select a file",
     fileTooLarge: "File size must be 5MB or less",
     invalidFileType: "Supported formats: JPG, PNG, WebP, HEIC",
+    invalidFileContent: "Invalid file content. The file may be corrupted",
     invalidInput: "Invalid input",
     invalidIdFormat: "Invalid ID format",
     invalidFieldFormat: "Invalid {{field}} format",

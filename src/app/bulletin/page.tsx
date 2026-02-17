@@ -6,6 +6,7 @@ import { BulletinBoard } from "@/components/bulletin-board";
 import { getBulletinsPaginated } from "@/lib/bulletin/actions";
 import { getCachedUser } from "@/lib/supabase/cached-queries";
 import { logError } from "@/lib/errors";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 export const dynamic = "force-dynamic";
 
@@ -33,13 +34,15 @@ export default async function BulletinPage() {
 
       <main className="flex-1 pb-20 sm:pb-0">
         <div className="container mx-auto px-4 sm:px-6 pt-2 sm:pt-6 pb-4 max-w-4xl">
-          <BulletinBoard
-            bulletins={bulletinsResult.bulletins}
-            currentUserId={user.id}
-            currentUserProfile={currentUserProfile}
-            initialCursor={bulletinsResult.nextCursor}
-            initialHasMore={bulletinsResult.hasMore}
-          />
+          <ErrorBoundary>
+            <BulletinBoard
+              bulletins={bulletinsResult.bulletins}
+              currentUserId={user.id}
+              currentUserProfile={currentUserProfile}
+              initialCursor={bulletinsResult.nextCursor}
+              initialHasMore={bulletinsResult.hasMore}
+            />
+          </ErrorBoundary>
         </div>
       </main>
 

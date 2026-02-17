@@ -8,6 +8,7 @@ import { getServerTranslator } from "@/lib/i18n/server";
 import { enforceAllowedOrigin } from "@/lib/security/request";
 import { isValidUUID, RateLimiters, formatRateLimitError } from "@/lib/security";
 import { validateFileUpload, sanitizeFileName } from "@/domain/validation/profile";
+import { shareItemSchema } from "@/domain/validation/schemas";
 import type { ShareItemWithProfile } from "@/domain/share-item";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Translator } from "@/lib/i18n";
@@ -177,24 +178,21 @@ export async function createShareItem(
       return { error: formatRateLimitError(rateLimitResult.retryAfter, t) };
     }
 
-    const trimmedTitle = title.trim();
-    if (!trimmedTitle) return { error: t("errors.invalidInput") };
-    if (trimmedTitle.length > SHARE_ITEMS.maxTitleLength) {
-      return { error: t("errors.invalidInput") };
+    const validation = shareItemSchema.safeParse({ title, description, category: "general" });
+    if (!validation.success) {
+      return { error: validation.error.issues[0].message };
     }
-
-    const trimmedDesc = description?.trim() || null;
-    if (trimmedDesc && trimmedDesc.length > SHARE_ITEMS.maxDescriptionLength) {
-      return { error: t("errors.invalidInput") };
-    }
+    const validatedData = validation.data;
 
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + SHARE_ITEMS.expirationDays);
 
     const { data, error } = await supabase.from("share_items").insert({
       user_id: user.id,
-      title: trimmedTitle,
-      description: trimmedDesc,
+      title: validatedData.title,
+      description: validatedData.description ?? null,
+      category: validatedData.category,
+      location: validatedData.location ?? null,
       expires_at: expiresAt.toISOString(),
     }).select("id").single();
 
@@ -292,22 +290,19 @@ export async function updateShareItem(
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { error: t("errors.unauthorized") };
 
-    const trimmedTitle = title.trim();
-    if (!trimmedTitle) return { error: t("errors.invalidInput") };
-    if (trimmedTitle.length > SHARE_ITEMS.maxTitleLength) {
-      return { error: t("errors.invalidInput") };
+    const validation = shareItemSchema.safeParse({ title, description, category: "general" });
+    if (!validation.success) {
+      return { error: validation.error.issues[0].message };
     }
-
-    const trimmedDesc = description?.trim() || null;
-    if (trimmedDesc && trimmedDesc.length > SHARE_ITEMS.maxDescriptionLength) {
-      return { error: t("errors.invalidInput") };
-    }
+    const validatedData = validation.data;
 
     const { data, error } = await supabase
       .from("share_items")
       .update({
-        title: trimmedTitle,
-        description: trimmedDesc,
+        title: validatedData.title,
+        description: validatedData.description ?? null,
+        category: validatedData.category,
+        location: validatedData.location ?? null,
       })
       .eq("id", itemId)
       .eq("user_id", user.id)

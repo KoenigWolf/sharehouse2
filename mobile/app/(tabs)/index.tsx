@@ -18,6 +18,7 @@ import { logError } from "../../lib/utils/log-error";
 import { Avatar } from "../../components/ui/Avatar";
 import { Card } from "../../components/ui/Card";
 import { Badge } from "../../components/ui/Badge";
+import { ResidentSkeleton } from "../../components/ui/ResidentSkeleton";
 import { Colors, Shadows } from "../../constants/colors";
 
 export default function ResidentsScreen() {
@@ -155,8 +156,12 @@ export default function ResidentsScreen() {
         }
         ListEmptyComponent={
           isLoading ? (
-            <View className="items-center justify-center py-20">
-              <Text className="text-muted-foreground">{t("common.loading")}</Text>
+            <View className="flex-row flex-wrap" style={{ gap: 12 }}>
+              {[...Array(8)].map((_, i) => (
+                <View key={`skeleton-${i}`} className="w-[48.2%]">
+                  <ResidentSkeleton />
+                </View>
+              ))}
             </View>
           ) : (
             <View className="items-center justify-center py-20">

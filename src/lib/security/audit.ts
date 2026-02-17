@@ -1,10 +1,28 @@
 /**
  * Security Audit Logging
  * Tracks security-sensitive operations for compliance and incident response
+ *
+ * ログは以下に出力:
+ * 1. コンソール (即座)
+ * 2. データベース (非同期、失敗してもブロックしない)
  */
 
 import { maskSensitiveData } from "./validation";
-import { logWarning } from "@/lib/errors";
+import { logWarning, logError, logInfo } from "@/lib/errors";
+
+/**
+ * Sensitive fields to mask in audit logs
+ * Unified list for both console and database logging
+ */
+const SENSITIVE_AUDIT_FIELDS = [
+  "password",
+  "token",
+  "secret",
+  "apiKey",
+  "creditCard",
+  "ssn",
+  "email",
+] as const;
 
 /**
  * Audit event types
@@ -125,29 +143,6 @@ function getSeverity(eventType: AuditEventTypeValue): AuditSeverityValue {
 }
 
 /**
- * Format audit log entry for output
- */
-function formatAuditLog(entry: AuditLogEntry): string {
-  const severity = getSeverity(entry.eventType);
-  const maskedMetadata = entry.metadata
-    ? maskSensitiveData(entry.metadata as Record<string, unknown>, [
-      "password",
-      "token",
-      "secret",
-      "apiKey",
-    ])
-    : undefined;
-
-  const logData = {
-    ...entry,
-    severity,
-    metadata: maskedMetadata,
-  };
-
-  return JSON.stringify(logData);
-}
-
-/**
  * Write audit log entry
  * In production, this should write to a secure, tamper-evident log store
  */
@@ -156,28 +151,82 @@ export function auditLog(entry: AuditLogEntry): void {
     ...entry,
     timestamp: entry.timestamp || new Date().toISOString(),
   };
-  const formattedLog = formatAuditLog(fullEntry);
 
   const severity = getSeverity(entry.eventType);
 
   switch (severity) {
     case AuditSeverity.CRITICAL:
-      console.error(`[AUDIT:CRITICAL] ${formattedLog}`);
+      logError(new Error(`[AUDIT:CRITICAL] ${entry.eventType}`), {
+        action: "auditLog",
+        metadata: fullEntry,
+      });
       break;
     case AuditSeverity.ERROR:
-      console.error(`[AUDIT:ERROR] ${formattedLog}`);
+      logError(new Error(`[AUDIT:ERROR] ${entry.eventType}`), {
+        action: "auditLog",
+        metadata: fullEntry,
+      });
       break;
     case AuditSeverity.WARNING:
       logWarning("Audit warning", { action: "auditLog", metadata: fullEntry });
       break;
     default:
-      console.info(`[AUDIT:INFO] ${formattedLog}`);
+      logInfo("Audit info", { action: "auditLog", metadata: fullEntry });
   }
 
-  // In production, also send to:
-  // - Centralized logging service (e.g., CloudWatch, Datadog)
-  // - SIEM system
-  // - Database audit table
+  // 非同期でデータベースに永続化（失敗してもブロックしない）
+  persistAuditLog(fullEntry).catch(() => {
+    // 永続化失敗はログ済み、メイン処理はブロックしない
+  });
+}
+
+/**
+ * Persist audit log to database
+ * 非同期で実行し、失敗してもメイン処理をブロックしない
+ */
+async function persistAuditLog(entry: AuditLogEntry): Promise<void> {
+  // Service Role Key がない場合はスキップ（開発環境など）
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return;
+  }
+
+  try {
+    const { createAdminClient } = await import("@/lib/supabase/admin");
+    const supabase = createAdminClient();
+    const severity = getSeverity(entry.eventType);
+
+    const maskedMetadata = entry.metadata
+      ? maskSensitiveData(
+        entry.metadata as Record<string, unknown>,
+        SENSITIVE_AUDIT_FIELDS as unknown as (keyof Record<string, unknown>)[]
+      )
+      : null;
+
+    const { error } = await supabase.from("audit_logs").insert({
+      event_type: entry.eventType,
+      severity,
+      user_id: entry.userId ?? null,
+      target_id: entry.targetId ?? null,
+      action: entry.action,
+      outcome: entry.outcome,
+      ip_address: entry.ipAddress ?? null,
+      user_agent: entry.userAgent ?? null,
+      metadata: maskedMetadata,
+      error_message: entry.errorMessage ?? null,
+    });
+
+    if (error) {
+      logError(error, {
+        action: "persistAuditLog",
+        metadata: { eventType: entry.eventType },
+      });
+    }
+  } catch (err) {
+    logError(err, {
+      action: "persistAuditLog",
+      metadata: { eventType: entry.eventType },
+    });
+  }
 }
 
 /**
@@ -264,7 +313,7 @@ export const AuditActions = {
     });
   },
 
-  loginFailure: (email: string, reason: string, ipAddress?: string) => {
+  loginFailure: (reason: string, ipAddress?: string) => {
     auditLog({
       timestamp: new Date().toISOString(),
       eventType: AuditEventType.AUTH_LOGIN_FAILURE,
@@ -272,7 +321,6 @@ export const AuditActions = {
       outcome: "failure",
       errorMessage: reason,
       ipAddress,
-      metadata: { email: email.slice(0, 3) + "***" },
     });
   },
 

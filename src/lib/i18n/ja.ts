@@ -29,6 +29,7 @@ export const ja = {
     copy: "Copy",
     new: "NEW",
     remove: "削除",
+    input: "入力",
   },
 
   header: {
@@ -400,6 +401,12 @@ export const ja = {
     nameSuffix: "さん",
   },
 
+  errorBoundary: {
+    title: "表示中にエラーが発生しました",
+    message: "一時的な不具合が発生した可能性があります。",
+    reload: "再読み込み",
+  },
+
   errors: {
     unauthorized: "認証が必要です",
     forbidden: "アクセスできません",
@@ -414,6 +421,7 @@ export const ja = {
     fileRequired: "ファイルを選択してください",
     fileTooLarge: "ファイルサイズは5MB以下にしてください",
     invalidFileType: "対応形式: JPG, PNG, WebP, HEIC",
+    invalidFileContent: "ファイル内容が無効です。破損したファイルの可能性があります",
     invalidInput: "入力が無効です",
     invalidIdFormat: "無効なID形式です",
     invalidFieldFormat: "無効な{{field}}形式です",

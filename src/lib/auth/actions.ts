@@ -216,7 +216,7 @@ export async function signIn(
     if (error) {
       logError(error, { action: "signIn", metadata: { email: validatedEmail } });
 
-      AuditActions.loginFailure(validatedEmail, error.message, ipAddress || undefined);
+      AuditActions.loginFailure(error.message, ipAddress || undefined);
 
       return { error: t("auth.invalidCredentials") };
     }
@@ -264,6 +264,11 @@ export async function requestPasswordReset(
   email: string
 ): Promise<PasswordResetRequestResponse> {
   const t = await getServerTranslator();
+  const startTime = Date.now();
+
+  // Minimum response time to prevent timing attacks (800-1200ms with jitter)
+  const MIN_RESPONSE_TIME = 800;
+  const JITTER = Math.random() * 400;
 
   const originError = await enforceAllowedOrigin(t, "requestPasswordReset");
   if (originError) return { error: originError };
@@ -285,6 +290,8 @@ export async function requestPasswordReset(
     );
     return { error: formatRateLimitError(rateLimitResult.retryAfter, t) };
   }
+
+  let result: PasswordResetRequestResponse;
 
   try {
     const supabase = await createClient();
@@ -313,11 +320,20 @@ export async function requestPasswordReset(
       metadata: { email: validatedEmail.slice(0, 3) + "***" },
     });
 
-    return { success: true };
+    result = { success: true };
   } catch (error) {
     logError(error, { action: "requestPasswordReset" });
-    return { error: t("errors.serverError") };
+    result = { error: t("errors.serverError") };
   }
+
+  // Apply constant-time delay to both success and error paths
+  const elapsed = Date.now() - startTime;
+  const delay = Math.max(0, MIN_RESPONSE_TIME + JITTER - elapsed);
+  if (delay > 0) {
+    await new Promise((resolve) => setTimeout(resolve, delay));
+  }
+
+  return result;
 }
 
 /**

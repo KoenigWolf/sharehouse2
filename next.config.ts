@@ -41,6 +41,15 @@ const securityHeaders = [
     key: "Strict-Transport-Security",
     value: "max-age=31536000; includeSubDomains; preload",
   },
+  // Cross-Origin isolation headers for enhanced security
+  {
+    key: "Cross-Origin-Opener-Policy",
+    value: "same-origin",
+  },
+  {
+    key: "Cross-Origin-Resource-Policy",
+    value: "same-origin",
+  },
   // Content Security Policy - Moved to middleware.ts with nonce support
   // CSP with nonce provides better XSS protection than 'unsafe-inline'
 ];
