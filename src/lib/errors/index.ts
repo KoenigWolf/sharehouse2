@@ -127,6 +127,60 @@ export function handleError(err: unknown): { error: string; code?: ErrorCodeType
 /**
  * Sentryにエラー/警告を送信する（内部ヘルパー）
  */
+/**
+ * Sensitive keys that should be redacted before sending to Sentry
+ */
+const SENSITIVE_KEYS = [
+  "password",
+  "token",
+  "secret",
+  "apiKey",
+  "api_key",
+  "authorization",
+  "cookie",
+  "session",
+  "creditCard",
+  "credit_card",
+  "ssn",
+  "email",
+  "phone",
+  "address",
+];
+
+/**
+ * Sanitize metadata before sending to Sentry
+ * Redacts sensitive information to prevent PII leakage
+ */
+function sanitizeForSentry(
+  data: Record<string, unknown>
+): Record<string, unknown> {
+  const sanitized: Record<string, unknown> = {};
+
+  for (const [key, value] of Object.entries(data)) {
+    const lowerKey = key.toLowerCase();
+
+    // Check if key contains sensitive patterns
+    const isSensitive = SENSITIVE_KEYS.some(
+      (sensitiveKey) =>
+        lowerKey.includes(sensitiveKey.toLowerCase())
+    );
+
+    if (isSensitive) {
+      sanitized[key] = "[REDACTED]";
+    } else if (typeof value === "object" && value !== null) {
+      // Recursively sanitize nested objects
+      sanitized[key] = sanitizeForSentry(value as Record<string, unknown>);
+    } else if (typeof value === "string" && value.length > 100) {
+      // Truncate long strings
+      sanitized[key] = value.slice(0, 100) + "...[truncated]";
+    } else {
+      sanitized[key] = value;
+    }
+  }
+
+  return sanitized;
+}
+
 async function sendToSentry(
   error: unknown,
   errorData: Record<string, unknown>,
@@ -145,17 +199,23 @@ async function sendToSentry(
       scope.setTag("action", context.action);
     }
     if (context?.userId) {
-      scope.setUser({ id: context.userId });
+      // Hash user ID instead of sending raw value
+      scope.setUser({ id: `user_${context.userId.slice(0, 8)}` });
     }
     if (context?.metadata) {
-      scope.setExtra("metadata", context.metadata);
+      // Sanitize metadata before sending
+      scope.setExtra("metadata", sanitizeForSentry(context.metadata));
     }
 
     if (error instanceof Error) {
-      Sentry.captureException(error);
+      // Sanitize error message if it contains sensitive data
+      const sanitizedError = new Error(error.message);
+      sanitizedError.name = error.name;
+      sanitizedError.stack = error.stack;
+      Sentry.captureException(sanitizedError);
     } else {
       Sentry.captureMessage(
-        typeof error === "string" ? error : JSON.stringify(errorData),
+        typeof error === "string" ? error : JSON.stringify(sanitizeForSentry(errorData)),
         level
       );
     }

@@ -414,6 +414,7 @@ export const ja = {
     fileRequired: "ファイルを選択してください",
     fileTooLarge: "ファイルサイズは5MB以下にしてください",
     invalidFileType: "対応形式: JPG, PNG, WebP, HEIC",
+    invalidFileContent: "ファイル内容が無効です。破損したファイルの可能性があります",
     invalidInput: "入力が無効です",
     invalidIdFormat: "無効なID形式です",
     invalidFieldFormat: "無効な{{field}}形式です",

@@ -270,3 +270,53 @@ export function validateOrigin(
     return false;
   }
 }
+
+/**
+ * Timing-safe string comparison to prevent timing attacks
+ * Uses constant-time comparison regardless of string length differences
+ *
+ * @param a - First string to compare
+ * @param b - Second string to compare
+ * @returns true if strings are equal
+ */
+export function timingSafeEqual(a: string, b: string): boolean {
+  if (typeof a !== "string" || typeof b !== "string") {
+    return false;
+  }
+
+  // Encode strings to buffers
+  const encoder = new TextEncoder();
+  const bufA = encoder.encode(a);
+  const bufB = encoder.encode(b);
+
+  // Pad to same length (prevents length-based timing leaks)
+  const maxLen = Math.max(bufA.length, bufB.length);
+  const paddedA = new Uint8Array(maxLen);
+  const paddedB = new Uint8Array(maxLen);
+  paddedA.set(bufA);
+  paddedB.set(bufB);
+
+  // Constant-time comparison
+  let result = bufA.length === bufB.length ? 0 : 1;
+  for (let i = 0; i < maxLen; i++) {
+    result |= paddedA[i] ^ paddedB[i];
+  }
+
+  return result === 0;
+}
+
+/**
+ * Validate CRON secret with timing-safe comparison
+ *
+ * @param authHeader - Authorization header value
+ * @returns true if valid CRON secret
+ */
+export function validateCronSecret(authHeader: string | null): boolean {
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret || !authHeader) {
+    return false;
+  }
+
+  const expected = `Bearer ${cronSecret}`;
+  return timingSafeEqual(authHeader, expected);
+}

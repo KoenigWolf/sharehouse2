@@ -264,6 +264,11 @@ export async function requestPasswordReset(
   email: string
 ): Promise<PasswordResetRequestResponse> {
   const t = await getServerTranslator();
+  const startTime = Date.now();
+
+  // Minimum response time to prevent timing attacks (800-1200ms with jitter)
+  const MIN_RESPONSE_TIME = 800;
+  const JITTER = Math.random() * 400;
 
   const originError = await enforceAllowedOrigin(t, "requestPasswordReset");
   if (originError) return { error: originError };
@@ -312,6 +317,13 @@ export async function requestPasswordReset(
       ipAddress: ipAddress || undefined,
       metadata: { email: validatedEmail.slice(0, 3) + "***" },
     });
+
+    // Add constant-time delay to prevent timing-based email enumeration
+    const elapsed = Date.now() - startTime;
+    const delay = Math.max(0, MIN_RESPONSE_TIME + JITTER - elapsed);
+    if (delay > 0) {
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
 
     return { success: true };
   } catch (error) {

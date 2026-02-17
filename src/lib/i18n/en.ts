@@ -415,6 +415,7 @@ export const en: Translations = {
     fileRequired: "Please select a file",
     fileTooLarge: "File size must be 5MB or less",
     invalidFileType: "Supported formats: JPG, PNG, WebP, HEIC",
+    invalidFileContent: "Invalid file content. The file may be corrupted",
     invalidInput: "Invalid input",
     invalidIdFormat: "Invalid ID format",
     invalidFieldFormat: "Invalid {{field}} format",
