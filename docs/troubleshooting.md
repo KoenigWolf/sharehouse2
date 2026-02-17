@@ -164,5 +164,5 @@ echo $ANDROID_HOME
 ### 解決しない場合
 
 1. エラーメッセージで検索
-2. [GitHub Issues](https://github.com/your-org/sharehouse2/issues) を確認
+2. [GitHub Issues](https://github.com/KoenigWolf/sharehouse2/issues) を確認
 3. 新しい Issue を作成（テンプレートを使用）

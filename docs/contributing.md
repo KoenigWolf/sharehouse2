@@ -6,7 +6,7 @@ Share House Portal への貢献方法。
 
 ## 開発フロー
 
-```
+```text
 1. Issue を確認・作成
 2. ブランチを作成
 3. 実装
@@ -22,9 +22,9 @@ Share House Portal への貢献方法。
 
 ### 既存 Issue を探す
 
-- [Bug](https://github.com/your-org/sharehouse2/labels/bug) - バグ報告
-- [Enhancement](https://github.com/your-org/sharehouse2/labels/enhancement) - 機能要望
-- [Good First Issue](https://github.com/your-org/sharehouse2/labels/good%20first%20issue) - 初心者向け
+- [Bug](https://github.com/KoenigWolf/sharehouse2/labels/bug) - バグ報告
+- [Enhancement](https://github.com/KoenigWolf/sharehouse2/labels/enhancement) - 機能要望
+- [Good First Issue](https://github.com/KoenigWolf/sharehouse2/labels/good%20first%20issue) - 初心者向け
 
 ### 新しい Issue を作成
 
@@ -94,7 +94,7 @@ npm run lint
 
 ### PR タイトル
 
-```
+```text
 <type>: <description>
 ```
 

@@ -15,7 +15,7 @@ Share House Portal の開発環境セットアップ手順。
 ## 1. リポジトリのクローン
 
 ```bash
-git clone https://github.com/your-org/sharehouse2.git
+git clone https://github.com/KoenigWolf/sharehouse2.git
 cd sharehouse2
 ```
 

@@ -6,7 +6,7 @@ Share House Portal のシステム構成と設計方針。
 
 ## システム構成図
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                         クライアント                              │
 ├─────────────────────────────────┬───────────────────────────────┤
@@ -50,7 +50,7 @@ Share House Portal のシステム構成と設計方針。
 
 ## ディレクトリ構成
 
-```
+```text
 sharehouse2/
 ├── src/
 │   ├── app/                    # Next.js App Router
@@ -87,7 +87,7 @@ sharehouse2/
 
 ### 読み取り（Server Component）
 
-```
+```text
 Page (Server Component)
     │
     ▼
@@ -102,7 +102,7 @@ PostgreSQL + RLS
 
 ### 書き込み（Server Action）
 
-```
+```text
 Client Component
     │
     ▼ (form action / useFormState)
@@ -128,7 +128,7 @@ revalidatePath / revalidateTag
 
 ### 認証フロー
 
-```
+```text
 1. サインアップ/サインイン
    → Supabase Auth
    → セッショントークン発行
