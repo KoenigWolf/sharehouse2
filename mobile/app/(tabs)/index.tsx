@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, memo } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   RefreshControl,
   Pressable,
   TextInput,
+  Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -143,7 +144,7 @@ export default function ResidentsScreen() {
           paddingBottom: insets.bottom + 80,
         }}
         columnWrapperStyle={{ gap: 12 }}
-        ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+        ItemSeparatorComponent={ProfileGridSeparator}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -164,13 +165,22 @@ export default function ResidentsScreen() {
             </View>
           )
         }
+        // Performance optimizations
+        initialNumToRender={8}
+        maxToRenderPerBatch={8}
+        windowSize={5}
+        removeClippedSubviews={Platform.OS === "android"}
       />
     </View>
   );
 }
 
+// Memoized separator component for FlatList
+const ProfileGridSeparator = memo(() => <View style={{ height: 12 }} />);
+ProfileGridSeparator.displayName = "ProfileGridSeparator";
+
 // Resident Card Component
-function ResidentCard({
+const ResidentCard = memo(function ResidentCard({
   profile,
   onPress,
   isCurrentUser,
@@ -227,4 +237,4 @@ function ResidentCard({
       </Card>
     </View>
   );
-}
+});

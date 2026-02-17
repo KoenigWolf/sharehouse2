@@ -1,4 +1,4 @@
-import { View, Pressable, type ViewProps, StyleSheet } from "react-native";
+import { View, Pressable, type ViewProps } from "react-native";
 import * as Haptics from "expo-haptics";
 import { Shadows } from "../../constants/colors";
 

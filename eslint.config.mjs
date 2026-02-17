@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Mobile config files use CommonJS
+    "mobile/metro.config.js",
+    "mobile/tailwind.config.js",
   ]),
 ]);
 

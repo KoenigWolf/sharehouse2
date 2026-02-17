@@ -1,5 +1,5 @@
-import { useEffect, useState, useCallback } from "react";
-import { View, Text, FlatList, RefreshControl, Pressable } from "react-native";
+import { useEffect, useState, useCallback, memo } from "react";
+import { View, Text, FlatList, RefreshControl, Pressable, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Image } from "expo-image";
@@ -12,6 +12,7 @@ import { Avatar, AvatarGroup } from "../../components/ui/Avatar";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { Badge } from "../../components/ui/Badge";
+import { EventCreateModal } from "../../components/events/EventCreateModal";
 import { Colors, Shadows } from "../../constants/colors";
 import { formatDate, formatTime } from "../../lib/utils";
 
@@ -23,6 +24,7 @@ export default function EventsScreen() {
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const fetchEvents = async () => {
     try {
@@ -138,7 +140,7 @@ export default function EventsScreen() {
           padding: 16,
           paddingBottom: insets.bottom + 100,
         }}
-        ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
+        ItemSeparatorComponent={EventListSeparator}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -153,6 +155,11 @@ export default function EventsScreen() {
             <Text className="text-muted-foreground">{t("events.empty")}</Text>
           </View>
         }
+        // Performance optimizations
+        initialNumToRender={5}
+        maxToRenderPerBatch={5}
+        windowSize={5}
+        removeClippedSubviews={Platform.OS === "android"}
       />
 
       {/* FAB */}
@@ -160,7 +167,7 @@ export default function EventsScreen() {
         <Pressable
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            // TODO: Open create event modal
+            setIsCreateModalOpen(true);
           }}
           className="w-14 h-14 rounded-full bg-brand-500 items-center justify-center"
           style={Shadows.elevated}
@@ -168,11 +175,22 @@ export default function EventsScreen() {
           <Text className="text-white text-2xl font-light">+</Text>
         </Pressable>
       </View>
+
+      {/* Create Event Modal */}
+      <EventCreateModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={() => fetchEvents()}
+      />
     </View>
   );
 }
 
-function EventCard({
+// Memoized separator component for FlatList
+const EventListSeparator = memo(() => <View style={{ height: 16 }} />);
+EventListSeparator.displayName = "EventListSeparator";
+
+const EventCard = memo(function EventCard({
   event,
   isAttending,
   onAttend,
@@ -274,4 +292,4 @@ function EventCard({
       </View>
     </Card>
   );
-}
+});

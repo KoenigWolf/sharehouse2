@@ -6,12 +6,14 @@ import Image from "next/image";
 import { m, AnimatePresence } from "framer-motion";
 import { Gift, Plus, X, Clock, Trash2, Check, ImagePlus } from "lucide-react";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
-import { useI18n } from "@/hooks/use-i18n";
+import { useI18n, useLocale } from "@/hooks/use-i18n";
+import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock";
 import { createShareItem, claimShareItem, deleteShareItem, updateShareItem, uploadShareItemImage } from "@/lib/share/actions";
 import { prepareImageForUpload } from "@/lib/utils/image-compression";
-import { SHARE_ITEMS, FILE_UPLOAD } from "@/lib/constants/config";
+import { SHARE_ITEMS, FILE_UPLOAD, IMAGE } from "@/lib/constants/config";
 import { getInitials } from "@/lib/utils";
 import { logError } from "@/lib/errors";
+import { getImageAlt } from "@/lib/utils/accessibility";
 import type { ShareItemWithProfile } from "@/domain/share-item";
 
 const EASE = [0.23, 1, 0.32, 1] as const;
@@ -102,16 +104,7 @@ function ShareComposeModalInner({ isOpen, onClose, onSubmit, isSubmitting, editi
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, handleKeyDown]);
 
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
+  useBodyScrollLock(isOpen);
 
   const canSubmit = title.trim().length > 0 && !isSubmitting;
 
@@ -327,6 +320,7 @@ const itemVariants = {
 
 export function ShareContent({ items, currentUserId, isTeaser = false }: ShareContentProps) {
   const t = useI18n();
+  const locale = useLocale();
   const router = useRouter();
   const [isComposeOpen, setIsComposeOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ShareItemWithProfile | null>(null);
@@ -556,8 +550,11 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                   <div className="relative aspect-[16/10] rounded-xl overflow-hidden bg-muted mb-4 -mx-1">
                     <Image
                       src={item.image_url}
-                      alt={item.title}
+                      alt={getImageAlt.shareItemImage(item.title, locale)}
                       fill
+                      priority={index === 0}
+                      placeholder="blur"
+                      blurDataURL={IMAGE.blurDataURL}
                       className={`object-cover transition-all duration-300 ${
                         isClaimed ? "grayscale opacity-60" : "group-hover:scale-[1.02]"
                       } ${isTeaser ? "blur-[6px]" : ""}`}

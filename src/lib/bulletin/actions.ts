@@ -7,9 +7,9 @@ import { BULLETIN } from "@/lib/constants/config";
 import { logError } from "@/lib/errors";
 import { getServerTranslator } from "@/lib/i18n/server";
 import { enforceAllowedOrigin } from "@/lib/security/request";
+import { RateLimiters, formatRateLimitError } from "@/lib/security/rate-limit";
 import type { BulletinWithProfile } from "@/domain/bulletin";
-
-type ActionResponse = { success: true } | { error: string };
+import type { ActionResponse } from "@/lib/types/action-response";
 
 export interface PaginatedBulletins {
   bulletins: BulletinWithProfile[];
@@ -136,6 +136,12 @@ export async function createBulletin(message: string): Promise<ActionResponse> {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { error: t("errors.unauthorized") };
+
+    // Rate limit check
+    const rateLimitResult = RateLimiters.bulletin(user.id);
+    if (!rateLimitResult.success) {
+      return { error: formatRateLimitError(rateLimitResult.retryAfter, t) };
+    }
 
     const trimmed = message.trim();
     if (!trimmed) return { error: t("errors.invalidInput") };

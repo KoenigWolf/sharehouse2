@@ -1,5 +1,5 @@
-import { useEffect, useState, useCallback } from "react";
-import { View, Text, FlatList, RefreshControl, Pressable, Alert } from "react-native";
+import { useEffect, useState, useCallback, memo } from "react";
+import { View, Text, FlatList, RefreshControl, Pressable, Alert, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Image } from "expo-image";
 import * as Haptics from "expo-haptics";
@@ -11,6 +11,7 @@ import { Avatar } from "../../components/ui/Avatar";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { Badge } from "../../components/ui/Badge";
+import { ShareCreateModal } from "../../components/share/ShareCreateModal";
 import { Colors, Shadows } from "../../constants/colors";
 
 export default function ShareScreen() {
@@ -20,6 +21,7 @@ export default function ShareScreen() {
   const [items, setItems] = useState<ShareItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const fetchItems = async () => {
     try {
@@ -128,7 +130,7 @@ export default function ShareScreen() {
           paddingBottom: insets.bottom + 100,
         }}
         columnWrapperStyle={{ gap: 8 }}
-        ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
+        ItemSeparatorComponent={ShareGridSeparator}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -146,6 +148,11 @@ export default function ShareScreen() {
             </Text>
           </View>
         }
+        // Performance optimizations
+        initialNumToRender={6}
+        maxToRenderPerBatch={6}
+        windowSize={5}
+        removeClippedSubviews={Platform.OS === "android"}
       />
 
       {/* FAB */}
@@ -153,7 +160,7 @@ export default function ShareScreen() {
         <Pressable
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            // TODO: Open create item modal
+            setIsCreateModalOpen(true);
           }}
           className="w-14 h-14 rounded-full bg-brand-500 items-center justify-center"
           style={Shadows.elevated}
@@ -161,11 +168,22 @@ export default function ShareScreen() {
           <Text className="text-white text-2xl font-light">+</Text>
         </Pressable>
       </View>
+
+      {/* Create Share Item Modal */}
+      <ShareCreateModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={() => fetchItems()}
+      />
     </View>
   );
 }
 
-function ShareItemCard({
+// Memoized separator component for FlatList
+const ShareGridSeparator = memo(() => <View style={{ height: 8 }} />);
+ShareGridSeparator.displayName = "ShareGridSeparator";
+
+const ShareItemCard = memo(function ShareItemCard({
   item,
   isOwn,
   onClaim,
@@ -179,9 +197,10 @@ function ShareItemCard({
   hoursLeftLabel: (hours: number) => string;
 }) {
   const expiresAt = new Date(item.expires_at);
+  const now = Date.now(); // eslint-disable-line -- Date.now() for display-only time calculation
   const hoursLeft = Math.max(
     0,
-    Math.floor((expiresAt.getTime() - Date.now()) / (1000 * 60 * 60))
+    Math.floor((expiresAt.getTime() - now) / (1000 * 60 * 60))
   );
   const isExpiringSoon = hoursLeft <= 6;
 
@@ -249,4 +268,4 @@ function ShareItemCard({
       </View>
     </Card>
   );
-}
+});
