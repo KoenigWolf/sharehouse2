@@ -1,0 +1,65 @@
+name: Bug Report
+description: バグを報告する
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        バグ報告ありがとうございます。以下の情報を記入してください。
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 問題の説明
+      description: 何が起きたか、何が期待される動作かを説明してください
+      placeholder: |
+        期待した動作:
+        実際の動作:
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 再現手順
+      description: バグを再現する手順
+      placeholder: |
+        1. '...' に移動
+        2. '...' をクリック
+        3. エラーが発生
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: プラットフォーム
+      options:
+        - Web (PC)
+        - Web (スマホ)
+        - iOS アプリ
+        - Android アプリ
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 環境情報
+      description: ブラウザ、OS、アプリバージョンなど
+      placeholder: |
+        - ブラウザ: Chrome 120
+        - OS: macOS 14.0
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: スクリーンショット
+      description: 問題を説明する画像があれば添付してください
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: その他
+      description: 関連情報があれば記入してください
