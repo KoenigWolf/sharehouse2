@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useRef, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import {
-  Camera,
   Pencil,
   User,
   Briefcase,
@@ -11,23 +10,25 @@ import {
   Users,
   Smile,
   Link,
-  Bell,
   Check,
 } from "lucide-react";
-import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { Switch } from "@/components/ui/switch";
 import { Profile, MBTI_TYPES, ROOM_NUMBERS, type MBTIType } from "@/domain/profile";
-import { updateProfile, uploadAvatar } from "@/lib/profile/actions";
+import { updateProfile } from "@/lib/profile/actions";
 import { updateTeaTimeSetting } from "@/lib/tea-time/actions";
 import { updateNotificationSetting } from "@/lib/notifications/actions";
 import type { NotificationKey } from "@/domain/notification";
-import { getInitials } from "@/lib/utils";
-import { prepareImageForUpload } from "@/lib/utils/image-compression";
-import { FILE_UPLOAD } from "@/lib/constants/config";
 import { ICON_SIZE, ICON_STROKE, ICON_GAP } from "@/lib/constants/icons";
 import { useI18n } from "@/hooks/use-i18n";
+import {
+  SectionLabel,
+  InputField,
+  SelectField,
+  TextareaField,
+  AvatarSection,
+  SettingsSection,
+} from "@/components/profile";
 
 interface NotificationSettingsData {
   notify_tea_time: boolean;
@@ -42,140 +43,12 @@ interface ProfileEditFormProps {
   targetUserId?: string;
 }
 
-function SectionLabel({ label, icon }: { label: string; icon?: React.ReactNode }) {
-  return (
-    <div className="flex items-center gap-4 pt-12 pb-6">
-      <div className={`flex items-center ${ICON_GAP.md}`}>
-        {icon && <span className="text-brand-500">{icon}</span>}
-        <h3 className="text-[10px] font-bold tracking-[0.2em] text-muted-foreground uppercase whitespace-nowrap">
-          {label}
-        </h3>
-      </div>
-      <div className="flex-1 h-px bg-secondary" />
-    </div>
-  );
-}
-
-function InputField({
-  id,
-  label,
-  value,
-  onChange,
-  placeholder,
-  type = "text",
-  required = false,
-  hint,
-}: {
-  id: string;
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  type?: "text" | "date";
-  required?: boolean;
-  hint?: string;
-}) {
-  return (
-    <div className="space-y-2.5">
-      <label htmlFor={id} className="label-uppercase ml-1">
-        {label}
-        {required && <span className="text-rose-400 ml-1">*</span>}
-      </label>
-      <input
-        id={id}
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        required={required}
-        className="input-base"
-      />
-      {hint && <p className="text-muted font-medium ml-1">{hint}</p>}
-    </div>
-  );
-}
-
-function SelectField({
-  id,
-  label,
-  value,
-  onChange,
-  options,
-  placeholder,
-}: {
-  id: string;
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  options: { value: string; label: string }[];
-  placeholder?: string;
-}) {
-  return (
-    <div className="space-y-2.5">
-      <label htmlFor={id} className="label-uppercase ml-1">
-        {label}
-      </label>
-      <div className="relative group">
-        <select
-          id={id}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="select-base"
-        >
-          {placeholder && <option value="">{placeholder}</option>}
-          {options.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-      </div>
-    </div>
-  );
-}
-
-function TextareaField({
-  id,
-  label,
-  value,
-  onChange,
-  placeholder,
-  rows = 3,
-  hint,
-}: {
-  id: string;
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  rows?: number;
-  hint?: string;
-}) {
-  return (
-    <div className="space-y-2.5">
-      <label htmlFor={id} className="label-uppercase ml-1">
-        {label}
-      </label>
-      <textarea
-        id={id}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        rows={rows}
-        className="textarea-base"
-      />
-      {hint && <p className="text-muted font-medium ml-1">{hint}</p>}
-    </div>
-  );
-}
-
 export function ProfileEditForm({
   profile,
   initialTeaTimeEnabled = false,
   initialNotificationSettings,
   targetUserId,
 }: ProfileEditFormProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const t = useI18n();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -238,42 +111,20 @@ export function ProfileEditForm({
     [formData.interests]
   );
 
-  const handleAvatarClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const handleAvatarUploadStart = useCallback(() => {
     setIsUploading(true);
     setError("");
     setSuccess(false);
+  }, []);
 
-    try {
-      const prepared = await prepareImageForUpload(file);
-      const formDataUpload = new FormData();
-      formDataUpload.append("avatar", prepared.file);
-      if (targetUserId) {
-        formDataUpload.append("targetUserId", targetUserId);
-      }
-
-      const result = await uploadAvatar(formDataUpload);
-
-      if ("error" in result) {
-        setError(result.error);
-      } else if ("url" in result) {
-        setAvatarUrl(result.url);
-      }
-    } catch {
-      setError(t("errors.compressionFailed"));
-    }
-
+  const handleAvatarUploadEnd = useCallback((url?: string, uploadError?: string) => {
     setIsUploading(false);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+    if (uploadError) {
+      setError(uploadError);
+    } else if (url) {
+      setAvatarUrl(url);
     }
-  };
+  }, []);
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
@@ -401,57 +252,20 @@ export function ProfileEditForm({
       </AnimatePresence>
 
       <form onSubmit={handleSubmit} className="space-y-12">
+        {/* Avatar & Basic Info Section */}
         <div className="premium-surface rounded-[2.5rem] p-8 sm:p-10 shadow-sm border border-border/50 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary/30 rounded-full blur-3xl -mr-32 -mt-32" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-muted/50 rounded-full blur-3xl -ml-24 -mb-24" />
 
           <div className="relative flex flex-col sm:flex-row gap-8 sm:gap-12 items-center sm:items-start">
-            <div className="shrink-0 group">
-              <div className="relative w-40 h-40 sm:w-48 sm:h-48">
-                <div className="absolute inset-0 rounded-full bg-brand-100/50 animate-pulse group-hover:animate-none group-hover:scale-105 transition-transform duration-500" />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={handleAvatarClick}
-                  disabled={isUploading}
-                  className="relative w-full h-full p-1 bg-card border-2 border-border/50 rounded-full overflow-hidden shadow-md group-hover:shadow-xl group-hover:border-brand-100 transition-all duration-500"
-                >
-                  <Avatar className="size-full rounded-full">
-                    <OptimizedAvatarImage
-                      src={avatarUrl}
-                      context="edit"
-                      alt={t("a11y.profilePhotoAlt", { name: formData.name || "?" })}
-                      fallback={getInitials(formData.name || "?")}
-                      fallbackClassName="bg-muted text-muted-foreground/70 text-5xl rounded-full"
-                    />
-                  </Avatar>
-
-                  <div className="absolute inset-0 bg-brand-900/40 backdrop-blur-sm opacity-50 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-500 flex flex-col items-center justify-center gap-2">
-                    <Camera size={ICON_SIZE.xl} strokeWidth={ICON_STROKE.normal} className="text-white" />
-                    <span className="text-white text-[10px] font-bold tracking-widest uppercase">
-                      {isUploading ? t("profile.uploadingPhoto") : t("profile.changePhoto")}
-                    </span>
-                  </div>
-
-                  {isUploading && (
-                    <div className="absolute inset-0 bg-card/90 backdrop-blur-sm flex items-center justify-center">
-                      <Spinner size="lg" variant="dark" />
-                    </div>
-                  )}
-                </Button>
-              </div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept={FILE_UPLOAD.inputAccept}
-                onChange={handleAvatarChange}
-                className="hidden"
-                aria-label={t("profile.changePhoto")}
-              />
-              <p className="text-[10px] text-muted-foreground/70 font-bold tracking-widest uppercase text-center mt-4">
-                {t("profile.photoFormat")}
-              </p>
-            </div>
+            <AvatarSection
+              avatarUrl={avatarUrl}
+              name={formData.name}
+              isUploading={isUploading}
+              onUploadStart={handleAvatarUploadStart}
+              onUploadEnd={handleAvatarUploadEnd}
+              targetUserId={targetUserId}
+            />
 
             <div className="flex-1 w-full space-y-8 py-2">
               <div className="space-y-6">
@@ -486,6 +300,7 @@ export function ProfileEditForm({
           </div>
         </div>
 
+        {/* Bio Section */}
         <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-border/50 space-y-8">
           <SectionLabel
             label={t("profile.bio")}
@@ -531,6 +346,7 @@ export function ProfileEditForm({
           />
         </div>
 
+        {/* Basic Info Section */}
         <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-border/50 space-y-8">
           <SectionLabel
             label={t("profile.sectionBasicInfo")}
@@ -590,6 +406,7 @@ export function ProfileEditForm({
           </div>
         </div>
 
+        {/* Work Section */}
         <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-border/50 space-y-8">
           <SectionLabel
             label={t("profile.sectionWork")}
@@ -639,6 +456,7 @@ export function ProfileEditForm({
           </div>
         </div>
 
+        {/* Lifestyle Section */}
         <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-border/50 space-y-8">
           <SectionLabel
             label={t("profile.sectionLifestyle")}
@@ -724,6 +542,7 @@ export function ProfileEditForm({
           </div>
         </div>
 
+        {/* Communal Section */}
         <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-border/50 space-y-8">
           <SectionLabel
             label={t("profile.sectionCommunal")}
@@ -799,6 +618,7 @@ export function ProfileEditForm({
           </div>
         </div>
 
+        {/* Personality Section */}
         <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-border/50 space-y-8">
           <SectionLabel
             label={t("profile.sectionPersonality")}
@@ -822,6 +642,7 @@ export function ProfileEditForm({
           </div>
         </div>
 
+        {/* SNS Section */}
         <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-border/50 space-y-8">
           <SectionLabel
             label={t("profile.sectionSns")}
@@ -871,55 +692,17 @@ export function ProfileEditForm({
           </div>
         </div>
 
-        <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-border/50 space-y-8">
-          <SectionLabel
-            label={`${t("teaTime.title")} & ${t("notifications.sectionTitle")}`}
-            icon={<Bell size={ICON_SIZE.md} strokeWidth={ICON_STROKE.normal} />}
-          />
-          <div className="divide-y divide-border/50">
-            <div className="flex items-center justify-between py-5 group first:pt-0">
-              <div className="space-y-1">
-                <p className="text-[13px] font-bold text-foreground/80 tracking-wide">{t("teaTime.title")}</p>
-                <p className={`text-[11px] font-medium ${teaTimeEnabled ? "text-brand-500" : "text-muted-foreground"}`}>
-                  {teaTimeEnabled ? t("teaTime.participating") : t("teaTime.notParticipating")}
-                </p>
-              </div>
-              {isTeaTimeLoading ? (
-                <Spinner size="sm" variant="dark" />
-              ) : (
-                <Switch
-                  checked={teaTimeEnabled}
-                  onCheckedChange={handleTeaTimeToggle}
-                  disabled={isTeaTimeLoading}
-                  className="scale-110 data-[state=checked]:bg-brand-500"
-                />
-              )}
-            </div>
-            {([
-              { key: "notify_tea_time" as NotificationKey, label: t("notifications.teaTime"), description: t("notifications.teaTimeDescription") },
-              { key: "notify_garbage_duty" as NotificationKey, label: t("notifications.garbageDuty"), description: t("notifications.garbageDutyDescription") },
-              { key: "notify_new_photos" as NotificationKey, label: t("notifications.newPhotos"), description: t("notifications.newPhotosDescription") },
-            ]).map((item) => (
-              <div key={item.key} className="flex items-center justify-between py-5 group">
-                <div className="space-y-1">
-                  <p className="text-[13px] font-bold text-foreground/80 tracking-wide">{item.label}</p>
-                  <p className="text-[11px] font-medium text-muted-foreground">{item.description}</p>
-                </div>
-                {notificationLoading === item.key ? (
-                  <Spinner size="sm" variant="dark" />
-                ) : (
-                  <Switch
-                    checked={notificationSettings[item.key]}
-                    onCheckedChange={(checked) => handleNotificationToggle(item.key, checked)}
-                    disabled={notificationLoading === item.key}
-                    className="scale-110 data-[state=checked]:bg-brand-500"
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* Settings Section */}
+        <SettingsSection
+          teaTimeEnabled={teaTimeEnabled}
+          isTeaTimeLoading={isTeaTimeLoading}
+          onTeaTimeToggle={handleTeaTimeToggle}
+          notificationSettings={notificationSettings}
+          notificationLoading={notificationLoading}
+          onNotificationToggle={handleNotificationToggle}
+        />
 
+        {/* Submit Button */}
         <m.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
