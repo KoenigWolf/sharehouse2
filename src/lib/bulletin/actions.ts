@@ -10,6 +10,7 @@ import { enforceAllowedOrigin } from "@/lib/security/request";
 import { RateLimiters, formatRateLimitError } from "@/lib/security/rate-limit";
 import type { BulletinWithProfile } from "@/domain/bulletin";
 import type { ActionResponse } from "@/lib/types/action-response";
+import { bulletinSchema } from "@/domain/validation/schemas";
 
 export interface PaginatedBulletins {
   bulletins: BulletinWithProfile[];
@@ -143,17 +144,17 @@ export async function createBulletin(message: string): Promise<ActionResponse> {
       return { error: formatRateLimitError(rateLimitResult.retryAfter, t) };
     }
 
-    const trimmed = message.trim();
-    if (!trimmed) return { error: t("errors.invalidInput") };
-    if (trimmed.length > BULLETIN.maxMessageLength) {
-      return { error: t("errors.invalidInput") };
+    const validation = bulletinSchema.safeParse({ message });
+    if (!validation.success) {
+      return { error: validation.error.issues[0].message };
     }
+    const { message: validatedMessage } = validation.data;
 
     const { data, error } = await supabase
       .from("bulletins")
       .insert({
         user_id: user.id,
-        message: trimmed,
+        message: validatedMessage,
       })
       .select("id")
       .single();
@@ -187,16 +188,16 @@ export async function updateBulletin(bulletinId: string, message: string): Promi
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { error: t("errors.unauthorized") };
 
-    const trimmed = message.trim();
-    if (!trimmed) return { error: t("errors.invalidInput") };
-    if (trimmed.length > BULLETIN.maxMessageLength) {
-      return { error: t("errors.invalidInput") };
+    const validation = bulletinSchema.safeParse({ message });
+    if (!validation.success) {
+      return { error: validation.error.issues[0].message };
     }
+    const { message: validatedMessage } = validation.data;
 
     const { data, error } = await supabase
       .from("bulletins")
       .update({
-        message: trimmed,
+        message: validatedMessage,
         updated_at: new Date().toISOString(),
       })
       .eq("id", bulletinId)

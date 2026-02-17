@@ -8,6 +8,7 @@ import { getServerTranslator } from "@/lib/i18n/server";
 import { enforceAllowedOrigin } from "@/lib/security/request";
 import { isValidUUID, RateLimiters, formatRateLimitError } from "@/lib/security";
 import { validateFileUpload, sanitizeFileName } from "@/domain/validation/profile";
+import { eventSchema } from "@/domain/validation/schemas";
 import type { EventWithDetails } from "@/domain/event";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Translator } from "@/lib/i18n";
@@ -185,26 +186,19 @@ export async function createEvent(input: {
       return { error: formatRateLimitError(rateLimitResult.retryAfter, t) };
     }
 
-    const trimmedTitle = input.title.trim();
-    if (!trimmedTitle) return { error: t("errors.invalidInput") };
-    if (trimmedTitle.length > EVENTS.maxTitleLength) {
-      return { error: t("errors.invalidInput") };
+    const validation = eventSchema.safeParse(input);
+    if (!validation.success) {
+      return { error: validation.error.issues[0].message };
     }
-
-    if (!input.event_date) return { error: t("errors.invalidInput") };
-
-    const trimmedDesc = input.description?.trim() || null;
-    if (trimmedDesc && trimmedDesc.length > EVENTS.maxDescriptionLength) {
-      return { error: t("errors.invalidInput") };
-    }
+    const validatedData = validation.data;
 
     const { data, error } = await supabase.from("events").insert({
       user_id: user.id,
-      title: trimmedTitle,
-      description: trimmedDesc,
-      event_date: input.event_date,
+      title: validatedData.title,
+      description: validatedData.description ?? null,
+      event_date: validatedData.event_date,
       event_time: input.event_time?.trim() || null,
-      location: input.location?.trim() || null,
+      location: validatedData.location ?? null,
     }).select("id").single();
 
     if (error || !data) {
@@ -291,27 +285,20 @@ export async function updateEvent(
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { error: t("errors.unauthorized") };
 
-    const trimmedTitle = input.title.trim();
-    if (!trimmedTitle) return { error: t("errors.invalidInput") };
-    if (trimmedTitle.length > EVENTS.maxTitleLength) {
-      return { error: t("errors.invalidInput") };
+    const validation = eventSchema.safeParse(input);
+    if (!validation.success) {
+      return { error: validation.error.issues[0].message };
     }
-
-    if (!input.event_date) return { error: t("errors.invalidInput") };
-
-    const trimmedDesc = input.description?.trim() || null;
-    if (trimmedDesc && trimmedDesc.length > EVENTS.maxDescriptionLength) {
-      return { error: t("errors.invalidInput") };
-    }
+    const validatedData = validation.data;
 
     const { data, error } = await supabase
       .from("events")
       .update({
-        title: trimmedTitle,
-        description: trimmedDesc,
-        event_date: input.event_date,
+        title: validatedData.title,
+        description: validatedData.description ?? null,
+        event_date: validatedData.event_date,
         event_time: input.event_time?.trim() || null,
-        location: input.location?.trim() || null,
+        location: validatedData.location ?? null,
       })
       .eq("id", eventId)
       .eq("user_id", user.id)
