@@ -1,12 +1,8 @@
 name: Security Check
 
 on:
-  pull_request:
-    paths:
-      - 'package.json'
-      - 'package-lock.json'
-      - 'mobile/package.json'
-      - 'mobile/package-lock.json'
+  # PR自動実行を削除（コスト節約）
+  # 代わりに /review コメントで review.yml が実行される
   schedule:
     # 毎週月曜 9:00 JST (日曜 24:00 UTC)
     - cron: '0 0 * * 1'

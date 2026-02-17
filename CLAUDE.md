@@ -2,16 +2,46 @@
 
 20人規模のシェアハウス住民専用ポータル。immedio スタイル（シンプル＆モダン）なデザイン。
 
-## コマンド
+## クイックスタート
 
-- `npm run dev` - 開発サーバー
-- `npm run check-all` - lint + type-check + test + build（コミット前に必ず実行）
-- `npm run test:run` - テスト実行
-- `npm run build` - 本番ビルド
+```bash
+npm install          # 依存関係インストール
+npm run dev          # 開発サーバー起動 (http://localhost:3000)
+npm run check-all    # コミット前チェック (lint + type-check + test + build)
+```
+
+## コマンド一覧
+
+| コマンド | 説明 |
+|---------|------|
+| `npm run dev` | 開発サーバー |
+| `npm run build` | 本番ビルド |
+| `npm run check-all` | lint + type-check + test + build（コミット前に必ず実行） |
+| `npm run test:run` | テスト実行 |
+| `npm run lint` | ESLint 実行 |
+| `npm run type-check` | TypeScript 型チェック |
 
 ## 技術スタック
 
-Next.js 16 (App Router) / TypeScript / Tailwind CSS 4 / shadcn/ui / Supabase / Framer Motion
+| カテゴリ | 技術 |
+|---------|------|
+| フレームワーク | Next.js 16 (App Router) |
+| 言語 | TypeScript |
+| スタイリング | Tailwind CSS 4 + shadcn/ui |
+| バックエンド | Supabase (Auth / DB / Storage) |
+| アニメーション | Framer Motion |
+| モバイル | Expo (React Native) |
+
+## ドキュメント
+
+| ドキュメント | 内容 |
+|-------------|------|
+| [concept.md](docs/concept.md) | プロダクトコンセプト・機能一覧 |
+| [coding-guidelines.md](docs/coding-guidelines.md) | コーディング規約 |
+| [design-guidelines.md](docs/design-guidelines.md) | デザインシステム |
+| [github-workflows.md](docs/github-workflows.md) | CI/CD・GitHub自動化 |
+| [requirements.md](docs/requirements.md) | 改善要件 |
+| [improvements.md](docs/improvements.md) | 改善履歴 |
 
 ## コーディング規約
 
@@ -76,3 +106,13 @@ Next.js 16 (App Router) / TypeScript / Tailwind CSS 4 / shadcn/ui / Supabase / F
 - アバター画像は `OptimizedAvatarImage` コンポーネントを使う（Next.js Image ベース）
 - framer-motion は `m` コンポーネントを優先（`motion` は layoutId 使用時のみ）
 - レート制限は `checkRateLimit` / `checkRateLimitAsync`（Redis 対応）
+
+## CI/CD
+
+PR コメントで `/review` と投稿すると CI が実行される（コスト節約のためオンデマンド方式）。
+
+```
+/review  → 🚀 リアクション → npm run check-all → ✅/❌ 結果コメント
+```
+
+詳細: @docs/github-workflows.md

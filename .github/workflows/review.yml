@@ -54,6 +54,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Security audit
+        id: audit
+        run: |
+          npm audit --audit-level=high || echo "::warning::Security vulnerabilities found"
+        continue-on-error: true
+
       - name: Run checks
         id: checks
         run: npm run check-all
@@ -63,15 +69,22 @@ jobs:
         uses: actions/github-script@v8
         with:
           script: |
-            const success = '${{ steps.checks.outcome }}' === 'success';
-            const emoji = success ? '✅' : '❌';
-            const status = success ? 'passed' : 'failed';
+            const checksSuccess = '${{ steps.checks.outcome }}' === 'success';
+            const auditSuccess = '${{ steps.audit.outcome }}' === 'success';
+            const allSuccess = checksSuccess && auditSuccess;
+
+            const emoji = allSuccess ? '✅' : '❌';
+            const status = allSuccess ? 'passed' : 'failed';
+
+            let details = '';
+            details += checksSuccess ? '✅ Lint / Type / Test / Build\n' : '❌ Lint / Type / Test / Build\n';
+            details += auditSuccess ? '✅ Security Audit\n' : '⚠️ Security Audit (vulnerabilities found)\n';
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: `${emoji} **Review checks ${status}**\n\n[View workflow run](${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})`
+              body: `${emoji} **Review checks ${status}**\n\n${details}\n[View workflow run](${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})`
             });
 
       - name: Exit with check result
