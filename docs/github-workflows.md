@@ -170,6 +170,8 @@ gh label create "blocked" --color "B60205" --description "Blocked by external fa
 gh label create "pinned" --color "006B75" --description "Pinned issue"
 ```
 
+> `dependencies` ラベルは Dependabot が PR 作成時に自動付与するため、手動作成不要。
+
 ---
 
 ## トラブルシューティング
@@ -178,9 +180,9 @@ gh label create "pinned" --color "006B75" --description "Pinned issue"
 
 1. PR のコメントか確認（Issue コメントでは動かない）
 2. Actions タブでワークフロー実行履歴を確認
-3. リポジトリの Settings > Actions で権限を確認
+3. リポジトリの Settings > Actions > General で権限を確認
    - "Allow all actions and reusable workflows" を選択
-   - "Workflow permissions" で "Read and write permissions" を選択
+   - "Workflow permissions" は最小権限で OK（ワークフロー内で `contents: read` と `pull-requests: write` を明示指定）
 
 ### Dependabot PR が来ない
 
