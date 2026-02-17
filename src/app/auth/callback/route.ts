@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@/lib/env";
+import { ALLOWED_REDIRECT_PATHS } from "@/lib/constants/config";
 
 /**
  * Validate redirect URL to prevent open redirect attacks
@@ -17,28 +18,16 @@ function validateRedirect(redirect: string | null): string {
   if (redirect.startsWith("//")) return "/";
 
   // Prevent encoded attacks
-  const decoded = decodeURIComponent(redirect);
-  if (decoded.startsWith("//") || decoded.includes("://")) return "/";
-
-  // Whitelist allowed paths
-  const allowedPaths = [
-    "/",
-    "/profile",
-    "/settings",
-    "/events",
-    "/bulletin",
-    "/share",
-    "/residents",
-    "/tea-time",
-    "/floor-plan",
-    "/room-photos",
-    "/admin",
-    "/stats",
-    "/info",
-  ];
+  try {
+    const decoded = decodeURIComponent(redirect);
+    if (decoded.startsWith("//") || decoded.includes("://")) return "/";
+  } catch {
+    // Invalid URL encoding
+    return "/";
+  }
 
   // Check if path starts with any allowed path
-  const isAllowed = allowedPaths.some(
+  const isAllowed = ALLOWED_REDIRECT_PATHS.some(
     (path) => redirect === path || redirect.startsWith(`${path}/`) || redirect.startsWith(`${path}?`)
   );
 

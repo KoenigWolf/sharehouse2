@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   isValidUUID,
   isMockId,
@@ -7,6 +7,8 @@ import {
   sanitizeForStorage,
   sanitizeEmail,
   hasSqlInjectionPattern,
+  timingSafeEqual,
+  validateCronSecret,
 } from "@/lib/security/validation";
 
 describe("Security Validation", () => {
@@ -196,6 +198,82 @@ describe("Security Validation", () => {
       expect(hasSqlInjectionPattern("' or '1'='1")).toBe(true);
       expect(hasSqlInjectionPattern("' OR '1'='1")).toBe(true);
       expect(hasSqlInjectionPattern("' Or '1'='1")).toBe(true);
+    });
+  });
+
+  describe("timingSafeEqual", () => {
+    it("returns true for equal strings", () => {
+      expect(timingSafeEqual("hello", "hello")).toBe(true);
+      expect(timingSafeEqual("Bearer secret123", "Bearer secret123")).toBe(true);
+      expect(timingSafeEqual("", "")).toBe(true);
+    });
+
+    it("returns false for different strings", () => {
+      expect(timingSafeEqual("hello", "world")).toBe(false);
+      expect(timingSafeEqual("abc", "abd")).toBe(false);
+      expect(timingSafeEqual("Bearer secret123", "Bearer secret456")).toBe(false);
+    });
+
+    it("returns false for different length strings", () => {
+      expect(timingSafeEqual("short", "longer string")).toBe(false);
+      expect(timingSafeEqual("", "not empty")).toBe(false);
+      expect(timingSafeEqual("abc", "ab")).toBe(false);
+    });
+
+    it("handles non-string inputs", () => {
+      expect(timingSafeEqual(null as unknown as string, "test")).toBe(false);
+      expect(timingSafeEqual("test", undefined as unknown as string)).toBe(false);
+      expect(timingSafeEqual(123 as unknown as string, "123")).toBe(false);
+    });
+
+    it("handles special characters", () => {
+      expect(timingSafeEqual("!@#$%^&*()", "!@#$%^&*()")).toBe(true);
+      expect(timingSafeEqual("日本語", "日本語")).toBe(true);
+      expect(timingSafeEqual("🔐🔑", "🔐🔑")).toBe(true);
+    });
+  });
+
+  describe("validateCronSecret", () => {
+    const originalEnv = process.env.CRON_SECRET;
+
+    beforeEach(() => {
+      process.env.CRON_SECRET = "test-secret-123";
+    });
+
+    afterEach(() => {
+      if (originalEnv) {
+        process.env.CRON_SECRET = originalEnv;
+      } else {
+        delete process.env.CRON_SECRET;
+      }
+    });
+
+    it("returns true for valid CRON secret", () => {
+      expect(validateCronSecret("Bearer test-secret-123")).toBe(true);
+    });
+
+    it("returns false for invalid CRON secret", () => {
+      expect(validateCronSecret("Bearer wrong-secret")).toBe(false);
+      expect(validateCronSecret("Bearer ")).toBe(false);
+    });
+
+    it("returns false for missing Bearer prefix", () => {
+      expect(validateCronSecret("test-secret-123")).toBe(false);
+    });
+
+    it("returns false for null/empty auth header", () => {
+      expect(validateCronSecret(null)).toBe(false);
+      expect(validateCronSecret("")).toBe(false);
+    });
+
+    it("returns false when CRON_SECRET is not set", () => {
+      delete process.env.CRON_SECRET;
+      expect(validateCronSecret("Bearer test-secret-123")).toBe(false);
+    });
+
+    it("is case sensitive", () => {
+      expect(validateCronSecret("bearer test-secret-123")).toBe(false);
+      expect(validateCronSecret("BEARER test-secret-123")).toBe(false);
     });
   });
 });

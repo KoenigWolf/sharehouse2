@@ -5,6 +5,7 @@
 
 import { z } from "zod";
 import { t } from "@/lib/i18n";
+import { timingSafeEqual as cryptoTimingSafeEqual } from "crypto";
 
 /**
  * UUID v4 validation regex
@@ -273,7 +274,7 @@ export function validateOrigin(
 
 /**
  * Timing-safe string comparison to prevent timing attacks
- * Uses constant-time comparison regardless of string length differences
+ * Uses Node.js crypto.timingSafeEqual for constant-time comparison
  *
  * @param a - First string to compare
  * @param b - Second string to compare
@@ -284,25 +285,19 @@ export function timingSafeEqual(a: string, b: string): boolean {
     return false;
   }
 
-  // Encode strings to buffers
-  const encoder = new TextEncoder();
-  const bufA = encoder.encode(a);
-  const bufB = encoder.encode(b);
-
-  // Pad to same length (prevents length-based timing leaks)
-  const maxLen = Math.max(bufA.length, bufB.length);
-  const paddedA = new Uint8Array(maxLen);
-  const paddedB = new Uint8Array(maxLen);
-  paddedA.set(bufA);
-  paddedB.set(bufB);
-
-  // Constant-time comparison
-  let result = bufA.length === bufB.length ? 0 : 1;
-  for (let i = 0; i < maxLen; i++) {
-    result |= paddedA[i] ^ paddedB[i];
+  // Different lengths are always unequal (but we still do constant-time work)
+  if (a.length !== b.length) {
+    // Perform dummy comparison to prevent timing leaks
+    const dummyA = Buffer.from(a);
+    const dummyB = Buffer.from(a); // Compare with itself
+    cryptoTimingSafeEqual(dummyA, dummyB);
+    return false;
   }
 
-  return result === 0;
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+
+  return cryptoTimingSafeEqual(bufA, bufB);
 }
 
 /**

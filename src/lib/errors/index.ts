@@ -147,13 +147,24 @@ const SENSITIVE_KEYS = [
   "address",
 ];
 
+const MAX_SANITIZE_DEPTH = 10;
+
 /**
  * Sanitize metadata before sending to Sentry
  * Redacts sensitive information to prevent PII leakage
+ *
+ * @param data - Object to sanitize
+ * @param depth - Current recursion depth (internal use)
  */
 function sanitizeForSentry(
-  data: Record<string, unknown>
+  data: Record<string, unknown>,
+  depth = 0
 ): Record<string, unknown> {
+  // Prevent stack overflow from deeply nested objects
+  if (depth >= MAX_SANITIZE_DEPTH) {
+    return { "[max_depth_exceeded]": true };
+  }
+
   const sanitized: Record<string, unknown> = {};
 
   for (const [key, value] of Object.entries(data)) {
@@ -167,9 +178,16 @@ function sanitizeForSentry(
 
     if (isSensitive) {
       sanitized[key] = "[REDACTED]";
+    } else if (Array.isArray(value)) {
+      // Handle arrays
+      sanitized[key] = value.slice(0, 20).map((item) =>
+        typeof item === "object" && item !== null
+          ? sanitizeForSentry(item as Record<string, unknown>, depth + 1)
+          : item
+      );
     } else if (typeof value === "object" && value !== null) {
       // Recursively sanitize nested objects
-      sanitized[key] = sanitizeForSentry(value as Record<string, unknown>);
+      sanitized[key] = sanitizeForSentry(value as Record<string, unknown>, depth + 1);
     } else if (typeof value === "string" && value.length > 100) {
       // Truncate long strings
       sanitized[key] = value.slice(0, 100) + "...[truncated]";

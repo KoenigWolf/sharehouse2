@@ -103,6 +103,26 @@ export const GARBAGE = {
   reminderHoursBefore: 12,
 } as const;
 
+/**
+ * Allowed redirect paths after authentication
+ * Used to prevent open redirect attacks
+ */
+export const ALLOWED_REDIRECT_PATHS = [
+  "/",
+  "/profile",
+  "/settings",
+  "/events",
+  "/bulletin",
+  "/share",
+  "/residents",
+  "/tea-time",
+  "/floor-plan",
+  "/room-photos",
+  "/admin",
+  "/stats",
+  "/info",
+] as const;
+
 export const BULLETIN = {
   maxMessageLength: 200,
   maxDisplayOnHome: 5,
