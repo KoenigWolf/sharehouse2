@@ -6,7 +6,7 @@ import { z } from "zod";
 export const commonSchemas = {
    message: z.string().min(1, "メッセージを入力してください").max(1000, "メッセージは1000文字以内で入力してください"),
    title: z.string().min(1, "タイトルを入力してください").max(100, "タイトルは100文字以内で入力してください"),
-   description: z.string().max(2000, "説明は2000文字以内で入力してください").optional(),
+   description: z.string().max(2000, "説明は2000文字以内で入力してください").optional().nullable(),
    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "正しい日付形式で入力してください (YYYY-MM-DD)"),
 };
 

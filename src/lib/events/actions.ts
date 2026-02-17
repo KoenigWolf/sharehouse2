@@ -2,7 +2,6 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { CacheStrategy } from "@/lib/utils/cache";
-import { EVENTS } from "@/lib/constants/config";
 import { logError } from "@/lib/errors";
 import { getServerTranslator } from "@/lib/i18n/server";
 import { enforceAllowedOrigin } from "@/lib/security/request";

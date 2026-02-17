@@ -108,7 +108,8 @@ describe("createShareItem", () => {
     const result = await createShareItem("", null);
 
     expect(result).toHaveProperty("error");
-    expect((result as { error: string }).error).toBe(t("errors.invalidInput"));
+    // Schema returns specific validation message for empty title
+    expect((result as { error: string }).error).toBe("タイトルを入力してください");
   });
 
   it("should create share item successfully", async () => {
@@ -298,7 +299,8 @@ describe("updateShareItem", () => {
     );
 
     expect(result).toHaveProperty("error");
-    expect((result as { error: string }).error).toBe(t("errors.invalidInput"));
+    // Schema returns specific validation message for empty title
+    expect((result as { error: string }).error).toBe("タイトルを入力してください");
   });
 
   it("should update item successfully", async () => {

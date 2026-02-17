@@ -4,6 +4,7 @@ import { Card } from "./Card";
 import { Colors } from "../../constants/colors";
 
 export function ResidentSkeleton() {
+   /* eslint-disable react-hooks/refs -- Animated.Value with useRef is the standard React Native pattern for animations */
    const animatedValue = useRef(new Animated.Value(0)).current;
 
    useEffect(() => {
@@ -29,6 +30,7 @@ export function ResidentSkeleton() {
       inputRange: [0, 1],
       outputRange: [0.3, 0.7],
    });
+   /* eslint-enable react-hooks/refs */
 
    return (
       <View className="flex-1">
