@@ -280,17 +280,16 @@ export function timingSafeEqual(a: string, b: string): boolean {
     return false;
   }
 
-  // Different lengths are always unequal (but we still do constant-time work)
-  if (a.length !== b.length) {
+  // Create UTF-8 buffers first to compare actual byte lengths
+  const bufA = Buffer.from(a, "utf8");
+  const bufB = Buffer.from(b, "utf8");
+
+  // Different byte lengths are always unequal (but we still do constant-time work)
+  if (bufA.length !== bufB.length) {
     // Perform dummy comparison to prevent timing leaks
-    const dummyA = Buffer.from(a);
-    const dummyB = Buffer.from(a); // Compare with itself
-    cryptoTimingSafeEqual(dummyA, dummyB);
+    cryptoTimingSafeEqual(bufA, bufA);
     return false;
   }
-
-  const bufA = Buffer.from(a);
-  const bufB = Buffer.from(b);
 
   return cryptoTimingSafeEqual(bufA, bufB);
 }
