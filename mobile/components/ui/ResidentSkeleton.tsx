@@ -4,13 +4,12 @@ import { Card } from "./Card";
 import { Colors } from "../../constants/colors";
 
 export function ResidentSkeleton() {
-   // React Native's Animated.Value pattern requires accessing .current during initialization
-   // This is safe because Animated.Value is a persistent mutable object, not a React component
+   // Animated.Value is a persistent mutable object - safe to extract .current once
    // eslint-disable-next-line react-hooks/refs
    const animatedValue = useRef(new Animated.Value(0)).current;
 
    useEffect(() => {
-      Animated.loop(
+      const loopAnim = Animated.loop(
          Animated.sequence([
             Animated.timing(animatedValue, {
                toValue: 1,
@@ -25,7 +24,13 @@ export function ResidentSkeleton() {
                useNativeDriver: true,
             }),
          ])
-      ).start();
+      );
+      loopAnim.start();
+
+      return () => {
+         loopAnim.stop();
+         animatedValue.setValue(0);
+      };
    }, [animatedValue]);
 
    // eslint-disable-next-line react-hooks/refs

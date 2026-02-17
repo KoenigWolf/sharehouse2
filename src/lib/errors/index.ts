@@ -3,6 +3,7 @@
  * Provides consistent error handling across the application
  */
 
+import { createHash } from "crypto";
 import { t } from "@/lib/i18n";
 import { AUTH } from "@/lib/constants/config";
 
@@ -199,6 +200,41 @@ function sanitizeForSentry(
   return sanitized;
 }
 
+/**
+ * Hash user ID for Sentry to prevent PII leakage
+ * Uses SHA-256 and takes first 12 chars of hex output
+ */
+function hashUserId(userId: string): string {
+  return createHash("sha256").update(userId).digest("hex").slice(0, 12);
+}
+
+/**
+ * Redact sensitive patterns from error message
+ */
+function redactErrorMessage(message: string): string {
+  let redacted = message;
+
+  // Redact email patterns
+  redacted = redacted.replace(
+    /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g,
+    "[EMAIL]"
+  );
+
+  // Redact potential tokens/secrets (long alphanumeric strings)
+  redacted = redacted.replace(
+    /\b[a-zA-Z0-9]{32,}\b/g,
+    "[REDACTED]"
+  );
+
+  // Redact UUIDs
+  redacted = redacted.replace(
+    /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi,
+    "[UUID]"
+  );
+
+  return redacted;
+}
+
 async function sendToSentry(
   error: unknown,
   errorData: Record<string, unknown>,
@@ -217,23 +253,22 @@ async function sendToSentry(
       scope.setTag("action", context.action);
     }
     if (context?.userId) {
-      // Hash user ID instead of sending raw value
-      scope.setUser({ id: `user_${context.userId.slice(0, 8)}` });
+      // Use SHA-256 hash to prevent PII correlation
+      scope.setUser({ id: `user_${hashUserId(context.userId)}` });
     }
     if (context?.metadata) {
-      // Sanitize metadata before sending
       scope.setExtra("metadata", sanitizeForSentry(context.metadata));
     }
 
     if (error instanceof Error) {
-      // Sanitize error message if it contains sensitive data
-      const sanitizedError = new Error(error.message);
+      // Redact sensitive data from error message before sending
+      const sanitizedError = new Error(redactErrorMessage(error.message));
       sanitizedError.name = error.name;
       sanitizedError.stack = error.stack;
       Sentry.captureException(sanitizedError);
     } else {
       Sentry.captureMessage(
-        typeof error === "string" ? error : JSON.stringify(sanitizeForSentry(errorData)),
+        typeof error === "string" ? redactErrorMessage(error) : JSON.stringify(sanitizeForSentry(errorData)),
         level
       );
     }

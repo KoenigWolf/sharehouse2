@@ -1,10 +1,10 @@
 "use client";
 
 import React, { Component, ErrorInfo, ReactNode } from "react";
-import * as Sentry from "@sentry/nextjs";
 import { AlertCircle, RefreshCcw } from "lucide-react";
 import { Button } from "./button";
 import { useI18n } from "@/hooks/use-i18n";
+import { logError } from "@/lib/errors";
 
 interface Props {
    children?: ReactNode;
@@ -14,7 +14,6 @@ interface Props {
 
 interface State {
    hasError: boolean;
-   error?: Error;
 }
 
 /**
@@ -50,21 +49,19 @@ export class ErrorBoundary extends Component<Props, State> {
       hasError: false,
    };
 
-   public static getDerivedStateFromError(error: Error): State {
-      return { hasError: true, error };
+   public static getDerivedStateFromError(): State {
+      return { hasError: true };
    }
 
    public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-      // Report to Sentry with component stack
-      Sentry.withScope((scope) => {
-         scope.setTag("errorBoundary", "true");
-         scope.setExtra("componentStack", errorInfo.componentStack);
-         Sentry.captureException(error);
+      logError(error, {
+         action: "errorBoundary",
+         metadata: { componentStack: errorInfo.componentStack },
       });
    }
 
    private handleReset = () => {
-      this.setState({ hasError: false, error: undefined });
+      this.setState({ hasError: false });
    };
 
    public render() {

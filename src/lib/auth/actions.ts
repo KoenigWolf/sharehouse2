@@ -291,6 +291,8 @@ export async function requestPasswordReset(
     return { error: formatRateLimitError(rateLimitResult.retryAfter, t) };
   }
 
+  let result: PasswordResetRequestResponse;
+
   try {
     const supabase = await createClient();
 
@@ -318,18 +320,20 @@ export async function requestPasswordReset(
       metadata: { email: validatedEmail.slice(0, 3) + "***" },
     });
 
-    // Add constant-time delay to prevent timing-based email enumeration
-    const elapsed = Date.now() - startTime;
-    const delay = Math.max(0, MIN_RESPONSE_TIME + JITTER - elapsed);
-    if (delay > 0) {
-      await new Promise((resolve) => setTimeout(resolve, delay));
-    }
-
-    return { success: true };
+    result = { success: true };
   } catch (error) {
     logError(error, { action: "requestPasswordReset" });
-    return { error: t("errors.serverError") };
+    result = { error: t("errors.serverError") };
   }
+
+  // Apply constant-time delay to both success and error paths
+  const elapsed = Date.now() - startTime;
+  const delay = Math.max(0, MIN_RESPONSE_TIME + JITTER - elapsed);
+  if (delay > 0) {
+    await new Promise((resolve) => setTimeout(resolve, delay));
+  }
+
+  return result;
 }
 
 /**

@@ -30,6 +30,7 @@ export const en: Translations = {
     copy: "Copy",
     new: "NEW",
     remove: "Remove",
+    input: "input",
   },
 
   header: {

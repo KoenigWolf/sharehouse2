@@ -194,13 +194,14 @@ export function hasSqlInjectionPattern(input: string): boolean {
 /**
  * Validate content doesn't contain injection patterns
  * @param input - String to validate
- * @param fieldName - Field name for error
+ * @param fieldName - Field name for error (uses i18n fallback if not provided)
  * @returns Validated string
  * @throws Error if suspicious patterns found
  */
-export function validateNoInjection(input: string, fieldName = "入力"): string {
+export function validateNoInjection(input: string, fieldName?: string): string {
   if (hasSqlInjectionPattern(input)) {
-    throw new Error(t("errors.invalidCharacters", { field: fieldName }));
+    const field = fieldName ?? t("common.input");
+    throw new Error(t("errors.invalidCharacters", { field }));
   }
   return input;
 }

@@ -29,6 +29,7 @@ export const ja = {
     copy: "Copy",
     new: "NEW",
     remove: "削除",
+    input: "入力",
   },
 
   header: {
