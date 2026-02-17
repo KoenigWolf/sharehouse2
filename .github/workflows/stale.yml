@@ -1,0 +1,60 @@
+name: Stale Issue/PR Management
+
+on:
+  schedule:
+    # 毎日 9:00 JST (0:00 UTC)
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Mark stale issues and PRs
+        uses: actions/stale@v9
+        with:
+          # Issues
+          days-before-stale: 30
+          days-before-close: 14
+          stale-issue-label: 'stale'
+          stale-issue-message: |
+            このIssueは30日間更新がないため、`stale` ラベルを付けました。
+            14日以内にアクティビティがない場合、自動的にクローズされます。
+
+            This issue has been automatically marked as stale because it has not had recent activity.
+            It will be closed in 14 days if no further activity occurs.
+          close-issue-message: |
+            このIssueは長期間アクティビティがなかったためクローズしました。
+            再開する場合はコメントしてください。
+
+            This issue has been closed due to inactivity.
+            Feel free to reopen if needed.
+
+          # PRs
+          days-before-pr-stale: 21
+          days-before-pr-close: 7
+          stale-pr-label: 'stale'
+          stale-pr-message: |
+            このPRは21日間更新がないため、`stale` ラベルを付けました。
+            7日以内にアクティビティがない場合、自動的にクローズされます。
+
+            This PR has been automatically marked as stale because it has not had recent activity.
+            It will be closed in 7 days if no further activity occurs.
+          close-pr-message: |
+            このPRは長期間アクティビティがなかったためクローズしました。
+            再開する場合はコメントしてください。
+
+            This PR has been closed due to inactivity.
+            Feel free to reopen if needed.
+
+          # Exemptions
+          exempt-issue-labels: 'pinned,in-progress,blocked'
+          exempt-pr-labels: 'pinned,in-progress,blocked,dependencies'
+          exempt-all-milestones: true
+
+          # Limits (to avoid rate limiting)
+          operations-per-run: 30
