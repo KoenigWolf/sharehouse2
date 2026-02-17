@@ -196,7 +196,7 @@ export async function createEvent(input: {
       title: validatedData.title,
       description: validatedData.description ?? null,
       event_date: validatedData.event_date,
-      event_time: input.event_time?.trim() || null,
+      event_time: validatedData.event_time ?? null,
       location: validatedData.location ?? null,
     }).select("id").single();
 
@@ -296,7 +296,7 @@ export async function updateEvent(
         title: validatedData.title,
         description: validatedData.description ?? null,
         event_date: validatedData.event_date,
-        event_time: input.event_time?.trim() || null,
+        event_time: validatedData.event_time ?? null,
         location: validatedData.location ?? null,
       })
       .eq("id", eventId)

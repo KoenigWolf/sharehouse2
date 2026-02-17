@@ -401,6 +401,12 @@ export const en: Translations = {
     nameSuffix: "",
   },
 
+  errorBoundary: {
+    title: "An error occurred while loading",
+    message: "A temporary issue may have occurred.",
+    reload: "Reload",
+  },
+
   errors: {
     unauthorized: "Authentication required",
     forbidden: "Access denied",

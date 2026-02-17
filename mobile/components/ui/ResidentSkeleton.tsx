@@ -4,7 +4,9 @@ import { Card } from "./Card";
 import { Colors } from "../../constants/colors";
 
 export function ResidentSkeleton() {
-   /* eslint-disable react-hooks/refs -- Animated.Value with useRef is the standard React Native pattern for animations */
+   // React Native's Animated.Value pattern requires accessing .current during initialization
+   // This is safe because Animated.Value is a persistent mutable object, not a React component
+   // eslint-disable-next-line react-hooks/refs
    const animatedValue = useRef(new Animated.Value(0)).current;
 
    useEffect(() => {
@@ -26,11 +28,11 @@ export function ResidentSkeleton() {
       ).start();
    }, [animatedValue]);
 
+   // eslint-disable-next-line react-hooks/refs
    const opacity = animatedValue.interpolate({
       inputRange: [0, 1],
       outputRange: [0.3, 0.7],
    });
-   /* eslint-enable react-hooks/refs */
 
    return (
       <View className="flex-1">

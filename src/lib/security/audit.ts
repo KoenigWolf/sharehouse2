@@ -8,7 +8,21 @@
  */
 
 import { maskSensitiveData } from "./validation";
-import { logWarning, logError } from "@/lib/errors";
+import { logWarning, logError, logInfo } from "@/lib/errors";
+
+/**
+ * Sensitive fields to mask in audit logs
+ * Unified list for both console and database logging
+ */
+const SENSITIVE_AUDIT_FIELDS = [
+  "password",
+  "token",
+  "secret",
+  "apiKey",
+  "creditCard",
+  "ssn",
+  "email",
+] as const;
 
 /**
  * Audit event types
@@ -129,29 +143,6 @@ function getSeverity(eventType: AuditEventTypeValue): AuditSeverityValue {
 }
 
 /**
- * Format audit log entry for output
- */
-function formatAuditLog(entry: AuditLogEntry): string {
-  const severity = getSeverity(entry.eventType);
-  const maskedMetadata = entry.metadata
-    ? maskSensitiveData(entry.metadata as Record<string, unknown>, [
-      "password",
-      "token",
-      "secret",
-      "apiKey",
-    ])
-    : undefined;
-
-  const logData = {
-    ...entry,
-    severity,
-    metadata: maskedMetadata,
-  };
-
-  return JSON.stringify(logData);
-}
-
-/**
  * Write audit log entry
  * In production, this should write to a secure, tamper-evident log store
  */
@@ -160,22 +151,27 @@ export function auditLog(entry: AuditLogEntry): void {
     ...entry,
     timestamp: entry.timestamp || new Date().toISOString(),
   };
-  const formattedLog = formatAuditLog(fullEntry);
 
   const severity = getSeverity(entry.eventType);
 
   switch (severity) {
     case AuditSeverity.CRITICAL:
-      console.error(`[AUDIT:CRITICAL] ${formattedLog}`);
+      logError(new Error(`[AUDIT:CRITICAL] ${entry.eventType}`), {
+        action: "auditLog",
+        metadata: fullEntry,
+      });
       break;
     case AuditSeverity.ERROR:
-      console.error(`[AUDIT:ERROR] ${formattedLog}`);
+      logError(new Error(`[AUDIT:ERROR] ${entry.eventType}`), {
+        action: "auditLog",
+        metadata: fullEntry,
+      });
       break;
     case AuditSeverity.WARNING:
       logWarning("Audit warning", { action: "auditLog", metadata: fullEntry });
       break;
     default:
-      console.info(`[AUDIT:INFO] ${formattedLog}`);
+      logInfo("Audit info", { action: "auditLog", metadata: fullEntry });
   }
 
   // 非同期でデータベースに永続化（失敗してもブロックしない）
@@ -200,14 +196,10 @@ async function persistAuditLog(entry: AuditLogEntry): Promise<void> {
     const severity = getSeverity(entry.eventType);
 
     const maskedMetadata = entry.metadata
-      ? maskSensitiveData(entry.metadata as Record<string, unknown>, [
-        "password",
-        "token",
-        "secret",
-        "apiKey",
-        "creditCard",
-        "ssn",
-      ])
+      ? maskSensitiveData(
+        entry.metadata as Record<string, unknown>,
+        SENSITIVE_AUDIT_FIELDS as unknown as (keyof Record<string, unknown>)[]
+      )
       : null;
 
     const { error } = await supabase.from("audit_logs").insert({
@@ -321,7 +313,7 @@ export const AuditActions = {
     });
   },
 
-  loginFailure: (email: string, reason: string, ipAddress?: string) => {
+  loginFailure: (reason: string, ipAddress?: string) => {
     auditLog({
       timestamp: new Date().toISOString(),
       eventType: AuditEventType.AUTH_LOGIN_FAILURE,
@@ -329,7 +321,6 @@ export const AuditActions = {
       outcome: "failure",
       errorMessage: reason,
       ipAddress,
-      metadata: { email: email.slice(0, 3) + "***" },
     });
   },
 

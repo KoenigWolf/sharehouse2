@@ -400,6 +400,12 @@ export const ja = {
     nameSuffix: "さん",
   },
 
+  errorBoundary: {
+    title: "表示中にエラーが発生しました",
+    message: "一時的な不具合が発生した可能性があります。",
+    reload: "再読み込み",
+  },
+
   errors: {
     unauthorized: "認証が必要です",
     forbidden: "アクセスできません",

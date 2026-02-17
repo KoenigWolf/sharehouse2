@@ -145,53 +145,47 @@ export function hasSqlInjectionPattern(input: string): boolean {
   const normalized = input.toUpperCase().replace(/\s+/g, " ");
 
   const sqlPatterns = [
-    // DML/DDL キーワード
-    /\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|TRUNCATE)\b/,
-    /\b(UNION|JOIN|WHERE|FROM|INTO|VALUES|SET)\b/,
-    /\b(HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|OFFSET)\b/,
-    /\b(GRANT|REVOKE|COMMIT|ROLLBACK|SAVEPOINT)\b/,
+    // DML/DDL キーワード（典型的な攻撃パターン）
+    /\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|TRUNCATE)\s+\S/,
+    /\bUNION\s+(ALL\s+)?SELECT\b/,
+    /\bINTO\s+(OUTFILE|DUMPFILE)\b/,
 
-    // 関数・演算子
-    /\b(CONCAT|SUBSTRING|CHAR|ASCII|HEX|UNHEX)\s*\(/,
-    /\b(SLEEP|BENCHMARK|WAITFOR|DELAY)\s*\(/,
-    /\b(LOAD_FILE|INTO\s+OUTFILE|INTO\s+DUMPFILE)\b/,
+    // 危険な関数呼び出し
+    /\b(SLEEP|BENCHMARK|WAITFOR|DELAY|LOAD_FILE)\s*\(/,
+    /\bCHAR\s*\(\s*\d+(\s*,\s*\d+)+\s*\)/i, // CHAR(65,66,67) - 文字列構築
 
-    // コメント構文（複数DB対応）
-    /--/,                          // SQL標準
-    /#/,                           // MySQL
-    /\/\*/,                        // ブロックコメント開始
-    /\*\//,                        // ブロックコメント終了
+    // コメント構文（攻撃的コンテキスト）
+    /--\s*$/m,                      // 行末SQLコメント
+    /\/\*.*\*\//,                   // ブロックコメント（完結）
+    /\/\*[^*]*$/,                   // 未閉じブロックコメント
 
     // 論理演算子を使った条件操作
-    /['"`]\s*(OR|AND)\s/,           // ' OR, " AND など
+    /['"`]\s*(OR|AND)\s+['"`\d]/,   // ' OR '..., " AND 1 など
     /\b(OR|AND)\s+\d+\s*=\s*\d+/,   // OR 1=1, AND 1=1
-    /\b(OR|AND)\s+['"`]/,           // OR '..., AND "...
+    /\b(OR|AND)\s+['"`]\w*['"`]\s*=\s*['"`]/,  // OR 'a'='a'
 
-    // ストアドプロシージャ
-    /\b(EXEC|EXECUTE|XP_|SP_)\b/,
+    // ストアドプロシージャ（MSSQL）
+    /\b(EXEC|EXECUTE)\s+\w/,
+    /\bXP_\w+/,
+    /\bSP_\w+\s*\(/,
 
     // NULL バイト・エスケープシーケンス
-    /\\x00|\\0|%00/,
+    /\\x00|%00/,
 
-    // Hex エンコーディング（SQL インジェクション回避手法）
-    /0x[0-9a-f]{4,}/i,
+    // Hex エンコーディング（長い16進数列は攻撃の可能性）
+    /0x[0-9a-f]{8,}/i,
 
     // 文字列連結による回避
-    /['"`]\s*\+\s*['"`]/,          // '+' 連結
-    /['"`]\s*\|\|\s*['"`]/,        // '||' 連結
-    /CHAR\s*\(\s*\d+/i,            // CHAR(65) など
-
-    // 条件分岐
-    /\bCASE\s+WHEN\b/,
-    /\bIF\s*\(/,
+    /['"`]\s*\|\|\s*['"`]/,        // '||' 連結（Oracle/PostgreSQL）
+    /CONCAT\s*\([^)]*['"`]/i,      // CONCAT関数での文字列操作
 
     // 情報スキーマアクセス
-    /INFORMATION_SCHEMA/,
-    /SYS\.(ALL_|DBA_|USER_)/,
-    /PG_CATALOG/,
+    /INFORMATION_SCHEMA\.\w+/,
+    /SYS\.(ALL_|DBA_|USER_)\w+/,
+    /PG_CATALOG\.\w+/,
 
     // サブクエリパターン
-    /\(\s*SELECT\b/,
+    /\(\s*SELECT\s+\S/,
   ];
 
   return sqlPatterns.some((pattern) => pattern.test(normalized));

@@ -1,52 +1,89 @@
 import { z } from "zod";
-
-/**
- * Common validation patterns
- */
-export const commonSchemas = {
-   message: z.string().min(1, "メッセージを入力してください").max(1000, "メッセージは1000文字以内で入力してください"),
-   title: z.string().min(1, "タイトルを入力してください").max(100, "タイトルは100文字以内で入力してください"),
-   description: z.string().max(2000, "説明は2000文字以内で入力してください").optional().nullable(),
-   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "正しい日付形式で入力してください (YYYY-MM-DD)"),
-};
+import {
+   BULLETIN,
+   SHARE_ITEMS,
+   EVENTS,
+   PROFILE,
+} from "@/lib/constants/config";
 
 /**
  * Bulletin Schema
+ * Uses BULLETIN.maxMessageLength from config
  */
 export const bulletinSchema = z.object({
-   message: commonSchemas.message,
+   message: z.string()
+      .min(1, "メッセージを入力してください")
+      .max(BULLETIN.maxMessageLength, `メッセージは${BULLETIN.maxMessageLength}文字以内で入力してください`),
 });
 
 /**
  * Event Schema
+ * Uses EVENTS.maxDescriptionLength from config
  */
 export const eventSchema = z.object({
-   title: commonSchemas.title,
-   description: commonSchemas.description,
-   event_date: commonSchemas.date,
-   location: z.string().max(200, "場所は200文字以内で入力してください").optional(),
+   title: z.string()
+      .min(1, "タイトルを入力してください")
+      .max(EVENTS.maxTitleLength, `タイトルは${EVENTS.maxTitleLength}文字以内で入力してください`),
+   description: z.string()
+      .max(EVENTS.maxDescriptionLength, `説明は${EVENTS.maxDescriptionLength}文字以内で入力してください`)
+      .optional()
+      .nullable(),
+   event_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "正しい日付形式で入力してください (YYYY-MM-DD)"),
+   event_time: z.string()
+      .max(20, "時間は20文字以内で入力してください")
+      .optional()
+      .nullable()
+      .transform((val) => val?.trim() || null),
+   location: z.string()
+      .max(200, "場所は200文字以内で入力してください")
+      .optional()
+      .nullable(),
    max_attendees: z.number().int().min(1).max(100).optional(),
 });
 
 /**
  * Share Item Schema
+ * Uses SHARE_ITEMS.maxTitleLength and maxDescriptionLength from config
  */
 export const shareItemSchema = z.object({
-   title: commonSchemas.title,
-   description: commonSchemas.description,
+   title: z.string()
+      .min(1, "タイトルを入力してください")
+      .max(SHARE_ITEMS.maxTitleLength, `タイトルは${SHARE_ITEMS.maxTitleLength}文字以内で入力してください`),
+   description: z.string()
+      .max(SHARE_ITEMS.maxDescriptionLength, `説明は${SHARE_ITEMS.maxDescriptionLength}文字以内で入力してください`)
+      .optional()
+      .nullable(),
    category: z.string().optional().default("general"),
-   location: z.string().max(100, "保管場所を入力してください").optional(),
+   location: z.string()
+      .max(100, "保管場所は100文字以内で入力してください")
+      .optional()
+      .nullable(),
 });
 
 /**
  * Profile Schema (Partial/Update)
+ * Uses PROFILE constants from config
  */
 export const profileSchema = z.object({
-   name: z.string().min(1, "名前を入力してください").max(50, "名前は50文字以内で入力してください"),
-   nickname: z.string().max(50, "ニックネームは50文字以内で入力してください").optional().nullable(),
-   room_number: z.string().max(10, "部屋番号は10文字以内で入力してください").optional().nullable(),
-   bio: z.string().max(500, "自己紹介は500文字以内で入力してください").optional().nullable(),
-   mbti: z.string().length(4, "MBTIは4文字で入力してください").optional().nullable(),
+   name: z.string()
+      .min(1, "名前を入力してください")
+      .max(PROFILE.nameMaxLength, `名前は${PROFILE.nameMaxLength}文字以内で入力してください`),
+   nickname: z.string()
+      .max(50, "ニックネームは50文字以内で入力してください")
+      .optional()
+      .nullable(),
+   room_number: z.string()
+      .max(PROFILE.roomNumberMaxLength, `部屋番号は${PROFILE.roomNumberMaxLength}文字以内で入力してください`)
+      .optional()
+      .nullable(),
+   bio: z.string()
+      .max(PROFILE.bioMaxLength, `自己紹介は${PROFILE.bioMaxLength}文字以内で入力してください`)
+      .optional()
+      .nullable(),
+   mbti: z.string()
+      .length(4, "MBTIは4文字で入力してください")
+      .optional()
+      .nullable(),
 });
 
 export type BulletinInput = z.infer<typeof bulletinSchema>;

@@ -216,7 +216,7 @@ export async function signIn(
     if (error) {
       logError(error, { action: "signIn", metadata: { email: validatedEmail } });
 
-      AuditActions.loginFailure(validatedEmail, error.message, ipAddress || undefined);
+      AuditActions.loginFailure(error.message, ipAddress || undefined);
 
       return { error: t("auth.invalidCredentials") };
     }

@@ -311,3 +311,28 @@ export function logWarning(
     // Sentry not available, skip silently
   });
 }
+
+/**
+ * Log info with context (for server-side use)
+ *
+ * Info level logs are not sent to Sentry, only to console.
+ */
+export function logInfo(
+  message: string,
+  context?: {
+    action?: string;
+    userId?: string;
+    metadata?: Record<string, unknown>;
+  }
+): void {
+  const timestamp = new Date().toISOString();
+
+  const infoData = {
+    timestamp,
+    level: "info",
+    message,
+    ...context,
+  };
+
+  console.info("[AppInfo]", JSON.stringify(infoData, null, 2));
+}
