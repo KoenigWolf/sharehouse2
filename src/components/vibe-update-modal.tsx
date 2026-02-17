@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { m, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { useI18n } from "@/hooks/use-i18n";
+import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock";
+import { useFocusTrap } from "@/hooks/use-focus-trap";
 import { createBulletin } from "@/lib/bulletin/actions";
 import { BULLETIN } from "@/lib/constants/config";
 import { Spinner } from "@/components/ui/spinner";
@@ -37,6 +39,13 @@ export function VibeUpdateModal({
    const [message, setMessage] = useState(currentVibe);
    const [isSubmitting, setIsSubmitting] = useState(false);
    const [error, setError] = useState<string | null>(null);
+
+   // Focus trap for accessibility (WCAG 2.1 Level AA)
+   const focusTrapRef = useFocusTrap<HTMLDivElement>({
+      isActive: isOpen,
+      onEscape: isSubmitting ? undefined : onClose,
+      restoreFocus: true,
+   });
 
    // Sync message when modal opens or currentVibe changes
    useEffect(() => {
@@ -78,31 +87,8 @@ export function VibeUpdateModal({
       }
    }, [message, currentVibe, router, onClose, t]);
 
-   // Handle escape key
-   const handleKeyDown = useCallback(
-      (e: KeyboardEvent) => {
-         if (e.key === "Escape" && !isSubmitting) onClose();
-      },
-      [isSubmitting, onClose]
-   );
-
-   useEffect(() => {
-      if (!isOpen) return;
-      document.addEventListener("keydown", handleKeyDown);
-      return () => document.removeEventListener("keydown", handleKeyDown);
-   }, [isOpen, handleKeyDown]);
-
    // Lock body scroll
-   useEffect(() => {
-      if (isOpen) {
-         document.body.style.overflow = "hidden";
-      } else {
-         document.body.style.overflow = "";
-      }
-      return () => {
-         document.body.style.overflow = "";
-      };
-   }, [isOpen]);
+   useBodyScrollLock(isOpen);
 
    const displayName = userProfile?.nickname ?? userProfile?.name ?? "";
    const canSubmit = message.trim() !== (currentVibe || "") || (message.trim() !== "" && !currentVibe);
@@ -119,6 +105,7 @@ export function VibeUpdateModal({
                onClick={isSubmitting ? undefined : onClose}
             >
                <m.div
+                  ref={focusTrapRef}
                   role="dialog"
                   aria-modal="true"
                   aria-labelledby={`${id}-title`}

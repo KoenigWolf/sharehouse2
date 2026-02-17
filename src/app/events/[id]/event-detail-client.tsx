@@ -24,7 +24,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { TimeSelect } from "@/components/ui/time-select";
 import { getInitials } from "@/lib/utils/formatting";
-import { useI18n } from "@/hooks/use-i18n";
+import { useI18n, useLocale } from "@/hooks/use-i18n";
 import { useUser } from "@/hooks/use-user";
 import {
   toggleAttendance,
@@ -33,9 +33,10 @@ import {
   removeEventCover,
   updateEvent,
 } from "@/lib/events/actions";
-import { FILE_UPLOAD, EVENTS } from "@/lib/constants/config";
+import { FILE_UPLOAD, EVENTS, IMAGE } from "@/lib/constants/config";
 import { prepareImageForUpload } from "@/lib/utils/image-compression";
 import { logError } from "@/lib/errors";
+import { getImageAlt } from "@/lib/utils/accessibility";
 import type { EventWithDetails } from "@/domain/event";
 
 interface EventDetailClientProps {
@@ -45,6 +46,7 @@ interface EventDetailClientProps {
 export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
   const router = useRouter();
   const t = useI18n();
+  const locale = useLocale();
   const { userId } = useUser();
 
   const [event, setEvent] = useState<EventWithDetails>(initialEvent);
@@ -234,11 +236,13 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
                 {event.cover_image_url ? (
                   <Image
                     src={event.cover_image_url}
-                    alt={event.title}
+                    alt={getImageAlt.eventCover(event.title, locale)}
                     fill
                     sizes="(min-width: 896px) 896px, 100vw"
                     className="object-cover"
                     priority
+                    placeholder="blur"
+                    blurDataURL={IMAGE.blurDataURL}
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center bg-brand-50">

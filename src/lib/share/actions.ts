@@ -11,8 +11,7 @@ import { validateFileUpload, sanitizeFileName } from "@/domain/validation/profil
 import type { ShareItemWithProfile } from "@/domain/share-item";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Translator } from "@/lib/i18n";
-
-type ActionResponse = { success: true } | { error: string };
+import type { ActionResponse } from "@/lib/types/action-response";
 type CreateShareItemResponse = { success: true; itemId: string } | { error: string };
 type UploadResponse = { success: true; url: string } | { error: string };
 
@@ -171,6 +170,12 @@ export async function createShareItem(
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { error: t("errors.unauthorized") };
+
+    // Rate limit check
+    const rateLimitResult = RateLimiters.share(user.id);
+    if (!rateLimitResult.success) {
+      return { error: formatRateLimitError(rateLimitResult.retryAfter, t) };
+    }
 
     const trimmedTitle = title.trim();
     if (!trimmedTitle) return { error: t("errors.invalidInput") };

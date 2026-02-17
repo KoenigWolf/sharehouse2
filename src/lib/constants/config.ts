@@ -62,6 +62,21 @@ export const RATE_LIMIT = {
   upload: {
     maxUploadsPerHour: 100,
   },
+  /** Bulletin POST: 10 messages per minute */
+  bulletin: {
+    maxPostsPerMinute: 10,
+    windowMs: 60 * 1000,
+  },
+  /** Share Item POST: 5 items per minute */
+  share: {
+    maxPostsPerMinute: 5,
+    windowMs: 60 * 1000,
+  },
+  /** Event POST: 3 events per minute */
+  event: {
+    maxPostsPerMinute: 3,
+    windowMs: 60 * 1000,
+  },
 } as const;
 
 export const CACHE = {
@@ -98,6 +113,14 @@ export const SHARE_ITEMS = {
 export const EVENTS = {
   maxTitleLength: 100,
   maxDescriptionLength: 500,
+} as const;
+
+export const IMAGE = {
+  /** Tiny gray blur placeholder (4x3 aspect ratio) for perceived performance */
+  blurDataURL:
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAIAAAA7ljmRAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIklEQVQImWNgYGBgYGBgsLS0ZGBgYGBgYGBgYGBgYGBgYGAABgAAAwA2AAA=",
+  /** Default sizes for responsive cover images */
+  coverSizes: "(min-width: 1024px) 448px, 100vw",
 } as const;
 
 export type FileUploadConfig = typeof FILE_UPLOAD;
