@@ -7,6 +7,7 @@ import { PublicTeaserGrid } from "@/components/public-teaser/public-teaser-grid"
 import { TeaTimeNotification } from "@/components/tea-time-notification";
 import { getLatestScheduledMatch } from "@/lib/tea-time/actions";
 import { getProfilesWithMock, getPublicProfilesWithMock } from "@/lib/residents/queries";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +36,9 @@ export default async function ResidentsPage() {
               </div>
             )}
 
-            <ResidentsGrid profiles={profiles} currentUserId={user.id} />
+            <ErrorBoundary>
+              <ResidentsGrid profiles={profiles} currentUserId={user.id} />
+            </ErrorBoundary>
           </div>
         </main>
 
@@ -54,7 +57,9 @@ export default async function ResidentsPage() {
 
       <main className="flex-1 pb-20 sm:pb-0">
         <div className="container mx-auto px-4 sm:px-6 pt-2 sm:pt-4 pb-4">
-          <PublicTeaserGrid profiles={profiles} />
+          <ErrorBoundary>
+            <PublicTeaserGrid profiles={profiles} />
+          </ErrorBoundary>
         </div>
       </main>
 
