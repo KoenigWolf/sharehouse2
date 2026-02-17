@@ -280,6 +280,39 @@ export const RateLimiters = {
       windowMs: 60 * 60 * 1000,
       prefix: "pwd_reset",
     }),
+
+  /**
+   * Rate limiter for bulletin posts
+   * Standard: 10 posts per minute
+   */
+  bulletin: (identifier: string) =>
+    checkRateLimit(identifier, {
+      limit: RATE_LIMIT.bulletin.maxPostsPerMinute,
+      windowMs: RATE_LIMIT.bulletin.windowMs,
+      prefix: "bulletin",
+    }),
+
+  /**
+   * Rate limiter for share item posts
+   * Moderate: 5 posts per minute
+   */
+  share: (identifier: string) =>
+    checkRateLimit(identifier, {
+      limit: RATE_LIMIT.share.maxPostsPerMinute,
+      windowMs: RATE_LIMIT.share.windowMs,
+      prefix: "share",
+    }),
+
+  /**
+   * Rate limiter for event posts
+   * Conservative: 3 posts per minute
+   */
+  event: (identifier: string) =>
+    checkRateLimit(identifier, {
+      limit: RATE_LIMIT.event.maxPostsPerMinute,
+      windowMs: RATE_LIMIT.event.windowMs,
+      prefix: "event",
+    }),
 } as const;
 
 /**
