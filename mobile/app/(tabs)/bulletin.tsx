@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, memo } from "react";
 import {
   View,
   Text,
@@ -53,17 +53,56 @@ export default function BulletinScreen() {
     }
   };
 
+  // Fetch profile for a new message (realtime payload doesn't include joined data)
+  const fetchMessageProfile = useCallback(async (userId: string) => {
+    const { data } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("user_id", userId)
+      .single();
+    return data;
+  }, []);
+
   useEffect(() => {
     fetchMessages();
 
-    // Real-time subscription
+    // Real-time subscription with delta updates
     const channel = supabase
       .channel("bulletin_changes")
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "bulletin_messages" },
-        () => {
-          fetchMessages();
+        { event: "INSERT", schema: "public", table: "bulletin_messages" },
+        async (payload) => {
+          const newRecord = payload.new as BulletinMessage;
+          // Fetch profile for the new message
+          const profileData = await fetchMessageProfile(newRecord.user_id);
+          if (profileData) {
+            const messageWithProfile = {
+              ...newRecord,
+              profiles: profileData,
+            } as BulletinMessage;
+            setMessages((prev) => [messageWithProfile, ...prev]);
+          }
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "DELETE", schema: "public", table: "bulletin_messages" },
+        (payload) => {
+          const deletedId = payload.old.id as string;
+          setMessages((prev) => prev.filter((m) => m.id !== deletedId));
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "bulletin_messages" },
+        (payload) => {
+          const updated = payload.new as BulletinMessage;
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === updated.id ? { ...m, message: updated.message } : m
+            )
+          );
         }
       )
       .subscribe();
@@ -71,7 +110,7 @@ export default function BulletinScreen() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [fetchMessageProfile]);
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
@@ -98,7 +137,7 @@ export default function BulletinScreen() {
       }
 
       setNewMessage("");
-      await fetchMessages();
+      // Realtime subscription handles the state update
     } catch (error) {
       logError(error, { fn: "handlePost" });
     } finally {
@@ -106,11 +145,9 @@ export default function BulletinScreen() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    Alert.alert(
-      t("bulletin.deleteTitle"),
-      t("bulletin.deleteMessage"),
-      [
+  const handleDelete = useCallback(
+    (id: string) => {
+      Alert.alert(t("bulletin.deleteTitle"), t("bulletin.deleteMessage"), [
         { text: t("common.cancel"), style: "cancel" },
         {
           text: t("common.delete"),
@@ -126,19 +163,18 @@ export default function BulletinScreen() {
               if (error) {
                 logError(error, { fn: "handleDelete", id });
                 Alert.alert(t("common.error"), t("bulletin.deleteError"));
-                return;
               }
-
-              await fetchMessages();
+              // Realtime subscription handles the state update
             } catch (error) {
               logError(error, { fn: "handleDelete", id });
               Alert.alert(t("common.error"), t("bulletin.deleteError"));
             }
           },
         },
-      ]
-    );
-  };
+      ]);
+    },
+    [t]
+  );
 
   const renderItem = useCallback(
     ({ item }: { item: BulletinMessage }) => (
@@ -149,7 +185,7 @@ export default function BulletinScreen() {
         deleteLabel={t("common.delete")}
       />
     ),
-    [user, t]
+    [user, t, handleDelete]
   );
 
   return (
@@ -182,7 +218,7 @@ export default function BulletinScreen() {
           padding: 16,
           paddingBottom: 100,
         }}
-        ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+        ItemSeparatorComponent={ItemSeparator}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -200,6 +236,11 @@ export default function BulletinScreen() {
             </Text>
           </View>
         }
+        // Performance optimizations
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
+        windowSize={5}
+        removeClippedSubviews={Platform.OS === "android"}
       />
 
       {/* Compose Bar */}
@@ -241,7 +282,11 @@ export default function BulletinScreen() {
   );
 }
 
-function MessageCard({
+// Memoized separator component for FlatList
+const ItemSeparator = memo(() => <View style={{ height: 12 }} />);
+ItemSeparator.displayName = "ItemSeparator";
+
+const MessageCard = memo(function MessageCard({
   message,
   isOwn,
   onDelete,
@@ -288,4 +333,4 @@ function MessageCard({
       </View>
     </View>
   );
-}
+});
