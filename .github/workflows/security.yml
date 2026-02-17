@@ -13,7 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: write
 
     steps:
       - name: Checkout
@@ -33,11 +32,6 @@ jobs:
           CRITICAL_COUNT=$(cat audit-web.json | jq '.metadata.vulnerabilities.critical // 0')
           echo "high=$HIGH_COUNT" >> $GITHUB_OUTPUT
           echo "critical=$CRITICAL_COUNT" >> $GITHUB_OUTPUT
-          if [ "$HIGH_COUNT" -gt 0 ] || [ "$CRITICAL_COUNT" -gt 0 ]; then
-            echo "has_issues=true" >> $GITHUB_OUTPUT
-          else
-            echo "has_issues=false" >> $GITHUB_OUTPUT
-          fi
 
       - name: Run npm audit (mobile)
         id: audit-mobile
@@ -48,11 +42,6 @@ jobs:
           CRITICAL_COUNT=$(cat audit-mobile.json | jq '.metadata.vulnerabilities.critical // 0')
           echo "high=$HIGH_COUNT" >> $GITHUB_OUTPUT
           echo "critical=$CRITICAL_COUNT" >> $GITHUB_OUTPUT
-          if [ "$HIGH_COUNT" -gt 0 ] || [ "$CRITICAL_COUNT" -gt 0 ]; then
-            echo "has_issues=true" >> $GITHUB_OUTPUT
-          else
-            echo "has_issues=false" >> $GITHUB_OUTPUT
-          fi
 
       - name: Report results
         run: |
@@ -64,8 +53,12 @@ jobs:
           echo "High: ${{ steps.audit-mobile.outputs.high }}"
           echo "Critical: ${{ steps.audit-mobile.outputs.critical }}"
 
-      - name: Fail if critical vulnerabilities
-        if: steps.audit-web.outputs.critical > 0 || steps.audit-mobile.outputs.critical > 0
+      - name: Fail if high/critical vulnerabilities
+        if: >
+          steps.audit-web.outputs.high > 0 ||
+          steps.audit-web.outputs.critical > 0 ||
+          steps.audit-mobile.outputs.high > 0 ||
+          steps.audit-mobile.outputs.critical > 0
         run: |
-          echo "::error::Critical vulnerabilities found!"
+          echo "::error::High or critical vulnerabilities found!"
           exit 1

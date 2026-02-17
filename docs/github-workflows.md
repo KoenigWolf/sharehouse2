@@ -67,8 +67,10 @@ npm run check-all             # lint + type-check + test + build
 ### 動作
 
 1. Web アプリ（`/`）と Mobile アプリ（`/mobile`）の両方を監査
-2. Critical レベルの脆弱性がある場合、ワークフロー失敗
+2. **High または Critical** レベルの脆弱性がある場合、ワークフロー失敗
 3. 結果はワークフローログで確認
+
+> 判定基準は `security.yml` の `--audit-level` と最終チェック条件に依存。
 
 ### ローカルで確認
 
