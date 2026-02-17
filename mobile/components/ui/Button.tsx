@@ -1,4 +1,4 @@
-import { Text, Pressable, ActivityIndicator, View } from "react-native";
+import { Text, Pressable, ActivityIndicator } from "react-native";
 import * as Haptics from "expo-haptics";
 import { Colors, Shadows } from "../../constants/colors";
 
