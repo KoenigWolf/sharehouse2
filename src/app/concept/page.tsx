@@ -575,10 +575,11 @@ function KeywordCycler({
     return i * -100;
   });
   const y = useSpring(rawY, { stiffness: 100, damping: 30 });
+  const yPercent = useTransform(y, (v) => `${v}%`);
 
   return (
     <m.div
-      style={{ y: useTransform(y, (v) => `${v}%`) }}
+      style={{ y: yPercent }}
       className="absolute top-0 left-0 w-full"
     >
       {keywords.map((k, i) => (
