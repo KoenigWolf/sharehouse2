@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   m,
   useScroll,
@@ -47,6 +47,18 @@ const FEATURE_ICONS: Record<string, LucideIcon> = {
   gallery: Images,
 };
 
+const SECTIONS = [
+  "hero",
+  "mission",
+  "vision",
+  "features",
+  "testimonials",
+  "principles",
+  "faq",
+  "onboarding",
+  "cta",
+] as const;
+
 const ONBOARDING_ICONS: LucideIcon[] = [Home, KeyRound, UserCircle, MessageCircle];
 
 export default function ConceptPage() {
@@ -76,11 +88,15 @@ export default function ConceptPage() {
     <div className="min-h-[300vh] bg-background relative" ref={containerRef}>
       <div className="fixed top-0 left-0 right-0 z-50">
         <Header />
+        <m.div
+          className="h-[2px] bg-foreground/20 origin-left"
+          style={{ scaleX: scrollYProgress }}
+        />
       </div>
 
       <PageTransition>
         <main className="relative">
-          <div className="sticky top-0 h-screen flex flex-col items-center justify-center overflow-hidden bg-background">
+          <div id="hero" className="sticky top-0 h-screen flex flex-col items-center justify-center overflow-hidden bg-background">
             <m.div
               style={{
                 scale: useTransform(scrollYProgress, [0, 0.3], [1, 1.5]),
@@ -153,7 +169,7 @@ export default function ConceptPage() {
           </div>
 
           <div className="relative bg-background">
-            <section className="py-32 md:py-48">
+            <section id="mission" className="py-32 md:py-48">
               <div className="container mx-auto px-6 max-w-4xl">
                 <m.div
                   initial={{ opacity: 0, y: 40 }}
@@ -172,7 +188,7 @@ export default function ConceptPage() {
               </div>
             </section>
 
-            <section className="py-32 md:py-48 border-t border-foreground/5">
+            <section id="vision" className="py-32 md:py-48 border-t border-foreground/5">
               <div className="container mx-auto px-6 max-w-6xl">
                 <m.p
                   initial={{ opacity: 0 }}
@@ -206,7 +222,7 @@ export default function ConceptPage() {
               </div>
             </section>
 
-            <section className="py-32 md:py-48 border-t border-foreground/5">
+            <section id="features" className="py-32 md:py-48 border-t border-foreground/5">
               <div className="container mx-auto px-6 max-w-6xl">
                 <m.div
                   initial={{ opacity: 0, y: 20 }}
@@ -255,7 +271,7 @@ export default function ConceptPage() {
               </div>
             </section>
 
-            <section className="py-32 md:py-48 border-t border-foreground/5 bg-foreground/[0.02]">
+            <section id="testimonials" className="py-32 md:py-48 border-t border-foreground/5 bg-foreground/[0.02]">
               <div className="container mx-auto px-6 max-w-4xl">
                 <m.div
                   initial={{ opacity: 0, y: 20 }}
@@ -303,7 +319,7 @@ export default function ConceptPage() {
               </div>
             </section>
 
-            <section className="py-32 md:py-48 border-t border-foreground/5">
+            <section id="principles" className="py-32 md:py-48 border-t border-foreground/5">
               <div className="container mx-auto px-6 max-w-4xl">
                 <m.div
                   initial={{ opacity: 0, y: 20 }}
@@ -346,7 +362,7 @@ export default function ConceptPage() {
               </div>
             </section>
 
-            <section className="py-32 md:py-48 border-t border-foreground/5 bg-foreground/[0.02]">
+            <section id="faq" className="py-32 md:py-48 border-t border-foreground/5 bg-foreground/[0.02]">
               <div className="container mx-auto px-6 max-w-4xl">
                 <m.div
                   initial={{ opacity: 0, y: 20 }}
@@ -471,7 +487,7 @@ export default function ConceptPage() {
               </div>
             </section>
 
-            <section className="py-32 md:py-48 border-t border-foreground/5 bg-foreground/[0.02]">
+            <section id="cta" className="py-32 md:py-48 border-t border-foreground/5 bg-foreground/[0.02]">
               <div className="container mx-auto px-6 max-w-4xl text-center">
                 <m.div
                   initial={{ opacity: 0, y: 30 }}
@@ -499,6 +515,8 @@ export default function ConceptPage() {
           </div>
         </main>
       </PageTransition>
+
+      <SectionNav sections={SECTIONS} />
 
       <Footer variant="minimal" />
       <MobileNav />
@@ -560,5 +578,71 @@ function VisionCard({
       <h3 className="text-xl font-semibold mb-4 tracking-tight text-foreground/80">{title}</h3>
       <p className="text-foreground/40 leading-relaxed">{desc}</p>
     </m.div>
+  );
+}
+
+function SectionNav({ sections }: { sections: readonly string[] }) {
+  const [activeSection, setActiveSection] = useState<string>("hero");
+
+  useEffect(() => {
+    const observers: IntersectionObserver[] = [];
+
+    sections.forEach((sectionId) => {
+      const element = document.getElementById(sectionId);
+      if (!element) return;
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setActiveSection(sectionId);
+            }
+          });
+        },
+        { threshold: 0.3, rootMargin: "-20% 0px -60% 0px" }
+      );
+
+      observer.observe(element);
+      observers.push(observer);
+    });
+
+    return () => {
+      observers.forEach((observer) => observer.disconnect());
+    };
+  }, [sections]);
+
+  const handleClick = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  return (
+    <div className="fixed right-6 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col gap-3">
+      {sections.map((sectionId) => (
+        <button
+          key={sectionId}
+          onClick={() => handleClick(sectionId)}
+          className="group flex items-center justify-end gap-3"
+          aria-label={`Navigate to ${sectionId} section`}
+        >
+          <span
+            className={`text-[10px] uppercase tracking-wider transition-opacity duration-300 ${activeSection === sectionId
+                ? "opacity-60"
+                : "opacity-0 group-hover:opacity-40"
+              }`}
+          >
+            {sectionId}
+          </span>
+          <span
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${activeSection === sectionId
+                ? "bg-foreground/60 scale-125"
+                : "bg-foreground/20 group-hover:bg-foreground/40"
+              }`}
+          />
+        </button>
+      ))}
+    </div>
   );
 }
