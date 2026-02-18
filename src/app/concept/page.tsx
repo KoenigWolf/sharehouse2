@@ -55,13 +55,15 @@ export default function ConceptPage() {
   const keywordIndex = useTransform(smoothProgress, [0, 0.1, 0.2, 0.3], [0, 1, 2, 3]);
 
   return (
-    <div className="min-h-[300vh] bg-white flex flex-col relative" ref={containerRef}>
-      <Header />
+    <div className="min-h-[300vh] bg-white relative" ref={containerRef}>
+      <div className="fixed top-0 left-0 right-0 z-50">
+        <Header />
+      </div>
 
       <PageTransition>
-        <main className="flex-1 relative">
+        <main className="relative">
           {/* Hero Section - SEREAL style */}
-          <div className="sticky top-0 h-screen flex flex-col items-center justify-center overflow-hidden bg-white pt-16">
+          <div className="sticky top-0 h-screen flex flex-col items-center justify-center overflow-hidden bg-white">
             {/* Decorative circle - SEREAL style */}
             <m.div
               style={{
