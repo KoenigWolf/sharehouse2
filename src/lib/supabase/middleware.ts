@@ -35,30 +35,7 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
-  const isAuthCallback = pathname.startsWith("/auth/callback");
   const isLoginPage = pathname.startsWith("/login");
-
-  // 公開ページ（未認証でもアクセス可能、一部はマスク表示）
-  const publicPages = [
-    "/",
-    "/concept",
-    "/residents",
-    "/contact",
-    "/tour",
-    "/payment",
-    "/events",
-    "/bulletin",
-    "/share",
-    "/tea-time",
-    "/info",
-    "/room-photos",
-    "/floor-plan",
-    "/stats",
-    "/legal",
-  ];
-  const isPublicPage = publicPages.some(
-    (page) => pathname === page || pathname.startsWith(`${page}/`)
-  );
 
   // 認証必須ページ（プロフィール編集、設定、管理画面）
   const authRequiredPages = ["/admin", "/settings", "/profile"];
