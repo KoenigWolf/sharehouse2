@@ -197,7 +197,6 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
         animate="visible"
         className="space-y-8"
       >
-        {/* Calendar Strip */}
         <m.section variants={itemVariants} className="premium-surface rounded-2xl overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-border/30">
             <div className="flex items-center gap-2">
@@ -276,7 +275,6 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
           </div>
         </m.section>
 
-        {/* Feedback */}
         <AnimatePresence>
           {feedback && (
             <m.div
@@ -295,7 +293,6 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
           )}
         </AnimatePresence>
 
-        {/* Empty State or Event List */}
         {filteredEvents.length === 0 ? (
           <m.div variants={itemVariants} className="py-20 flex flex-col items-center text-center">
             <div className="w-20 h-20 mb-8 rounded-2xl bg-muted/80 flex items-center justify-center">
@@ -370,7 +367,6 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
         )}
       </m.div>
 
-      {/* FAB */}
       {!isTeaser && (
         <m.button
           type="button"
@@ -477,7 +473,6 @@ function EventCard({
       )}
 
       <div className="p-5 sm:p-6 space-y-4">
-        {/* Title row */}
         <div className="flex items-start justify-between gap-4">
           {isTeaser ? (
             <span className="text-lg font-bold text-foreground leading-snug blur-[2.5px] select-none">
@@ -513,7 +508,6 @@ function EventCard({
           )}
         </div>
 
-        {/* Meta info */}
         <div className="flex flex-wrap gap-2">
           {event.event_time && (
             <span className={`inline-flex items-center gap-2 px-3 py-1.5 bg-muted/60 rounded-lg text-sm font-medium text-foreground/80 ${isTeaser ? "blur-[2px] select-none" : ""}`}>
@@ -529,14 +523,12 @@ function EventCard({
           )}
         </div>
 
-        {/* Description */}
         {event.description && (
           <p className={`text-sm text-muted-foreground leading-relaxed line-clamp-2 ${isTeaser ? "blur-[3px] select-none" : ""}`}>
             {event.description}
           </p>
         )}
 
-        {/* Footer */}
         <div className="flex items-center justify-between pt-4 border-t border-border/40">
           <div className="flex items-center gap-3">
             <Avatar className="w-8 h-8 border border-border/50">

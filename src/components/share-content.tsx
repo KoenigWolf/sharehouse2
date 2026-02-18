@@ -130,7 +130,6 @@ function ShareComposeModalInner({ isOpen, onClose, onSubmit, isSubmitting, editi
             className="fixed inset-0 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-lg sm:rounded-2xl bg-background sm:premium-surface flex flex-col sm:max-h-[80vh]"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
             <div className="flex items-center justify-between px-4 h-14 border-b border-border/50 shrink-0">
               <button
                 type="button"
@@ -146,11 +145,9 @@ function ShareComposeModalInner({ isOpen, onClose, onSubmit, isSubmitting, editi
                 {isEditMode ? t("share.editItem") : t("share.createItem")}
               </h2>
 
-              {/* Spacer for layout balance */}
               <div className="w-10" />
             </div>
 
-            {/* Form area */}
             <div className="flex-1 overflow-y-auto p-4 sm:p-6">
               <div className="space-y-5">
                 <div className="space-y-2">
@@ -182,7 +179,6 @@ function ShareComposeModalInner({ isOpen, onClose, onSubmit, isSubmitting, editi
                   />
                 </div>
 
-                {/* Image upload */}
                 <div className="space-y-2">
                   <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
                     {t("share.imageLabel")}
@@ -234,7 +230,6 @@ function ShareComposeModalInner({ isOpen, onClose, onSubmit, isSubmitting, editi
                     </button>
                   )}
 
-                  {/* Image upload error */}
                   {imageUploadError && (
                     <p className="text-sm text-error mt-2">
                       {imageUploadError}
@@ -244,7 +239,6 @@ function ShareComposeModalInner({ isOpen, onClose, onSubmit, isSubmitting, editi
               </div>
             </div>
 
-            {/* Footer */}
             <div className="px-4 py-4 border-t border-border/50 shrink-0 flex justify-end">
               <m.button
                 type="button"
@@ -418,7 +412,6 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
 
   return (
     <>
-      {/* Compose Modal */}
       <ShareComposeModal
         isOpen={isComposeOpen}
         onClose={handleCloseCompose}
@@ -433,7 +426,6 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
         animate="visible"
         className="space-y-6"
       >
-        {/* Feedback */}
         <AnimatePresence>
           {feedback && (
             <m.div
@@ -452,7 +444,6 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
           )}
         </AnimatePresence>
 
-        {/* Empty state */}
         {items.length === 0 ? (
           <m.div
             variants={itemVariants}
@@ -481,7 +472,6 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
             )}
           </m.div>
         ) : (
-        /* Item grid - 2 columns on desktop */
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
           {items.map((item, index) => {
             const displayName = item.profiles?.nickname ?? item.profiles?.name ?? t("common.formerResident");
@@ -507,7 +497,6 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                   isClaimed ? "opacity-60" : ""
                 } ${isEditable ? "cursor-pointer" : ""}`}
               >
-                {/* Header */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <Avatar className="w-9 h-9 rounded-lg border border-border/50">
@@ -536,7 +525,6 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                     </div>
                   </div>
 
-                  {/* Time remaining badge */}
                   {timeLeft && !isClaimed && (
                     <span className="flex items-center gap-1.5 text-xs font-semibold text-brand-500 bg-brand-500/10 px-2.5 py-1 rounded-lg">
                       <Clock size={12} />
@@ -545,7 +533,6 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                   )}
                 </div>
 
-                {/* Item image */}
                 {item.image_url && (
                   <div className="relative aspect-[16/10] rounded-xl overflow-hidden bg-muted mb-4 -mx-1">
                     <Image
@@ -563,7 +550,6 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                   </div>
                 )}
 
-                {/* Content */}
                 <div className="flex-1 space-y-2 mb-5">
                   <h4 className={`text-base font-bold ${
                     isTeaser ? "blur-[2.5px] select-none" : isClaimed ? "text-muted-foreground line-through" : "text-foreground"
@@ -579,7 +565,6 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                   )}
                 </div>
 
-                {/* Footer */}
                 <div className="flex items-center justify-between pt-4 border-t border-border/40">
                   {isClaimed ? (
                     <span className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground bg-muted px-3 py-1.5 rounded-lg">
@@ -628,7 +613,6 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
       )}
       </m.div>
 
-      {/* FAB - Floating Action Button */}
       {!isTeaser && (
         <m.button
           type="button"

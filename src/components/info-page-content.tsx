@@ -151,7 +151,6 @@ const FloorSection = memo(function FloorSection({ floorData }: { floorData: Floo
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Wi-Fi Card */}
         {floorData.wifiInfos.length > 0 && (
           <div className="rounded-xl border border-border/60 bg-card p-4 sm:p-5 hover:border-border transition-colors">
             <div className="flex items-center gap-2 mb-4 text-muted-foreground">
@@ -169,7 +168,6 @@ const FloorSection = memo(function FloorSection({ floorData }: { floorData: Floo
                 ))}
               </div>
 
-              {/* Show common password if all SSIDs share the same one */}
               {hasCommonPassword && commonPassword && (
                 <div className="pt-3 border-t border-border/40 flex items-center justify-between">
                   <div>
@@ -182,7 +180,6 @@ const FloorSection = memo(function FloorSection({ floorData }: { floorData: Floo
                 </div>
               )}
 
-              {/* Show per-SSID passwords if they differ */}
               {!hasCommonPassword && passwords.length > 0 && (
                 <div className="pt-3 border-t border-border/40 space-y-2">
                   {floorData.wifiInfos.map((wifi) => wifi.password && (
@@ -199,7 +196,6 @@ const FloorSection = memo(function FloorSection({ floorData }: { floorData: Floo
                 </div>
               )}
 
-              {/* No password case */}
               {passwords.length === 0 && (
                 <div className="pt-3 border-t border-border/40">
                   <span className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-0.5">{t("info.password")}</span>
@@ -212,7 +208,6 @@ const FloorSection = memo(function FloorSection({ floorData }: { floorData: Floo
           </div>
         )}
 
-        {/* Mailbox Card */}
         {floorData.mailboxInfo && (
           <div className="rounded-xl border border-border/60 bg-card p-4 sm:p-5 hover:border-border transition-colors">
             <div className="flex items-center gap-2 mb-4 text-muted-foreground">
@@ -233,7 +228,6 @@ const FloorSection = memo(function FloorSection({ floorData }: { floorData: Floo
           </div>
         )}
 
-        {/* Address Card */}
         {floorData.addressInfo && (
           <div className="rounded-xl border border-border/60 bg-card p-4 sm:p-5 hover:border-border transition-colors md:col-span-2 lg:col-span-1">
             <div className="flex items-center gap-2 mb-4 text-muted-foreground">

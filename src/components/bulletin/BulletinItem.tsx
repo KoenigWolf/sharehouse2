@@ -39,27 +39,22 @@ export function BulletinItem({
   const isMine = bulletin.user_id === currentUserId;
   const profileHref = bulletin.profiles ? `/profile/${bulletin.user_id}` : undefined;
 
-  // Edit state
   const [isEditing, setIsEditing] = useState(false);
   const [editMessage, setEditMessage] = useState(bulletin.message);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Check if message was edited
   const isEdited = bulletin.updated_at && bulletin.updated_at !== bulletin.created_at;
 
-  // Start editing
   const handleStartEdit = useCallback(() => {
     setEditMessage(bulletin.message);
     setIsEditing(true);
   }, [bulletin.message]);
 
-  // Cancel editing
   const handleCancelEdit = useCallback(() => {
     setEditMessage(bulletin.message);
     setIsEditing(false);
   }, [bulletin.message]);
 
-  // Save edit
   const handleSaveEdit = useCallback(async () => {
     const trimmed = editMessage.trim();
     if (!trimmed || trimmed === bulletin.message) {
@@ -76,7 +71,6 @@ export function BulletinItem({
     }
   }, [editMessage, bulletin.id, bulletin.message, onEdit]);
 
-  // Auto-focus textarea when editing starts
   useEffect(() => {
     if (isEditing && textareaRef.current) {
       textareaRef.current.focus();
@@ -84,7 +78,6 @@ export function BulletinItem({
     }
   }, [isEditing]);
 
-  // Handle keyboard shortcuts
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === "Escape") {
       handleCancelEdit();

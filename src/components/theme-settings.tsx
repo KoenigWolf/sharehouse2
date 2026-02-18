@@ -57,7 +57,6 @@ const ThemeOption = memo(function ThemeOption({
           : "border-border bg-card hover:border-foreground/30 hover:bg-muted/50"
       }`}
     >
-      {/* Selected indicator with layoutId animation */}
       <AnimatePresence>
         {isSelected && (
           <motion.div
@@ -72,7 +71,6 @@ const ThemeOption = memo(function ThemeOption({
         )}
       </AnimatePresence>
 
-      {/* Color swatches - 32px for touch accessibility */}
       <div className="flex gap-2 mb-4">
         <div
           className="w-8 h-8 rounded-lg shadow-sm border border-foreground/10"
@@ -202,7 +200,6 @@ export const ThemeSettings = memo(function ThemeSettings() {
       animate="visible"
       className="space-y-8"
     >
-      {/* Section header */}
       <m.div variants={itemVariants} className="flex items-center gap-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center">
@@ -220,7 +217,6 @@ export const ThemeSettings = memo(function ThemeSettings() {
         <div className="flex-1 h-px bg-border" />
       </m.div>
 
-      {/* Theme style selection */}
       <div className="space-y-5">
         <m.h3 variants={itemVariants} className="text-sm font-semibold text-foreground ml-1">
           {t("theme.styleLabel")}
@@ -240,7 +236,6 @@ export const ThemeSettings = memo(function ThemeSettings() {
         </m.div>
       </div>
 
-      {/* Color mode selection */}
       <div className="space-y-5">
         <m.h3 variants={itemVariants} className="text-sm font-semibold text-foreground ml-1">
           {t("theme.colorModeLabel")}

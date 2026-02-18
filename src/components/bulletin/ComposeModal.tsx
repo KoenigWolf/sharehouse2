@@ -86,7 +86,6 @@ export function ComposeModal({ isOpen, onClose, onSubmit, isSubmitting, userProf
             className="fixed inset-0 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-lg sm:rounded-2xl bg-background sm:premium-surface flex flex-col sm:max-h-[80vh]"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
             <div className="flex items-center justify-between px-4 h-14 border-b border-border/50 shrink-0">
               <m.button
                 type="button"
@@ -131,7 +130,6 @@ export function ComposeModal({ isOpen, onClose, onSubmit, isSubmitting, userProf
               </m.button>
             </div>
 
-            {/* Compose area */}
             <div className="flex-1 overflow-y-auto p-4">
               <div className="flex gap-3">
                 <Avatar className="w-10 h-10 rounded-full border border-border/50 shrink-0">
@@ -162,7 +160,6 @@ export function ComposeModal({ isOpen, onClose, onSubmit, isSubmitting, userProf
               </div>
             </div>
 
-            {/* Footer with character count */}
             <div className="px-4 py-3 border-t border-border/50 shrink-0">
               <div className="flex items-center justify-between">
                 <m.span

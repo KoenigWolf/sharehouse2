@@ -42,22 +42,18 @@ export function BulletinBoard({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
-  // Track newly added bulletin IDs for special animation
   const [newBulletinIds, setNewBulletinIds] = useState<Set<string>>(new Set());
 
-  // Infinite scroll state
   const [cursor, setCursor] = useState<string | null>(initialCursor);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const loadMoreRef = useRef(false);
 
-  // Intersection observer for infinite scroll
   const [sentinelRef, isIntersecting] = useIntersectionObserver({
-    rootMargin: "400px", // Load earlier for smoother experience
+    rootMargin: "400px",
     threshold: 0,
   });
 
-  // Track which bulletins were just loaded for staggered animation
   const [loadedBatch, setLoadedBatch] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -66,7 +62,6 @@ export function BulletinBoard({
     setHasMore(initialHasMore);
   }, [initialBulletins, initialCursor, initialHasMore]);
 
-  // Load more bulletins
   const loadMore = useCallback(async () => {
     if (loadMoreRef.current || !hasMore || !cursor || isTeaser) return;
     loadMoreRef.current = true;
@@ -121,12 +116,10 @@ export function BulletinBoard({
         profiles: currentUserProfile ?? null,
       };
 
-      // Mark as new for special animation
       setNewBulletinIds((prev) => new Set([...prev, newId]));
       setBulletins((prev) => [newBulletin, ...prev]);
       setIsComposeOpen(false);
 
-      // Clear new status after animation
       setTimeout(() => {
         setNewBulletinIds((prev) => {
           const next = new Set(prev);
@@ -175,7 +168,6 @@ export function BulletinBoard({
         return false;
       }
 
-      // Update local state with new message
       setBulletins((prev) =>
         prev.map((b) =>
           b.id === bulletinId
@@ -204,7 +196,6 @@ export function BulletinBoard({
   return (
     <>
       <div className="space-y-1">
-        {/* Feedback message */}
         <AnimatePresence mode="wait">
           {feedback && (
             <m.div
@@ -223,7 +214,6 @@ export function BulletinBoard({
           )}
         </AnimatePresence>
 
-        {/* Empty state */}
         {bulletins.length === 0 && !isLoadingMore ? (
           <m.div
             initial={{ opacity: 0, y: 20 }}
@@ -247,7 +237,6 @@ export function BulletinBoard({
             </p>
           </m.div>
         ) : (
-          /* Timeline */
           <div>
             <AnimatePresence initial={false} mode="popLayout">
               {bulletins.map((bulletin) => (
@@ -276,7 +265,6 @@ export function BulletinBoard({
           </div>
         )}
 
-        {/* Loading skeletons */}
         <AnimatePresence>
           {isLoadingMore && (
             <m.div
@@ -299,7 +287,6 @@ export function BulletinBoard({
           )}
         </AnimatePresence>
 
-        {/* Infinite scroll sentinel */}
         {!isTeaser && (
           <div ref={sentinelRef} className="py-4">
             {!hasMore && bulletins.length > 0 && (
@@ -316,7 +303,6 @@ export function BulletinBoard({
         )}
       </div>
 
-      {/* Floating Action Button */}
       {isEditing && (
         <m.button
           type="button"
@@ -333,7 +319,6 @@ export function BulletinBoard({
         </m.button>
       )}
 
-      {/* Compose Modal */}
       <ComposeModal
         isOpen={isComposeOpen}
         onClose={() => setIsComposeOpen(false)}

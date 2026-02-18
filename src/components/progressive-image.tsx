@@ -62,7 +62,6 @@ export const ProgressiveImage = memo(function ProgressiveImage({
 
   return (
     <div className={`relative overflow-hidden ${wrapperClassName}`}>
-      {/* Shimmer loading animation */}
       <AnimatePresence>
         {!isLoaded && showLoadingAnimation && (
           <m.div
@@ -77,7 +76,6 @@ export const ProgressiveImage = memo(function ProgressiveImage({
         )}
       </AnimatePresence>
 
-      {/* Low quality placeholder (blur) */}
       {placeholderSrc && !isLoaded && (
         <Image
           src={placeholderSrc}
@@ -90,7 +88,6 @@ export const ProgressiveImage = memo(function ProgressiveImage({
         />
       )}
 
-      {/* Main image */}
       <m.div
         initial={{ opacity: 0 }}
         animate={{ opacity: isLoaded ? 1 : 0 }}
@@ -153,7 +150,6 @@ export const ProgressiveAvatar = memo(function ProgressiveAvatar({
       className={`relative overflow-hidden rounded-full ${className}`}
       style={{ width: size, height: size }}
     >
-      {/* Shimmer */}
       <AnimatePresence>
         {!isLoaded && (
           <m.div
@@ -168,7 +164,6 @@ export const ProgressiveAvatar = memo(function ProgressiveAvatar({
         )}
       </AnimatePresence>
 
-      {/* Image */}
       <m.div
         initial={{ opacity: 0, scale: 1.05 }}
         animate={{ opacity: isLoaded ? 1 : 0, scale: isLoaded ? 1 : 1.05 }}

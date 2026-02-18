@@ -103,7 +103,6 @@ function PasswordSection() {
       onSubmit={handleSubmit}
       className="premium-surface rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-border/50 space-y-6"
     >
-      {/* Section header */}
       <div className="flex items-center gap-3 mb-2">
         <div className="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center">
           <Lock size={18} className="text-brand-500" />
@@ -113,7 +112,6 @@ function PasswordSection() {
         </h3>
       </div>
 
-      {/* Form fields with golden ratio spacing */}
       <div className="space-y-5">
         <div className="space-y-2">
           <label htmlFor="current-password" className="block text-xs font-semibold text-muted-foreground ml-1">
@@ -163,7 +161,6 @@ function PasswordSection() {
 
       <FeedbackMessage feedback={feedback} />
 
-      {/* Submit button - h-12 for touch target */}
       <m.button
         type="submit"
         disabled={isSubmitting || !isValid}
@@ -207,7 +204,6 @@ function EmailSection({ userEmail }: { userEmail: string | undefined }) {
       onSubmit={handleSubmit}
       className="premium-surface rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-border/50 space-y-6"
     >
-      {/* Section header */}
       <div className="flex items-center gap-3 mb-2">
         <div className="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center">
           <Mail size={18} className="text-brand-500" />
@@ -218,7 +214,6 @@ function EmailSection({ userEmail }: { userEmail: string | undefined }) {
       </div>
 
       <div className="space-y-5">
-        {/* Current email display */}
         {userEmail && (
           <div className="px-5 py-4 bg-muted/50 rounded-xl border border-border/50">
             <p className="text-xs font-semibold text-muted-foreground mb-1">
@@ -292,7 +287,6 @@ function DeleteSection() {
       onSubmit={handleSubmit}
       className="bg-error-bg/30 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-error/20 space-y-6"
     >
-      {/* Section header */}
       <div className="flex items-center gap-3 mb-2">
         <div className="w-10 h-10 rounded-xl bg-error/10 flex items-center justify-center">
           <Trash2 size={18} className="text-error" />
@@ -354,7 +348,6 @@ export function AccountSettings({ userEmail, hasPassword }: AccountSettingsProps
       animate="visible"
       className="space-y-8"
     >
-      {/* Section header */}
       <m.div variants={itemVariants} className="flex items-center gap-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center">
@@ -367,7 +360,6 @@ export function AccountSettings({ userEmail, hasPassword }: AccountSettingsProps
         <div className="flex-1 h-px bg-border" />
       </m.div>
 
-      {/* Account settings cards */}
       <m.div variants={containerVariants} className="space-y-6">
         <EmailSection userEmail={userEmail} />
 
