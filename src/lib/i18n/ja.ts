@@ -747,6 +747,18 @@ export const ja = {
       capacity: "定員",
       unit: "名",
     },
+    events: {
+      title: "UPCOMING",
+      subtitle: "直近のイベント",
+      viewAll: "すべて見る",
+      attendees: "{{count}}名参加",
+      noEvents: "現在予定されているイベントはありません",
+      samples: {
+        brunch: "日曜ブランチ",
+        movie: "映画ナイト",
+        bbq: "屋上BBQ",
+      },
+    },
     onboarding: {
       title: "GETTING STARTED",
       subtitle: "入居までの流れ",

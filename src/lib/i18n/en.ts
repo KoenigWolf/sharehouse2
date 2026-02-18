@@ -746,6 +746,18 @@ export const en: Translations = {
       capacity: "Capacity",
       unit: "",
     },
+    events: {
+      title: "UPCOMING",
+      subtitle: "Upcoming Events",
+      viewAll: "View all",
+      attendees: "{{count}} attending",
+      noEvents: "No upcoming events",
+      samples: {
+        brunch: "Sunday Brunch",
+        movie: "Movie Night",
+        bbq: "Rooftop BBQ",
+      },
+    },
     onboarding: {
       title: "GETTING STARTED",
       subtitle: "How to move in",
