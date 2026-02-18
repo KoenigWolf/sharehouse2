@@ -169,3 +169,22 @@ export function validateJsonContentType(req: NextRequest): NextResponse | null {
 
   return null;
 }
+
+/**
+ * Get request ID from headers (set by middleware)
+ */
+export function getApiRequestId(req: NextRequest): string {
+  return req.headers.get("x-request-id") || `api-${Date.now().toString(36)}`;
+}
+
+/**
+ * Get client IP from various headers
+ */
+export function getApiClientIp(req: NextRequest): string {
+  return (
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    req.headers.get("x-real-ip") ||
+    req.headers.get("cf-connecting-ip") ||
+    "unknown"
+  );
+}

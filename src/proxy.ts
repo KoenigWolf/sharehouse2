@@ -3,8 +3,22 @@ import { updateSession } from "@/lib/supabase/middleware";
 
 const isDev = process.env.NODE_ENV === "development";
 
+/**
+ * Generate unique request ID for tracing and debugging
+ * Format: timestamp-random (URL-safe base64)
+ */
+function generateRequestId(): string {
+  const timestamp = Date.now().toString(36);
+  const random = crypto.randomUUID().split("-")[0];
+  return `${timestamp}-${random}`;
+}
+
 export async function proxy(request: NextRequest) {
   const response = await updateSession(request);
+
+  // Request ID for tracing (useful for debugging and audit logs)
+  const requestId = generateRequestId();
+  response.headers.set("X-Request-ID", requestId);
 
   const nonce = generateNonce();
 
