@@ -42,12 +42,10 @@ export function usePhotoGallery({
   const [photos, setPhotos] = useState<PhotoWithProfile[]>(initialPhotos);
   const [visibleCount, setVisibleCount] = useState(initialVisibleCount);
 
-  // Sync with prop changes
   useEffect(() => {
     setPhotos(initialPhotos);
   }, [initialPhotos]);
 
-  // Derived state
   const hasPhotos = photos.length > 0;
   const visiblePhotos = useMemo(
     () => photos.slice(0, visibleCount),
@@ -56,7 +54,6 @@ export function usePhotoGallery({
   const hasMore = photos.length > visibleCount;
   const remainingCount = photos.length - visibleCount;
 
-  // Actions
   const showMore = useCallback(() => {
     setVisibleCount((prev) => prev + initialVisibleCount);
   }, [initialVisibleCount]);
