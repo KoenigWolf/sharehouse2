@@ -581,9 +581,14 @@ export const ja = {
 
   concept: {
     hero: {
+      eyebrow: "Share House Portal",
       prefix: "We share",
       suffix: "with you",
       keywords: ["Life", "Time", "Vibe", "Values"],
+      scrollHint: "Scroll",
+    },
+    cta: {
+      explore: "住民を見る",
     },
     mission: {
       title: "MISSION",

@@ -581,9 +581,14 @@ export const en: Translations = {
 
   concept: {
     hero: {
+      eyebrow: "Share House Portal",
       prefix: "We share",
       suffix: "with you",
       keywords: ["Life", "Time", "Vibe", "Values"],
+      scrollHint: "Scroll",
+    },
+    cta: {
+      explore: "Explore Residents",
     },
     mission: {
       title: "MISSION",
