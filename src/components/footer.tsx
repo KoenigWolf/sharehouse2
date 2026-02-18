@@ -16,6 +16,8 @@ import {
   CoffeeIcon,
   BarChart3Icon,
   HomeIcon,
+  MailIcon,
+  MapPinIcon,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -34,6 +36,8 @@ const NAV_LINKS: { href: string; labelKey: Parameters<Translator>[0]; icon: Luci
 ];
 
 const MORE_LINKS: { href: string; labelKey: Parameters<Translator>[0]; icon: LucideIcon }[] = [
+  { href: "/contact", labelKey: "contact.title", icon: MailIcon },
+  { href: "/tour", labelKey: "tour.title", icon: MapPinIcon },
   { href: "/stats", labelKey: "nav.stats", icon: BarChart3Icon },
   { href: "/info", labelKey: "nav.info", icon: InfoIcon },
   { href: "/tea-time", labelKey: "nav.teaTime", icon: CoffeeIcon },
