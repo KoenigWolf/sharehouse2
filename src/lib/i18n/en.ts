@@ -413,6 +413,8 @@ export const en: Translations = {
     rateLimitMinutes: "Too many requests. Try again in {{minutes}} minutes.",
     maxPhotosReached: "You can upload up to 5 photos",
     deleteFailed: "Failed to delete",
+    passwordBreached: "This password has been found in {{count}} data breaches. Please use a different password.",
+    accountLocked: "Account temporarily locked. Try again in {{minutes}} minutes.",
   },
 
   validation: {

@@ -17,6 +17,11 @@ import {
   AuditActions,
   AuditEventType,
   auditLog,
+  checkPasswordBreach,
+  BREACH_WARNING_THRESHOLD,
+  checkAccountLockout,
+  recordFailedLogin,
+  recordSuccessfulLogin,
 } from "@/lib/security";
 import { enforceAllowedOrigin, getRequestIp } from "@/lib/security/request";
 import {
@@ -77,6 +82,20 @@ export async function signUp(
   if (!rateLimitResult.success) {
     AuditActions.rateLimited(validatedEmail, "signUp", ipAddress || undefined);
     return { error: formatRateLimitError(rateLimitResult.retryAfter, t) };
+  }
+
+  // Check if password has been exposed in data breaches
+  const breachResult = await checkPasswordBreach(validatedPassword);
+  if (breachResult.breached && breachResult.count && breachResult.count >= BREACH_WARNING_THRESHOLD) {
+    auditLog({
+      timestamp: new Date().toISOString(),
+      eventType: AuditEventType.SECURITY_VALIDATION_FAILURE,
+      action: "Signup blocked due to breached password",
+      outcome: "failure",
+      ipAddress: ipAddress ?? undefined,
+      metadata: { breachCount: breachResult.count },
+    });
+    return { error: t("errors.passwordBreached", { count: breachResult.count.toLocaleString() }) };
   }
 
   try {
@@ -196,6 +215,13 @@ export async function signIn(
     validation.data;
 
   const ipAddress = await getRequestIp();
+
+  // Check account lockout before proceeding
+  const lockoutStatus = checkAccountLockout(validatedEmail, ipAddress ?? undefined);
+  if (lockoutStatus.isLocked) {
+    return { error: t("errors.accountLocked", { minutes: lockoutStatus.remainingMinutes }) };
+  }
+
   const rateLimitKey = ipAddress
     ? `${validatedEmail}:${ipAddress}`
     : validatedEmail;
@@ -216,7 +242,15 @@ export async function signIn(
     if (error) {
       logError(error, { action: "signIn", metadata: { email: validatedEmail } });
 
+      // Record failed login attempt for lockout tracking
+      const lockout = recordFailedLogin(validatedEmail, ipAddress ?? undefined);
+
       AuditActions.loginFailure(error.message, ipAddress || undefined);
+
+      // If account is now locked, return lockout message
+      if (lockout.isLocked) {
+        return { error: t("errors.accountLocked", { minutes: lockout.remainingMinutes }) };
+      }
 
       return { error: t("auth.invalidCredentials") };
     }
@@ -242,6 +276,9 @@ export async function signIn(
         // Don't fail login if profile creation fails
       }
     }
+
+    // Clear failed login attempts on success
+    recordSuccessfulLogin(validatedEmail, ipAddress ?? undefined);
 
     AuditActions.loginSuccess(data.user.id);
 

@@ -19,6 +19,26 @@ type PaymentType = (typeof ALLOWED_PAYMENT_TYPES)[number];
 const MIN_AMOUNT = 100;
 const MAX_AMOUNT = 1_000_000;
 
+// Idempotency cache (prevents duplicate charges)
+interface IdempotencyEntry {
+  response: { sessionId: string; url: string | null };
+  expiresAt: number;
+}
+const idempotencyCache = new Map<string, IdempotencyEntry>();
+const IDEMPOTENCY_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+const MAX_IDEMPOTENCY_ENTRIES = 10000;
+
+function cleanupIdempotencyCache(): void {
+  if (idempotencyCache.size <= MAX_IDEMPOTENCY_ENTRIES) return;
+
+  const now = Date.now();
+  for (const [key, entry] of idempotencyCache.entries()) {
+    if (entry.expiresAt < now) {
+      idempotencyCache.delete(key);
+    }
+  }
+}
+
 function isValidPaymentType(type: unknown): type is PaymentType {
   return typeof type === "string" && ALLOWED_PAYMENT_TYPES.includes(type as PaymentType);
 }
@@ -70,7 +90,17 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { type, amount, description, metadata } = body;
+    const { type, amount, description, metadata, idempotencyKey } = body;
+
+    // Idempotency: Return cached response if same key
+    if (idempotencyKey && typeof idempotencyKey === "string") {
+      const cached = idempotencyCache.get(idempotencyKey);
+      if (cached && cached.expiresAt > Date.now()) {
+        return NextResponse.json(cached.response, {
+          headers: { "Idempotency-Replayed": "true" },
+        });
+      }
+    }
 
     // Security: Validate payment type (whitelist)
     if (!isValidPaymentType(type)) {
@@ -136,7 +166,18 @@ export async function POST(req: NextRequest) {
       metadata: sanitizedMetadata,
     });
 
-    return NextResponse.json({ sessionId: session.id, url: session.url });
+    const response = { sessionId: session.id, url: session.url };
+
+    // Cache response for idempotency
+    if (idempotencyKey && typeof idempotencyKey === "string") {
+      cleanupIdempotencyCache();
+      idempotencyCache.set(idempotencyKey, {
+        response,
+        expiresAt: Date.now() + IDEMPOTENCY_TTL_MS,
+      });
+    }
+
+    return NextResponse.json(response);
   } catch (err) {
     logError(err, { action: "checkout", metadata: { requestId, clientIp } });
     return NextResponse.json(

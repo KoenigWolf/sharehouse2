@@ -412,6 +412,8 @@ export const ja = {
     rateLimitMinutes: "リクエストが多すぎます。{{minutes}}分後に再試行してください。",
     maxPhotosReached: "写真は最大5枚までアップロードできます",
     deleteFailed: "削除に失敗しました",
+    passwordBreached: "このパスワードは過去のデータ漏洩で{{count}}件確認されています。別のパスワードをご使用ください。",
+    accountLocked: "アカウントが一時的にロックされています。{{minutes}}分後に再試行してください。",
   },
 
   validation: {
