@@ -78,22 +78,56 @@ describe("useDebounce", () => {
 
   it("works with different value types", () => {
     // Number
-    const { result: numberResult } = renderHook(() => useDebounce(42, 100));
+    const { result: numberResult, rerender: rerenderNumber } = renderHook(
+      ({ value, delay }) => useDebounce(value, delay),
+      { initialProps: { value: 42, delay: 100 } }
+    );
     expect(numberResult.current).toBe(42);
+    rerenderNumber({ value: 100, delay: 100 });
+    act(() => {
+      vi.advanceTimersByTime(100);
+    });
+    expect(numberResult.current).toBe(100);
 
     // Object
-    const obj = { key: "value" };
-    const { result: objectResult } = renderHook(() => useDebounce(obj, 100));
-    expect(objectResult.current).toBe(obj);
+    const obj1 = { key: "value1" };
+    const obj2 = { key: "value2" };
+    const { result: objectResult, rerender: rerenderObject } = renderHook(
+      ({ value, delay }) => useDebounce(value, delay),
+      { initialProps: { value: obj1, delay: 100 } }
+    );
+    expect(objectResult.current).toBe(obj1);
+    rerenderObject({ value: obj2, delay: 100 });
+    act(() => {
+      vi.advanceTimersByTime(100);
+    });
+    expect(objectResult.current).toBe(obj2);
 
     // Array
-    const arr = [1, 2, 3];
-    const { result: arrayResult } = renderHook(() => useDebounce(arr, 100));
-    expect(arrayResult.current).toBe(arr);
+    const arr1 = [1, 2, 3];
+    const arr2 = [4, 5, 6];
+    const { result: arrayResult, rerender: rerenderArray } = renderHook(
+      ({ value, delay }) => useDebounce(value, delay),
+      { initialProps: { value: arr1, delay: 100 } }
+    );
+    expect(arrayResult.current).toBe(arr1);
+    rerenderArray({ value: arr2, delay: 100 });
+    act(() => {
+      vi.advanceTimersByTime(100);
+    });
+    expect(arrayResult.current).toBe(arr2);
 
     // Boolean
-    const { result: boolResult } = renderHook(() => useDebounce(true, 100));
+    const { result: boolResult, rerender: rerenderBool } = renderHook(
+      ({ value, delay }) => useDebounce(value, delay),
+      { initialProps: { value: true, delay: 100 } }
+    );
     expect(boolResult.current).toBe(true);
+    rerenderBool({ value: false, delay: 100 });
+    act(() => {
+      vi.advanceTimersByTime(100);
+    });
+    expect(boolResult.current).toBe(false);
   });
 
   it("respects different delay values", () => {
