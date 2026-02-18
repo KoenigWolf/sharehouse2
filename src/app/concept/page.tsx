@@ -62,9 +62,7 @@ export default function ConceptPage() {
 
       <PageTransition>
         <main className="relative">
-          {/* Hero Section - SEREAL style */}
           <div className="sticky top-0 h-screen flex flex-col items-center justify-center overflow-hidden bg-white">
-            {/* Decorative circle - SEREAL style */}
             <m.div
               style={{
                 scale: useTransform(scrollYProgress, [0, 0.3], [1, 1.5]),
@@ -115,7 +113,6 @@ export default function ConceptPage() {
               </div>
             </div>
 
-            {/* Scroll indicator - SEREAL style */}
             <m.div
               style={{ opacity: useTransform(scrollYProgress, [0, 0.05], [1, 0]) }}
               className="absolute bottom-16 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4"
@@ -137,9 +134,7 @@ export default function ConceptPage() {
             </m.div>
           </div>
 
-          {/* Content Sections */}
           <div className="relative bg-white">
-            {/* Mission Section - SEREAL style minimal */}
             <section className="py-32 md:py-48">
               <div className="container mx-auto px-6 max-w-4xl">
                 <m.div
@@ -159,7 +154,6 @@ export default function ConceptPage() {
               </div>
             </section>
 
-            {/* Vision Section - SEREAL grid style */}
             <section className="py-32 md:py-48 border-t border-foreground/5">
               <div className="container mx-auto px-6 max-w-6xl">
                 <m.p
@@ -194,7 +188,6 @@ export default function ConceptPage() {
               </div>
             </section>
 
-            {/* Features Section - SEREAL minimal cards */}
             <section className="py-32 md:py-48 border-t border-foreground/5">
               <div className="container mx-auto px-6 max-w-6xl">
                 <m.div
@@ -244,7 +237,6 @@ export default function ConceptPage() {
               </div>
             </section>
 
-            {/* Principles Section - SEREAL numbered list */}
             <section className="py-32 md:py-48 border-t border-foreground/5 bg-foreground/[0.02]">
               <div className="container mx-auto px-6 max-w-4xl">
                 <m.div
@@ -288,7 +280,6 @@ export default function ConceptPage() {
               </div>
             </section>
 
-            {/* CTA Section - SEREAL style */}
             <section className="py-32 md:py-48 border-t border-foreground/5">
               <div className="container mx-auto px-6 max-w-4xl text-center">
                 <m.div

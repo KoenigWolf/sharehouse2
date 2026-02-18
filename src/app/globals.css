@@ -224,6 +224,7 @@
     box-shadow: var(--shadow-card);
   }
 
+  /* Named after SEREAL design style (sereal.jp) - intentional spelling */
   .sereal-glow {
     position: fixed;
     inset: 0;

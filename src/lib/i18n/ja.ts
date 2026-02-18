@@ -580,6 +580,7 @@ export const ja = {
   },
 
   concept: {
+    // Hero copy is intentionally in English for design/branding consistency (SEREAL-style typography)
     hero: {
       eyebrow: "Share House Portal",
       prefix: "We share",
