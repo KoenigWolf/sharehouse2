@@ -778,6 +778,7 @@ export const ja = {
       phone: "電話でのお問い合わせ",
       phoneNumber: "03-1234-5678",
       lineAdd: "LINEで相談",
+      lineUrl: "https://line.me/R/",
     },
     sections: {
       hero: "トップ",
@@ -831,6 +832,7 @@ export const ja = {
       subjectRequired: "お問い合わせ種別を選択してください",
       messageRequired: "お問い合わせ内容を入力してください",
       submitFailed: "送信に失敗しました。しばらく経ってから再度お試しください。",
+      rateLimited: "送信回数が上限に達しました。しばらく経ってから再度お試しください。",
     },
   },
 
@@ -872,6 +874,7 @@ export const ja = {
       dateRequired: "ご希望日を選択してください",
       timeRequired: "ご希望時間を選択してください",
       submitFailed: "予約に失敗しました。しばらく経ってから再度お試しください。",
+      rateLimited: "予約回数が上限に達しました。しばらく経ってから再度お試しください。",
     },
     calendar: {
       selectDate: "日付を選択",

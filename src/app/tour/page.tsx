@@ -79,7 +79,10 @@ export default function TourPage() {
 
     if ("error" in result) {
       setFormState("error");
-      setErrorMessage(result.error);
+      const errorKey = result.error === "RATE_LIMITED"
+        ? "tour.errors.rateLimited"
+        : "tour.errors.submitFailed";
+      setErrorMessage(t(errorKey));
     } else {
       setFormState("success");
     }

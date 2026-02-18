@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { logError } from "@/lib/errors";
+import { checkRateLimitAsync } from "@/lib/security";
 
 interface ContactFormData {
   name: string;
@@ -11,10 +12,22 @@ interface ContactFormData {
   message: string;
 }
 
+export type ContactErrorCode = "SUBMIT_FAILED" | "RATE_LIMITED";
+
 export async function submitContactForm(
   data: ContactFormData
-): Promise<{ success: true } | { error: string }> {
+): Promise<{ success: true } | { error: ContactErrorCode }> {
   try {
+    const rateLimit = await checkRateLimitAsync(`contact:${data.email}`, {
+      limit: 3,
+      windowMs: 60 * 1000,
+      prefix: "contact",
+    });
+
+    if (!rateLimit.success) {
+      return { error: "RATE_LIMITED" };
+    }
+
     const supabase = await createClient();
 
     const { error } = await supabase.from("contact_submissions").insert({
@@ -28,15 +41,12 @@ export async function submitContactForm(
 
     if (error) {
       logError(error, { action: "submitContactForm" });
-      return { error: "送信に失敗しました。しばらく経ってから再度お試しください。" };
+      return { error: "SUBMIT_FAILED" };
     }
-
-    // TODO: Send email notification to admin using Resend or similar service
-    // await sendAdminNotification(data);
 
     return { success: true };
   } catch (err) {
     logError(err, { action: "submitContactForm" });
-    return { error: "送信に失敗しました。しばらく経ってから再度お試しください。" };
+    return { error: "SUBMIT_FAILED" };
   }
 }

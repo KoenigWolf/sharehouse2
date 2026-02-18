@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { logError } from "@/lib/errors";
+import { checkRateLimitAsync } from "@/lib/security";
 
 interface TourRequestData {
   name: string;
@@ -12,10 +13,22 @@ interface TourRequestData {
   notes: string;
 }
 
+export type TourErrorCode = "SUBMIT_FAILED" | "RATE_LIMITED";
+
 export async function submitTourRequest(
   data: TourRequestData
-): Promise<{ success: true } | { error: string }> {
+): Promise<{ success: true } | { error: TourErrorCode }> {
   try {
+    const rateLimit = await checkRateLimitAsync(`tour:${data.email}`, {
+      limit: 3,
+      windowMs: 60 * 1000,
+      prefix: "tour",
+    });
+
+    if (!rateLimit.success) {
+      return { error: "RATE_LIMITED" };
+    }
+
     const supabase = await createClient();
 
     const { error } = await supabase.from("tour_requests").insert({
@@ -31,15 +44,12 @@ export async function submitTourRequest(
 
     if (error) {
       logError(error, { action: "submitTourRequest" });
-      return { error: "予約に失敗しました。しばらく経ってから再度お試しください。" };
+      return { error: "SUBMIT_FAILED" };
     }
-
-    // TODO: Send confirmation email to user
-    // TODO: Send notification email to admin
 
     return { success: true };
   } catch (err) {
     logError(err, { action: "submitTourRequest" });
-    return { error: "予約に失敗しました。しばらく経ってから再度お試しください。" };
+    return { error: "SUBMIT_FAILED" };
   }
 }

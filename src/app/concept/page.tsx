@@ -570,7 +570,7 @@ export default function ConceptPage() {
 
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-8 text-foreground/60 mb-16">
                     <a
-                      href="tel:03-1234-5678"
+                      href={`tel:${t("concept.ctaSection.phoneNumber")}`}
                       className="flex items-center gap-2 hover:text-foreground transition-colors"
                     >
                       <Phone className="w-5 h-5" />
@@ -578,7 +578,7 @@ export default function ConceptPage() {
                     </a>
                     <span className="hidden sm:block text-foreground/20">|</span>
                     <a
-                      href="https://line.me/R/"
+                      href={t("concept.ctaSection.lineUrl")}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 px-6 py-2 bg-[#00B900] text-white rounded-full hover:bg-[#00A000] transition-colors text-sm font-medium"

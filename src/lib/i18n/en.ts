@@ -777,6 +777,7 @@ export const en: Translations = {
       phone: "Call Us",
       phoneNumber: "03-1234-5678",
       lineAdd: "Chat on LINE",
+      lineUrl: "https://line.me/R/",
     },
     sections: {
       hero: "Top",
@@ -830,6 +831,7 @@ export const en: Translations = {
       subjectRequired: "Please select a subject",
       messageRequired: "Please enter your message",
       submitFailed: "Failed to send. Please try again later.",
+      rateLimited: "Too many attempts. Please try again later.",
     },
   },
 
@@ -871,6 +873,7 @@ export const en: Translations = {
       dateRequired: "Please select a date",
       timeRequired: "Please select a time",
       submitFailed: "Booking failed. Please try again later.",
+      rateLimited: "Too many attempts. Please try again later.",
     },
     calendar: {
       selectDate: "Select a date",
