@@ -37,20 +37,26 @@ export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const isAuthCallback = pathname.startsWith("/auth/callback");
   const isLoginPage = pathname.startsWith("/login");
-  // /residents のみ未認証チラ見せ対応済み
-  const isPublicTeaserPage = pathname === "/residents";
+
+  // 公開ページ（未認証でもアクセス可能）
+  const publicPages = [
+    "/",
+    "/concept",
+    "/residents",
+    "/contact",
+    "/tour",
+    "/payment",
+    "/payment/success",
+    "/payment/cancel",
+  ];
+  const isPublicPage = publicPages.some(
+    (page) => pathname === page || pathname.startsWith(`${page}/`)
+  );
 
   // 未認証ユーザーの挙動
-  if (!user && !isLoginPage && !isAuthCallback && !isPublicTeaserPage) {
+  if (!user && !isLoginPage && !isAuthCallback && !isPublicPage) {
     const url = request.nextUrl.clone();
-
-    // ルートパスへのアクセスの場合は /residents (チラ見せ) へ
-    if (pathname === "/") {
-      url.pathname = "/residents";
-    } else {
-      url.pathname = "/login";
-    }
-
+    url.pathname = "/login";
     return NextResponse.redirect(url);
   }
 
