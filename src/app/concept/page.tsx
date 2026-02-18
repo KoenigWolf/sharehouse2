@@ -32,6 +32,8 @@ import { useI18n, useLocale } from "@/hooks/use-i18n";
 import { PageTransition } from "@/components/page-transition";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import {
+  Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
@@ -61,6 +63,7 @@ const SECTIONS = [
   "cta",
 ] as const;
 
+export default function ConceptPage() {
   const t = useI18n();
   const locale = useLocale();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -592,6 +595,79 @@ function VisionCard({
 }) {
   return (
     <m.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ delay: index * 0.05, duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+      className="bg-background p-10 md:p-12 group"
+    >
+      <div className="mb-8 text-foreground/15 group-hover:text-foreground/30 transition-colors duration-500">
+        <Icon size={36} strokeWidth={1} />
+      </div>
+      <h3 className="text-xl font-semibold mb-4 tracking-tight text-foreground/80">{title}</h3>
+      <p className="text-foreground/40 leading-relaxed">{desc}</p>
+    </m.div>
+  );
+}
+
+function SectionNav({ sections }: { sections: readonly string[] }) {
+  const [activeSection, setActiveSection] = useState<string>("hero");
+
+  useEffect(() => {
+    const observers: IntersectionObserver[] = [];
+
+    sections.forEach((sectionId) => {
+      const element = document.getElementById(sectionId);
+      if (!element) return;
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setActiveSection(sectionId);
+            }
+          });
+        },
+        { threshold: 0.3, rootMargin: "-20% 0px -60% 0px" }
+      );
+
+      observer.observe(element);
+      observers.push(observer);
+    });
+
+    return () => {
+      observers.forEach((observer) => observer.disconnect());
+    };
+  }, [sections]);
+
+  const handleClick = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  return (
+    <div className="fixed right-6 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col gap-3">
+      {sections.map((sectionId) => (
+        <button
+          key={sectionId}
+          onClick={() => handleClick(sectionId)}
+          className="group flex items-center justify-end gap-3"
+          aria-label={`Navigate to ${sectionId} section`}
+        >
+          <span
+            className={`text-[10px] uppercase tracking-wider transition-opacity duration-300 ${activeSection === sectionId
+                ? "opacity-60"
+                : "opacity-0 group-hover:opacity-40"
+              }`}
+          >
+            {sectionId}
+          </span>
+          <span
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${activeSection === sectionId
+                ? "bg-foreground/60 scale-125"
+                : "bg-foreground/20 group-hover:bg-foreground/40"
               }`}
           />
         </button>
