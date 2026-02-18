@@ -9,6 +9,7 @@
  */
 
 import type { Metric } from "web-vitals";
+import { logError } from "@/lib/errors";
 
 /**
  * Web Vitalsメトリクスの閾値（Googleの推奨値）
@@ -30,6 +31,12 @@ const WEB_VITALS_THRESHOLDS = {
 
 type MetricName = keyof typeof WEB_VITALS_THRESHOLDS;
 
+const VALID_METRIC_NAMES = Object.keys(WEB_VITALS_THRESHOLDS) as MetricName[];
+
+function isValidMetricName(name: string): name is MetricName {
+  return VALID_METRIC_NAMES.includes(name as MetricName);
+}
+
 /**
  * メトリクス値の評価を返す
  *
@@ -42,7 +49,6 @@ function rateMetric(
   value: number
 ): "good" | "needs-improvement" | "poor" {
   const threshold = WEB_VITALS_THRESHOLDS[name];
-  if (!threshold) return "good";
 
   if (value <= threshold.good) return "good";
   if (value <= threshold.needsImprovement) return "needs-improvement";
@@ -55,7 +61,15 @@ function rateMetric(
  * @param metric - web-vitals ライブラリから取得したメトリクス
  */
 function reportToConsole(metric: Metric): void {
-  const rating = rateMetric(metric.name as MetricName, metric.value);
+  if (!isValidMetricName(metric.name)) {
+    logError(new Error(`Unknown web-vitals metric: ${metric.name}`), {
+      action: "web-vitals:reportToConsole",
+      metadata: { metricName: metric.name },
+    });
+    return;
+  }
+
+  const rating = rateMetric(metric.name, metric.value);
 
   const style =
     rating === "good"
@@ -100,8 +114,8 @@ function reportToEndpoint(metric: Metric, endpoint?: string): void {
       body,
       headers: { "Content-Type": "application/json" },
       keepalive: true,
-    }).catch(() => {
-      // Silently fail - metrics are best-effort
+    }).catch((err) => {
+      logError(err, { action: "web-vitals:sendMetrics" });
     });
   }
 }
@@ -134,7 +148,7 @@ export async function initWebVitals(options?: {
     onFCP(handleMetric);
     onTTFB(handleMetric);
     onINP(handleMetric);
-  } catch {
-    // web-vitals not available, skip silently
+  } catch (err) {
+    logError(err, { action: "web-vitals:init" });
   }
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useRef, useState } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { m, AnimatePresence } from "framer-motion";
 
 /**
@@ -9,7 +9,6 @@ import { m, AnimatePresence } from "framer-motion";
  */
 function NavigationProgressInner() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const [progress, setProgress] = useState(0);
   const prevPathRef = useRef(pathname);
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -51,13 +50,12 @@ function NavigationProgressInner() {
     if (pathname !== prevPathRef.current) {
       prevPathRef.current = pathname;
       clearTimers();
-      // Animate to 100%, then reset after delay for smooth transition
       queueMicrotask(() => {
         setProgress(100);
         timersRef.current.push(setTimeout(() => setProgress(0), 300));
       });
     }
-  }, [pathname, searchParams]);
+  }, [pathname]);
 
   const isVisible = progress > 0 && progress < 100;
 
@@ -69,15 +67,15 @@ function NavigationProgressInner() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.15 }}
+          transition={{ duration: 0.2 }}
         >
           <m.div
             className="h-full bg-gradient-to-r from-brand-400 via-brand-500 to-brand-600 shadow-[0_0_12px_rgba(74,103,65,0.6)]"
             initial={{ width: "0%" }}
             animate={{ width: `${progress}%` }}
             transition={{
-              duration: progress < 30 ? 0.15 : 0.4,
-              ease: [0.4, 0, 0.2, 1],
+              duration: progress < 30 ? 0.2 : 0.4,
+              ease: [0.25, 0.46, 0.45, 0.94],
             }}
           />
         </m.div>
