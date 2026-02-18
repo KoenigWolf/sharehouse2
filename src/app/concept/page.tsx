@@ -85,17 +85,17 @@ export default function ConceptPage() {
                 <m.p
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
+                  transition={{ duration: 0.3, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
                   className="text-xs sm:text-sm tracking-[0.3em] uppercase text-foreground/40 mb-8"
                 >
-                  Share House Portal
+                  {t("concept.hero.eyebrow")}
                 </m.p>
 
                 <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[1.1] text-foreground">
                   <m.span
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.3 }}
+                    transition={{ duration: 0.4, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
                     className="block"
                   >
                     {t("concept.hero.prefix")}
@@ -106,7 +106,7 @@ export default function ConceptPage() {
                   <m.span
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.5 }}
+                    transition={{ duration: 0.4, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
                     className="block"
                   >
                     {t("concept.hero.suffix")}
@@ -132,7 +132,7 @@ export default function ConceptPage() {
                 />
               </m.div>
               <span className="text-[10px] tracking-[0.2em] uppercase text-foreground/30">
-                Scroll
+                {t("concept.hero.scrollHint")}
               </span>
             </m.div>
           </div>
@@ -146,7 +146,7 @@ export default function ConceptPage() {
                   initial={{ opacity: 0, y: 40 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-100px" }}
-                  transition={{ duration: 0.8 }}
+                  transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
                   className="text-center"
                 >
                   <p className="text-xs tracking-[0.3em] uppercase text-foreground/30 mb-8">
@@ -221,7 +221,7 @@ export default function ConceptPage() {
                           initial={{ opacity: 0, y: 30 }}
                           whileInView={{ opacity: 1, y: 0 }}
                           viewport={{ once: true, margin: "-50px" }}
-                          transition={{ delay: i * 0.1, duration: 0.6 }}
+                          transition={{ delay: i * 0.05, duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
                           className="group"
                         >
                           <div className="p-8 bg-foreground/[0.02] hover:bg-foreground/[0.04] transition-colors duration-500">
@@ -268,7 +268,7 @@ export default function ConceptPage() {
                       initial={{ opacity: 0, x: -20 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true, margin: "-50px" }}
-                      transition={{ delay: i * 0.1, duration: 0.6 }}
+                      transition={{ delay: i * 0.05, duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
                       className="flex gap-8 py-8 border-b border-foreground/5 group"
                     >
                       <span className="text-5xl font-extralight text-foreground/10 group-hover:text-foreground/20 transition-colors w-16 shrink-0">
@@ -295,7 +295,7 @@ export default function ConceptPage() {
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.8 }}
+                  transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
                 >
                   <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-12 text-foreground/90">
                     {t("concept.callToAction")}
@@ -307,7 +307,7 @@ export default function ConceptPage() {
                     className="h-14 px-12 rounded-none border-foreground/20 hover:bg-foreground hover:text-white transition-all duration-500 text-sm tracking-wider"
                   >
                     <Link href="/residents">
-                      {t("auth.browseAsGuest")}
+                      {t("concept.cta.explore")}
                       <ArrowRight className="ml-3 w-4 h-4" />
                     </Link>
                   </Button>
@@ -331,15 +331,16 @@ function KeywordCycler({
   index: MotionValue<number>;
   keywords: string[];
 }) {
-  const y = useTransform(index, (latest: number) => {
+  const rawY = useTransform(index, (latest: number) => {
     const i = Math.floor(Math.min(latest, keywords.length - 1));
-    return `${i * -100}%`;
+    return i * -100;
   });
+  const y = useSpring(rawY, { stiffness: 100, damping: 30 });
 
   return (
     <m.div
-      style={{ y }}
-      className="absolute top-0 left-0 w-full transition-transform duration-700 ease-out"
+      style={{ y: useTransform(y, (v) => `${v}%`) }}
+      className="absolute top-0 left-0 w-full"
     >
       {keywords.map((k, i) => (
         <div key={i} className="h-full flex items-center justify-center">
@@ -368,7 +369,7 @@ function VisionCard({
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
-      transition={{ delay: index * 0.15, duration: 0.6 }}
+      transition={{ delay: index * 0.05, duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
       className="bg-white p-10 md:p-12 group"
     >
       <div className="mb-8 text-foreground/15 group-hover:text-foreground/30 transition-colors duration-500">
