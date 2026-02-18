@@ -28,7 +28,7 @@ import {
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { MobileNav } from "@/components/mobile-nav";
-import { useI18n, useLocale } from "@/hooks/use-i18n";
+import { useI18n } from "@/hooks/use-i18n";
 import { PageTransition } from "@/components/page-transition";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -63,9 +63,13 @@ const SECTIONS = [
   "cta",
 ] as const;
 
+const CONCEPT_STATS = {
+  residents: 18,
+  capacity: 20,
+} as const;
+
 export default function ConceptPage() {
   const t = useI18n();
-  const locale = useLocale();
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -87,6 +91,12 @@ export default function ConceptPage() {
 
   const keywordIndex = useTransform(smoothProgress, [0, 0.1, 0.2, 0.3], [0, 1, 2, 3]);
 
+  const outerCircleScale = useTransform(scrollYProgress, [0, 0.3], [1, 1.5]);
+  const outerCircleOpacity = useTransform(scrollYProgress, [0, 0.2, 0.4], [0.03, 0.05, 0]);
+  const innerCircleScale = useTransform(scrollYProgress, [0, 0.3], [0.8, 1.3]);
+  const innerCircleOpacity = useTransform(scrollYProgress, [0, 0.2, 0.4], [0.02, 0.04, 0]);
+  const scrollHintOpacity = useTransform(scrollYProgress, [0, 0.05], [1, 0]);
+
   return (
     <div className="min-h-[300vh] bg-background relative" ref={containerRef}>
       <div className="fixed top-0 left-0 right-0 z-50">
@@ -102,15 +112,15 @@ export default function ConceptPage() {
           <div id="hero" className="sticky top-0 h-screen flex flex-col items-center justify-center overflow-hidden bg-background">
             <m.div
               style={{
-                scale: useTransform(scrollYProgress, [0, 0.3], [1, 1.5]),
-                opacity: useTransform(scrollYProgress, [0, 0.2, 0.4], [0.03, 0.05, 0]),
+                scale: outerCircleScale,
+                opacity: outerCircleOpacity,
               }}
               className="absolute w-[80vmin] h-[80vmin] rounded-full border border-foreground/10 pointer-events-none"
             />
             <m.div
               style={{
-                scale: useTransform(scrollYProgress, [0, 0.3], [0.8, 1.3]),
-                opacity: useTransform(scrollYProgress, [0, 0.2, 0.4], [0.02, 0.04, 0]),
+                scale: innerCircleScale,
+                opacity: innerCircleOpacity,
               }}
               className="absolute w-[60vmin] h-[60vmin] rounded-full border border-foreground/5 pointer-events-none"
             />
@@ -151,7 +161,7 @@ export default function ConceptPage() {
             </div>
 
             <m.div
-              style={{ opacity: useTransform(scrollYProgress, [0, 0.05], [1, 0]) }}
+              style={{ opacity: scrollHintOpacity }}
               className="absolute bottom-16 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4"
             >
               <m.div
@@ -238,12 +248,12 @@ export default function ConceptPage() {
 
                 <div className="grid grid-cols-2 gap-8 md:gap-16">
                   <AnimatedCounter
-                    value={18}
+                    value={CONCEPT_STATS.residents}
                     label={t("concept.stats.residents")}
                     unit={t("concept.stats.unit")}
                   />
                   <AnimatedCounter
-                    value={20}
+                    value={CONCEPT_STATS.capacity}
                     label={t("concept.stats.capacity")}
                     unit={t("concept.stats.unit")}
                   />
@@ -658,16 +668,16 @@ function SectionNav({ sections }: { sections: readonly string[] }) {
         >
           <span
             className={`text-[10px] uppercase tracking-wider transition-opacity duration-300 ${activeSection === sectionId
-                ? "opacity-60"
-                : "opacity-0 group-hover:opacity-40"
+              ? "opacity-60"
+              : "opacity-0 group-hover:opacity-40"
               }`}
           >
             {sectionId}
           </span>
           <span
             className={`w-2 h-2 rounded-full transition-all duration-300 ${activeSection === sectionId
-                ? "bg-foreground/60 scale-125"
-                : "bg-foreground/20 group-hover:bg-foreground/40"
+              ? "bg-foreground/60 scale-125"
+              : "bg-foreground/20 group-hover:bg-foreground/40"
               }`}
           />
         </button>
@@ -692,21 +702,30 @@ function AnimatedCounter({
   useEffect(() => {
     if (!isInView) return;
 
+    let rafId: number;
+    let isCancelled = false;
     const duration = 1500;
     const startTime = Date.now();
 
     const animate = () => {
+      if (isCancelled) return;
+
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
       setDisplayValue(Math.floor(eased * value));
 
       if (progress < 1) {
-        requestAnimationFrame(animate);
+        rafId = requestAnimationFrame(animate);
       }
     };
 
-    requestAnimationFrame(animate);
+    rafId = requestAnimationFrame(animate);
+
+    return () => {
+      isCancelled = true;
+      cancelAnimationFrame(rafId);
+    };
   }, [isInView, value]);
 
   return (
