@@ -103,13 +103,13 @@ export const ResidentCard = memo(function ResidentCard({
               src={optimizedSrc}
               alt={profile.name}
               fill
-              className={`object-cover ${isBlurred ? "blur-md scale-110" : ""}`}
+              className={`object-cover ${isBlurred ? "blur-[3px] scale-105" : ""}`}
               sizes={getResponsiveImageSizes("card")}
               onLoad={handleImageLoad}
             />
           </m.div>
         ) : (
-          <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-muted-foreground/20 ${isBlurred ? "blur-md" : ""}`}>
+          <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-muted-foreground/20 ${isBlurred ? "blur-[3px]" : ""}`}>
             <span className="text-muted-foreground text-3xl font-bold">
               {getInitials(profile.name)}
             </span>

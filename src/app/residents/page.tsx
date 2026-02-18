@@ -58,14 +58,14 @@ export default async function ResidentsPage() {
       <main className="flex-1 pb-20 sm:pb-0">
         <div className="container mx-auto px-4 sm:px-6 pt-2 sm:pt-4 pb-4">
           <div className="space-y-8">
-            <div className="relative max-h-[600px] overflow-hidden">
+            <div className="relative max-h-[800px] overflow-hidden">
               <ErrorBoundary>
                 <ResidentsGrid profiles={profiles} isBlurred />
               </ErrorBoundary>
-              <div className="absolute inset-x-0 bottom-0 h-60 bg-gradient-to-t from-background via-background/90 to-transparent pointer-events-none" />
+              <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none" />
             </div>
 
-            <div className="-mt-32 relative z-10">
+            <div className="-mt-24 relative z-10">
               <TeaserOverlay totalCount={profiles.length} />
             </div>
           </div>
