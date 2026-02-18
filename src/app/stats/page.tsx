@@ -10,6 +10,38 @@ export default async function StatsPage() {
   const { user, supabase } = await getCachedUser();
   const isBlurred = !user;
 
+  // 未認証ユーザーにはプレースホルダーデータのみ表示（DBクエリ不要）
+  if (isBlurred) {
+    const { profiles } = await getProfilesWithMock(supabase);
+    const emptyStats = {
+      events: { total: 0, upcoming: 0, past: 0, totalAttendees: 0, uniqueCreators: 0, avgAttendeesPerEvent: 0 },
+      shareItems: { total: 0, available: 0, claimed: 0, expired: 0, uniqueSharers: 0 },
+      roomPhotos: { total: 0, uniqueUploaders: 0, photosPerUser: 0 },
+      teaTimeMatches: { total: 0, done: 0, skipped: 0, successRate: 0 },
+      garbageDuties: { total: 0, completed: 0, upcoming: 0, completionRate: 0 },
+      bulletins: { total: 0, uniquePosters: 0 },
+    };
+
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <Header />
+        <main className="flex-1 pb-20 sm:pb-12">
+          <div className="container mx-auto px-4 sm:px-6 pt-2 sm:pt-6 pb-4 max-w-5xl">
+            <BlurredPageContent isBlurred={isBlurred} totalCount={profiles.length}>
+              <ResidentStats
+                profiles={profiles}
+                teaTimeParticipants={[]}
+                extendedStats={emptyStats}
+              />
+            </BlurredPageContent>
+          </div>
+        </main>
+        <Footer />
+        <MobileNav />
+      </div>
+    );
+  }
+
   const now = new Date();
   const todayStr = now.toISOString().split("T")[0];
 
