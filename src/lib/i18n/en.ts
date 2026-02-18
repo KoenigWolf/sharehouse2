@@ -685,6 +685,61 @@ export const en: Translations = {
         "The paper bulletin board becomes unnecessary",
       ],
     },
+    faq: {
+      title: "FAQ",
+      subtitle: "Frequently Asked Questions",
+      items: [
+        {
+          question: "Who can use this portal?",
+          answer:
+            "Only residents of this share house. Your account is created when you move in.",
+        },
+        {
+          question: "How much of my profile is visible?",
+          answer:
+            "Only to other residents. Nothing is publicly visible. You can adjust visibility in settings.",
+        },
+        {
+          question: "How does Tea Time matching work?",
+          answer:
+            "You're randomly paired every Sunday. Participation is optional and you can opt out in settings.",
+        },
+        {
+          question: "Do I have to post or comment?",
+          answer:
+            "No. There's value in just viewing. Nothing is forced.",
+        },
+        {
+          question: "What happens when I move out?",
+          answer:
+            "Your account is deactivated and posts are anonymized.",
+        },
+      ],
+    },
+    testimonials: {
+      title: "VOICES",
+      subtitle: "Resident testimonials",
+      items: [
+        {
+          quote:
+            "Now I can call people by name when we pass in the hallway. That alone makes such a difference.",
+          name: "Yuki",
+          duration: "8 months",
+        },
+        {
+          quote:
+            "Tea Time gave me a chance to talk to people I wouldn't normally. I made new friends.",
+          name: "Takeshi",
+          duration: "1 year 2 months",
+        },
+        {
+          quote:
+            "Being able to share leftover food is convenient. Less food waste, win-win.",
+          name: "Mika",
+          duration: "5 months",
+        },
+      ],
+    },
     callToAction: "JOIN OUR COMMUNITY",
   },
 

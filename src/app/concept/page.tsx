@@ -21,6 +21,12 @@ import { useI18n } from "@/hooks/use-i18n";
 import { PageTransition } from "@/components/page-transition";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const FEATURE_ICONS: Record<string, LucideIcon> = {
   residents: Users,
@@ -55,14 +61,14 @@ export default function ConceptPage() {
   const keywordIndex = useTransform(smoothProgress, [0, 0.1, 0.2, 0.3], [0, 1, 2, 3]);
 
   return (
-    <div className="min-h-[300vh] bg-white relative" ref={containerRef}>
+    <div className="min-h-[300vh] bg-background relative" ref={containerRef}>
       <div className="fixed top-0 left-0 right-0 z-50">
         <Header />
       </div>
 
       <PageTransition>
         <main className="relative">
-          <div className="sticky top-0 h-screen flex flex-col items-center justify-center overflow-hidden bg-white">
+          <div className="sticky top-0 h-screen flex flex-col items-center justify-center overflow-hidden bg-background">
             <m.div
               style={{
                 scale: useTransform(scrollYProgress, [0, 0.3], [1, 1.5]),
@@ -134,7 +140,7 @@ export default function ConceptPage() {
             </m.div>
           </div>
 
-          <div className="relative bg-white">
+          <div className="relative bg-background">
             <section className="py-32 md:py-48">
               <div className="container mx-auto px-6 max-w-4xl">
                 <m.div
@@ -246,6 +252,54 @@ export default function ConceptPage() {
                   className="text-center mb-20"
                 >
                   <p className="text-xs tracking-[0.3em] uppercase text-foreground/30 mb-4">
+                    {t("concept.testimonials.title")}
+                  </p>
+                  <p className="text-xl md:text-2xl font-medium text-foreground/60">
+                    {t("concept.testimonials.subtitle")}
+                  </p>
+                </m.div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  {[0, 1, 2].map((i) => (
+                    <m.div
+                      key={i}
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, margin: "-50px" }}
+                      transition={{ delay: i * 0.05, duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+                      className="p-8 bg-background border border-foreground/5"
+                    >
+                      <blockquote className="text-foreground/70 leading-relaxed mb-6">
+                        &ldquo;{t(`concept.testimonials.items.${i}.quote` as Parameters<typeof t>[0])}&rdquo;
+                      </blockquote>
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-foreground/5 flex items-center justify-center text-foreground/40 text-sm font-medium">
+                          {(t(`concept.testimonials.items.${i}.name` as Parameters<typeof t>[0]) as string).charAt(0)}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-foreground/80">
+                            {t(`concept.testimonials.items.${i}.name` as Parameters<typeof t>[0])}
+                          </p>
+                          <p className="text-xs text-foreground/40">
+                            {t(`concept.testimonials.items.${i}.duration` as Parameters<typeof t>[0])}
+                          </p>
+                        </div>
+                      </div>
+                    </m.div>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            <section className="py-32 md:py-48 border-t border-foreground/5">
+              <div className="container mx-auto px-6 max-w-4xl">
+                <m.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="text-center mb-20"
+                >
+                  <p className="text-xs tracking-[0.3em] uppercase text-foreground/30 mb-4">
                     {t("concept.principles.title")}
                   </p>
                   <p className="text-xl md:text-2xl font-medium text-foreground/60">
@@ -277,6 +331,48 @@ export default function ConceptPage() {
                     </m.div>
                   ))}
                 </div>
+              </div>
+            </section>
+
+            <section className="py-32 md:py-48 border-t border-foreground/5 bg-foreground/[0.02]">
+              <div className="container mx-auto px-6 max-w-4xl">
+                <m.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="text-center mb-16"
+                >
+                  <p className="text-xs tracking-[0.3em] uppercase text-foreground/30 mb-4">
+                    {t("concept.faq.title")}
+                  </p>
+                  <p className="text-xl md:text-2xl font-medium text-foreground/60">
+                    {t("concept.faq.subtitle")}
+                  </p>
+                </m.div>
+
+                <m.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+                >
+                  <Accordion type="single" collapsible className="w-full">
+                    {[0, 1, 2, 3, 4].map((i) => (
+                      <AccordionItem
+                        key={i}
+                        value={`item-${i}`}
+                        className="border-b border-foreground/5"
+                      >
+                        <AccordionTrigger className="py-6 text-left text-foreground/80 hover:text-foreground hover:no-underline transition-colors">
+                          {t(`concept.faq.items.${i}.question` as Parameters<typeof t>[0])}
+                        </AccordionTrigger>
+                        <AccordionContent className="text-foreground/50 leading-relaxed pb-6">
+                          {t(`concept.faq.items.${i}.answer` as Parameters<typeof t>[0])}
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                </m.div>
               </div>
             </section>
 
@@ -361,7 +457,7 @@ function VisionCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
       transition={{ delay: index * 0.05, duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className="bg-white p-10 md:p-12 group"
+      className="bg-background p-10 md:p-12 group"
     >
       <div className="mb-8 text-foreground/15 group-hover:text-foreground/30 transition-colors duration-500">
         <Icon size={36} strokeWidth={1} />
