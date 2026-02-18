@@ -66,6 +66,54 @@
     background-size: 1.25rem;
   }
 
+  /* モーダル内入力フィールド（軽量スタイル） */
+  .input-modal {
+    @apply w-full h-13 px-5 bg-muted/50 border border-border/50 rounded-xl;
+    @apply text-foreground placeholder:text-muted-foreground/50;
+    @apply focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background;
+    @apply transition-all duration-200;
+  }
+
+  .textarea-modal {
+    @apply w-full px-5 py-4 bg-muted/50 border border-border/50 rounded-xl;
+    @apply text-foreground placeholder:text-muted-foreground/50 leading-relaxed;
+    @apply focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background;
+    @apply transition-all duration-200 resize-none;
+  }
+
+  /* 画像アップロードエリア（破線ボーダー） */
+  /* 使用時は group クラスを一緒に適用: className="upload-area group" */
+  .upload-area {
+    @apply w-full rounded-xl border-2 border-dashed border-border/60;
+    @apply hover:border-foreground/30 bg-muted/30 hover:bg-muted/50;
+    @apply flex flex-col items-center justify-center gap-2;
+    @apply transition-all duration-200;
+  }
+
+  .upload-area-icon {
+    @apply w-12 h-12 rounded-xl bg-muted flex items-center justify-center;
+    @apply transition-colors;
+  }
+
+  /* モーダルオーバーレイ（フルスクリーン→デスクトップ） */
+  .modal-overlay {
+    @apply fixed inset-0 z-50 bg-background sm:bg-black/50 sm:backdrop-blur-sm;
+  }
+
+  /* モーダルコンテンツエリア */
+  .modal-content {
+    @apply flex-1 overflow-y-auto p-4;
+  }
+
+  .modal-content-responsive {
+    @apply flex-1 overflow-y-auto p-4 sm:p-6;
+  }
+
+  /* モーダルヘッダー */
+  .modal-header {
+    @apply flex items-center justify-between px-4 h-14 border-b border-border/50 shrink-0;
+  }
+
   /* ========================================
    * テキスト系（Typography）- immedio style
    * ======================================== */
@@ -103,6 +151,42 @@
   /* ラベル（大文字） */
   .label-uppercase {
     @apply text-[10px] font-bold tracking-wider uppercase text-muted-foreground/80;
+  }
+
+  /* フォームラベル */
+  .form-label {
+    @apply block text-xs font-semibold text-muted-foreground tracking-wide ml-1;
+  }
+
+  /* ========================================
+   * アイコン系（Icon）
+   * ======================================== */
+
+  /* アイコンボックス（メニューアイテム等で使用） */
+  .icon-box {
+    @apply w-8 h-8 rounded-lg bg-muted flex items-center justify-center;
+  }
+
+  .icon-box-sm {
+    @apply w-6 h-6 rounded-md bg-muted flex items-center justify-center;
+  }
+
+  .icon-box-lg {
+    @apply w-10 h-10 rounded-xl bg-muted flex items-center justify-center;
+  }
+
+  /* ========================================
+   * ホバー効果系（Hover Effects）
+   * ======================================== */
+
+  /* 画像ホバースケール（ギャラリー等） */
+  .img-hover-scale {
+    @apply transition-transform duration-700 ease-in-out;
+  }
+
+  /* オーバーレイフェードイン（カードホバー時） */
+  .overlay-reveal {
+    @apply opacity-0 transition-opacity duration-300;
   }
 
   /* ========================================
@@ -375,15 +459,36 @@
     }
   }
 
-  /* タッチデバイス向けホバー無効化 */
-  @media (hover: none) and (pointer: coarse) {
-    .group-hover\:scale-105 {
-      transform: none !important;
-    }
-  }
 
   /* will-change最適化（アニメーション対象要素） */
   .will-change-transform {
     will-change: transform;
+  }
+}
+
+/* ========================================
+ * Group hover effects (outside @layer for Tailwind v4 compatibility)
+ * ======================================== */
+.group:hover .upload-area-icon {
+  background-color: rgb(var(--muted) / 0.8);
+}
+
+.group:hover .img-hover-scale {
+  transform: scale(1.1);
+}
+
+.group:hover .overlay-reveal {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .group:hover .overlay-reveal {
+    opacity: 0;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .group-hover\:scale-105 {
+    transform: none !important;
   }
 }

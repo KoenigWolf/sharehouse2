@@ -11,10 +11,9 @@ import { createBulletin } from "@/lib/bulletin/actions";
 import { BULLETIN } from "@/lib/constants/config";
 import { Spinner } from "@/components/ui/spinner";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
-import { getInitials } from "@/lib/utils";
+import { getInitials, getDisplayName } from "@/lib/utils";
+import { EASE_MODAL } from "@/lib/animation";
 import { logError } from "@/lib/errors";
-
-const EASE = [0.23, 1, 0.32, 1] as const;
 
 interface VibeUpdateModalProps {
    isOpen: boolean;
@@ -90,7 +89,7 @@ export function VibeUpdateModal({
    // Lock body scroll
    useBodyScrollLock(isOpen);
 
-   const displayName = userProfile?.nickname ?? userProfile?.name ?? "";
+   const displayName = getDisplayName(userProfile);
    const canSubmit = message.trim() !== (currentVibe || "") || (message.trim() !== "" && !currentVibe);
 
    return (
@@ -112,7 +111,7 @@ export function VibeUpdateModal({
                   initial={{ opacity: 0, scale: 0.95, y: 20 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                  transition={{ duration: 0.3, ease: EASE }}
+                  transition={{ duration: 0.3, ease: EASE_MODAL }}
                   className="fixed inset-x-4 top-[20%] sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-md rounded-3xl bg-card border border-border shadow-2xl p-6 overflow-hidden"
                   onClick={(e) => e.stopPropagation()}
                >

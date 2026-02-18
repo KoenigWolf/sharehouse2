@@ -8,25 +8,8 @@ import { Spinner } from "@/components/ui/spinner";
 import { useI18n } from "@/hooks/use-i18n";
 import { updateTeaTimeSetting } from "@/lib/tea-time/actions";
 import { updateNotificationSetting } from "@/lib/notifications/actions";
+import { staggerContainer, staggerItem } from "@/lib/animation";
 import type { NotificationKey } from "@/domain/notification";
-
-// Animation config with natural easing
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.06, delayChildren: 0.1 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 12 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] as const },
-  },
-};
 
 interface NotificationSettingsProps {
   initialTeaTimeEnabled: boolean;
@@ -97,13 +80,13 @@ export const NotificationSettings = memo(function NotificationSettings({
 
   return (
     <m.section
-      variants={containerVariants}
+      variants={staggerContainer}
       initial="hidden"
       animate="visible"
       className="space-y-8"
     >
       {/* Section header */}
-      <m.div variants={itemVariants} className="flex items-center gap-4">
+      <m.div variants={staggerItem} className="flex items-center gap-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center">
             <Bell size={18} className="text-brand-500" />
@@ -117,7 +100,7 @@ export const NotificationSettings = memo(function NotificationSettings({
 
       {/* Settings card */}
       <m.div
-        variants={itemVariants}
+        variants={staggerItem}
         className="premium-surface rounded-2xl sm:rounded-3xl border border-border/50 overflow-hidden"
       >
         {/* Tea Time toggle - min 64px height for touch target */}
@@ -148,7 +131,7 @@ export const NotificationSettings = memo(function NotificationSettings({
         {notificationItems.map((item, index) => (
           <m.div
             key={item.key}
-            variants={itemVariants}
+            variants={staggerItem}
             className={`flex items-center justify-between min-h-[72px] px-6 py-5 ${
               index < notificationItems.length - 1 ? "border-b border-border/50" : ""
             }`}

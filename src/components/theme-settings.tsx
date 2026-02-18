@@ -5,24 +5,7 @@ import { m, motion, AnimatePresence } from "framer-motion";
 import { Check, Sun, Moon, Monitor, Palette } from "lucide-react";
 import { useTheme, type ThemeStyle, type ColorMode } from "@/hooks/use-theme";
 import { useI18n } from "@/hooks/use-i18n";
-
-// Animation config with natural easing
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.06, delayChildren: 0.1 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 12 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] as const },
-  },
-};
+import { staggerContainer, staggerItem } from "@/lib/animation";
 
 interface ThemeOptionProps {
   value: ThemeStyle;
@@ -48,7 +31,7 @@ const ThemeOption = memo(function ThemeOption({
     <m.button
       type="button"
       onClick={onSelect}
-      variants={itemVariants}
+      variants={staggerItem}
       whileHover={{ scale: 1.02, y: -2 }}
       whileTap={{ scale: 0.98 }}
       className={`relative flex-1 min-h-[120px] p-5 rounded-2xl border-2 transition-all duration-200 text-left ${
@@ -112,7 +95,7 @@ const ColorModeOption = memo(function ColorModeOption({
     <m.button
       type="button"
       onClick={onSelect}
-      variants={itemVariants}
+      variants={staggerItem}
       whileHover={{ scale: 1.03 }}
       whileTap={{ scale: 0.97 }}
       className={`flex flex-col items-center justify-center gap-2.5 min-w-[88px] h-[88px] p-4 rounded-2xl border-2 transition-all duration-200 ${
@@ -195,12 +178,12 @@ export const ThemeSettings = memo(function ThemeSettings() {
 
   return (
     <m.section
-      variants={containerVariants}
+      variants={staggerContainer}
       initial="hidden"
       animate="visible"
       className="space-y-8"
     >
-      <m.div variants={itemVariants} className="flex items-center gap-4">
+      <m.div variants={staggerItem} className="flex items-center gap-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center">
             <Palette size={18} className="text-brand-500" />
@@ -218,10 +201,10 @@ export const ThemeSettings = memo(function ThemeSettings() {
       </m.div>
 
       <div className="space-y-5">
-        <m.h3 variants={itemVariants} className="text-sm font-semibold text-foreground ml-1">
+        <m.h3 variants={staggerItem} className="text-sm font-semibold text-foreground ml-1">
           {t("theme.styleLabel")}
         </m.h3>
-        <m.div variants={containerVariants} className="flex flex-col sm:flex-row gap-4">
+        <m.div variants={staggerContainer} className="flex flex-col sm:flex-row gap-4">
           {themes.map((themeOption) => (
             <ThemeOption
               key={themeOption.value}
@@ -237,10 +220,10 @@ export const ThemeSettings = memo(function ThemeSettings() {
       </div>
 
       <div className="space-y-5">
-        <m.h3 variants={itemVariants} className="text-sm font-semibold text-foreground ml-1">
+        <m.h3 variants={staggerItem} className="text-sm font-semibold text-foreground ml-1">
           {t("theme.colorModeLabel")}
         </m.h3>
-        <m.div variants={containerVariants} className="flex gap-3">
+        <m.div variants={staggerContainer} className="flex gap-3">
           {colorModes.map((mode) => (
             <ColorModeOption
               key={mode.value}

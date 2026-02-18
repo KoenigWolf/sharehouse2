@@ -120,17 +120,6 @@ export function useLightbox({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, close, navigate]);
 
-  // Body scroll lock
-  useEffect(() => {
-    if (isOpen) {
-      const originalOverflow = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = originalOverflow;
-      };
-    }
-  }, [isOpen]);
-
   // Preload adjacent images
   useEffect(() => {
     if (selectedIndex === null) return;

@@ -1,30 +1,14 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { m, AnimatePresence } from "framer-motion";
+import { m } from "framer-motion";
 import { Lock, Mail, Trash2, Shield } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import { AnimatedFeedbackMessage } from "@/components/ui/feedback-message";
 import { useI18n } from "@/hooks/use-i18n";
+import { staggerContainer, staggerItem } from "@/lib/animation";
 import { changePassword, changeEmail, deleteAccount } from "@/lib/account/actions";
-
-// Animation config with natural easing
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.06, delayChildren: 0.1 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 12 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] as const },
-  },
-};
 
 interface AccountSettingsProps {
   userEmail: string | undefined;
@@ -34,28 +18,6 @@ interface AccountSettingsProps {
 interface Feedback {
   type: "success" | "error";
   message: string;
-}
-
-function FeedbackMessage({ feedback }: { feedback: Feedback | null }) {
-  return (
-    <AnimatePresence>
-      {feedback && (
-        <m.div
-          initial={{ opacity: 0, y: -4 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -4 }}
-          transition={{ duration: 0.25 }}
-          className={`text-sm font-medium px-5 py-4 rounded-xl border-l-4 ${
-            feedback.type === "success"
-              ? "bg-success-bg/50 border-success text-success"
-              : "bg-error-bg/50 border-error text-error"
-          }`}
-        >
-          {feedback.message}
-        </m.div>
-      )}
-    </AnimatePresence>
-  );
 }
 
 function PasswordSection() {
@@ -99,7 +61,7 @@ function PasswordSection() {
 
   return (
     <m.form
-      variants={itemVariants}
+      variants={staggerItem}
       onSubmit={handleSubmit}
       className="premium-surface rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-border/50 space-y-6"
     >
@@ -159,7 +121,13 @@ function PasswordSection() {
         </div>
       </div>
 
-      <FeedbackMessage feedback={feedback} />
+      {feedback && (
+        <AnimatedFeedbackMessage
+          show={true}
+          type={feedback.type}
+          message={feedback.message}
+        />
+      )}
 
       <m.button
         type="submit"
@@ -200,7 +168,7 @@ function EmailSection({ userEmail }: { userEmail: string | undefined }) {
 
   return (
     <m.form
-      variants={itemVariants}
+      variants={staggerItem}
       onSubmit={handleSubmit}
       className="premium-surface rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-border/50 space-y-6"
     >
@@ -241,7 +209,13 @@ function EmailSection({ userEmail }: { userEmail: string | undefined }) {
         </div>
       </div>
 
-      <FeedbackMessage feedback={feedback} />
+      {feedback && (
+        <AnimatedFeedbackMessage
+          show={true}
+          type={feedback.type}
+          message={feedback.message}
+        />
+      )}
 
       <m.button
         type="submit"
@@ -283,7 +257,7 @@ function DeleteSection() {
 
   return (
     <m.form
-      variants={itemVariants}
+      variants={staggerItem}
       onSubmit={handleSubmit}
       className="bg-error-bg/30 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-error/20 space-y-6"
     >
@@ -316,7 +290,13 @@ function DeleteSection() {
         />
       </div>
 
-      <FeedbackMessage feedback={feedback} />
+      {feedback && (
+        <AnimatedFeedbackMessage
+          show={true}
+          type={feedback.type}
+          message={feedback.message}
+        />
+      )}
 
       <m.button
         type="submit"
@@ -343,12 +323,12 @@ export function AccountSettings({ userEmail, hasPassword }: AccountSettingsProps
 
   return (
     <m.section
-      variants={containerVariants}
+      variants={staggerContainer}
       initial="hidden"
       animate="visible"
       className="space-y-8"
     >
-      <m.div variants={itemVariants} className="flex items-center gap-4">
+      <m.div variants={staggerItem} className="flex items-center gap-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center">
             <Shield size={18} className="text-brand-500" />
@@ -360,14 +340,14 @@ export function AccountSettings({ userEmail, hasPassword }: AccountSettingsProps
         <div className="flex-1 h-px bg-border" />
       </m.div>
 
-      <m.div variants={containerVariants} className="space-y-6">
+      <m.div variants={staggerContainer} className="space-y-6">
         <EmailSection userEmail={userEmail} />
 
         {hasPassword ? (
           <PasswordSection />
         ) : (
           <m.div
-            variants={itemVariants}
+            variants={staggerItem}
             className="premium-surface rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-border/50"
           >
             <div className="flex items-center gap-3 mb-4">
