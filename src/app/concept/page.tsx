@@ -12,6 +12,9 @@ import {
   Package,
   CalendarDays,
   Images,
+  Phone,
+  Mail,
+  MapPin,
   type LucideIcon,
 } from "lucide-react";
 import { Header } from "@/components/header";
@@ -280,7 +283,7 @@ export default function ConceptPage() {
               </div>
             </section>
 
-            <section className="py-32 md:py-48 border-t border-foreground/5">
+            <section className="py-32 md:py-48 border-t border-foreground/5 bg-foreground/[0.02]">
               <div className="container mx-auto px-6 max-w-4xl text-center">
                 <m.div
                   initial={{ opacity: 0, y: 30 }}
@@ -288,14 +291,72 @@ export default function ConceptPage() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
                 >
-                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-12 text-foreground/90">
-                    {t("concept.callToAction")}
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-6 text-foreground/90">
+                    {t("concept.ctaSection.title")}
                   </h2>
+                  <p className="text-lg text-foreground/50 mb-12">
+                    {t("concept.ctaSection.subtitle")}
+                  </p>
+
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+                    <Button
+                      asChild
+                      size="lg"
+                      className="h-14 px-8 bg-brand-500 hover:bg-brand-600 text-white transition-all duration-300 text-sm tracking-wider"
+                    >
+                      <Link href="/contact">
+                        <Mail className="mr-2 w-4 h-4" />
+                        {t("concept.contact.button")}
+                      </Link>
+                    </Button>
+                    <Button
+                      asChild
+                      size="lg"
+                      variant="outline"
+                      className="h-14 px-8 border-foreground/20 hover:bg-foreground hover:text-white transition-all duration-300 text-sm tracking-wider"
+                    >
+                      <Link href="/tour">
+                        <MapPin className="mr-2 w-4 h-4" />
+                        {t("concept.tour.button")}
+                      </Link>
+                    </Button>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-8 text-foreground/60">
+                    <a
+                      href="tel:03-1234-5678"
+                      className="flex items-center gap-2 hover:text-foreground transition-colors"
+                    >
+                      <Phone className="w-5 h-5" />
+                      <span className="text-lg font-medium">{t("concept.ctaSection.phoneNumber")}</span>
+                    </a>
+                    <span className="hidden sm:block text-foreground/20">|</span>
+                    <a
+                      href="https://line.me/R/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-6 py-2 bg-[#00B900] text-white rounded-full hover:bg-[#00A000] transition-colors text-sm font-medium"
+                    >
+                      {t("concept.ctaSection.lineAdd")}
+                    </a>
+                  </div>
+                </m.div>
+              </div>
+            </section>
+
+            <section className="py-20 md:py-24 border-t border-foreground/5">
+              <div className="container mx-auto px-6 max-w-4xl text-center">
+                <m.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+                >
                   <Button
                     asChild
                     size="lg"
-                    variant="outline"
-                    className="h-14 px-12 rounded-none border-foreground/20 hover:bg-foreground hover:text-white transition-all duration-500 text-sm tracking-wider"
+                    variant="ghost"
+                    className="h-14 px-12 text-foreground/60 hover:text-foreground hover:bg-transparent transition-all duration-300 text-sm tracking-wider"
                   >
                     <Link href="/residents">
                       {t("concept.cta.explore")}
