@@ -686,7 +686,105 @@ export const ja = {
         "紙の掲示板が不要になっている",
       ],
     },
+    faq: {
+      title: "FAQ",
+      subtitle: "よくある質問",
+      items: [
+        {
+          question: "誰がこのポータルを使えますか？",
+          answer:
+            "このシェアハウスの住民のみが利用できます。入居時にアカウントが発行されます。",
+        },
+        {
+          question: "プロフィールはどこまで公開されますか？",
+          answer:
+            "住民間でのみ公開されます。外部には一切公開されません。公開範囲は設定で調整できます。",
+        },
+        {
+          question: "Tea Timeのマッチングはどう行われますか？",
+          answer:
+            "毎週日曜日にランダムでペアリングされます。参加は任意で、設定でオプトアウトできます。",
+        },
+        {
+          question: "投稿やコメントは必須ですか？",
+          answer:
+            "いいえ。見るだけでも価値があります。強制は一切ありません。",
+        },
+        {
+          question: "退去後はどうなりますか？",
+          answer:
+            "退去時にアカウントは無効化され、投稿は匿名化されます。",
+        },
+      ],
+    },
+    testimonials: {
+      title: "VOICES",
+      subtitle: "住民の声",
+      items: [
+        {
+          quote:
+            "廊下で会ったとき、名前で呼び合えるようになった。それだけで安心感が全然違う。",
+          name: "Yuki",
+          duration: "居住8ヶ月",
+        },
+        {
+          quote:
+            "Tea Timeで普段話さない人と話すきっかけができた。おかげで友達が増えた。",
+          name: "Takeshi",
+          duration: "居住1年2ヶ月",
+        },
+        {
+          quote:
+            "余った食材をシェアできるのが便利。フードロスも減って一石二鳥。",
+          name: "Mika",
+          duration: "居住5ヶ月",
+        },
+      ],
+    },
+    stats: {
+      title: "COMMUNITY",
+      residents: "住民数",
+      capacity: "定員",
+      unit: "名",
+    },
+    onboarding: {
+      title: "GETTING STARTED",
+      subtitle: "入居までの流れ",
+      steps: [
+        {
+          title: "内見・契約",
+          description: "物件を見学して、気に入ったら契約手続きへ。",
+        },
+        {
+          title: "アカウント発行",
+          description: "入居日が決まったら、ポータルのアカウントが届きます。",
+        },
+        {
+          title: "プロフィール登録",
+          description: "自己紹介を書いて、他の住民に顔を覚えてもらう準備。",
+        },
+        {
+          title: "入居・ご挨拶",
+          description: "引っ越し後、共用スペースで顔を合わせたら声をかけてみて。",
+        },
+      ],
+    },
     callToAction: "JOIN OUR COMMUNITY",
+    sections: {
+      hero: "トップ",
+      mission: "ミッション",
+      vision: "ビジョン",
+      stats: "コミュニティ",
+      features: "機能",
+      testimonials: "住民の声",
+      principles: "原則",
+      faq: "FAQ",
+      onboarding: "入居の流れ",
+      cta: "参加する",
+    },
+    sectionNav: {
+      navigateTo: "{{section}}セクションへ移動",
+    },
   },
 
   notifications: {
