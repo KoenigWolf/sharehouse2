@@ -28,6 +28,7 @@ interface FooterProps {
 }
 
 const NAV_LINKS: { href: string; labelKey: Parameters<Translator>[0]; icon: LucideIcon }[] = [
+  { href: "/concept", labelKey: "nav.home", icon: HomeIcon },
   { href: "/residents", labelKey: "nav.residents", icon: UsersIcon },
   { href: "/events", labelKey: "nav.events", icon: CalendarIcon },
   { href: "/bulletin", labelKey: "bulletin.title", icon: MessageCircleIcon },
