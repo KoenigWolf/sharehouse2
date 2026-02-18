@@ -740,6 +740,28 @@ export const en: Translations = {
         },
       ],
     },
+    onboarding: {
+      title: "GETTING STARTED",
+      subtitle: "How to move in",
+      steps: [
+        {
+          title: "Tour & Contract",
+          description: "Visit the property and sign the contract if you like it.",
+        },
+        {
+          title: "Account Setup",
+          description: "Once your move-in date is set, you'll receive your portal account.",
+        },
+        {
+          title: "Create Profile",
+          description: "Write your intro so other residents can get to know you.",
+        },
+        {
+          title: "Move In & Say Hi",
+          description: "After moving in, say hello when you see someone in common areas.",
+        },
+      ],
+    },
     callToAction: "JOIN OUR COMMUNITY",
   },
 

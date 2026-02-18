@@ -741,6 +741,28 @@ export const ja = {
         },
       ],
     },
+    onboarding: {
+      title: "GETTING STARTED",
+      subtitle: "入居までの流れ",
+      steps: [
+        {
+          title: "内見・契約",
+          description: "物件を見学して、気に入ったら契約手続きへ。",
+        },
+        {
+          title: "アカウント発行",
+          description: "入居日が決まったら、ポータルのアカウントが届きます。",
+        },
+        {
+          title: "プロフィール登録",
+          description: "自己紹介を書いて、他の住民に顔を覚えてもらう準備。",
+        },
+        {
+          title: "入居・ご挨拶",
+          description: "引っ越し後、共用スペースで顔を合わせたら声をかけてみて。",
+        },
+      ],
+    },
     callToAction: "JOIN OUR COMMUNITY",
   },
 
