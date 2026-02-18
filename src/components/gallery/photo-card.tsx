@@ -77,7 +77,7 @@ export const PhotoCard = memo(function PhotoCard({
           width={500}
           height={500}
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          className="w-full h-auto object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
+          className="w-full h-auto object-cover img-hover-scale"
           loading={isEagerLoad ? "eager" : "lazy"}
           priority={isEagerLoad}
         />

@@ -1,12 +1,15 @@
 "use client";
 
-import { useState, useCallback, useEffect, useId } from "react";
+import { useState, useCallback, useId } from "react";
 import { m, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
+import { CloseButton } from "@/components/ui/close-button";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
+import { Spinner } from "@/components/ui/spinner";
 import { useI18n } from "@/hooks/use-i18n";
+import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock";
+import { useEscapeKey } from "@/hooks/use-escape-key";
 import { BULLETIN } from "@/lib/constants/config";
-import { getInitials } from "@/lib/utils";
+import { getInitials, getDisplayName } from "@/lib/utils";
 import { SPRING, SPRING_SOFT } from "./utils";
 
 export interface ComposeModalProps {
@@ -37,31 +40,10 @@ export function ComposeModal({ isOpen, onClose, onSubmit, isSubmitting, userProf
     setMessage("");
   };
 
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !isSubmitting) handleClose();
-    },
-    [isSubmitting, handleClose],
-  );
+  useEscapeKey(isOpen && !isSubmitting, handleClose);
+  useBodyScrollLock(isOpen);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, handleKeyDown]);
-
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
-
-  const displayName = userProfile?.nickname ?? userProfile?.name ?? "";
+  const displayName = getDisplayName(userProfile);
   const canSubmit = message.trim().length > 0 && !isSubmitting;
 
   return (
@@ -72,7 +54,7 @@ export function ComposeModal({ isOpen, onClose, onSubmit, isSubmitting, userProf
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.15 }}
-          className="fixed inset-0 z-50 bg-background sm:bg-black/50 sm:backdrop-blur-sm"
+          className="modal-overlay"
           onClick={isSubmitting ? undefined : handleClose}
         >
           <m.div
@@ -86,18 +68,8 @@ export function ComposeModal({ isOpen, onClose, onSubmit, isSubmitting, userProf
             className="fixed inset-0 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-lg sm:rounded-2xl bg-background sm:premium-surface flex flex-col sm:max-h-[80vh]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-4 h-14 border-b border-border/50 shrink-0">
-              <m.button
-                type="button"
-                onClick={handleClose}
-                disabled={isSubmitting}
-                whileHover={{ scale: 1.05, backgroundColor: "rgba(0,0,0,0.05)" }}
-                whileTap={{ scale: 0.95 }}
-                className="w-10 h-10 flex items-center justify-center rounded-full transition-colors"
-                aria-label={t("common.close")}
-              >
-                <X size={20} className="text-foreground" />
-              </m.button>
+            <div className="modal-header">
+              <CloseButton onClick={handleClose} disabled={isSubmitting} animated />
 
               <h2 id={`${id}-title`} className="sr-only">
                 {t("bulletin.postMessage")}
@@ -112,25 +84,11 @@ export function ComposeModal({ isOpen, onClose, onSubmit, isSubmitting, userProf
                 transition={SPRING}
                 className="h-9 px-5 rounded-full bg-foreground text-background text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? (
-                  <m.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="flex items-center gap-2"
-                  >
-                    <m.span
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                      className="w-4 h-4 border-2 border-background/30 border-t-background rounded-full"
-                    />
-                  </m.span>
-                ) : (
-                  t("bulletin.post")
-                )}
+                {isSubmitting ? <Spinner size="sm" variant="light" /> : t("bulletin.post")}
               </m.button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4">
+            <div className="modal-content">
               <div className="flex gap-3">
                 <Avatar className="w-10 h-10 rounded-full border border-border/50 shrink-0">
                   <OptimizedAvatarImage

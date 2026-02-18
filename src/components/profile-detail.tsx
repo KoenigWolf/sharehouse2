@@ -4,7 +4,7 @@ import { useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { m, type Variants } from "framer-motion";
+import { m } from "framer-motion";
 import { SharedAvatar } from "@/components/shared-element";
 import {
   Camera,
@@ -62,6 +62,7 @@ import { MaskedText } from "./public-teaser/masked-text";
 import { uploadCoverPhoto } from "@/lib/profile/cover-photo-actions";
 import { prepareImageForUpload } from "@/lib/utils/image-compression";
 import { FILE_UPLOAD } from "@/lib/constants/config";
+import { staggerContainer, staggerItem } from "@/lib/animation";
 import type { Translator } from "@/lib/i18n";
 import { useI18n } from "@/hooks/use-i18n";
 import { logError } from "@/lib/errors";
@@ -190,23 +191,6 @@ interface ProfileDetailProps {
   teaTimeEnabled?: boolean;
   roomPhotos?: RoomPhoto[];
 }
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08, delayChildren: 0.1 },
-  },
-} as const;
-
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 12 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.4, ease: "easeOut" }
-  },
-};
 
 function translateOption(
   value: string | null | undefined,
@@ -412,14 +396,14 @@ export function ProfileDetail({
 
   return (
     <m.article
-      variants={containerVariants}
+      variants={staggerContainer}
       initial="hidden"
       animate="visible"
       className="w-full"
     >
       {isMockProfile && (
         <m.div
-          variants={itemVariants}
+          variants={staggerItem}
           className="mb-6 py-4 px-5 border border-primary/10 bg-primary/5 rounded-xl flex items-start gap-4 shadow-sm"
           role="alert"
         >
@@ -445,7 +429,7 @@ export function ProfileDetail({
       )}
 
       <m.div
-        variants={itemVariants}
+        variants={staggerItem}
         className="premium-surface rounded-2xl overflow-hidden"
       >
         <div className="relative aspect-2/1 sm:aspect-21/8 bg-secondary overflow-hidden">
@@ -617,7 +601,7 @@ export function ProfileDetail({
         <div className="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-5">
           <div className="lg:col-span-1 space-y-4">
             {basicInfo.length > 0 && (
-              <m.div variants={itemVariants}>
+              <m.div variants={staggerItem}>
                 <DetailSection title={t("profile.sectionBasicInfo")} icon={<User size={ICON_SIZE.lg} />}>
                   {basicInfo.map((field, i) => (
                     <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} suffix={field.suffix} />
@@ -627,7 +611,7 @@ export function ProfileDetail({
             )}
 
             {workInfo.length > 0 && (
-              <m.div variants={itemVariants}>
+              <m.div variants={staggerItem}>
                 <DetailSection title={t("profile.sectionWork")} icon={<Briefcase size={ICON_SIZE.lg} />}>
                   {workInfo.map((field, i) => (
                     <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} suffix={field.suffix} />
@@ -637,7 +621,7 @@ export function ProfileDetail({
             )}
 
             {lifestyleInfo.length > 0 && (
-              <m.div variants={itemVariants}>
+              <m.div variants={staggerItem}>
                 <DetailSection title={t("profile.sectionLifestyle")} icon={<Sun size={ICON_SIZE.lg} />}>
                   {lifestyleInfo.map((field, i) => (
                     <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} />
@@ -647,7 +631,7 @@ export function ProfileDetail({
             )}
 
             {(communalInfo.length > 0 || sharedSpaceUsage) && (
-              <m.div variants={itemVariants}>
+              <m.div variants={staggerItem}>
                 <DetailSection title={t("profile.sectionCommunal")} icon={<Users size={ICON_SIZE.lg} />}>
                   {communalInfo.map((field, i) => (
                     <DetailItem key={i} icon={field.icon} label={field.label} value={field.value} />
@@ -666,13 +650,13 @@ export function ProfileDetail({
 
           <div className="lg:col-span-2 space-y-4">
             {profile.mbti && (
-              <m.div variants={itemVariants}>
+              <m.div variants={staggerItem}>
                 <MBTIDetail mbti={profile.mbti} />
               </m.div>
             )}
 
             {(isOwnProfile || roomPhotos.length > 0) && (
-              <m.div variants={itemVariants}>
+              <m.div variants={staggerItem}>
                 <FbCard>
                   <FbCardHeader
                     title={t("roomPhotos.roomPhotosSection")}

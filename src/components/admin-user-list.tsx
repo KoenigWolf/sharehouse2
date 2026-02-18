@@ -11,6 +11,9 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Spinner } from "@/components/ui/spinner";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { useI18n } from "@/hooks/use-i18n";
+import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock";
+import { useEscapeKey } from "@/hooks/use-escape-key";
+import { EASE_MODAL } from "@/lib/animation";
 import { getInitials } from "@/lib/utils";
 import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
 import {
@@ -21,8 +24,6 @@ import {
   adminUpdateUserPassword,
   type AdminListProfile,
 } from "@/lib/admin/actions";
-
-const EASE = [0.23, 1, 0.32, 1] as const;
 
 interface AdminUserListProps {
   profiles: AdminListProfile[];
@@ -163,7 +164,7 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
         <m.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: EASE }}
+          transition={{ duration: 0.4, ease: EASE_MODAL }}
           className="flex flex-col items-center justify-center py-16 text-center"
         >
           <Search size={ICON_SIZE["2xl"]} strokeWidth={ICON_STROKE.thin} className="text-muted-foreground/70 mb-4" />
@@ -197,7 +198,7 @@ export function AdminUserList({ profiles, currentUserId }: AdminUserListProps) {
                 transition={{
                   duration: 0.4,
                   delay: Math.min(index * 0.04, 0.4),
-                  ease: EASE,
+                  ease: EASE_MODAL,
                 }}
                 className="flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3 sm:py-4 bg-card border border-border rounded-2xl transition-shadow duration-300 hover:shadow-md"
               >
@@ -424,18 +425,8 @@ function AdminCredentialsDialog({
     };
   }, [target]);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
-    };
-  }, [isOpen, onClose]);
+  useEscapeKey(isOpen, onClose);
+  useBodyScrollLock(isOpen);
 
   const handleEmailSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -514,7 +505,7 @@ function AdminCredentialsDialog({
             initial={{ opacity: 0, scale: 0.95, y: 8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 8 }}
-            transition={{ duration: 0.3, ease: EASE }}
+            transition={{ duration: 0.3, ease: EASE_MODAL }}
             className="w-full max-w-md bg-card rounded-2xl premium-surface p-6 space-y-5 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >

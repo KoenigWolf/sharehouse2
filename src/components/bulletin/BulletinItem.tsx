@@ -7,7 +7,7 @@ import { Trash2, Pencil, Check } from "lucide-react";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { useI18n } from "@/hooks/use-i18n";
 import { BULLETIN } from "@/lib/constants/config";
-import { getInitials } from "@/lib/utils";
+import { getInitials, getDisplayName } from "@/lib/utils";
 import { formatTimestamp, SPRING, EASE_OUT } from "./utils";
 import type { BulletinWithProfile } from "@/domain/bulletin";
 
@@ -35,7 +35,7 @@ export function BulletinItem({
   const t = useI18n();
   const shouldReduceMotion = useReducedMotion();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const displayName = bulletin.profiles?.nickname ?? bulletin.profiles?.name ?? t("common.formerResident");
+  const displayName = getDisplayName(bulletin.profiles, t("common.formerResident"));
   const isMine = bulletin.user_id === currentUserId;
   const profileHref = bulletin.profiles ? `/profile/${bulletin.user_id}` : undefined;
 
@@ -48,12 +48,12 @@ export function BulletinItem({
   const handleStartEdit = useCallback(() => {
     setEditMessage(bulletin.message);
     setIsEditing(true);
-  }, [bulletin.message]);
+  }, [bulletin.message, setEditMessage]);
 
   const handleCancelEdit = useCallback(() => {
     setEditMessage(bulletin.message);
     setIsEditing(false);
-  }, [bulletin.message]);
+  }, [bulletin.message, setEditMessage]);
 
   const handleSaveEdit = useCallback(async () => {
     const trimmed = editMessage.trim();

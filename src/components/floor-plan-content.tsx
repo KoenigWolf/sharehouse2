@@ -10,6 +10,7 @@ import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { useI18n } from "@/hooks/use-i18n";
 import { getInitials, formatDate, calculateResidenceDuration } from "@/lib/utils";
 import { getFloorFromRoom, FLOOR_COLORS, type FloorId } from "@/lib/utils/residents";
+import { staggerContainer, staggerItem } from "@/lib/animation";
 
 interface FloorPlanContentProps {
   profiles: Profile[];
@@ -26,23 +27,6 @@ function getRoomsForFloor(floor: FloorId): string[] {
 function isMockProfile(profile: Profile): boolean {
   return profile.id.startsWith("mock-");
 }
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.05, delayChildren: 0.1 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 12 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] as const },
-  },
-};
 
 export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentProps) {
   const [activeFloor, setActiveFloor] = useState<FloorId>("5F");
@@ -88,13 +72,13 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
 
   return (
     <m.div
-      variants={containerVariants}
+      variants={staggerContainer}
       initial="hidden"
       animate="visible"
       className="space-y-8"
     >
       <m.div
-        variants={itemVariants}
+        variants={staggerItem}
         className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide"
       >
         {FLOORS.slice().reverse().map((floor, i) => {
@@ -129,7 +113,7 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
         })}
       </m.div>
 
-      <m.section variants={itemVariants} className="premium-surface rounded-2xl sm:rounded-3xl p-6 sm:p-8">
+      <m.section variants={staggerItem} className="premium-surface rounded-2xl sm:rounded-3xl p-6 sm:p-8">
         <div className="flex items-center gap-4 mb-8">
           <div className={`w-12 h-12 flex items-center justify-center rounded-2xl ${colors.bg} ${colors.text} border ${colors.border}`}>
             <span className="text-lg font-bold">{activeFloor}</span>

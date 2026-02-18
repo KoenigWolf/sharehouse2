@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { TimeSelect } from "@/components/ui/time-select";
-import { getInitials } from "@/lib/utils/formatting";
+import { getInitials, formatDate } from "@/lib/utils/formatting";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
 import { useUser } from "@/hooks/use-user";
 import {
@@ -191,16 +191,11 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
     setIsSaving(false);
   };
 
-  const formatDate = (dateStr: string) => {
-    // Append time component to force local-time interpretation
-    // Without this, date-only strings are parsed as UTC and may shift the day
-    const date = new Date(`${dateStr}T00:00:00`);
-    return date.toLocaleDateString(undefined, {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
+  const dateOptions: Intl.DateTimeFormatOptions = {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   };
 
   const creatorName = event.profiles?.nickname || event.profiles?.name || t("events.unknownCreator");
@@ -434,7 +429,7 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
                       <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
                         <div className="flex items-center gap-2 text-foreground">
                           <Calendar size={16} className="text-brand-500 shrink-0" />
-                          <span>{formatDate(event.event_date)}</span>
+                          <span>{formatDate(event.event_date, dateOptions, undefined)}</span>
                         </div>
                         {event.event_time && (
                           <div className="flex items-center gap-2 text-foreground">

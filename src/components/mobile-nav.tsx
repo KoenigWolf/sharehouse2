@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, memo, useCallback, useEffect } from "react";
+import { useState, memo, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { m, motion, AnimatePresence } from "framer-motion";
@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useI18n } from "@/hooks/use-i18n";
 import { useUser } from "@/hooks/use-user";
+import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -151,16 +152,7 @@ export const MobileNav = memo(function MobileNav() {
     window.location.href = "/login";
   }, [closeDrawer]);
 
-  useEffect(() => {
-    if (isDrawerOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isDrawerOpen]);
+  useBodyScrollLock(isDrawerOpen);
 
   const isMoreActive =
     !MOBILE_BOTTOM_NAV_ITEMS.some((item) => isNavItemActive(pathname, item)) &&

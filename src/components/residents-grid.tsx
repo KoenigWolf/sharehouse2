@@ -20,7 +20,9 @@ import Link from "next/link";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
 import { getFloorFromRoom, isNewResident, FLOOR_COLORS, type FloorId } from "@/lib/utils/residents";
+import { staggerContainer, staggerItem } from "@/lib/animation";
 import { VibeUpdateModal } from "@/components/vibe-update-modal";
+import { FloatingActionButton } from "@/components/ui/floating-action-button";
 
 interface ResidentsGridProps {
   profiles: Profile[];
@@ -30,29 +32,6 @@ interface ResidentsGridProps {
 type ViewMode = "grid" | "floor" | "list";
 
 const SEARCH_VISIBLE_THRESHOLD = 30;
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.03,
-      delayChildren: 0.05,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 8 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.3,
-      ease: [0.25, 0.46, 0.45, 0.94] as const,
-    },
-  },
-};
 
 export function ResidentsGrid({
   profiles,
@@ -151,25 +130,18 @@ export function ResidentsGrid({
 
   return (
     <m.div
-      variants={containerVariants}
+      variants={staggerContainer}
       initial="hidden"
       animate="visible"
       className="space-y-3"
     >
       {currentUserId && (
         <>
-          <m.button
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.4, type: "spring", stiffness: 400, damping: 25 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+          <FloatingActionButton
             onClick={() => setIsVibeModalOpen(true)}
-            className="fixed bottom-24 sm:bottom-8 right-5 sm:right-8 z-40 h-14 w-14 rounded-full bg-foreground text-background shadow-lg shadow-foreground/20 flex items-center justify-center"
-            aria-label={t("bulletin.updateVibe")}
-          >
-            <MessageCircle size={22} />
-          </m.button>
+            icon={MessageCircle}
+            label={t("bulletin.updateVibe")}
+          />
 
           <VibeUpdateModal
             isOpen={isVibeModalOpen}
@@ -184,7 +156,7 @@ export function ResidentsGrid({
         </>
       )}
 
-      <m.section variants={itemVariants} className="space-y-2">
+      <m.section variants={staggerItem} className="space-y-2">
         <div className="flex items-center justify-end gap-3">
           <div className="flex gap-0.5 p-0.5 bg-muted/50 rounded-lg">
             {viewModeOptions.map((option) => {

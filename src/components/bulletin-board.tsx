@@ -9,6 +9,7 @@ import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 import { createBulletin, deleteBulletin, updateBulletin, getBulletinsPaginated } from "@/lib/bulletin/actions";
 import { logError } from "@/lib/errors";
 import { BulletinItem, BulletinSkeleton, ComposeModal, SPRING, SPRING_SOFT, EASE_OUT } from "@/components/bulletin";
+import { FloatingActionButton } from "@/components/ui/floating-action-button";
 import type { BulletinWithProfile } from "@/domain/bulletin";
 
 interface BulletinBoardProps {
@@ -304,19 +305,11 @@ export function BulletinBoard({
       </div>
 
       {isEditing && (
-        <m.button
-          type="button"
+        <FloatingActionButton
           onClick={() => setIsComposeOpen(true)}
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.92 }}
-          transition={SPRING}
-          className="fixed bottom-24 sm:bottom-8 right-5 sm:right-8 z-40 w-14 h-14 rounded-full bg-foreground text-background shadow-lg shadow-foreground/20 flex items-center justify-center"
-          aria-label={t("bulletin.postMessage")}
-        >
-          <Feather size={22} />
-        </m.button>
+          icon={Feather}
+          label={t("bulletin.postMessage")}
+        />
       )}
 
       <ComposeModal

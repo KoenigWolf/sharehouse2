@@ -141,7 +141,7 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
       >
         <DropdownMenuItem asChild className="rounded-xl h-11 px-3 focus:bg-muted cursor-pointer">
           <Link href={profileHref} className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+            <div className="icon-box">
               <User size={16} strokeWidth={1.5} className="text-muted-foreground" />
             </div>
             <span className="font-medium text-sm text-foreground">{t("nav.myPage")}</span>
@@ -149,7 +149,7 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
         </DropdownMenuItem>
         <DropdownMenuItem asChild className="rounded-xl h-11 px-3 focus:bg-muted cursor-pointer">
           <Link href="/settings" className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+            <div className="icon-box">
               <Settings size={16} strokeWidth={1.5} className="text-muted-foreground" />
             </div>
             <span className="font-medium text-sm text-foreground">{t("nav.settings")}</span>
@@ -158,7 +158,7 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
         {isAdmin && (
           <DropdownMenuItem asChild className="rounded-xl h-11 px-3 focus:bg-muted cursor-pointer">
             <Link href="/admin" className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+              <div className="icon-box">
                 <Shield size={16} strokeWidth={1.5} className="text-muted-foreground" />
               </div>
               <span className="font-medium text-sm text-foreground">{t("nav.admin")}</span>

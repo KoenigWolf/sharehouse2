@@ -8,6 +8,7 @@ import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { useI18n } from "@/hooks/use-i18n";
+import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock";
 import { getInitials } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/formatting";
 import { ROOM_PHOTOS } from "@/lib/constants/config";
@@ -518,16 +519,7 @@ export function PhotoLightbox({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, isEditingCaption, onClose, handlePrev, handleNext]);
 
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
+  useBodyScrollLock(isOpen);
 
   return (
     <AnimatePresence>

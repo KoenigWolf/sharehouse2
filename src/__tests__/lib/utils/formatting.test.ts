@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   getInitials,
+  getDisplayName,
   formatDate,
   calculateResidenceDuration,
 } from "@/lib/utils/formatting";
@@ -51,6 +52,36 @@ describe("getInitials", () => {
 
   it("returns uppercase initials", () => {
     expect(getInitials("taro yamada")).toBe("TY");
+  });
+});
+
+describe("getDisplayName", () => {
+  it("returns nickname when available", () => {
+    expect(getDisplayName({ nickname: "Taro", name: "Yamada Taro" })).toBe("Taro");
+  });
+
+  it("returns name when nickname is null", () => {
+    expect(getDisplayName({ nickname: null, name: "Yamada Taro" })).toBe("Yamada Taro");
+  });
+
+  it("returns name when nickname is undefined", () => {
+    expect(getDisplayName({ name: "Yamada Taro" })).toBe("Yamada Taro");
+  });
+
+  it("returns fallback when both are null", () => {
+    expect(getDisplayName({ nickname: null, name: null }, "Unknown")).toBe("Unknown");
+  });
+
+  it("returns fallback when profile is null", () => {
+    expect(getDisplayName(null, "Unknown")).toBe("Unknown");
+  });
+
+  it("returns fallback when profile is undefined", () => {
+    expect(getDisplayName(undefined, "Unknown")).toBe("Unknown");
+  });
+
+  it("returns empty string as default fallback", () => {
+    expect(getDisplayName(null)).toBe("");
   });
 });
 

@@ -22,6 +22,7 @@ import { GarbageAdminPanel } from "@/components/garbage-admin-panel";
 import type { WifiInfo } from "@/domain/wifi";
 import type { GarbageSchedule, GarbageDutyWithProfile } from "@/domain/garbage";
 import type { SharedInfo } from "@/domain/shared-info";
+import { staggerContainer, staggerItem } from "@/lib/animation";
 import { cn } from "@/lib/utils";
 
 interface InfoPageContentProps {
@@ -32,29 +33,6 @@ interface InfoPageContentProps {
   isAdmin: boolean;
   currentUserId: string;
 }
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.05,
-      delayChildren: 0.05,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 10 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.4,
-      ease: [0.22, 1, 0.36, 1] as const,
-    },
-  },
-};
 
 interface FloorData {
   floor: number;
@@ -140,7 +118,7 @@ const FloorSection = memo(function FloorSection({ floorData }: { floorData: Floo
   const commonPassword = hasCommonPassword ? uniquePasswords[0] : null;
 
   return (
-    <m.div variants={itemVariants} className="group">
+    <m.div variants={staggerItem} className="group">
       <div className="flex items-baseline gap-4 mb-4 border-b border-border/50 pb-2">
         <h3 className="text-xl font-semibold tracking-tight text-foreground font-sans">
           {isShared ? t("info.buildingName") : `${floorData.floor}F`}
@@ -251,7 +229,7 @@ FloorSection.displayName = "FloorSection";
 const CommonInfoCard = memo(function CommonInfoCard({ info }: { info: SharedInfo }) {
   return (
     <m.div
-      variants={itemVariants}
+      variants={staggerItem}
       className="p-4 sm:p-5 rounded-xl border border-border/60 bg-card hover:border-border transition-colors"
     >
       <div className="flex items-center gap-2 mb-3 text-muted-foreground">
@@ -350,7 +328,7 @@ export function InfoPageContent({
 
   return (
     <m.div
-      variants={containerVariants}
+      variants={staggerContainer}
       initial="hidden"
       animate="visible"
       className="space-y-8 sm:space-y-10"
@@ -380,7 +358,7 @@ export function InfoPageContent({
           </h2>
         </div>
 
-        <m.div variants={itemVariants}>
+        <m.div variants={staggerItem}>
           <GarbageScheduleView
             schedule={schedule}
             duties={duties}
@@ -406,7 +384,7 @@ export function InfoPageContent({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {wifiNote && (
               <m.div
-                variants={itemVariants}
+                variants={staggerItem}
                 className="md:col-span-2 p-4 sm:p-5 rounded-xl border border-blue-200/50 bg-blue-50/50 dark:bg-blue-950/20 dark:border-blue-900/50"
               >
                 <div className="flex gap-4">
