@@ -26,7 +26,9 @@ import { FloatingActionButton } from "@/components/ui/floating-action-button";
 
 interface ResidentsGridProps {
   profiles: Profile[];
-  currentUserId: string;
+  currentUserId?: string;
+  /** 未認証ユーザー向けにモザイクをかける */
+  isBlurred?: boolean;
 }
 
 type ViewMode = "grid" | "floor" | "list";
@@ -36,6 +38,7 @@ const SEARCH_VISIBLE_THRESHOLD = 30;
 export function ResidentsGrid({
   profiles,
   currentUserId,
+  isBlurred = false,
 }: ResidentsGridProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
@@ -135,7 +138,7 @@ export function ResidentsGrid({
       animate="visible"
       className="space-y-3"
     >
-      {currentUserId && (
+      {currentUserId && !isBlurred && (
         <>
           <FloatingActionButton
             onClick={() => setIsVibeModalOpen(true)}
@@ -156,54 +159,56 @@ export function ResidentsGrid({
         </>
       )}
 
-      <m.section variants={staggerItem} className="space-y-2">
-        <div className="flex items-center justify-end gap-3">
-          <div className="flex gap-0.5 p-0.5 bg-muted/50 rounded-lg">
-            {viewModeOptions.map((option) => {
-              const isActive = viewMode === option.value;
-              const Icon = option.icon;
-              return (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => setViewMode(option.value)}
-                  className={`w-9 h-9 flex items-center justify-center rounded-md transition-all ${isActive
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  title={option.label}
-                  aria-label={option.label}
-                  aria-pressed={isActive}
-                >
-                  <Icon size={16} strokeWidth={1.5} />
-                </button>
-              );
-            })}
+      {!isBlurred && (
+        <m.section variants={staggerItem} className="space-y-2">
+          <div className="flex items-center justify-end gap-3">
+            <div className="flex gap-0.5 p-0.5 bg-muted/50 rounded-lg">
+              {viewModeOptions.map((option) => {
+                const isActive = viewMode === option.value;
+                const Icon = option.icon;
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setViewMode(option.value)}
+                    className={`w-9 h-9 flex items-center justify-center rounded-md transition-all ${isActive
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    title={option.label}
+                    aria-label={option.label}
+                    aria-pressed={isActive}
+                  >
+                    <Icon size={16} strokeWidth={1.5} />
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
 
-        {totalCount >= SEARCH_VISIBLE_THRESHOLD && (
-          <div className="relative">
-            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
-            <input
-              type="search"
-              placeholder={t("residents.searchPlaceholder")}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full sm:w-72 h-10 pl-10 pr-9 bg-muted/40 border border-border/40 rounded-full text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all"
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-muted-foreground hover:text-foreground"
-              >
-                <X size={14} />
-              </button>
-            )}
-          </div>
-        )}
-      </m.section>
+          {totalCount >= SEARCH_VISIBLE_THRESHOLD && (
+            <div className="relative">
+              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
+              <input
+                type="search"
+                placeholder={t("residents.searchPlaceholder")}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full sm:w-72 h-10 pl-10 pr-9 bg-muted/40 border border-border/40 rounded-full text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-muted-foreground hover:text-foreground"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+          )}
+        </m.section>
+      )}
 
       <AnimatePresence mode="wait">
         {filteredAndSortedProfiles.length === 0 ? (
@@ -231,7 +236,7 @@ export function ResidentsGrid({
               {t("residents.clearSearch")}
             </button>
           </m.div>
-        ) : viewMode === "floor" ? (
+        ) : viewMode === "floor" && !isBlurred ? (
           <FloorView
             key="floor-view"
             groupedByFloor={groupedByFloor}
@@ -239,7 +244,7 @@ export function ResidentsGrid({
             floorStats={floorStats}
             t={t}
           />
-        ) : viewMode === "list" ? (
+        ) : viewMode === "list" && !isBlurred ? (
           <ListView
             key="list-view"
             profiles={filteredAndSortedProfiles}
@@ -251,6 +256,7 @@ export function ResidentsGrid({
             key="grid-view"
             profiles={filteredAndSortedProfiles}
             currentUserId={currentUserId}
+            isBlurred={isBlurred}
           />
         )}
       </AnimatePresence>
@@ -261,9 +267,11 @@ export function ResidentsGrid({
 function GridView({
   profiles,
   currentUserId,
+  isBlurred = false,
 }: {
   profiles: Profile[];
-  currentUserId: string;
+  currentUserId?: string;
+  isBlurred?: boolean;
 }) {
   return (
     <m.div
@@ -286,7 +294,8 @@ function GridView({
         >
           <ResidentCard
             profile={profile}
-            isCurrentUser={profile.id === currentUserId}
+            isCurrentUser={currentUserId ? profile.id === currentUserId : false}
+            isBlurred={isBlurred}
           />
         </m.div>
       ))}
@@ -301,7 +310,7 @@ function FloorView({
   t,
 }: {
   groupedByFloor: Record<string, Profile[]>;
-  currentUserId: string;
+  currentUserId?: string;
   floorStats: Record<string, { total: number; registered: number }>;
   t: Translator;
 }) {
@@ -373,7 +382,7 @@ function FloorView({
                 >
                   <ResidentCard
                     profile={profile}
-                    isCurrentUser={profile.id === currentUserId}
+                    isCurrentUser={currentUserId ? profile.id === currentUserId : false}
                   />
                 </m.div>
               ))}
@@ -391,7 +400,7 @@ function ListView({
   t,
 }: {
   profiles: Profile[];
-  currentUserId: string;
+  currentUserId?: string;
   t: Translator;
 }) {
   return (
@@ -413,7 +422,7 @@ function ListView({
         >
           <ResidentListItem
             profile={profile}
-            isCurrentUser={profile.id === currentUserId}
+            isCurrentUser={currentUserId ? profile.id === currentUserId : false}
             t={t}
           />
         </m.div>
