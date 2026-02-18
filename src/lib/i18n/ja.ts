@@ -797,6 +797,21 @@ export const ja = {
       ],
     },
     callToAction: "JOIN OUR COMMUNITY",
+    sections: {
+      hero: "トップ",
+      mission: "ミッション",
+      vision: "ビジョン",
+      stats: "コミュニティ",
+      features: "機能",
+      testimonials: "住民の声",
+      principles: "原則",
+      faq: "FAQ",
+      onboarding: "入居の流れ",
+      cta: "参加する",
+    },
+    sectionNav: {
+      navigateTo: "{{section}}セクションへ移動",
+    },
   },
 
   notifications: {

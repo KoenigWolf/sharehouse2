@@ -796,6 +796,21 @@ export const en: Translations = {
       ],
     },
     callToAction: "JOIN OUR COMMUNITY",
+    sections: {
+      hero: "Top",
+      mission: "Mission",
+      vision: "Vision",
+      stats: "Community",
+      features: "Features",
+      testimonials: "Testimonials",
+      principles: "Principles",
+      faq: "FAQ",
+      onboarding: "Getting Started",
+      cta: "Join",
+    },
+    sectionNav: {
+      navigateTo: "Navigate to {{section}} section",
+    },
   },
 
   notifications: {

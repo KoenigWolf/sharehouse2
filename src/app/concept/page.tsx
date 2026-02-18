@@ -621,6 +621,7 @@ function VisionCard({
 }
 
 function SectionNav({ sections }: { sections: readonly string[] }) {
+  const t = useI18n();
   const [activeSection, setActiveSection] = useState<string>("hero");
 
   useEffect(() => {
@@ -657,31 +658,40 @@ function SectionNav({ sections }: { sections: readonly string[] }) {
     }
   };
 
+  const getSectionLabel = (sectionId: string): string => {
+    const key = `concept.sections.${sectionId}` as Parameters<typeof t>[0];
+    const translated = t(key);
+    return translated !== key ? translated : sectionId;
+  };
+
   return (
     <div className="fixed right-6 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col gap-3">
-      {sections.map((sectionId) => (
-        <button
-          key={sectionId}
-          onClick={() => handleClick(sectionId)}
-          className="group flex items-center justify-end gap-3"
-          aria-label={`Navigate to ${sectionId} section`}
-        >
-          <span
-            className={`text-[10px] uppercase tracking-wider transition-opacity duration-300 ${activeSection === sectionId
-              ? "opacity-60"
-              : "opacity-0 group-hover:opacity-40"
-              }`}
+      {sections.map((sectionId) => {
+        const label = getSectionLabel(sectionId);
+        return (
+          <button
+            key={sectionId}
+            onClick={() => handleClick(sectionId)}
+            className="group flex items-center justify-end gap-3"
+            aria-label={t("concept.sectionNav.navigateTo", { section: label })}
           >
-            {sectionId}
-          </span>
-          <span
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${activeSection === sectionId
-              ? "bg-foreground/60 scale-125"
-              : "bg-foreground/20 group-hover:bg-foreground/40"
-              }`}
-          />
-        </button>
-      ))}
+            <span
+              className={`text-[10px] uppercase tracking-wider transition-opacity duration-300 ${activeSection === sectionId
+                ? "opacity-60"
+                : "opacity-0 group-hover:opacity-40"
+                }`}
+            >
+              {label}
+            </span>
+            <span
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${activeSection === sectionId
+                ? "bg-foreground/60 scale-125"
+                : "bg-foreground/20 group-hover:bg-foreground/40"
+                }`}
+            />
+          </button>
+        );
+      })}
     </div>
   );
 }
