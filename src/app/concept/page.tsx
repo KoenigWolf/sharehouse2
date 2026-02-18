@@ -607,7 +607,7 @@ export default function ConceptPage() {
 
       <SectionNav sections={SECTIONS} />
 
-      <Footer variant="minimal" />
+      <Footer />
       <MobileNav />
     </div>
   );
