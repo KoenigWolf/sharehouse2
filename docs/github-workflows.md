@@ -37,11 +37,22 @@ npm run check-all             # lint + type-check + test + build
 
 ### 結果表示
 
+成功時:
 ```text
 ✅ Review checks passed
 
 ✅ Lint / Type / Test / Build
 ✅ Security Audit
+
+[View workflow run](...)
+```
+
+失敗時:
+```text
+❌ Review checks failed
+
+✅ Security Audit
+❌ Lint / Type / Test / Build
 
 [View workflow run](...)
 ```
