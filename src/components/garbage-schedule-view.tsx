@@ -50,7 +50,7 @@ const DEFAULT_STYLE = {
 interface GarbageScheduleViewProps {
   schedule: GarbageSchedule[];
   duties: GarbageDutyWithProfile[];
-  currentUserId: string;
+  currentUserId?: string;
 }
 
 const WeekRow = memo(function WeekRow({

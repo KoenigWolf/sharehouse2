@@ -1,17 +1,14 @@
-import { redirect } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { MobileNav } from "@/components/mobile-nav";
 import { ResidentStats } from "@/components/resident-stats";
+import { BlurredPageContent } from "@/components/blurred-page-content";
 import { getProfilesWithMock } from "@/lib/residents/queries";
 import { getCachedUser } from "@/lib/supabase/cached-queries";
 
 export default async function StatsPage() {
   const { user, supabase } = await getCachedUser();
-
-  if (!user) {
-    redirect("/login");
-  }
+  const isBlurred = !user;
 
   const now = new Date();
   const todayStr = now.toISOString().split("T")[0];
@@ -126,11 +123,13 @@ export default async function StatsPage() {
 
       <main className="flex-1 pb-20 sm:pb-12">
         <div className="container mx-auto px-4 sm:px-6 pt-2 sm:pt-6 pb-4 max-w-5xl">
-          <ResidentStats
-            profiles={profiles}
-            teaTimeParticipants={teaTimeParticipants}
-            extendedStats={extendedStats}
-          />
+          <BlurredPageContent isBlurred={isBlurred} totalCount={profiles.length}>
+            <ResidentStats
+              profiles={profiles}
+              teaTimeParticipants={teaTimeParticipants}
+              extendedStats={extendedStats}
+            />
+          </BlurredPageContent>
         </div>
       </main>
 

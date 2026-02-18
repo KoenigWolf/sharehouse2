@@ -38,7 +38,7 @@ export async function updateSession(request: NextRequest) {
   const isAuthCallback = pathname.startsWith("/auth/callback");
   const isLoginPage = pathname.startsWith("/login");
 
-  // 公開ページ（未認証でもアクセス可能）
+  // 公開ページ（未認証でもアクセス可能、一部はマスク表示）
   const publicPages = [
     "/",
     "/concept",
@@ -46,15 +46,28 @@ export async function updateSession(request: NextRequest) {
     "/contact",
     "/tour",
     "/payment",
-    "/payment/success",
-    "/payment/cancel",
+    "/events",
+    "/bulletin",
+    "/share",
+    "/tea-time",
+    "/info",
+    "/room-photos",
+    "/floor-plan",
+    "/stats",
+    "/legal",
   ];
   const isPublicPage = publicPages.some(
     (page) => pathname === page || pathname.startsWith(`${page}/`)
   );
 
-  // 未認証ユーザーの挙動
-  if (!user && !isLoginPage && !isAuthCallback && !isPublicPage) {
+  // 認証必須ページ（プロフィール編集、設定、管理画面）
+  const authRequiredPages = ["/admin", "/settings", "/profile"];
+  const isAuthRequired = authRequiredPages.some(
+    (page) => pathname.startsWith(page)
+  );
+
+  // 未認証ユーザーの挙動（認証必須ページのみリダイレクト）
+  if (!user && isAuthRequired) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);

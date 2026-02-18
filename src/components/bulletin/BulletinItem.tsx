@@ -13,7 +13,7 @@ import type { BulletinWithProfile } from "@/domain/bulletin";
 
 export interface BulletinItemProps {
   bulletin: BulletinWithProfile;
-  currentUserId: string;
+  currentUserId?: string;
   isTeaser: boolean;
   isNew: boolean;
   onDelete: (id: string) => void;
