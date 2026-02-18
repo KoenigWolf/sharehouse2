@@ -7,13 +7,11 @@ import {
   ShieldCheck,
   Sparkles,
   ArrowRight,
-  Coffee,
-  MessageCircle,
-  Gift,
-  Calendar,
-  Image,
-  AlertCircle,
-  CheckCircle2,
+  Handshake,
+  MessagesSquare,
+  Package,
+  CalendarDays,
+  Images,
   type LucideIcon,
 } from "lucide-react";
 import { Header } from "@/components/header";
@@ -26,11 +24,11 @@ import { Button } from "@/components/ui/button";
 
 const FEATURE_ICONS: Record<string, LucideIcon> = {
   residents: Users,
-  teaTime: Coffee,
-  bulletin: MessageCircle,
-  share: Gift,
-  events: Calendar,
-  gallery: Image,
+  teaTime: Handshake,
+  bulletin: MessagesSquare,
+  share: Package,
+  events: CalendarDays,
+  gallery: Images,
 };
 
 export default function ConceptPage() {
@@ -54,188 +52,188 @@ export default function ConceptPage() {
     t("concept.hero.keywords.3"),
   ];
 
-  const keywordIndex = useTransform(smoothProgress, [0, 0.15, 0.3, 0.45], [0, 1, 2, 3]);
-  const circleScale = useTransform(scrollYProgress, [0, 0.5], [0.8, 1.2]);
-  const circleOpacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.1, 0.2, 0.2, 0]);
+  const keywordIndex = useTransform(smoothProgress, [0, 0.1, 0.2, 0.3], [0, 1, 2, 3]);
 
   return (
-    <div className="min-h-[400vh] bg-background flex flex-col relative" ref={containerRef}>
-      <div className="sereal-glow fixed inset-0 z-0" />
+    <div className="min-h-[300vh] bg-white flex flex-col relative" ref={containerRef}>
       <Header />
 
       <PageTransition>
-        <main className="flex-1 relative z-10">
-          {/* Hero Section */}
-          <div className="sticky top-0 h-screen flex flex-col items-center justify-center overflow-hidden">
+        <main className="flex-1 relative">
+          {/* Hero Section - SEREAL style */}
+          <div className="sticky top-0 h-screen flex flex-col items-center justify-center overflow-hidden bg-white pt-16">
+            {/* Decorative circle - SEREAL style */}
             <m.div
-              style={{ scale: circleScale, opacity: circleOpacity }}
-              className="absolute w-[80vh] h-[80vh] rounded-full bg-foreground/5 pointer-events-none blur-3xl"
+              style={{
+                scale: useTransform(scrollYProgress, [0, 0.3], [1, 1.5]),
+                opacity: useTransform(scrollYProgress, [0, 0.2, 0.4], [0.03, 0.05, 0]),
+              }}
+              className="absolute w-[80vmin] h-[80vmin] rounded-full border border-foreground/10 pointer-events-none"
+            />
+            <m.div
+              style={{
+                scale: useTransform(scrollYProgress, [0, 0.3], [0.8, 1.3]),
+                opacity: useTransform(scrollYProgress, [0, 0.2, 0.4], [0.02, 0.04, 0]),
+              }}
+              className="absolute w-[60vmin] h-[60vmin] rounded-full border border-foreground/5 pointer-events-none"
             />
 
             <div className="container mx-auto px-6 relative z-10">
-              <div className="flex flex-col items-start justify-center min-h-[50vh]">
-                <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-[0.9] text-foreground uppercase">
-                  <div>{t("concept.hero.prefix")}</div>
-                  <div className="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-brand-600 h-[1.1em] overflow-hidden relative">
+              <div className="flex flex-col items-center justify-center text-center">
+                <m.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="text-xs sm:text-sm tracking-[0.3em] uppercase text-foreground/40 mb-8"
+                >
+                  Share House Portal
+                </m.p>
+
+                <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[1.1] text-foreground">
+                  <m.span
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.3 }}
+                    className="block"
+                  >
+                    {t("concept.hero.prefix")}
+                  </m.span>
+                  <span className="block h-[1.15em] overflow-hidden relative">
                     <KeywordCycler index={keywordIndex} keywords={keywords} />
-                  </div>
-                  <div>{t("concept.hero.suffix")}</div>
+                  </span>
+                  <m.span
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.5 }}
+                    className="block"
+                  >
+                    {t("concept.hero.suffix")}
+                  </m.span>
                 </h1>
               </div>
             </div>
 
+            {/* Scroll indicator - SEREAL style */}
             <m.div
-              style={{ opacity: useTransform(scrollYProgress, [0, 0.1], [1, 0]) }}
-              className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+              style={{ opacity: useTransform(scrollYProgress, [0, 0.05], [1, 0]) }}
+              className="absolute bottom-16 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4"
             >
-              <span className="text-xs font-bold tracking-widest uppercase text-muted-foreground">
+              <m.div
+                animate={{ y: [0, 8, 0] }}
+                transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                className="w-px h-16 bg-foreground/20 relative overflow-hidden"
+              >
+                <m.div
+                  animate={{ y: ["-100%", "100%"] }}
+                  transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                  className="absolute w-full h-1/3 bg-foreground/60"
+                />
+              </m.div>
+              <span className="text-[10px] tracking-[0.2em] uppercase text-foreground/30">
                 Scroll
               </span>
-              <div className="w-px h-12 bg-muted-foreground/30 overflow-hidden relative">
-                <m.div
-                  initial={{ y: "-100%" }}
-                  animate={{ y: "100%" }}
-                  transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-                  className="absolute w-full h-1/2 bg-foreground"
-                />
-              </div>
             </m.div>
           </div>
 
           {/* Content Sections */}
-          <div className="relative bg-background/80 backdrop-blur-xl border-t border-border/20">
-            {/* Mission Section */}
-            <section className="py-32 border-b border-border/20">
-              <div className="container mx-auto px-6 max-w-6xl">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-                  <div>
-                    <h2 className="text-base font-bold tracking-widest uppercase text-muted-foreground mb-4">
-                      {t("concept.mission.title")}
-                    </h2>
-                    <p className="text-3xl md:text-4xl font-bold leading-tight whitespace-pre-wrap">
-                      {t("concept.mission.content")}
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-center">
-                    <div className="w-full aspect-square rounded-full border border-border/50 relative flex items-center justify-center group overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-tr from-brand-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                      <Sparkles
-                        size={64}
-                        className="text-foreground/20 group-hover:text-brand-500 transition-colors duration-500"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* Problem Section */}
-            <section className="py-32 border-b border-border/20 bg-muted/30">
-              <div className="container mx-auto px-6 max-w-6xl">
-                <div className="mb-16">
-                  <h2 className="text-base font-bold tracking-widest uppercase text-muted-foreground mb-4">
-                    {t("concept.problem.title")}
-                  </h2>
-                  <p className="text-2xl md:text-3xl font-bold text-foreground/80">
-                    {t("concept.problem.subtitle")}
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
-                  {[0, 1, 2, 3].map((i) => (
-                    <m.div
-                      key={i}
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true, margin: "-50px" }}
-                      transition={{ delay: i * 0.1, duration: 0.4 }}
-                      className="flex items-start gap-4 p-6 bg-background rounded-xl border border-border/50"
-                    >
-                      <AlertCircle className="w-6 h-6 text-error shrink-0 mt-0.5" />
-                      <p className="text-foreground/80">{t(`concept.problem.items.${i}` as Parameters<typeof t>[0])}</p>
-                    </m.div>
-                  ))}
-                </div>
-
+          <div className="relative bg-white">
+            {/* Mission Section - SEREAL style minimal */}
+            <section className="py-32 md:py-48">
+              <div className="container mx-auto px-6 max-w-4xl">
                 <m.div
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 40 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.8 }}
                   className="text-center"
                 >
-                  <p className="text-xl md:text-2xl font-bold text-foreground whitespace-pre-wrap">
-                    {t("concept.problem.conclusion")}
+                  <p className="text-xs tracking-[0.3em] uppercase text-foreground/30 mb-8">
+                    {t("concept.mission.title")}
+                  </p>
+                  <p className="text-2xl sm:text-3xl md:text-4xl font-medium leading-relaxed text-foreground/80 whitespace-pre-wrap">
+                    {t("concept.mission.content")}
                   </p>
                 </m.div>
               </div>
             </section>
 
-            {/* Vision Section */}
-            <section className="py-32 border-b border-border/20">
+            {/* Vision Section - SEREAL grid style */}
+            <section className="py-32 md:py-48 border-t border-foreground/5">
               <div className="container mx-auto px-6 max-w-6xl">
-                <div className="flex items-end justify-between mb-16 border-b border-border/50 pb-8">
-                  <h2 className="text-6xl md:text-8xl font-black tracking-tighter text-foreground/10 uppercase">
-                    {t("concept.vision.title")}
-                  </h2>
-                </div>
+                <m.p
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  className="text-xs tracking-[0.3em] uppercase text-foreground/30 mb-16 text-center"
+                >
+                  {t("concept.vision.title")}
+                </m.p>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-foreground/5">
                   <VisionCard
                     icon={Users}
                     title={t("concept.vision.connection.title")}
                     desc={t("concept.vision.connection.description")}
-                    delay={0}
+                    index={0}
                   />
                   <VisionCard
                     icon={ShieldCheck}
                     title={t("concept.vision.safety.title")}
                     desc={t("concept.vision.safety.description")}
-                    delay={0.1}
+                    index={1}
                   />
                   <VisionCard
                     icon={Sparkles}
                     title={t("concept.vision.vibe.title")}
                     desc={t("concept.vision.vibe.description")}
-                    delay={0.2}
+                    index={2}
                   />
                 </div>
               </div>
             </section>
 
-            {/* Features Section */}
-            <section className="py-32 border-b border-border/20 bg-muted/30">
+            {/* Features Section - SEREAL minimal cards */}
+            <section className="py-32 md:py-48 border-t border-foreground/5">
               <div className="container mx-auto px-6 max-w-6xl">
-                <div className="mb-16">
-                  <h2 className="text-base font-bold tracking-widest uppercase text-muted-foreground mb-4">
+                <m.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="text-center mb-20"
+                >
+                  <p className="text-xs tracking-[0.3em] uppercase text-foreground/30 mb-4">
                     {t("concept.features.title")}
-                  </h2>
-                  <p className="text-2xl md:text-3xl font-bold text-foreground/80">
+                  </p>
+                  <p className="text-xl md:text-2xl font-medium text-foreground/60">
                     {t("concept.features.subtitle")}
                   </p>
-                </div>
+                </m.div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                   {(["residents", "teaTime", "bulletin", "share", "events", "gallery"] as const).map(
                     (key, i) => {
                       const Icon = FEATURE_ICONS[key];
                       return (
                         <m.div
                           key={key}
-                          initial={{ opacity: 0, y: 20 }}
+                          initial={{ opacity: 0, y: 30 }}
                           whileInView={{ opacity: 1, y: 0 }}
                           viewport={{ once: true, margin: "-50px" }}
-                          transition={{ delay: i * 0.05, duration: 0.4 }}
-                          className="p-6 bg-background rounded-xl border border-border/50 hover:border-brand-500/50 transition-colors group"
+                          transition={{ delay: i * 0.1, duration: 0.6 }}
+                          className="group"
                         >
-                          <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mb-4 group-hover:bg-brand-500/10 transition-colors">
-                            <Icon className="w-6 h-6 text-muted-foreground group-hover:text-brand-500 transition-colors" />
+                          <div className="p-8 bg-foreground/[0.02] hover:bg-foreground/[0.04] transition-colors duration-500">
+                            <Icon
+                              className="w-8 h-8 text-foreground/20 group-hover:text-foreground/40 transition-colors duration-500 mb-6"
+                              strokeWidth={1.5}
+                            />
+                            <h3 className="text-lg font-semibold mb-3 text-foreground/80">
+                              {t(`concept.features.${key}.title`)}
+                            </h3>
+                            <p className="text-sm text-foreground/40 leading-relaxed">
+                              {t(`concept.features.${key}.description`)}
+                            </p>
                           </div>
-                          <h3 className="text-lg font-bold mb-2">
-                            {t(`concept.features.${key}.title`)}
-                          </h3>
-                          <p className="text-sm text-muted-foreground">
-                            {t(`concept.features.${key}.description`)}
-                          </p>
                         </m.div>
                       );
                     }
@@ -244,34 +242,41 @@ export default function ConceptPage() {
               </div>
             </section>
 
-            {/* Principles Section */}
-            <section className="py-32 border-b border-border/20">
-              <div className="container mx-auto px-6 max-w-6xl">
-                <div className="mb-16">
-                  <h2 className="text-base font-bold tracking-widest uppercase text-muted-foreground mb-4">
+            {/* Principles Section - SEREAL numbered list */}
+            <section className="py-32 md:py-48 border-t border-foreground/5 bg-foreground/[0.02]">
+              <div className="container mx-auto px-6 max-w-4xl">
+                <m.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="text-center mb-20"
+                >
+                  <p className="text-xs tracking-[0.3em] uppercase text-foreground/30 mb-4">
                     {t("concept.principles.title")}
-                  </h2>
-                  <p className="text-2xl md:text-3xl font-bold text-foreground/80">
+                  </p>
+                  <p className="text-xl md:text-2xl font-medium text-foreground/60">
                     {t("concept.principles.subtitle")}
                   </p>
-                </div>
+                </m.div>
 
-                <div className="space-y-6">
+                <div className="space-y-0">
                   {[0, 1, 2, 3, 4].map((i) => (
                     <m.div
                       key={i}
                       initial={{ opacity: 0, x: -20 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true, margin: "-50px" }}
-                      transition={{ delay: i * 0.1, duration: 0.4 }}
-                      className="flex gap-6 p-6 border-l-4 border-brand-500/50 bg-muted/30 rounded-r-xl"
+                      transition={{ delay: i * 0.1, duration: 0.6 }}
+                      className="flex gap-8 py-8 border-b border-foreground/5 group"
                     >
-                      <span className="text-4xl font-black text-brand-500/30">{i + 1}</span>
-                      <div>
-                        <h3 className="text-lg font-bold mb-1">
+                      <span className="text-5xl font-extralight text-foreground/10 group-hover:text-foreground/20 transition-colors w-16 shrink-0">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <div className="pt-2">
+                        <h3 className="text-lg font-semibold mb-2 text-foreground/80">
                           {t(`concept.principles.items.${i}.title` as Parameters<typeof t>[0])}
                         </h3>
-                        <p className="text-muted-foreground">
+                        <p className="text-foreground/40 leading-relaxed">
                           {t(`concept.principles.items.${i}.description` as Parameters<typeof t>[0])}
                         </p>
                       </div>
@@ -281,49 +286,30 @@ export default function ConceptPage() {
               </div>
             </section>
 
-            {/* Success Section */}
-            <section className="py-32 border-b border-border/20 bg-muted/30">
-              <div className="container mx-auto px-6 max-w-6xl">
-                <div className="mb-16">
-                  <h2 className="text-base font-bold tracking-widest uppercase text-muted-foreground mb-4">
-                    {t("concept.success.title")}
+            {/* CTA Section - SEREAL style */}
+            <section className="py-32 md:py-48 border-t border-foreground/5">
+              <div className="container mx-auto px-6 max-w-4xl text-center">
+                <m.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8 }}
+                >
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-12 text-foreground/90">
+                    {t("concept.callToAction")}
                   </h2>
-                  <p className="text-2xl md:text-3xl font-bold text-foreground/80">
-                    {t("concept.success.subtitle")}
-                  </p>
-                </div>
-
-                <div className="space-y-4">
-                  {[0, 1, 2, 3, 4].map((i) => (
-                    <m.div
-                      key={i}
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true, margin: "-50px" }}
-                      transition={{ delay: i * 0.1, duration: 0.4 }}
-                      className="flex items-center gap-4 p-4 bg-background rounded-xl border border-border/50"
-                    >
-                      <CheckCircle2 className="w-6 h-6 text-success shrink-0" />
-                      <p className="text-foreground/80">{t(`concept.success.items.${i}` as Parameters<typeof t>[0])}</p>
-                    </m.div>
-                  ))}
-                </div>
-              </div>
-            </section>
-
-            {/* CTA Section */}
-            <section className="py-32">
-              <div className="container mx-auto px-6 max-w-6xl text-center">
-                <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-12 uppercase">
-                  {t("concept.callToAction")}
-                </h2>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                  <Button asChild size="lg" className="h-14 px-10 rounded-full text-lg font-bold">
+                  <Button
+                    asChild
+                    size="lg"
+                    variant="outline"
+                    className="h-14 px-12 rounded-none border-foreground/20 hover:bg-foreground hover:text-white transition-all duration-500 text-sm tracking-wider"
+                  >
                     <Link href="/residents">
-                      {t("auth.browseAsGuest")} <ArrowRight className="ml-2" />
+                      {t("auth.browseAsGuest")}
+                      <ArrowRight className="ml-3 w-4 h-4" />
                     </Link>
                   </Button>
-                </div>
+                </m.div>
               </div>
             </section>
           </div>
@@ -351,11 +337,13 @@ function KeywordCycler({
   return (
     <m.div
       style={{ y }}
-      className="absolute top-0 left-0 w-full transition-transform duration-500 ease-out"
+      className="absolute top-0 left-0 w-full transition-transform duration-700 ease-out"
     >
       {keywords.map((k, i) => (
-        <div key={i} className="h-full flex items-center">
-          {k.toUpperCase()}
+        <div key={i} className="h-full flex items-center justify-center">
+          <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+            {k}
+          </span>
         </div>
       ))}
     </m.div>
@@ -366,26 +354,26 @@ function VisionCard({
   icon: Icon,
   title,
   desc,
-  delay,
+  index,
 }: {
   icon: LucideIcon;
   title: string;
   desc: string;
-  delay: number;
+  index: number;
 }) {
   return (
     <m.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
-      transition={{ delay, duration: 0.5 }}
-      className="p-8 border-t border-foreground/10 hover:border-foreground/50 transition-colors duration-300 group"
+      transition={{ delay: index * 0.15, duration: 0.6 }}
+      className="bg-white p-10 md:p-12 group"
     >
-      <div className="mb-6 text-foreground/40 group-hover:text-brand-500 transition-colors duration-300">
-        <Icon size={32} />
+      <div className="mb-8 text-foreground/15 group-hover:text-foreground/30 transition-colors duration-500">
+        <Icon size={36} strokeWidth={1} />
       </div>
-      <h3 className="text-xl font-bold mb-4 tracking-tight">{title}</h3>
-      <p className="text-muted-foreground leading-relaxed">{desc}</p>
+      <h3 className="text-xl font-semibold mb-4 tracking-tight text-foreground/80">{title}</h3>
+      <p className="text-foreground/40 leading-relaxed">{desc}</p>
     </m.div>
   );
 }
