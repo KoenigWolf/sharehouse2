@@ -1,7 +1,13 @@
 "use client";
 
 import { useRef } from "react";
-import { m, useScroll, useTransform, useSpring, type MotionValue } from "framer-motion";
+import {
+  m,
+  useScroll,
+  useTransform,
+  useSpring,
+  type MotionValue,
+} from "framer-motion";
 import {
   Users,
   ShieldCheck,
@@ -12,6 +18,10 @@ import {
   Package,
   CalendarDays,
   Images,
+  Home,
+  KeyRound,
+  UserCircle,
+  MessageCircle,
   type LucideIcon,
 } from "lucide-react";
 import { Header } from "@/components/header";
@@ -36,6 +46,8 @@ const FEATURE_ICONS: Record<string, LucideIcon> = {
   events: CalendarDays,
   gallery: Images,
 };
+
+const ONBOARDING_ICONS: LucideIcon[] = [Home, KeyRound, UserCircle, MessageCircle];
 
 export default function ConceptPage() {
   const t = useI18n();
@@ -376,7 +388,90 @@ export default function ConceptPage() {
               </div>
             </section>
 
-            <section className="py-32 md:py-48 border-t border-foreground/5">
+            <section id="onboarding" className="py-32 md:py-48 border-t border-foreground/5">
+              <div className="container mx-auto px-6 max-w-4xl">
+                <m.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="text-center mb-20"
+                >
+                  <p className="text-xs tracking-[0.3em] uppercase text-foreground/30 mb-4">
+                    {t("concept.onboarding.title")}
+                  </p>
+                  <p className="text-xl md:text-2xl font-medium text-foreground/60">
+                    {t("concept.onboarding.subtitle")}
+                  </p>
+                </m.div>
+
+                <div className="relative">
+                  <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-px bg-foreground/10 md:-translate-x-px" />
+
+                  <div className="space-y-12 md:space-y-0">
+                    {[0, 1, 2, 3].map((i) => {
+                      const Icon = ONBOARDING_ICONS[i];
+                      const isEven = i % 2 === 0;
+                      return (
+                        <m.div
+                          key={i}
+                          initial={{ opacity: 0, x: isEven ? -20 : 20 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          viewport={{ once: true, margin: "-50px" }}
+                          transition={{
+                            delay: i * 0.05,
+                            duration: 0.4,
+                            ease: [0.25, 0.46, 0.45, 0.94],
+                          }}
+                          className={`relative flex items-start gap-6 md:gap-0 ${isEven ? "md:flex-row" : "md:flex-row-reverse"
+                            }`}
+                        >
+                          <div
+                            className={`hidden md:block w-1/2 ${isEven ? "pr-12 text-right" : "pl-12 text-left"
+                              }`}
+                          >
+                            <h3 className="text-lg font-semibold text-foreground/80 mb-2">
+                              {t(
+                                `concept.onboarding.steps.${i}.title` as Parameters<typeof t>[0]
+                              )}
+                            </h3>
+                            <p className="text-foreground/40 leading-relaxed">
+                              {t(
+                                `concept.onboarding.steps.${i}.description` as Parameters<
+                                  typeof t
+                                >[0]
+                              )}
+                            </p>
+                          </div>
+
+                          <div className="relative z-10 flex-shrink-0 w-12 h-12 rounded-full bg-background border border-foreground/10 flex items-center justify-center md:absolute md:left-1/2 md:-translate-x-1/2">
+                            <Icon className="w-5 h-5 text-foreground/40" strokeWidth={1.5} />
+                          </div>
+
+                          <div className="md:hidden flex-1">
+                            <h3 className="text-lg font-semibold text-foreground/80 mb-2">
+                              {t(
+                                `concept.onboarding.steps.${i}.title` as Parameters<typeof t>[0]
+                              )}
+                            </h3>
+                            <p className="text-foreground/40 leading-relaxed">
+                              {t(
+                                `concept.onboarding.steps.${i}.description` as Parameters<
+                                  typeof t
+                                >[0]
+                              )}
+                            </p>
+                          </div>
+
+                          <div className="hidden md:block w-1/2" />
+                        </m.div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section className="py-32 md:py-48 border-t border-foreground/5 bg-foreground/[0.02]">
               <div className="container mx-auto px-6 max-w-4xl text-center">
                 <m.div
                   initial={{ opacity: 0, y: 30 }}
