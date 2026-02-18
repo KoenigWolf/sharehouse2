@@ -13,6 +13,7 @@ import {
   Image as ImageIcon,
   Info,
   Coffee,
+  Lightbulb,
   LayoutGrid,
   BarChart3,
   Settings,
@@ -47,6 +48,7 @@ export const PRIMARY_NAV_ITEMS: NavItem[] = [
  */
 export const SECONDARY_NAV_ITEMS: NavItem[] = [
   { href: "/info", labelKey: "nav.info", icon: Info },
+  { href: "/concept", labelKey: "nav.concept", icon: Lightbulb },
   { href: "/tea-time", labelKey: "nav.teaTime", icon: Coffee },
   { href: "/floor-plan", labelKey: "nav.floorPlan", icon: LayoutGrid },
   { href: "/stats", labelKey: "nav.stats", icon: BarChart3 },

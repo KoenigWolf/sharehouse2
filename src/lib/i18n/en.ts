@@ -48,6 +48,7 @@ export const en: Translations = {
     floorPlan: "Floor Map",
     share: "Share",
     events: "Events",
+    concept: "Concept",
     admin: "Admin",
     stats: "Statistics",
   },
@@ -576,6 +577,115 @@ export const en: Translations = {
     noPassword: "No Password",
     mailbox: "Mailbox",
     address: "Address",
+  },
+
+  concept: {
+    hero: {
+      eyebrow: "Share House Portal",
+      prefix: "We share",
+      suffix: "with you",
+      keywords: ["Life", "Time", "Vibe", "Values"],
+      scrollHint: "Scroll",
+    },
+    cta: {
+      explore: "Explore Residents",
+    },
+    mission: {
+      title: "MISSION",
+      content: "From 'just a place to live' to 'a comfortable place to be'.\nDesigning natural connections with the right distance.",
+    },
+    vision: {
+      title: "VISION",
+      connection: {
+        title: "Casual Connections",
+        description: "Natural, unforced connections.",
+      },
+      safety: {
+        title: "Safety & Trust",
+        description: "Security and trust that comes from knowing who lives here.",
+      },
+      vibe: {
+        title: "Share the Vibe",
+        description: "Sharing the current atmosphere and mood.",
+      },
+    },
+    problem: {
+      title: "PROBLEM",
+      subtitle: "Share house challenges",
+      items: [
+        "You pass by in the hallway but don't know each other's names",
+        "You're next to someone in the kitchen but can't start a conversation",
+        "Nobody reads the paper notices on the board",
+        "LINE group messages flow too fast, information gets buried",
+      ],
+      conclusion: "What's needed isn't a flashy SNS, but\n'a quiet place where everyone's face and personality is visible'",
+    },
+    features: {
+      title: "FEATURES",
+      subtitle: "What you can do with this portal",
+      residents: {
+        title: "Residents",
+        description: "See everyone's profile in a grid. Know who's who at a glance.",
+      },
+      teaTime: {
+        title: "Tea Time",
+        description: "Weekly random matching. Automatic prompts for 'Want to grab tea?'",
+      },
+      bulletin: {
+        title: "Vibe",
+        description: "Share your mood casually. Feel the community atmosphere.",
+      },
+      share: {
+        title: "Share Board",
+        description: "Share leftover food and supplies. Connect instead of waste.",
+      },
+      events: {
+        title: "Events",
+        description: "Create and join house events with one tap.",
+      },
+      gallery: {
+        title: "Gallery",
+        description: "Share room photos. Find living inspiration.",
+      },
+    },
+    principles: {
+      title: "PRINCIPLES",
+      subtitle: "Product principles",
+      items: [
+        {
+          title: "Environment, not protagonist",
+          description: "MUJI-style design. Remove decoration and assertion.",
+        },
+        {
+          title: "Designed for 20 people",
+          description: "Not SaaS. Prioritize atmosphere over scale.",
+        },
+        {
+          title: "Psychological safety",
+          description: "Closed space. No external exposure. No commanding tone.",
+        },
+        {
+          title: "Low barrier to entry",
+          description: "Value in just viewing. No forced posting.",
+        },
+        {
+          title: "Information delivered quietly",
+          description: "Minimal notifications. No hype. Just inform.",
+        },
+      ],
+    },
+    success: {
+      title: "SUCCESS",
+      subtitle: "When this portal is successful",
+      items: [
+        "Over 80% of residents have registered their profiles",
+        "Tea Time matching happens every week",
+        "3+ bulletin posts per week",
+        "'Oh, I saw your profile' conversations happen in the hallway",
+        "The paper bulletin board becomes unnecessary",
+      ],
+    },
+    callToAction: "JOIN OUR COMMUNITY",
   },
 
   notifications: {
