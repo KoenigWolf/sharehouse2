@@ -101,7 +101,6 @@ export function BulletinItem({
       className={`py-4 px-1 transition-colors group border-b border-border/40 last:border-b-0 ${isEditing ? "bg-muted/20" : "hover:bg-muted/30"}`}
     >
       <div className="flex gap-3">
-        {/* Avatar */}
         {profileHref ? (
           <Link href={profileHref} className="shrink-0">
             <m.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -138,9 +137,7 @@ export function BulletinItem({
           </Avatar>
         )}
 
-        {/* Content */}
         <div className="flex-1 min-w-0">
-          {/* Header row */}
           <div className="flex items-center gap-1.5 mb-0.5">
             <div className="flex items-baseline gap-1.5 min-w-0 flex-1">
               {profileHref ? (
@@ -163,10 +160,8 @@ export function BulletinItem({
               </span>
             </div>
 
-            {/* Action buttons */}
             {isMine && !bulletin.id.startsWith("temp-") && !isEditing && (
               <div className="flex items-center gap-0.5 shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                {/* Edit button */}
                 <m.button
                   type="button"
                   onClick={handleStartEdit}
@@ -180,7 +175,6 @@ export function BulletinItem({
                   <Pencil size={14} />
                 </m.button>
 
-                {/* Delete button */}
                 <m.button
                   type="button"
                   onClick={() => onDelete(bulletin.id)}
@@ -197,7 +191,6 @@ export function BulletinItem({
             )}
           </div>
 
-          {/* Message or Edit form */}
           <AnimatePresence mode="wait">
             {isEditing ? (
               <m.div
@@ -208,7 +201,6 @@ export function BulletinItem({
                 transition={{ duration: 0.2, ease: EASE_OUT }}
                 className="space-y-3"
               >
-                {/* Textarea */}
                 <div className="relative">
                   <textarea
                     ref={textareaRef}
@@ -227,9 +219,7 @@ export function BulletinItem({
                   />
                 </div>
 
-                {/* Footer: Character count + Actions */}
                 <div className="flex items-center justify-between">
-                  {/* Character counter with circular progress */}
                   <div className="flex items-center gap-2">
                     <div className="relative w-6 h-6">
                       <svg className="w-6 h-6 -rotate-90" viewBox="0 0 24 24">
@@ -263,7 +253,6 @@ export function BulletinItem({
                     </span>
                   </div>
 
-                  {/* Action buttons */}
                   <div className="flex items-center gap-2">
                     <m.button
                       type="button"

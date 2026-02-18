@@ -67,7 +67,6 @@ const WeekRow = memo(function WeekRow({
 
   return (
     <div className="relative">
-      {/* Scroll hint gradient for mobile - disappears when scrolled to end if implemented with JS, but CSS-only usually just overlay */}
       <div className="overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:pb-0 scrollbar-hide">
         <div className="grid grid-cols-7 gap-px bg-border/40 rounded-lg overflow-hidden border border-border/40 min-w-[600px] sm:min-w-0">
           {Array.from({ length: 7 }, (_, i) => i).map((dayIndex) => {
@@ -112,7 +111,6 @@ const WeekRow = memo(function WeekRow({
           })}
         </div>
       </div>
-      {/* Mobile scroll hint text */}
       <p className="sm:hidden text-[10px] text-muted-foreground text-center mt-1">
         {t("garbage.swipeHint")}
       </p>
@@ -242,7 +240,6 @@ export function GarbageScheduleView({
         </div>
       )}
 
-      {/* Weekly Schedule - Left Column */}
       <section>
         <div className="mb-4 flex items-center gap-2">
           <Calendar size={18} className="text-muted-foreground" />
@@ -256,7 +253,6 @@ export function GarbageScheduleView({
         </p>
       </section>
 
-      {/* Duties - Right Column */}
       <section>
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">

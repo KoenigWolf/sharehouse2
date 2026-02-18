@@ -27,7 +27,6 @@ function isMockProfile(profile: Profile): boolean {
   return profile.id.startsWith("mock-");
 }
 
-// Animation config
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -94,7 +93,6 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
       animate="visible"
       className="space-y-8"
     >
-      {/* Floor selector - Touch targets 64px minimum */}
       <m.div
         variants={itemVariants}
         className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide"
@@ -131,9 +129,7 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
         })}
       </m.div>
 
-      {/* Floor content */}
       <m.section variants={itemVariants} className="premium-surface rounded-2xl sm:rounded-3xl p-6 sm:p-8">
-        {/* Floor header */}
         <div className="flex items-center gap-4 mb-8">
           <div className={`w-12 h-12 flex items-center justify-center rounded-2xl ${colors.bg} ${colors.text} border ${colors.border}`}>
             <span className="text-lg font-bold">{activeFloor}</span>
@@ -148,7 +144,6 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
           </div>
         </div>
 
-        {/* Room grid */}
         <AnimatePresence mode="wait">
           <m.div
             key={activeFloor}
@@ -183,14 +178,12 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
                     }
                   `}
                 >
-                  {/* Current user badge */}
                   {isCurrentUser && (
                     <span className="absolute -top-2 -right-2 bg-foreground text-background text-[9px] font-bold px-1.5 py-0.5 rounded-full z-10">
                       {t("common.you")}
                     </span>
                   )}
 
-                  {/* Avatar */}
                   <div className="w-12 h-12 sm:w-14 sm:h-14 mb-3 relative">
                     {profile ? (
                       <Avatar className="w-full h-full rounded-xl border-2 border-border/50">
@@ -215,12 +208,10 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
                     )}
                   </div>
 
-                  {/* Room number */}
                   <span className={`text-xs font-bold tracking-wide ${isOccupied ? "text-foreground" : "text-muted-foreground/60"}`}>
                     {roomNumber}
                   </span>
 
-                  {/* Name */}
                   {profile && (
                     <span className={`text-[10px] truncate max-w-full mt-1 font-medium ${isMock ? "text-muted-foreground/30" : "text-muted-foreground"}`}>
                       {profile.nickname || profile.name}
@@ -233,7 +224,6 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
         </AnimatePresence>
       </m.section>
 
-      {/* Room detail popup */}
       <AnimatePresence>
         {selectedRoom && (
           <FocusTrap
@@ -245,7 +235,6 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
             }}
           >
             <div>
-              {/* Backdrop */}
               <m.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -255,7 +244,6 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
                 onClick={handleClosePopup}
               />
 
-              {/* Modal */}
               <m.div
                 initial={{ opacity: 0, y: 100, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -267,7 +255,6 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
                 aria-label={selectedRoom}
               >
                 <div className="bg-card border border-border/50 shadow-2xl rounded-3xl p-6 relative">
-                  {/* Close button - 44px touch target */}
                   <button
                     type="button"
                     onClick={handleClosePopup}
@@ -277,7 +264,6 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
                     <X size={20} />
                   </button>
 
-                  {/* Room badge */}
                   <div className="flex items-center gap-3 mb-6">
                     <span className={`text-sm font-bold px-3 py-1.5 rounded-xl ${colors.bg} ${colors.text} border ${colors.border}`}>
                       {selectedRoom}
@@ -289,7 +275,6 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
                     )}
                   </div>
 
-                  {/* Content */}
                   {selectedProfile ? (
                     <RoomDetailOccupied
                       profile={selectedProfile}
@@ -323,7 +308,6 @@ function RoomDetailOccupied({
 
   return (
     <div className="space-y-6">
-      {/* Profile header */}
       <div className="flex items-center gap-4">
         <Avatar className="w-16 h-16 rounded-2xl border border-border">
           <OptimizedAvatarImage
@@ -355,7 +339,6 @@ function RoomDetailOccupied({
         </div>
       </div>
 
-      {/* Info grid */}
       {(moveInFormatted || profile.occupation) && (
         <div className="grid grid-cols-2 gap-3">
           {moveInFormatted && (
@@ -385,14 +368,12 @@ function RoomDetailOccupied({
         </div>
       )}
 
-      {/* Bio */}
       {profile.bio && (
         <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 italic">
           &ldquo;{profile.bio}&rdquo;
         </p>
       )}
 
-      {/* Action */}
       {!isMock && (
         <Link
           href={`/profile/${profile.id}`}

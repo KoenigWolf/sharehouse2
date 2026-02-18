@@ -292,7 +292,6 @@ const PhotoCarousel = memo(function PhotoCarousel({
   const x = useMotionValue(0);
   const [containerHeight, setContainerHeight] = useState(600);
 
-  // Calculate container height on mount and resize
   useEffect(() => {
     const updateHeight = () => {
       setContainerHeight(window.innerHeight * VH_FRACTION);
@@ -302,7 +301,6 @@ const PhotoCarousel = memo(function PhotoCarousel({
     return () => window.removeEventListener("resize", updateHeight);
   }, []);
 
-  // Visible slides: current, prev, next for smooth transitions
   const visibleIndices = useMemo(() => {
     const indices: number[] = [];
     if (selectedIndex > 0) indices.push(selectedIndex - 1);
@@ -311,7 +309,6 @@ const PhotoCarousel = memo(function PhotoCarousel({
     return indices;
   }, [selectedIndex, photos.length]);
 
-  // Animate to center when selectedIndex changes
   useEffect(() => {
     animate(x, 0, {
       type: "spring",
@@ -427,7 +424,6 @@ export function PhotoLightbox({
   const hasPrev = selectedIndex !== null && selectedIndex > 0;
   const hasNext = selectedIndex !== null && selectedIndex < photos.length - 1;
 
-  // Navigation handlers
   const handlePrev = useCallback(() => {
     if (selectedIndex !== null && selectedIndex > 0) {
       onNavigate(selectedIndex - 1);
@@ -440,7 +436,6 @@ export function PhotoLightbox({
     }
   }, [selectedIndex, photos.length, onNavigate]);
 
-  // Caption handlers
   const handleStartEdit = useCallback(() => {
     if (!isOwner || !photo) return;
     setCaptionDraft(photo.caption ?? "");
@@ -502,7 +497,6 @@ export function PhotoLightbox({
     }
   }, [photo, onDelete, t]);
 
-  // Keyboard navigation (handled by useLightbox hook in parent, but we still need caption editing support)
   useEffect(() => {
     if (!isOpen || isEditingCaption) return;
 
@@ -524,7 +518,6 @@ export function PhotoLightbox({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, isEditingCaption, onClose, handlePrev, handleNext]);
 
-  // Body scroll lock
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";

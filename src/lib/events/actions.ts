@@ -19,10 +19,7 @@ type FileValidationResult =
   | { success: true; uint8Array: Uint8Array; fileName: string; contentType: string }
   | { success: false; error: string };
 
-/**
- * Extract storage path from a cover image URL
- * Uses URL constructor to properly parse and exclude query strings
- */
+// Uses URL constructor to properly parse and exclude query strings
 function extractStoragePath(coverImageUrl: string): string | null {
   try {
     const url = new URL(coverImageUrl);
@@ -31,16 +28,12 @@ function extractStoragePath(coverImageUrl: string): string | null {
     const markerIndex = pathname.indexOf(marker);
     if (markerIndex === -1) return null;
     const path = pathname.slice(markerIndex + marker.length);
-    // Trim leading/trailing slashes
     return path.replace(/^\/+|\/+$/g, "") || null;
   } catch {
     return null;
   }
 }
 
-/**
- * Delete a cover image from storage
- */
 async function deleteStorageCover(
   supabase: SupabaseClient,
   coverImageUrl: string
@@ -51,9 +44,6 @@ async function deleteStorageCover(
   }
 }
 
-/**
- * Validate file from FormData and read its contents
- */
 async function validateAndReadFile(
   formData: FormData,
   userId: string,
@@ -93,9 +83,6 @@ async function validateAndReadFile(
   };
 }
 
-/**
- * Upload cover to storage and persist URL to database
- */
 async function uploadAndPersistCover(
   supabase: SupabaseClient,
   fileName: string,
@@ -179,7 +166,6 @@ export async function createEvent(input: {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { error: t("errors.unauthorized") };
 
-    // Rate limit check
     const rateLimitResult = RateLimiters.event(user.id);
     if (!rateLimitResult.success) {
       return { error: formatRateLimitError(rateLimitResult.retryAfter, t) };
@@ -350,9 +336,6 @@ export async function deleteEvent(eventId: string): Promise<ActionResponse> {
   }
 }
 
-/**
- * Get a single event by ID with full details
- */
 export async function getEventById(eventId: string): Promise<EventWithDetails | null> {
   try {
     if (!isValidUUID(eventId)) return null;
@@ -377,9 +360,6 @@ export async function getEventById(eventId: string): Promise<EventWithDetails | 
   }
 }
 
-/**
- * Upload event cover image
- */
 export async function uploadEventCover(
   eventId: string,
   formData: FormData
@@ -416,7 +396,6 @@ export async function uploadEventCover(
       return { error: t("errors.notFound") };
     }
 
-    // Verify ownership
     if (event.user_id !== user.id) {
       logError(new Error("User is not the event owner"), {
         action: "uploadEventCover:ownership",
@@ -457,9 +436,6 @@ export async function uploadEventCover(
   }
 }
 
-/**
- * Remove event cover image
- */
 export async function removeEventCover(eventId: string): Promise<ActionResponse> {
   const t = await getServerTranslator();
   const originError = await enforceAllowedOrigin(t, "removeEventCover");

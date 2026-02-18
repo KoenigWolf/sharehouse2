@@ -355,7 +355,6 @@ export function InfoPageContent({
       animate="visible"
       className="space-y-8 sm:space-y-10"
     >
-      {/* Floors Section */}
       {floorDataList.length > 0 && (
         <section className="space-y-6 sm:space-y-10">
           <div className="flex items-center gap-2 text-muted-foreground mb-4 sm:mb-6">
@@ -373,7 +372,6 @@ export function InfoPageContent({
         </section>
       )}
 
-      {/* Garbage Section */}
       <section className="space-y-4 sm:space-y-6">
         <div className="flex items-center gap-2 text-muted-foreground border-b border-border/50 pb-2 mb-4 sm:mb-6">
           <Trash2 size={20} />
@@ -396,7 +394,6 @@ export function InfoPageContent({
         </m.div>
       </section>
 
-      {/* Common Layout */}
       {(commonInfos.length > 0 || wifiNote) && (
         <section className="space-y-4 sm:space-y-6">
           <div className="flex items-center gap-2 text-muted-foreground border-b border-border/50 pb-2 mb-4 sm:mb-6">
@@ -407,7 +404,6 @@ export function InfoPageContent({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Wi-Fi Note */}
             {wifiNote && (
               <m.div
                 variants={itemVariants}
@@ -435,7 +431,6 @@ export function InfoPageContent({
               </m.div>
             )}
 
-            {/* Other Common Infos */}
             {commonInfos.map((info) => (
               <CommonInfoCard key={info.id} info={info} />
             ))}

@@ -116,7 +116,6 @@ export function VibeUpdateModal({
                   className="fixed inset-x-4 top-[20%] sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-md rounded-3xl bg-card border border-border shadow-2xl p-6 overflow-hidden"
                   onClick={(e) => e.stopPropagation()}
                >
-                  {/* Header */}
                   <div className="flex items-center justify-between mb-6">
                      <h2 id={`${id}-title`} className="text-xl font-bold text-foreground">
                         {t("bulletin.updateVibe")}
@@ -132,7 +131,6 @@ export function VibeUpdateModal({
                      </button>
                   </div>
 
-                  {/* Content */}
                   <div className="flex gap-4 mb-6">
                      <Avatar className="w-12 h-12 rounded-xl border border-border/50 shrink-0">
                         <OptimizedAvatarImage
@@ -169,7 +167,6 @@ export function VibeUpdateModal({
                      </div>
                   </div>
 
-                  {/* Footer */}
                   <div className="flex justify-end gap-3">
                      <button
                         type="button"

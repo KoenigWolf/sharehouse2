@@ -62,7 +62,6 @@ export function SettingsSection({
         icon={<Bell size={ICON_SIZE.md} strokeWidth={ICON_STROKE.normal} />}
       />
       <div className="divide-y divide-border/50">
-        {/* Tea Time Toggle */}
         <div className="flex items-center justify-between py-5 group first:pt-0">
           <div className="space-y-1">
             <p className="text-[13px] font-bold text-foreground/80 tracking-wide">
@@ -88,7 +87,6 @@ export function SettingsSection({
           )}
         </div>
 
-        {/* Notification Toggles */}
         {notificationItems.map((item) => (
           <div key={item.key} className="flex items-center justify-between py-5 group">
             <div className="space-y-1">
