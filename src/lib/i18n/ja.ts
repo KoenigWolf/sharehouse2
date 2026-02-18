@@ -47,6 +47,7 @@ export const ja = {
     floorPlan: "Floor Map",
     share: "Share",
     events: "Events",
+    concept: "Concept",
     admin: "管理",
     stats: "統計",
   },
@@ -576,6 +577,110 @@ export const ja = {
     noPassword: "パスワードなし",
     mailbox: "郵便受け",
     address: "住所",
+  },
+
+  concept: {
+    hero: {
+      prefix: "We share",
+      suffix: "with you",
+      keywords: ["Life", "Time", "Vibe", "Values"],
+    },
+    mission: {
+      title: "MISSION",
+      content: "「ただ住む場所」から「心地よい居場所」へ。\n適度な距離感と、自然なつながりをデザインする。",
+    },
+    vision: {
+      title: "VISION",
+      connection: {
+        title: "Casual Connections",
+        description: "無理のない、ゆるやかなつながり。",
+      },
+      safety: {
+        title: "Safety & Trust",
+        description: "顔が見える安心感と信頼。",
+      },
+      vibe: {
+        title: "Share the Vibe",
+        description: "今の空気感を共有し合う。",
+      },
+    },
+    problem: {
+      title: "PROBLEM",
+      subtitle: "シェアハウスの課題",
+      items: [
+        "廊下ですれ違っても名前を知らない",
+        "共用キッチンで隣にいても話しかけられない",
+        "掲示板に紙を貼っても誰も見ない",
+        "LINEグループは流れが速く、情報が埋もれる",
+      ],
+      conclusion: "必要なのは、派手なSNSではなく\n「静かに全員の顔と人となりが分かる場所」",
+    },
+    features: {
+      title: "FEATURES",
+      subtitle: "このポータルでできること",
+      residents: {
+        title: "住民一覧",
+        description: "全員のプロフィールをグリッド表示。誰がどんな人か一目で分かる。",
+      },
+      teaTime: {
+        title: "Tea Time",
+        description: "週1回のランダムマッチング。「お茶でもどうですか」のきっかけを自動で。",
+      },
+      bulletin: {
+        title: "Vibe",
+        description: "今の気分や近況を気軽にシェア。コミュニティの空気を感じる。",
+      },
+      share: {
+        title: "Share Board",
+        description: "余った食材や日用品を住民間でシェア。捨てずに、つなげる。",
+      },
+      events: {
+        title: "Events",
+        description: "ハウス内イベントの作成・参加をワンタップで。",
+      },
+      gallery: {
+        title: "Gallery",
+        description: "住民の部屋写真を共有。住まい方のヒントが見つかる。",
+      },
+    },
+    principles: {
+      title: "PRINCIPLES",
+      subtitle: "プロダクト原則",
+      items: [
+        {
+          title: "環境であり主役ではない",
+          description: "デザインは無印良品的に。装飾・主張は削る。",
+        },
+        {
+          title: "20人のための設計",
+          description: "SaaSではない。スケールより空気感を優先する。",
+        },
+        {
+          title: "心理的安全性",
+          description: "クローズドな空間。外部公開なし。命令口調禁止。",
+        },
+        {
+          title: "低い参加ハードル",
+          description: "見るだけでも価値がある。投稿は強制しない。",
+        },
+        {
+          title: "情報は静かに届ける",
+          description: "通知は最小限。煽らない。淡々と伝える。",
+        },
+      ],
+    },
+    success: {
+      title: "SUCCESS",
+      subtitle: "このポータルが成功しているとき",
+      items: [
+        "住民の8割以上がプロフィールを登録している",
+        "Tea Timeのマッチングが毎週成立している",
+        "掲示板に週3件以上の投稿がある",
+        "廊下で「あ、プロフィール見ました」という会話が生まれている",
+        "紙の掲示板が不要になっている",
+      ],
+    },
+    callToAction: "JOIN OUR COMMUNITY",
   },
 
   notifications: {
