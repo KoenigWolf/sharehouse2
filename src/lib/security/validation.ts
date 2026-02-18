@@ -134,6 +134,27 @@ export function sanitizeEmail(email: string): string {
 }
 
 /**
+ * Mask email address for logging
+ * Shows only first char of local part and domain TLD
+ * e.g., "user@example.com" -> "u***@***.com"
+ */
+function maskEmail(email: string): string {
+  const atIndex = email.indexOf("@");
+  if (atIndex === -1) return "***";
+
+  const localPart = email.slice(0, atIndex);
+  const domainPart = email.slice(atIndex + 1);
+  const lastDotIndex = domainPart.lastIndexOf(".");
+
+  const maskedLocal = localPart.length > 0 ? localPart[0] + "***" : "***";
+  const maskedDomain = lastDotIndex > 0
+    ? "***" + domainPart.slice(lastDotIndex)
+    : "***";
+
+  return `${maskedLocal}@${maskedDomain}`;
+}
+
+/**
  * Mask sensitive data for logging
  * @param data - Data to mask
  * @param fields - Fields to mask
@@ -147,7 +168,12 @@ export function maskSensitiveData<T extends Record<string, unknown>>(
   for (const field of fields) {
     if (field in masked && masked[field]) {
       const value = String(masked[field]);
-      if (value.length > 4) {
+      const fieldName = String(field).toLowerCase();
+
+      // Special handling for email fields
+      if (fieldName === "email" || fieldName.includes("email")) {
+        masked[field] = maskEmail(value) as T[keyof T];
+      } else if (value.length > 4) {
         masked[field] = `${value.slice(0, 2)}***${value.slice(-2)}` as T[keyof T];
       } else {
         masked[field] = "***" as T[keyof T];
