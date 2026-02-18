@@ -22,6 +22,7 @@ import { GarbageAdminPanel } from "@/components/garbage-admin-panel";
 import type { WifiInfo } from "@/domain/wifi";
 import type { GarbageSchedule, GarbageDutyWithProfile } from "@/domain/garbage";
 import type { SharedInfo } from "@/domain/shared-info";
+import { staggerContainer, staggerItem } from "@/lib/animation";
 import { cn } from "@/lib/utils";
 
 interface InfoPageContentProps {
@@ -32,29 +33,6 @@ interface InfoPageContentProps {
   isAdmin: boolean;
   currentUserId: string;
 }
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.05,
-      delayChildren: 0.05,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 10 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.4,
-      ease: [0.22, 1, 0.36, 1] as const,
-    },
-  },
-};
 
 interface FloorData {
   floor: number;
@@ -140,7 +118,7 @@ const FloorSection = memo(function FloorSection({ floorData }: { floorData: Floo
   const commonPassword = hasCommonPassword ? uniquePasswords[0] : null;
 
   return (
-    <m.div variants={itemVariants} className="group">
+    <m.div variants={staggerItem} className="group">
       <div className="flex items-baseline gap-4 mb-4 border-b border-border/50 pb-2">
         <h3 className="text-xl font-semibold tracking-tight text-foreground font-sans">
           {isShared ? t("info.buildingName") : `${floorData.floor}F`}
@@ -151,7 +129,6 @@ const FloorSection = memo(function FloorSection({ floorData }: { floorData: Floo
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Wi-Fi Card */}
         {floorData.wifiInfos.length > 0 && (
           <div className="rounded-xl border border-border/60 bg-card p-4 sm:p-5 hover:border-border transition-colors">
             <div className="flex items-center gap-2 mb-4 text-muted-foreground">
@@ -169,7 +146,6 @@ const FloorSection = memo(function FloorSection({ floorData }: { floorData: Floo
                 ))}
               </div>
 
-              {/* Show common password if all SSIDs share the same one */}
               {hasCommonPassword && commonPassword && (
                 <div className="pt-3 border-t border-border/40 flex items-center justify-between">
                   <div>
@@ -182,7 +158,6 @@ const FloorSection = memo(function FloorSection({ floorData }: { floorData: Floo
                 </div>
               )}
 
-              {/* Show per-SSID passwords if they differ */}
               {!hasCommonPassword && passwords.length > 0 && (
                 <div className="pt-3 border-t border-border/40 space-y-2">
                   {floorData.wifiInfos.map((wifi) => wifi.password && (
@@ -199,7 +174,6 @@ const FloorSection = memo(function FloorSection({ floorData }: { floorData: Floo
                 </div>
               )}
 
-              {/* No password case */}
               {passwords.length === 0 && (
                 <div className="pt-3 border-t border-border/40">
                   <span className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-0.5">{t("info.password")}</span>
@@ -212,7 +186,6 @@ const FloorSection = memo(function FloorSection({ floorData }: { floorData: Floo
           </div>
         )}
 
-        {/* Mailbox Card */}
         {floorData.mailboxInfo && (
           <div className="rounded-xl border border-border/60 bg-card p-4 sm:p-5 hover:border-border transition-colors">
             <div className="flex items-center gap-2 mb-4 text-muted-foreground">
@@ -233,7 +206,6 @@ const FloorSection = memo(function FloorSection({ floorData }: { floorData: Floo
           </div>
         )}
 
-        {/* Address Card */}
         {floorData.addressInfo && (
           <div className="rounded-xl border border-border/60 bg-card p-4 sm:p-5 hover:border-border transition-colors md:col-span-2 lg:col-span-1">
             <div className="flex items-center gap-2 mb-4 text-muted-foreground">
@@ -257,7 +229,7 @@ FloorSection.displayName = "FloorSection";
 const CommonInfoCard = memo(function CommonInfoCard({ info }: { info: SharedInfo }) {
   return (
     <m.div
-      variants={itemVariants}
+      variants={staggerItem}
       className="p-4 sm:p-5 rounded-xl border border-border/60 bg-card hover:border-border transition-colors"
     >
       <div className="flex items-center gap-2 mb-3 text-muted-foreground">
@@ -356,12 +328,11 @@ export function InfoPageContent({
 
   return (
     <m.div
-      variants={containerVariants}
+      variants={staggerContainer}
       initial="hidden"
       animate="visible"
       className="space-y-8 sm:space-y-10"
     >
-      {/* Floors Section */}
       {floorDataList.length > 0 && (
         <section className="space-y-6 sm:space-y-10">
           <div className="flex items-center gap-2 text-muted-foreground mb-4 sm:mb-6">
@@ -379,7 +350,6 @@ export function InfoPageContent({
         </section>
       )}
 
-      {/* Garbage Section */}
       <section className="space-y-4 sm:space-y-6">
         <div className="flex items-center gap-2 text-muted-foreground border-b border-border/50 pb-2 mb-4 sm:mb-6">
           <Trash2 size={20} />
@@ -388,7 +358,7 @@ export function InfoPageContent({
           </h2>
         </div>
 
-        <m.div variants={itemVariants}>
+        <m.div variants={staggerItem}>
           <GarbageScheduleView
             schedule={schedule}
             duties={duties}
@@ -402,7 +372,6 @@ export function InfoPageContent({
         </m.div>
       </section>
 
-      {/* Common Layout */}
       {(commonInfos.length > 0 || wifiNote) && (
         <section className="space-y-4 sm:space-y-6">
           <div className="flex items-center gap-2 text-muted-foreground border-b border-border/50 pb-2 mb-4 sm:mb-6">
@@ -413,10 +382,9 @@ export function InfoPageContent({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Wi-Fi Note */}
             {wifiNote && (
               <m.div
-                variants={itemVariants}
+                variants={staggerItem}
                 className="md:col-span-2 p-4 sm:p-5 rounded-xl border border-blue-200/50 bg-blue-50/50 dark:bg-blue-950/20 dark:border-blue-900/50"
               >
                 <div className="flex gap-4">
@@ -441,7 +409,6 @@ export function InfoPageContent({
               </m.div>
             )}
 
-            {/* Other Common Infos */}
             {commonInfos.map((info) => (
               <CommonInfoCard key={info.id} info={info} />
             ))}

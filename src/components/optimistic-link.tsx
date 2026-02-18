@@ -40,7 +40,6 @@ export const OptimisticLink = memo(function OptimisticLink({
   const hrefString = typeof href === "string" ? href : href.pathname ?? "";
   const prefetch = usePrefetch(hrefString);
 
-  // Clean up timer on unmount
   useEffect(() => {
     return () => {
       if (pressTimerRef.current) {
@@ -64,11 +63,10 @@ export const OptimisticLink = memo(function OptimisticLink({
   }, [prefetch, showFeedback]);
 
   const handleTouchEnd = useCallback(() => {
-    // Clear any existing timer before starting a new one
     if (pressTimerRef.current) {
       clearTimeout(pressTimerRef.current);
     }
-    // Small delay before releasing press state for visual feedback
+    // Delay provides visual feedback before releasing press state
     pressTimerRef.current = setTimeout(() => {
       setIsPressed(false);
       pressTimerRef.current = null;
@@ -164,7 +162,6 @@ export const CardLink = memo(function CardLink({
   const hrefString = typeof href === "string" ? href : href.pathname ?? "";
   const prefetch = usePrefetch(hrefString);
 
-  // Clean up timer on unmount
   useEffect(() => {
     return () => {
       if (pressTimeoutRef.current) {
@@ -198,7 +195,6 @@ export const CardLink = memo(function CardLink({
   }, [prefetch]);
 
   const handleTouchEnd = useCallback(() => {
-    // Clear any existing timer before starting a new one
     if (pressTimeoutRef.current) {
       clearTimeout(pressTimeoutRef.current);
     }

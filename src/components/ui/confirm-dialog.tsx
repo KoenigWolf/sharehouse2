@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect, useCallback, useId } from "react";
+import { useId } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock";
+import { useEscapeKey } from "@/hooks/use-escape-key";
+import { EASE_MODAL } from "@/lib/animation";
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -19,8 +22,6 @@ interface ConfirmDialogProps {
   variant?: "default" | "destructive";
   children?: React.ReactNode;
 }
-
-const EASE = [0.23, 1, 0.32, 1] as const;
 
 export function ConfirmDialog({
   isOpen,
@@ -41,29 +42,8 @@ export function ConfirmDialog({
   const descId = `${id}-desc`;
   const isDestructive = variant === "destructive";
 
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !isLoading) onCancel();
-    },
-    [isLoading, onCancel],
-  );
-
-  useEffect(() => {
-    if (!isOpen) return;
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, handleKeyDown]);
-
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
+  useEscapeKey(isOpen && !isLoading, onCancel);
+  useBodyScrollLock(isOpen);
 
   return (
     <AnimatePresence>
@@ -84,7 +64,7 @@ export function ConfirmDialog({
             initial={{ opacity: 0, scale: 0.95, y: 8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 8 }}
-            transition={{ duration: 0.3, ease: EASE }}
+            transition={{ duration: 0.3, ease: EASE_MODAL }}
             className="w-full max-w-sm bg-card rounded-2xl premium-surface p-6 space-y-4"
             onClick={(e) => e.stopPropagation()}
           >

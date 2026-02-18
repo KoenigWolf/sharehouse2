@@ -1,9 +1,10 @@
 "use client";
 
 import { useMemo } from "react";
-import { m, type Variants } from "framer-motion";
+import { m } from "framer-motion";
 import { useI18n } from "@/hooks/use-i18n";
 import { getFloorFromRoom, isNewResident, FLOOR_COLORS } from "@/lib/utils/residents";
+import { staggerContainer, staggerItem } from "@/lib/animation";
 import type { Profile } from "@/domain/profile";
 import {
   UsersIcon,
@@ -23,23 +24,6 @@ import {
   TrashIcon,
   SparklesIcon,
 } from "lucide-react";
-
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08, delayChildren: 0.1 },
-  },
-};
-
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 12 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] },
-  },
-};
 
 interface ExtendedStats {
   events: {
@@ -267,13 +251,13 @@ export function ResidentStats({ profiles, teaTimeParticipants, extendedStats }: 
 
   return (
     <m.div
-      variants={containerVariants}
+      variants={staggerContainer}
       initial="hidden"
       animate="visible"
       className="space-y-6"
     >
       {/* HERO SECTION */}
-      <m.div variants={itemVariants} className="premium-surface rounded-2xl p-5 sm:p-6 lg:p-8">
+      <m.div variants={staggerItem} className="premium-surface rounded-2xl p-5 sm:p-6 lg:p-8">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
           <div className="col-span-2 lg:col-span-1">
             <p className="text-xs font-semibold tracking-wider uppercase text-muted-foreground">
@@ -303,7 +287,7 @@ export function ResidentStats({ profiles, teaTimeParticipants, extendedStats }: 
       </m.div>
 
       {/* CONTENT METRICS */}
-      <m.div variants={itemVariants} className="grid grid-cols-3 sm:grid-cols-6 gap-2.5 sm:gap-3">
+      <m.div variants={staggerItem} className="grid grid-cols-3 sm:grid-cols-6 gap-2.5 sm:gap-3">
         <QuickStat icon={<CalendarIcon size={16} />} value={extendedStats.events.total} label={t("stats.totalEvents")} detail={`${extendedStats.events.upcoming} ${t("stats.upcoming")}`} />
         <QuickStat icon={<SparklesIcon size={16} />} value={extendedStats.shareItems.total} label={t("stats.shareItems")} detail={`${extendedStats.shareItems.available} ${t("stats.available")}`} />
         <QuickStat icon={<ImageIcon size={16} />} value={extendedStats.roomPhotos.total} label={t("stats.photos")} detail={`${extendedStats.roomPhotos.uniqueUploaders} ${t("stats.people")}`} />
@@ -314,7 +298,7 @@ export function ResidentStats({ profiles, teaTimeParticipants, extendedStats }: 
 
       {/* OCCUPANCY & ENGAGEMENT */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
-        <m.div variants={itemVariants} className="lg:col-span-2">
+        <m.div variants={staggerItem} className="lg:col-span-2">
           <Card title={t("residents.floorOccupancy")} icon={<MapPinIcon size={16} />}>
             <div className="space-y-4">
               {(["5F", "4F", "3F", "2F"] as const).map((floor, i) => {
@@ -346,7 +330,7 @@ export function ResidentStats({ profiles, teaTimeParticipants, extendedStats }: 
           </Card>
         </m.div>
 
-        <m.div variants={itemVariants} className="lg:col-span-3">
+        <m.div variants={staggerItem} className="lg:col-span-3">
           <Card title={t("stats.engagementMetrics")} icon={<TrendingUpIcon size={16} />}>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <Tile value={extendedStats.events.avgAttendeesPerEvent} unit={t("stats.perEvent")} label={t("stats.avgAttendees")} />
@@ -362,13 +346,13 @@ export function ResidentStats({ profiles, teaTimeParticipants, extendedStats }: 
 
       {/* ACTIVITY & PROFILE QUALITY */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <m.div variants={itemVariants}>
+        <m.div variants={staggerItem}>
           <Card title={t("residents.statsActivity")} icon={<ActivityIcon size={16} />}>
             <BarList data={stats.activity} />
           </Card>
         </m.div>
 
-        <m.div variants={itemVariants}>
+        <m.div variants={staggerItem}>
           <Card title={t("stats.profileQuality")} icon={<CheckCircleIcon size={16} />}>
             <div className="grid grid-cols-2 gap-6">
               <BarList title={t("stats.completionDist")} data={stats.profile.completionDistribution} />
@@ -380,7 +364,7 @@ export function ResidentStats({ profiles, teaTimeParticipants, extendedStats }: 
 
       {/* PERSONALITY & PLATFORM */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <m.div variants={itemVariants}>
+        <m.div variants={staggerItem}>
           <Card title={t("stats.personalityInterests")} icon={<BrainIcon size={16} />}>
             <div className="grid grid-cols-3 gap-5">
               <BarList title="MBTI" data={stats.personality.mbti} compact />
@@ -390,7 +374,7 @@ export function ResidentStats({ profiles, teaTimeParticipants, extendedStats }: 
           </Card>
         </m.div>
 
-        <m.div variants={itemVariants}>
+        <m.div variants={staggerItem}>
           <Card title={t("stats.platformUsage")} icon={<GlobeIcon size={16} />}>
             <div className="grid grid-cols-3 gap-5">
               <BarList title={t("stats.snsUsage")} data={stats.profile.snsUsage} compact />
@@ -402,7 +386,7 @@ export function ResidentStats({ profiles, teaTimeParticipants, extendedStats }: 
       </div>
 
       {/* DEMOGRAPHICS */}
-      <m.div variants={itemVariants}>
+      <m.div variants={staggerItem}>
         <Card title={t("profile.sectionBasicInfo")} icon={<UsersIcon size={16} />}>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             <BarList title={t("profile.ageRange")} data={stats.demographics.age} />
@@ -415,7 +399,7 @@ export function ResidentStats({ profiles, teaTimeParticipants, extendedStats }: 
 
       {/* WORK & LIFESTYLE */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <m.div variants={itemVariants}>
+        <m.div variants={staggerItem}>
           <Card title={t("profile.sectionWork")} icon={<BriefcaseIcon size={16} />}>
             <div className="grid grid-cols-2 gap-6">
               <BarList title={t("profile.occupation")} data={stats.work.occupation} />
@@ -426,7 +410,7 @@ export function ResidentStats({ profiles, teaTimeParticipants, extendedStats }: 
           </Card>
         </m.div>
 
-        <m.div variants={itemVariants}>
+        <m.div variants={staggerItem}>
           <Card title={t("profile.sectionLifestyle")} icon={<ClockIcon size={16} />}>
             <div className="grid grid-cols-2 gap-6">
               <BarList title={t("profile.dailyRhythm")} data={stats.lifestyle.rhythm} />
@@ -439,7 +423,7 @@ export function ResidentStats({ profiles, teaTimeParticipants, extendedStats }: 
       </div>
 
       {/* COMMUNITY */}
-      <m.div variants={itemVariants}>
+      <m.div variants={staggerItem}>
         <Card title={t("profile.sectionCommunal")} icon={<HeartHandshakeIcon size={16} />}>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
             <BarList title={t("profile.socialStance")} data={stats.community.social} />

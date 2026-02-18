@@ -23,7 +23,5 @@ export function formatTimestamp(dateString: string, locale: string): string {
   return rtf.format(-diffDays, "day");
 }
 
-// Twitter-like spring physics for animations
-export const SPRING = { type: "spring", stiffness: 500, damping: 30, mass: 1 } as const;
-export const SPRING_SOFT = { type: "spring", stiffness: 300, damping: 25 } as const;
-export const EASE_OUT = [0.32, 0.72, 0, 1] as const;
+// Re-export animation configs from centralized location
+export { SPRING, SPRING_SOFT, EASE_OUT } from "@/lib/animation";

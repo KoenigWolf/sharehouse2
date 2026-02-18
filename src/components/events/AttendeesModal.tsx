@@ -1,15 +1,17 @@
 "use client";
 
-import { useCallback, useEffect, useId } from "react";
+import { useId } from "react";
 import Link from "next/link";
 import { m, AnimatePresence } from "framer-motion";
-import { Users, X } from "lucide-react";
+import { Users } from "lucide-react";
 import { Avatar, AvatarFallback, OptimizedAvatarImage } from "@/components/ui/avatar";
+import { CloseButton } from "@/components/ui/close-button";
 import { useI18n } from "@/hooks/use-i18n";
-import { getInitials } from "@/lib/utils";
+import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock";
+import { useEscapeKey } from "@/hooks/use-escape-key";
+import { EASE_MODAL } from "@/lib/animation";
+import { getInitials, getDisplayName } from "@/lib/utils";
 import type { EventWithDetails } from "@/domain/event";
-
-const MODAL_EASE = [0.23, 1, 0.32, 1] as const;
 
 interface AttendeesModalProps {
   event: EventWithDetails | null;
@@ -22,29 +24,8 @@ export function AttendeesModal({ event, onClose, isTeaser }: AttendeesModalProps
   const id = useId();
   const isOpen = event !== null;
 
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    },
-    [onClose],
-  );
-
-  useEffect(() => {
-    if (!isOpen) return;
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, handleKeyDown]);
-
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
+  useEscapeKey(isOpen, onClose);
+  useBodyScrollLock(isOpen);
 
   const attendees = event?.event_attendees ?? [];
 
@@ -66,27 +47,20 @@ export function AttendeesModal({ event, onClose, isTeaser }: AttendeesModalProps
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ duration: 0.25, ease: MODAL_EASE }}
+            transition={{ duration: 0.25, ease: EASE_MODAL }}
             className="fixed inset-x-4 top-1/2 -translate-y-1/2 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-sm rounded-2xl bg-background premium-surface flex flex-col max-h-[70vh]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-4 h-14 border-b border-border/50 shrink-0">
+            <div className="modal-header">
               <h2 id={`${id}-title`} className="text-sm font-bold text-foreground">
                 {t("events.attendeesTitle")}
               </h2>
-              <button
-                type="button"
-                onClick={onClose}
-                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted transition-colors"
-                aria-label={t("common.close")}
-              >
-                <X size={20} className="text-foreground" />
-              </button>
+              <CloseButton onClick={onClose} />
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-4">
+            <div className="modal-content">
               {attendees.length === 0 ? (
                 <div className="py-8 text-center">
                   <Users size={32} className="mx-auto text-muted-foreground/40 mb-3" />
@@ -107,8 +81,7 @@ export function AttendeesModal({ event, onClose, isTeaser }: AttendeesModalProps
                 >
                   {attendees.map((attendee) => {
                     const profile = attendee.profiles;
-                    const displayName =
-                      profile?.nickname ?? profile?.name ?? t("common.unregistered");
+                    const displayName = getDisplayName(profile, t("common.unregistered"));
                     const avatarUrl = profile?.avatar_url ?? null;
 
                     return (

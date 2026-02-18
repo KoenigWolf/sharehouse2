@@ -31,31 +31,3 @@ export function usePrefetch(href: string) {
 
   return prefetch;
 }
-
-/**
- * Prefetch multiple routes at once
- *
- * Usage:
- * const { prefetchAll } = usePrefetchRoutes(["/residents", "/events", "/bulletin"]);
- */
-export function usePrefetchRoutes(routes: string[]) {
-  const router = useRouter();
-  const prefetched = useRef<Set<string>>(new Set());
-  const routesRef = useRef(routes);
-
-  // Update routes ref when routes change
-  useEffect(() => {
-    routesRef.current = routes;
-  }, [routes]);
-
-  const prefetchAll = useCallback(() => {
-    for (const route of routesRef.current) {
-      if (!prefetched.current.has(route) && !route.startsWith("http")) {
-        router.prefetch(route);
-        prefetched.current.add(route);
-      }
-    }
-  }, [router]);
-
-  return { prefetchAll };
-}

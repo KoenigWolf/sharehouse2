@@ -130,7 +130,6 @@
 
   /* Tokens override */
   --radius-card: 1rem;
-  --radius-container: 1.25rem;
   --radius-button: 9999px;
   --radius-input: 0.75rem;
   --radius-badge: 0.375rem;
@@ -358,7 +357,6 @@
 
   /* Tokens override */
   --radius-card: 1.25rem;
-  --radius-container: 1.5rem;
   --radius-button: 2rem;
   --radius-input: 0.75rem;
   --radius-badge: 1rem;
@@ -600,11 +598,9 @@
 
   /* Tokens Override: Geometric Sharpness */
   --radius-card: 0.5rem;
-  --radius-container: 0.5rem;
   --radius-button: 0.375rem;
   --radius-input: 0.375rem;
   --radius-badge: 0px;
-  --radius-modal: 0.75rem;
 }
 
 /*

@@ -20,7 +20,9 @@ import Link from "next/link";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
 import { getFloorFromRoom, isNewResident, FLOOR_COLORS, type FloorId } from "@/lib/utils/residents";
+import { staggerContainer, staggerItem } from "@/lib/animation";
 import { VibeUpdateModal } from "@/components/vibe-update-modal";
+import { FloatingActionButton } from "@/components/ui/floating-action-button";
 
 interface ResidentsGridProps {
   profiles: Profile[];
@@ -30,29 +32,6 @@ interface ResidentsGridProps {
 type ViewMode = "grid" | "floor" | "list";
 
 const SEARCH_VISIBLE_THRESHOLD = 30;
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.03,
-      delayChildren: 0.05,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 8 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.3,
-      ease: [0.25, 0.46, 0.45, 0.94] as const,
-    },
-  },
-};
 
 export function ResidentsGrid({
   profiles,
@@ -151,26 +130,18 @@ export function ResidentsGrid({
 
   return (
     <m.div
-      variants={containerVariants}
+      variants={staggerContainer}
       initial="hidden"
       animate="visible"
       className="space-y-3"
     >
-      {/* FAB for Vibe Update */}
       {currentUserId && (
         <>
-          <m.button
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.4, type: "spring", stiffness: 400, damping: 25 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+          <FloatingActionButton
             onClick={() => setIsVibeModalOpen(true)}
-            className="fixed bottom-24 sm:bottom-8 right-5 sm:right-8 z-40 h-14 w-14 rounded-full bg-foreground text-background shadow-lg shadow-foreground/20 flex items-center justify-center"
-            aria-label={t("bulletin.updateVibe")}
-          >
-            <MessageCircle size={22} />
-          </m.button>
+            icon={MessageCircle}
+            label={t("bulletin.updateVibe")}
+          />
 
           <VibeUpdateModal
             isOpen={isVibeModalOpen}
@@ -185,9 +156,7 @@ export function ResidentsGrid({
         </>
       )}
 
-      {/* Controls Section - Minimal */}
-      <m.section variants={itemVariants} className="space-y-2">
-        {/* View mode toggle */}
+      <m.section variants={staggerItem} className="space-y-2">
         <div className="flex items-center justify-end gap-3">
           <div className="flex gap-0.5 p-0.5 bg-muted/50 rounded-lg">
             {viewModeOptions.map((option) => {
@@ -213,7 +182,6 @@ export function ResidentsGrid({
           </div>
         </div>
 
-        {/* Search (only for large lists) */}
         {totalCount >= SEARCH_VISIBLE_THRESHOLD && (
           <div className="relative">
             <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
@@ -237,7 +205,6 @@ export function ResidentsGrid({
         )}
       </m.section>
 
-      {/* Content */}
       <AnimatePresence mode="wait">
         {filteredAndSortedProfiles.length === 0 ? (
           <m.div
@@ -291,7 +258,6 @@ export function ResidentsGrid({
   );
 }
 
-/* Grid View - Compact horizontal cards */
 function GridView({
   profiles,
   currentUserId,
@@ -328,7 +294,6 @@ function GridView({
   );
 }
 
-/* Floor View */
 function FloorView({
   groupedByFloor,
   currentUserId,
@@ -368,7 +333,6 @@ function FloorView({
             }}
             className="space-y-4"
           >
-            {/* Floor header */}
             <div className="flex items-center gap-4 pb-3 border-b border-border/40">
               <div
                 className={`w-12 h-12 flex items-center justify-center rounded-xl ${colors.bg} ${colors.border} border`}
@@ -395,7 +359,6 @@ function FloorView({
               </div>
             </div>
 
-            {/* Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5">
               {profiles.map((profile, index) => (
                 <m.div
@@ -422,7 +385,6 @@ function FloorView({
   );
 }
 
-/* List View */
 function ListView({
   profiles,
   currentUserId,
@@ -460,7 +422,6 @@ function ListView({
   );
 }
 
-/* List Item */
 function ResidentListItem({
   profile,
   isCurrentUser,
@@ -493,7 +454,6 @@ function ResidentListItem({
           }
         `}
       >
-        {/* Avatar */}
         <div className="relative shrink-0">
           <Avatar className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl border border-border/30 shadow-sm">
             <OptimizedAvatarImage
@@ -512,7 +472,6 @@ function ResidentListItem({
           )}
         </div>
 
-        {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <h3 className="text-sm sm:text-base text-foreground font-semibold truncate">
@@ -535,7 +494,6 @@ function ResidentListItem({
             )}
           </div>
 
-          {/* Meta */}
           <div className="flex items-center gap-2 mt-1">
             {profile.occupation && (
               <span className="text-[11px] text-muted-foreground truncate max-w-[120px]">
@@ -548,7 +506,6 @@ function ResidentListItem({
           </div>
         </div>
 
-        {/* Arrow */}
         <div className="text-muted-foreground/40 group-hover:text-foreground transition-colors shrink-0">
           <ChevronRight size={18} strokeWidth={1.5} />
         </div>

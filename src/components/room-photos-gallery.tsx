@@ -13,6 +13,8 @@ import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 import { BulkUploadProgress } from "@/components/bulk-upload-progress";
 import { PhotoCard } from "@/components/gallery";
 import { Spinner } from "@/components/ui/spinner";
+import { FeedbackMessage } from "@/components/ui/feedback-message";
+import { FloatingActionButton } from "@/components/ui/floating-action-button";
 import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
 import { FILE_UPLOAD } from "@/lib/constants/config";
 import type { PhotoWithProfile } from "@/domain/room-photo";
@@ -54,41 +56,6 @@ const SectionHeader = memo(function SectionHeader({
 
 SectionHeader.displayName = "SectionHeader";
 
-interface FeedbackMessageProps {
-  type: "success" | "error";
-  message: string;
-}
-
-const FeedbackMessage = memo(function FeedbackMessage({
-  type,
-  message,
-}: FeedbackMessageProps) {
-  const isError = type === "error";
-
-  return (
-    <m.div
-      role={isError ? "alert" : "status"}
-      aria-live="polite"
-      initial={{ opacity: 0, y: -8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
-      transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-      className={`mb-5 py-3 px-4 rounded-lg ${isError
-        ? "bg-error-bg/50 border-l-2 border-error-border"
-        : "bg-success-bg/50 border-l-2 border-success-border"
-        }`}
-    >
-      <p className={`text-sm ${isError ? "text-error" : "text-success"}`}>
-        {message}
-      </p>
-    </m.div>
-  );
-});
-
-FeedbackMessage.displayName = "FeedbackMessage";
-
-// ShowMoreButton removed as we use Infinite Scroll now (kept implicit or removed entirely?)
-// I'll remove it since I replaced usages.
 
 interface GalleryFooterProps {
   maxBulkUpload: number;
@@ -236,11 +203,16 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
             />
           )}
           {!isUploading && feedback && (
-            <FeedbackMessage
+            <m.div
               key={feedback.type}
-              type={feedback.type}
-              message={feedback.message}
-            />
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+              className="mb-5"
+            >
+              <FeedbackMessage type={feedback.type} message={feedback.message} />
+            </m.div>
           )}
         </AnimatePresence>
 
@@ -301,19 +273,11 @@ export function RoomPhotosGallery({ photos: initialPhotos }: RoomPhotosGalleryPr
 
       {/* FAB - Floating Action Button */}
       {canUpload && (
-        <m.button
-          type="button"
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: "spring", stiffness: 400, damping: 25, delay: 0.2 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+        <FloatingActionButton
           onClick={handleFabClick}
-          className="fixed bottom-24 sm:bottom-8 right-5 sm:right-8 z-40 w-14 h-14 rounded-full bg-foreground text-background shadow-lg shadow-foreground/20 flex items-center justify-center"
-          aria-label={t("roomPhotos.uploadButton")}
-        >
-          <ImagePlus size={22} />
-        </m.button>
+          icon={ImagePlus}
+          label={t("roomPhotos.uploadButton")}
+        />
       )}
     </>
   );

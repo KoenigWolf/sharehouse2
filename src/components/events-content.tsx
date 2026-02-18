@@ -4,14 +4,16 @@ import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { m, AnimatePresence } from "framer-motion";
+import { m } from "framer-motion";
 import { MapPin, Clock, Plus, CalendarDays, Users, Sparkles, Pencil, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
 import { createEvent, updateEvent, toggleAttendance, deleteEvent, uploadEventCover } from "@/lib/events/actions";
 import { prepareImageForUpload } from "@/lib/utils/image-compression";
 import { IMAGE } from "@/lib/constants/config";
-import { getInitials } from "@/lib/utils";
+import { getInitials, getDisplayName } from "@/lib/utils";
+import { AnimatedFeedbackMessage } from "@/components/ui/feedback-message";
+import { FloatingActionButton } from "@/components/ui/floating-action-button";
 import { logError } from "@/lib/errors";
 import { getImageAlt } from "@/lib/utils/accessibility";
 import type { EventWithDetails } from "@/domain/event";
@@ -197,7 +199,6 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
         animate="visible"
         className="space-y-8"
       >
-        {/* Calendar Strip */}
         <m.section variants={itemVariants} className="premium-surface rounded-2xl overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-border/30">
             <div className="flex items-center gap-2">
@@ -276,26 +277,12 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
           </div>
         </m.section>
 
-        {/* Feedback */}
-        <AnimatePresence>
-          {feedback && (
-            <m.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.25 }}
-              className={`text-sm font-medium px-5 py-4 rounded-xl border-l-4 ${
-                feedback.type === "success"
-                  ? "bg-success-bg/50 border-success text-success"
-                  : "bg-error-bg/50 border-error text-error"
-              }`}
-            >
-              {feedback.message}
-            </m.div>
-          )}
-        </AnimatePresence>
+        <AnimatedFeedbackMessage
+          show={feedback !== null}
+          type={feedback?.type ?? "error"}
+          message={feedback?.message ?? ""}
+        />
 
-        {/* Empty State or Event List */}
         {filteredEvents.length === 0 ? (
           <m.div variants={itemVariants} className="py-20 flex flex-col items-center text-center">
             <div className="w-20 h-20 mb-8 rounded-2xl bg-muted/80 flex items-center justify-center">
@@ -370,21 +357,12 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
         )}
       </m.div>
 
-      {/* FAB */}
       {!isTeaser && (
-        <m.button
-          type="button"
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: "spring", stiffness: 400, damping: 25, delay: 0.2 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+        <FloatingActionButton
           onClick={() => { setEditingEvent(null); setIsComposeOpen(true); setFeedback(null); }}
-          className="fixed bottom-24 sm:bottom-8 right-5 sm:right-8 z-40 w-14 h-14 rounded-full bg-foreground text-background shadow-lg shadow-foreground/20 flex items-center justify-center"
-          aria-label={t("events.create")}
-        >
-          <CalendarDays size={22} />
-        </m.button>
+          icon={CalendarDays}
+          label={t("events.create")}
+        />
       )}
 
       <AttendeesModal
@@ -424,7 +402,7 @@ function EventCard({
   onShowAttendees,
   t,
 }: EventCardProps) {
-  const creatorName = event.profiles?.nickname ?? event.profiles?.name ?? t("common.formerResident");
+  const creatorName = getDisplayName(event.profiles, t("common.formerResident"));
   const isMine = event.user_id === currentUserId;
   const isAttending = event.event_attendees.some((a) => a.user_id === currentUserId);
   const attendeeCount = event.event_attendees.length;
@@ -477,7 +455,6 @@ function EventCard({
       )}
 
       <div className="p-5 sm:p-6 space-y-4">
-        {/* Title row */}
         <div className="flex items-start justify-between gap-4">
           {isTeaser ? (
             <span className="text-lg font-bold text-foreground leading-snug blur-[2.5px] select-none">
@@ -513,7 +490,6 @@ function EventCard({
           )}
         </div>
 
-        {/* Meta info */}
         <div className="flex flex-wrap gap-2">
           {event.event_time && (
             <span className={`inline-flex items-center gap-2 px-3 py-1.5 bg-muted/60 rounded-lg text-sm font-medium text-foreground/80 ${isTeaser ? "blur-[2px] select-none" : ""}`}>
@@ -529,14 +505,12 @@ function EventCard({
           )}
         </div>
 
-        {/* Description */}
         {event.description && (
           <p className={`text-sm text-muted-foreground leading-relaxed line-clamp-2 ${isTeaser ? "blur-[3px] select-none" : ""}`}>
             {event.description}
           </p>
         )}
 
-        {/* Footer */}
         <div className="flex items-center justify-between pt-4 border-t border-border/40">
           <div className="flex items-center gap-3">
             <Avatar className="w-8 h-8 border border-border/50">

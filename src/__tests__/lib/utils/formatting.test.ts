@@ -1,12 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   getInitials,
+  getDisplayName,
   formatDate,
-  formatDateShort,
   calculateResidenceDuration,
-  truncateText,
-  parseInterests,
-  formatInterests,
 } from "@/lib/utils/formatting";
 import { createTranslator } from "@/lib/i18n";
 
@@ -58,6 +55,36 @@ describe("getInitials", () => {
   });
 });
 
+describe("getDisplayName", () => {
+  it("returns nickname when available", () => {
+    expect(getDisplayName({ nickname: "Taro", name: "Yamada Taro" })).toBe("Taro");
+  });
+
+  it("returns name when nickname is null", () => {
+    expect(getDisplayName({ nickname: null, name: "Yamada Taro" })).toBe("Yamada Taro");
+  });
+
+  it("returns name when nickname is undefined", () => {
+    expect(getDisplayName({ name: "Yamada Taro" })).toBe("Yamada Taro");
+  });
+
+  it("returns fallback when both are null", () => {
+    expect(getDisplayName({ nickname: null, name: null }, "Unknown")).toBe("Unknown");
+  });
+
+  it("returns fallback when profile is null", () => {
+    expect(getDisplayName(null, "Unknown")).toBe("Unknown");
+  });
+
+  it("returns fallback when profile is undefined", () => {
+    expect(getDisplayName(undefined, "Unknown")).toBe("Unknown");
+  });
+
+  it("returns empty string as default fallback", () => {
+    expect(getDisplayName(null)).toBe("");
+  });
+});
+
 describe("formatDate", () => {
   it("formats valid date string", () => {
     const result = formatDate("2024-01-15");
@@ -91,19 +118,6 @@ describe("formatDate", () => {
   it("handles ISO datetime strings", () => {
     const result = formatDate("2024-01-15T10:30:00Z");
     expect(result).not.toBeNull();
-  });
-});
-
-describe("formatDateShort", () => {
-  it("formats date in short format", () => {
-    const result = formatDateShort("2024-01-15");
-    expect(result).toContain("1");
-    expect(result).toContain("15");
-    expect(result).not.toContain("2024");
-  });
-
-  it("returns empty string for invalid date", () => {
-    expect(formatDateShort("invalid")).toBe("");
   });
 });
 
@@ -147,89 +161,5 @@ describe("calculateResidenceDuration", () => {
 
   it("returns null for invalid date", () => {
     expect(calculateResidenceDuration("invalid", t)).toBeNull();
-  });
-});
-
-describe("truncateText", () => {
-  it("returns original text when shorter than maxLength", () => {
-    expect(truncateText("Hello", 10)).toBe("Hello");
-  });
-
-  it("returns original text when equal to maxLength", () => {
-    expect(truncateText("Hello", 5)).toBe("Hello");
-  });
-
-  it("truncates text and adds ellipsis when longer", () => {
-    expect(truncateText("Hello World", 5)).toBe("Hello...");
-  });
-
-  it("handles empty string", () => {
-    expect(truncateText("", 5)).toBe("");
-  });
-
-  it("handles maxLength of 0", () => {
-    expect(truncateText("Hello", 0)).toBe("...");
-  });
-});
-
-describe("parseInterests", () => {
-  it("parses comma-separated interests", () => {
-    expect(parseInterests("料理, 映画, ランニング")).toEqual([
-      "料理",
-      "映画",
-      "ランニング",
-    ]);
-  });
-
-  it("parses Japanese comma-separated interests", () => {
-    expect(parseInterests("料理、映画、ランニング")).toEqual([
-      "料理",
-      "映画",
-      "ランニング",
-    ]);
-  });
-
-  it("handles mixed comma types", () => {
-    expect(parseInterests("料理, 映画、ランニング")).toEqual([
-      "料理",
-      "映画",
-      "ランニング",
-    ]);
-  });
-
-  it("trims whitespace from interests", () => {
-    expect(parseInterests("  料理  ,  映画  ")).toEqual(["料理", "映画"]);
-  });
-
-  it("filters out empty interests", () => {
-    expect(parseInterests("料理,,映画")).toEqual(["料理", "映画"]);
-  });
-
-  it("returns empty array for empty string", () => {
-    expect(parseInterests("")).toEqual([]);
-  });
-
-  it("handles single interest", () => {
-    expect(parseInterests("料理")).toEqual(["料理"]);
-  });
-});
-
-describe("formatInterests", () => {
-  it("formats interests array to comma-separated string", () => {
-    expect(formatInterests(["料理", "映画", "ランニング"])).toBe(
-      "料理, 映画, ランニング"
-    );
-  });
-
-  it("filters out falsy values", () => {
-    expect(formatInterests(["料理", "", "映画"])).toBe("料理, 映画");
-  });
-
-  it("returns empty string for empty array", () => {
-    expect(formatInterests([])).toBe("");
-  });
-
-  it("handles single interest", () => {
-    expect(formatInterests(["料理"])).toBe("料理");
   });
 });

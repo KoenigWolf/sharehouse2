@@ -79,26 +79,5 @@ export function generateCalendarDates(): CalendarDate[] {
   return dates;
 }
 
-// Animation variants with natural easing
-export const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.06,
-      delayChildren: 0.1,
-    },
-  },
-};
-
-export const itemVariants = {
-  hidden: { opacity: 0, y: 12 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.4,
-      ease: [0.25, 0.46, 0.45, 0.94] as const,
-    },
-  },
-};
+// Re-export animation variants from centralized location
+export { staggerContainer as containerVariants, staggerItem as itemVariants } from "@/lib/animation";

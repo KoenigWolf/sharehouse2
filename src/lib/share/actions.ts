@@ -20,9 +20,6 @@ type FileValidationResult =
   | { success: true; uint8Array: Uint8Array; fileName: string; contentType: string }
   | { success: false; error: string };
 
-/**
- * Extract storage path from an image URL
- */
 function extractStoragePath(imageUrl: string): string | null {
   try {
     const url = new URL(imageUrl);
@@ -37,9 +34,6 @@ function extractStoragePath(imageUrl: string): string | null {
   }
 }
 
-/**
- * Delete an image from storage
- */
 async function deleteStorageImage(
   supabase: SupabaseClient,
   imageUrl: string
@@ -50,9 +44,6 @@ async function deleteStorageImage(
   }
 }
 
-/**
- * Validate file from FormData and read its contents
- */
 async function validateAndReadFile(
   formData: FormData,
   userId: string,
@@ -92,9 +83,6 @@ async function validateAndReadFile(
   };
 }
 
-/**
- * Upload image to storage and persist URL to database
- */
 async function uploadAndPersistImage(
   supabase: SupabaseClient,
   fileName: string,
@@ -172,7 +160,6 @@ export async function createShareItem(
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { error: t("errors.unauthorized") };
 
-    // Rate limit check
     const rateLimitResult = RateLimiters.share(user.id);
     if (!rateLimitResult.success) {
       return { error: formatRateLimitError(rateLimitResult.retryAfter, t) };
@@ -322,9 +309,6 @@ export async function updateShareItem(
   }
 }
 
-/**
- * Upload share item image
- */
 export async function uploadShareItemImage(
   itemId: string,
   formData: FormData

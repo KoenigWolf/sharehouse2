@@ -21,7 +21,6 @@ export const en: Translations = {
     confirm: "Confirm",
     close: "Close",
     search: "Search",
-    filter: "Filter",
     sort: "Sort",
     you: "You",
     unregistered: "Unregistered",
@@ -35,11 +34,6 @@ export const en: Translations = {
 
   header: {
     brand: "SHARE HOUSE",
-  },
-
-  home: {
-    heroTitle: "Welcome Home",
-    heroSubtitle: "Discover the amazing people who make this place special.",
   },
 
   nav: {
@@ -76,8 +70,6 @@ export const en: Translations = {
     email: "Email",
     password: "Password",
     name: "Name",
-    testAccount: "Test account",
-    clickToFill: "Click to autofill",
     residentPortal: "Residents only portal",
     emailRequired: "Please enter your email address",
     passwordRequired: "Please enter your password",
@@ -136,17 +128,7 @@ export const en: Translations = {
     interestsHint: "Split by commas to show as tags",
     mbti: "MBTI",
     mbtiPlaceholder: "Select your type",
-    photoHintDesktop: "Click the preview on the left to change the photo",
-    photoHintMobile: "Click the preview above to change the photo",
     photoFormat: "(JPG/PNG/WebP/HEIC supported)",
-    completion: "Completion",
-    completionItems: {
-      photo: "Photo",
-      name: "Name",
-      roomNumber: "Room number",
-      bio: "Bio",
-      interests: "Interests",
-    },
     saveChanges: "Save changes",
     saved: "Saved",
     nameUnset: "Name not set",
@@ -160,7 +142,6 @@ export const en: Translations = {
     editTitle: "Edit profile",
     uploadingPhoto: "Uploading...",
     changePhoto: "Change photo",
-    completionLabel: "Completion",
     teaTimeStatus: "Tea Time",
     interestsSeparatorHint: "Use commas or dots to display tags",
     sectionBasicInfo: "Basic Information",
@@ -584,15 +565,6 @@ export const en: Translations = {
   info: {
     title: "Share House Info",
     subtitle: "Essential information for daily life",
-    wifiTab: "Wi-Fi",
-    garbageTab: "Garbage",
-    tabWifi: "Wi-Fi",
-    tabGarbage: "Garbage",
-    tabBuilding: "Building",
-    wifiNote:
-      "SSIDs are hidden, so please manually search from your device. Please avoid setting up additional Wi-Fi routers in your room as it may cause interference.",
-    securityType: "Security: WPA2",
-    wifiPassword: "Wi-Fi Password",
     buildingName: "Tanaka Building",
     sharedFacilities: "Shared Facilities",
     floorInfo: "Floor Info",
@@ -604,12 +576,6 @@ export const en: Translations = {
     noPassword: "No Password",
     mailbox: "Mailbox",
     address: "Address",
-  },
-
-  sharedInfo: {
-    mailbox: "Mailbox",
-    address: "Address",
-    note: "*",
   },
 
   notifications: {

@@ -20,7 +20,6 @@ export const ja = {
     confirm: "確認",
     close: "閉じる",
     search: "検索",
-    filter: "Filter",
     sort: "並び替え",
     you: "あなた",
     unregistered: "未登録",
@@ -34,11 +33,6 @@ export const ja = {
 
   header: {
     brand: "SHARE HOUSE",
-  },
-
-  home: {
-    heroTitle: "おかえりなさい",
-    heroSubtitle: "この場所を特別にする、素敵な住人たち。",
   },
 
   nav: {
@@ -75,8 +69,6 @@ export const ja = {
     email: "メールアドレス",
     password: "パスワード",
     name: "名前",
-    testAccount: "テストアカウント",
-    clickToFill: "クリックで自動入力",
     residentPortal: "住民専用ポータル",
     emailRequired: "メールアドレスを入力してください",
     passwordRequired: "パスワードを入力してください",
@@ -135,17 +127,7 @@ export const ja = {
     interestsHint: "カンマで区切って入力（共通の趣味がある住民を見つけやすくなります）",
     mbti: "MBTI",
     mbtiPlaceholder: "選択してください",
-    photoHintDesktop: "写真は左のプレビューをクリックして変更できます",
-    photoHintMobile: "写真は上のプレビューをクリックして変更できます",
     photoFormat: "（JPG/PNG/WebP/HEIC対応）",
-    completion: "プロフィール完成度",
-    completionItems: {
-      photo: "写真",
-      name: "名前",
-      roomNumber: "部屋番号",
-      bio: "自己紹介",
-      interests: "趣味・関心",
-    },
     saveChanges: "変更を保存",
     saved: "保存しました",
     nameUnset: "名前未設定",
@@ -159,7 +141,6 @@ export const ja = {
     editTitle: "Profile 編集",
     uploadingPhoto: "Upload 中...",
     changePhoto: "写真を変更",
-    completionLabel: "完成度",
     teaTimeStatus: "ティータイム",
     interestsSeparatorHint: "「、」「・」「,」で区切ると、タグとして表示されます",
     sectionBasicInfo: "基本情報",
@@ -584,15 +565,6 @@ export const ja = {
   info: {
     title: "シェアハウス情報",
     subtitle: "生活に必要な情報をまとめています",
-    wifiTab: "Wi-Fi",
-    garbageTab: "ゴミ出し",
-    tabWifi: "Wi-Fi",
-    tabGarbage: "ゴミ出し",
-    tabBuilding: "施設情報",
-    wifiNote:
-      "SSIDは隠蔽されているため、各自のデバイスから手動で検索してください。自室に別途Wi-Fiルーターを設置すると混線するため、極力設置は避けてください。",
-    securityType: "セキュリティ: WPA2",
-    wifiPassword: "Wi-Fi パスワード",
     buildingName: "田中ビル",
     sharedFacilities: "共用設備",
     floorInfo: "フロア情報",
@@ -604,12 +576,6 @@ export const ja = {
     noPassword: "パスワードなし",
     mailbox: "郵便受け",
     address: "住所",
-  },
-
-  sharedInfo: {
-    mailbox: "郵便受け",
-    address: "住所",
-    note: "※",
   },
 
   notifications: {

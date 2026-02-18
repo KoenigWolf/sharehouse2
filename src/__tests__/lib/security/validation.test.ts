@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import {
   isValidUUID,
   isMockId,
@@ -6,7 +6,6 @@ import {
   stripHtml,
   sanitizeForStorage,
   sanitizeEmail,
-  hasSqlInjectionPattern,
   timingSafeEqual,
   validateCronSecret,
 } from "@/lib/security/validation";
@@ -150,54 +149,6 @@ describe("Security Validation", () => {
     it("truncates long emails to 255 characters", () => {
       const longEmail = "a".repeat(300) + "@example.com";
       expect(sanitizeEmail(longEmail).length).toBe(255);
-    });
-  });
-
-  describe("hasSqlInjectionPattern", () => {
-    it("detects OR injection", () => {
-      expect(hasSqlInjectionPattern("1' OR '1'='1")).toBe(true);
-      expect(hasSqlInjectionPattern("admin' OR 1=1--")).toBe(true);
-    });
-
-    it("detects UNION injection", () => {
-      expect(hasSqlInjectionPattern("' UNION SELECT * FROM users--")).toBe(true);
-    });
-
-    it("detects DROP injection", () => {
-      expect(hasSqlInjectionPattern("'; DROP TABLE users;--")).toBe(true);
-    });
-
-    it("detects DELETE injection", () => {
-      expect(hasSqlInjectionPattern("'; DELETE FROM users;--")).toBe(true);
-    });
-
-    it("detects INSERT injection", () => {
-      expect(hasSqlInjectionPattern("'; INSERT INTO users VALUES('hacked');--")).toBe(true);
-    });
-
-    it("detects UPDATE injection", () => {
-      expect(hasSqlInjectionPattern("'; UPDATE users SET admin=1;--")).toBe(true);
-    });
-
-    it("detects comment-based injection", () => {
-      expect(hasSqlInjectionPattern("admin'--")).toBe(true);
-      expect(hasSqlInjectionPattern("admin'/*")).toBe(true);
-    });
-
-    it("allows normal text", () => {
-      expect(hasSqlInjectionPattern("Hello World")).toBe(false);
-      expect(hasSqlInjectionPattern("My name is John")).toBe(false);
-      expect(hasSqlInjectionPattern("I like coffee and tea")).toBe(false);
-    });
-
-    it("handles empty strings", () => {
-      expect(hasSqlInjectionPattern("")).toBe(false);
-    });
-
-    it("is case insensitive", () => {
-      expect(hasSqlInjectionPattern("' or '1'='1")).toBe(true);
-      expect(hasSqlInjectionPattern("' OR '1'='1")).toBe(true);
-      expect(hasSqlInjectionPattern("' Or '1'='1")).toBe(true);
     });
   });
 

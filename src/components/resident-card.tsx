@@ -76,9 +76,7 @@ export const ResidentCard = memo(function ResidentCard({
           ${isCurrentUser ? "ring-2 ring-brand-500 ring-offset-2 ring-offset-background" : ""}
         `}
       >
-        {/* Photo or Fallback with SharedAvatar for smooth transitions */}
         <SharedAvatar id={profile.id} className="absolute inset-0">
-          {/* Shimmer loading state */}
           <AnimatePresence>
             {!isImageLoaded && optimizedSrc && (
               <m.div
@@ -125,19 +123,15 @@ export const ResidentCard = memo(function ResidentCard({
           )}
         </SharedAvatar>
 
-        {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
-        {/* Top badges */}
         <div className="absolute top-2.5 left-2.5 right-2.5 flex items-start justify-between">
-          {/* Room number */}
           {profile.room_number && (
             <span className="px-2 py-0.5 text-[11px] font-bold text-white bg-black/60 rounded-md shadow-sm">
               {profile.room_number}
             </span>
           )}
 
-          {/* Status badges */}
           <div className="flex items-center gap-1.5">
             {isCurrentUser && (
               <span className="px-2 py-0.5 text-[10px] font-bold text-white bg-brand-500 rounded-md uppercase tracking-wide">
@@ -153,14 +147,11 @@ export const ResidentCard = memo(function ResidentCard({
           </div>
         </div>
 
-        {/* Bottom info */}
         <div className="absolute bottom-0 left-0 right-0 p-3">
-          {/* Name */}
           <h3 className="text-base font-bold text-white leading-tight truncate drop-shadow-sm">
             {displayName}
           </h3>
 
-          {/* Meta row */}
           <div className="flex items-center gap-2 mt-1">
             {profile.mbti && (
               <span className="text-[11px] font-semibold text-white/90">
@@ -177,7 +168,6 @@ export const ResidentCard = memo(function ResidentCard({
             )}
           </div>
 
-          {/* Interests */}
           {profile.interests && profile.interests.length > 0 && (
             <div className="flex items-center gap-1.5 mt-2 overflow-hidden">
               {profile.interests.slice(0, 2).map((interest, i) => (

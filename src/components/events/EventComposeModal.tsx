@@ -1,15 +1,18 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect, useId } from "react";
+import { useState, useCallback, useId } from "react";
 import Image from "next/image";
 import { m, AnimatePresence } from "framer-motion";
-import { MapPin, Calendar, X, Pencil, ImagePlus } from "lucide-react";
+import { MapPin, Calendar, Pencil, ImagePlus, X } from "lucide-react";
+import { CloseButton } from "@/components/ui/close-button";
 import { TimeSelect } from "@/components/ui/time-select";
 import { useI18n } from "@/hooks/use-i18n";
+import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock";
+import { useEscapeKey } from "@/hooks/use-escape-key";
+import { useImagePreview } from "@/hooks/use-image-preview";
+import { EASE_MODAL } from "@/lib/animation";
 import { FILE_UPLOAD, EVENTS } from "@/lib/constants/config";
 import type { EventWithDetails } from "@/domain/event";
-
-const MODAL_EASE = [0.23, 1, 0.32, 1] as const;
 
 export interface EventFormData {
   title: string;
@@ -37,7 +40,6 @@ export function EventComposeModal({
 }: EventComposeModalProps) {
   const t = useI18n();
   const id = useId();
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isEditMode = editingEvent !== null && editingEvent !== undefined;
 
@@ -46,8 +48,15 @@ export function EventComposeModal({
   const [eventTime, setEventTime] = useState(editingEvent?.event_time ?? "");
   const [location, setLocation] = useState(editingEvent?.location ?? "");
   const [description, setDescription] = useState(editingEvent?.description ?? "");
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  const {
+    imageFile,
+    imagePreview,
+    fileInputRef,
+    handleImageSelect,
+    handleRemoveImage,
+    clearPreview,
+  } = useImagePreview();
 
   const handleClose = useCallback(() => {
     setTitle("");
@@ -55,39 +64,9 @@ export function EventComposeModal({
     setEventTime("");
     setLocation("");
     setDescription("");
-    setImageFile(null);
-    if (imagePreview) {
-      URL.revokeObjectURL(imagePreview);
-    }
-    setImagePreview(null);
+    clearPreview();
     onClose();
-  }, [onClose, imagePreview]);
-
-  const handleImageSelect = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-
-      if (imagePreview) {
-        URL.revokeObjectURL(imagePreview);
-      }
-      setImageFile(file);
-      const objectUrl = URL.createObjectURL(file);
-      setImagePreview(objectUrl);
-    },
-    [imagePreview],
-  );
-
-  const handleRemoveImage = useCallback(() => {
-    setImageFile(null);
-    if (imagePreview) {
-      URL.revokeObjectURL(imagePreview);
-    }
-    setImagePreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  }, [imagePreview]);
+  }, [onClose, clearPreview]);
 
   const handleSubmit = async () => {
     if (!title.trim() || !eventDate) return;
@@ -101,29 +80,8 @@ export function EventComposeModal({
     });
   };
 
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !isSubmitting) handleClose();
-    },
-    [isSubmitting, handleClose],
-  );
-
-  useEffect(() => {
-    if (!isOpen) return;
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, handleKeyDown]);
-
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
+  useEscapeKey(isOpen && !isSubmitting, handleClose);
+  useBodyScrollLock(isOpen);
 
   const canSubmit = title.trim().length > 0 && eventDate.length > 0 && !isSubmitting;
 
@@ -135,7 +93,7 @@ export function EventComposeModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50 bg-background sm:bg-black/50 sm:backdrop-blur-sm"
+          className="modal-overlay"
           onClick={isSubmitting ? undefined : handleClose}
         >
           <m.div
@@ -145,21 +103,13 @@ export function EventComposeModal({
             initial={{ opacity: 0, y: "100%" }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: "100%" }}
-            transition={{ duration: 0.3, ease: MODAL_EASE }}
+            transition={{ duration: 0.3, ease: EASE_MODAL }}
             className="fixed inset-0 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-lg sm:rounded-2xl bg-background sm:premium-surface flex flex-col sm:max-h-[85vh]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-4 h-14 border-b border-border/50 shrink-0">
-              <button
-                type="button"
-                onClick={handleClose}
-                disabled={isSubmitting}
-                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted transition-colors"
-                aria-label={t("common.close")}
-              >
-                <X size={20} className="text-foreground" />
-              </button>
+            <div className="modal-header">
+              <CloseButton onClick={handleClose} disabled={isSubmitting} />
 
               <h2 id={`${id}-title`} className="text-sm font-bold text-foreground">
                 {isEditMode ? t("events.edit") : t("events.create")}
@@ -184,7 +134,7 @@ export function EventComposeModal({
             </div>
 
             {/* Form area */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+            <div className="modal-content-responsive">
               <div className="flex items-center gap-3 mb-6">
                 <div
                   className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isEditMode ? "bg-amber-500/10" : "bg-brand-500/10"}`}
@@ -203,7 +153,7 @@ export function EventComposeModal({
               <div className="space-y-5">
                 {/* Title */}
                 <div className="space-y-2">
-                  <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
+                  <label className="form-label">
                     {t("events.titleLabel")} <span className="text-error">*</span>
                   </label>
                   <input
@@ -213,14 +163,14 @@ export function EventComposeModal({
                     placeholder={t("events.titlePlaceholder")}
                     maxLength={EVENTS.maxTitleLength}
                     autoFocus
-                    className="w-full h-13 px-5 bg-muted/50 border border-border/50 rounded-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all duration-200"
+                    className="input-modal"
                   />
                 </div>
 
                 {/* Date & Time */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
+                    <label className="form-label">
                       {t("events.dateLabel")} <span className="text-error">*</span>
                     </label>
                     <input
@@ -234,11 +184,11 @@ export function EventComposeModal({
                         const day = String(d.getDate()).padStart(2, "0");
                         return `${year}-${month}-${day}`;
                       })()}
-                      className="w-full h-13 px-5 bg-muted/50 border border-border/50 rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all duration-200"
+                      className="input-modal"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
+                    <label className="form-label">
                       {t("events.timeLabel")}
                     </label>
                     <TimeSelect value={eventTime} onChange={setEventTime} />
@@ -247,7 +197,7 @@ export function EventComposeModal({
 
                 {/* Location */}
                 <div className="space-y-2">
-                  <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
+                  <label className="form-label">
                     {t("events.locationLabel")}
                   </label>
                   <div className="relative">
@@ -260,14 +210,14 @@ export function EventComposeModal({
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
                       placeholder={t("events.locationPlaceholder")}
-                      className="w-full h-13 pl-12 pr-5 bg-muted/50 border border-border/50 rounded-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all duration-200"
+                      className="input-modal pl-12"
                     />
                   </div>
                 </div>
 
                 {/* Description */}
                 <div className="space-y-2">
-                  <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
+                  <label className="form-label">
                     {t("events.descriptionLabel")}
                   </label>
                   <textarea
@@ -276,14 +226,14 @@ export function EventComposeModal({
                     placeholder={t("events.descriptionPlaceholder")}
                     maxLength={EVENTS.maxDescriptionLength}
                     rows={3}
-                    className="w-full px-5 py-4 bg-muted/50 border border-border/50 rounded-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all duration-200 resize-none leading-relaxed"
+                    className="textarea-modal"
                   />
                 </div>
 
                 {/* Cover Image - Only for new events */}
                 {!isEditMode && (
                   <div className="space-y-2">
-                    <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
+                    <label className="form-label">
                       {t("events.coverImageLabel")}
                     </label>
                     <input
@@ -318,9 +268,9 @@ export function EventComposeModal({
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="w-full aspect-[2/1] rounded-xl border-2 border-dashed border-border/60 hover:border-foreground/30 bg-muted/30 hover:bg-muted/50 flex flex-col items-center justify-center gap-2 transition-all duration-200 group"
+                        className="upload-area group aspect-[2/1]"
                       >
-                        <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center group-hover:bg-muted/80 transition-colors">
+                        <div className="upload-area-icon">
                           <ImagePlus size={24} className="text-muted-foreground" />
                         </div>
                         <span className="text-sm font-medium text-muted-foreground">

@@ -141,7 +141,7 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
       >
         <DropdownMenuItem asChild className="rounded-xl h-11 px-3 focus:bg-muted cursor-pointer">
           <Link href={profileHref} className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+            <div className="icon-box">
               <User size={16} strokeWidth={1.5} className="text-muted-foreground" />
             </div>
             <span className="font-medium text-sm text-foreground">{t("nav.myPage")}</span>
@@ -149,7 +149,7 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
         </DropdownMenuItem>
         <DropdownMenuItem asChild className="rounded-xl h-11 px-3 focus:bg-muted cursor-pointer">
           <Link href="/settings" className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+            <div className="icon-box">
               <Settings size={16} strokeWidth={1.5} className="text-muted-foreground" />
             </div>
             <span className="font-medium text-sm text-foreground">{t("nav.settings")}</span>
@@ -158,7 +158,7 @@ const UserAvatarMenu = memo(function UserAvatarMenu() {
         {isAdmin && (
           <DropdownMenuItem asChild className="rounded-xl h-11 px-3 focus:bg-muted cursor-pointer">
             <Link href="/admin" className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+              <div className="icon-box">
                 <Shield size={16} strokeWidth={1.5} className="text-muted-foreground" />
               </div>
               <span className="font-medium text-sm text-foreground">{t("nav.admin")}</span>
@@ -196,9 +196,7 @@ export const Header = memo(function Header() {
       role="banner"
     >
       <div className="container mx-auto px-4 sm:px-8 h-14 flex items-center max-w-6xl">
-        {/* Left: Navigation text links */}
         <div className="flex-1 flex items-center gap-6">
-          {/* Brand - Clean text style */}
           <Link
             href="/residents"
             className="flex items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 group"
@@ -209,10 +207,8 @@ export const Header = memo(function Header() {
             </span>
           </Link>
 
-          {/* Separator */}
           <div className="hidden sm:block w-px h-4 bg-border" />
 
-          {/* Current section indicator */}
           <span className="hidden sm:block text-sm font-bold text-foreground tracking-wide">
             {(() => {
               // Profile edit page (more specific, check first)
@@ -251,7 +247,6 @@ export const Header = memo(function Header() {
           </span>
         </div>
 
-        {/* Center: Navigation - Desktop */}
         <nav
           aria-label={t("a11y.mainNavigation")}
           className="hidden lg:flex items-center gap-1"
@@ -265,7 +260,6 @@ export const Header = memo(function Header() {
           ))}
         </nav>
 
-        {/* Right: User Menu */}
         <div className="flex-1 flex items-center justify-end">
           <UserAvatarMenu />
         </div>

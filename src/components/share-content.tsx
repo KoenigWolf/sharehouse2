@@ -1,22 +1,26 @@
 "use client";
 
-import { useState, useCallback, useEffect, useId, useRef } from "react";
+import { useState, useCallback, useEffect, useId } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { m, AnimatePresence } from "framer-motion";
-import { Gift, Plus, X, Clock, Trash2, Check, ImagePlus } from "lucide-react";
+import { Gift, X, Clock, Trash2, Check, ImagePlus } from "lucide-react";
+import { CloseButton } from "@/components/ui/close-button";
+import { EmptyState } from "@/components/ui/empty-state";
+import { AnimatedFeedbackMessage } from "@/components/ui/feedback-message";
+import { FloatingActionButton } from "@/components/ui/floating-action-button";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
 import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock";
+import { useImagePreview } from "@/hooks/use-image-preview";
 import { createShareItem, claimShareItem, deleteShareItem, updateShareItem, uploadShareItemImage } from "@/lib/share/actions";
 import { prepareImageForUpload } from "@/lib/utils/image-compression";
 import { SHARE_ITEMS, FILE_UPLOAD, IMAGE } from "@/lib/constants/config";
-import { getInitials } from "@/lib/utils";
+import { getInitials, getDisplayName } from "@/lib/utils";
 import { logError } from "@/lib/errors";
+import { EASE_MODAL, staggerContainer } from "@/lib/animation";
 import { getImageAlt } from "@/lib/utils/accessibility";
 import type { ShareItemWithProfile } from "@/domain/share-item";
-
-const EASE = [0.23, 1, 0.32, 1] as const;
 
 interface ShareFormData {
   title: string;
@@ -37,46 +41,30 @@ interface ShareComposeModalProps {
 function ShareComposeModalInner({ isOpen, onClose, onSubmit, isSubmitting, editingItem }: ShareComposeModalProps) {
   const t = useI18n();
   const id = useId();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const isEditMode = editingItem !== null && editingItem !== undefined;
 
   const [title, setTitle] = useState(editingItem?.title ?? "");
   const [description, setDescription] = useState(editingItem?.description ?? "");
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(editingItem?.image_url ?? null);
-  const [existingImageUrl] = useState<string | null>(editingItem?.image_url ?? null);
   const [imageUploadError, setImageUploadError] = useState<string | null>(null);
 
+  const {
+    imageFile,
+    imagePreview,
+    fileInputRef,
+    handleImageSelect: baseHandleImageSelect,
+    handleRemoveImage,
+    clearPreview,
+  } = useImagePreview({ initialUrl: editingItem?.image_url ?? null });
+
   const handleClose = useCallback(() => {
-    if (imagePreview && imagePreview !== existingImageUrl) {
-      URL.revokeObjectURL(imagePreview);
-    }
+    clearPreview();
     onClose();
-  }, [onClose, imagePreview, existingImageUrl]);
+  }, [onClose, clearPreview]);
 
   const handleImageSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (imagePreview && imagePreview !== existingImageUrl) {
-      URL.revokeObjectURL(imagePreview);
-    }
-    setImageFile(file);
     setImageUploadError(null);
-    const objectUrl = URL.createObjectURL(file);
-    setImagePreview(objectUrl);
-  }, [imagePreview, existingImageUrl]);
-
-  const handleRemoveImage = useCallback(() => {
-    setImageFile(null);
-    if (imagePreview && imagePreview !== existingImageUrl) {
-      URL.revokeObjectURL(imagePreview);
-    }
-    setImagePreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  }, [imagePreview, existingImageUrl]);
+    baseHandleImageSelect(e);
+  }, [baseHandleImageSelect]);
 
   const handleSubmit = async () => {
     if (!title.trim()) return;
@@ -86,9 +74,7 @@ function ShareComposeModalInner({ isOpen, onClose, onSubmit, isSubmitting, editi
       setImageUploadError(result.error);
       return;
     }
-    if (imagePreview && imagePreview !== existingImageUrl) {
-      URL.revokeObjectURL(imagePreview);
-    }
+    clearPreview();
   };
 
   const handleKeyDown = useCallback(
@@ -116,7 +102,7 @@ function ShareComposeModalInner({ isOpen, onClose, onSubmit, isSubmitting, editi
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50 bg-background sm:bg-black/50 sm:backdrop-blur-sm"
+          className="modal-overlay"
           onClick={isSubmitting ? undefined : handleClose}
         >
           <m.div
@@ -126,35 +112,24 @@ function ShareComposeModalInner({ isOpen, onClose, onSubmit, isSubmitting, editi
             initial={{ opacity: 0, y: "100%" }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: "100%" }}
-            transition={{ duration: 0.3, ease: EASE }}
+            transition={{ duration: 0.3, ease: EASE_MODAL }}
             className="fixed inset-0 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-lg sm:rounded-2xl bg-background sm:premium-surface flex flex-col sm:max-h-[80vh]"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
-            <div className="flex items-center justify-between px-4 h-14 border-b border-border/50 shrink-0">
-              <button
-                type="button"
-                onClick={handleClose}
-                disabled={isSubmitting}
-                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted transition-colors"
-                aria-label={t("common.close")}
-              >
-                <X size={20} className="text-foreground" />
-              </button>
+            <div className="modal-header">
+              <CloseButton onClick={handleClose} disabled={isSubmitting} />
 
               <h2 id={`${id}-title`} className="text-sm font-bold text-foreground">
                 {isEditMode ? t("share.editItem") : t("share.createItem")}
               </h2>
 
-              {/* Spacer for layout balance */}
               <div className="w-10" />
             </div>
 
-            {/* Form area */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+            <div className="modal-content-responsive">
               <div className="space-y-5">
                 <div className="space-y-2">
-                  <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
+                  <label className="form-label">
                     {t("share.titleLabel")} <span className="text-error">*</span>
                   </label>
                   <input
@@ -164,12 +139,12 @@ function ShareComposeModalInner({ isOpen, onClose, onSubmit, isSubmitting, editi
                     placeholder={t("share.titlePlaceholder")}
                     maxLength={SHARE_ITEMS.maxTitleLength}
                     autoFocus
-                    className="w-full h-13 px-5 bg-muted/50 border border-border/50 rounded-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all duration-200"
+                    className="input-modal"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
+                  <label className="form-label">
                     {t("share.descriptionLabel")}
                   </label>
                   <textarea
@@ -178,13 +153,12 @@ function ShareComposeModalInner({ isOpen, onClose, onSubmit, isSubmitting, editi
                     placeholder={t("share.descriptionPlaceholder")}
                     maxLength={SHARE_ITEMS.maxDescriptionLength}
                     rows={3}
-                    className="w-full px-5 py-4 bg-muted/50 border border-border/50 rounded-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background transition-all duration-200 resize-none leading-relaxed"
+                    className="textarea-modal"
                   />
                 </div>
 
-                {/* Image upload */}
                 <div className="space-y-2">
-                  <label className="block text-xs font-semibold text-muted-foreground tracking-wide ml-1">
+                  <label className="form-label">
                     {t("share.imageLabel")}
                   </label>
                   <input
@@ -220,9 +194,9 @@ function ShareComposeModalInner({ isOpen, onClose, onSubmit, isSubmitting, editi
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="w-full aspect-[16/10] rounded-xl border-2 border-dashed border-border/60 hover:border-foreground/30 bg-muted/30 hover:bg-muted/50 flex flex-col items-center justify-center gap-2 transition-all duration-200 group"
+                      className="upload-area group aspect-[16/10]"
                     >
-                      <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center group-hover:bg-muted/80 transition-colors">
+                      <div className="upload-area-icon">
                         <ImagePlus size={24} className="text-muted-foreground" />
                       </div>
                       <span className="text-sm font-medium text-muted-foreground">
@@ -234,7 +208,6 @@ function ShareComposeModalInner({ isOpen, onClose, onSubmit, isSubmitting, editi
                     </button>
                   )}
 
-                  {/* Image upload error */}
                   {imageUploadError && (
                     <p className="text-sm text-error mt-2">
                       {imageUploadError}
@@ -244,7 +217,6 @@ function ShareComposeModalInner({ isOpen, onClose, onSubmit, isSubmitting, editi
               </div>
             </div>
 
-            {/* Footer */}
             <div className="px-4 py-4 border-t border-border/50 shrink-0 flex justify-end">
               <m.button
                 type="button"
@@ -299,24 +271,6 @@ function formatTimeRemaining(expiresAt: string): string {
   const diffDays = Math.floor(diffHours / 24);
   return `${diffDays}d`;
 }
-
-// Animation config
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.05, delayChildren: 0.1 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 12 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] as const },
-  },
-};
 
 export function ShareContent({ items, currentUserId, isTeaser = false }: ShareContentProps) {
   const t = useI18n();
@@ -418,7 +372,6 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
 
   return (
     <>
-      {/* Compose Modal */}
       <ShareComposeModal
         isOpen={isComposeOpen}
         onClose={handleCloseCompose}
@@ -428,63 +381,38 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
       />
 
       <m.div
-        variants={containerVariants}
+        variants={staggerContainer}
         initial="hidden"
         animate="visible"
         className="space-y-6"
       >
-        {/* Feedback */}
-        <AnimatePresence>
-          {feedback && (
-            <m.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.25 }}
-              className={`text-sm font-medium px-5 py-4 rounded-xl border-l-4 ${
-                feedback.type === "success"
-                  ? "bg-success-bg/50 border-success text-success"
-                  : "bg-error-bg/50 border-error text-error"
-              }`}
-            >
-              {feedback.message}
-            </m.div>
-          )}
-        </AnimatePresence>
+        <AnimatedFeedbackMessage
+          show={feedback !== null}
+          type={feedback?.type ?? "error"}
+          message={feedback?.message ?? ""}
+        />
 
-        {/* Empty state */}
         {items.length === 0 ? (
-          <m.div
-            variants={itemVariants}
-            className="py-20 flex flex-col items-center text-center"
-          >
-            <div className="w-20 h-20 mb-8 rounded-2xl bg-muted/80 flex items-center justify-center">
-              <Gift size={32} className="text-muted-foreground/40" />
-            </div>
-            <h3 className="text-xl font-bold text-foreground mb-2">
-              {t("share.empty")}
-            </h3>
-            <p className="text-sm text-muted-foreground mb-8 max-w-sm leading-relaxed">
-              {t("share.emptyHint")}
-            </p>
-            {!isTeaser && (
-              <m.button
-                type="button"
-                onClick={() => { setIsComposeOpen(true); setFeedback(null); }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="h-12 px-7 rounded-full bg-foreground text-background text-sm font-semibold tracking-wide transition-all duration-200 shadow-lg inline-flex items-center gap-2.5"
-              >
-                <Plus size={18} strokeWidth={2.5} />
-                {t("share.post")}
-              </m.button>
-            )}
-          </m.div>
+          <EmptyState
+            icon={Gift}
+            title={t("share.empty")}
+            description={t("share.emptyHint")}
+            action={
+              isTeaser
+                ? undefined
+                : {
+                    label: t("share.post"),
+                    onClick: () => {
+                      setIsComposeOpen(true);
+                      setFeedback(null);
+                    },
+                  }
+            }
+          />
         ) : (
-        /* Item grid - 2 columns on desktop */
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
           {items.map((item, index) => {
-            const displayName = item.profiles?.nickname ?? item.profiles?.name ?? t("common.formerResident");
+            const displayName = getDisplayName(item.profiles, t("common.formerResident"));
             const isMine = item.user_id === currentUserId;
             const isClaimed = item.status === "claimed";
             const timeLeft = formatTimeRemaining(item.expires_at);
@@ -507,7 +435,6 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                   isClaimed ? "opacity-60" : ""
                 } ${isEditable ? "cursor-pointer" : ""}`}
               >
-                {/* Header */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <Avatar className="w-9 h-9 rounded-lg border border-border/50">
@@ -536,7 +463,6 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                     </div>
                   </div>
 
-                  {/* Time remaining badge */}
                   {timeLeft && !isClaimed && (
                     <span className="flex items-center gap-1.5 text-xs font-semibold text-brand-500 bg-brand-500/10 px-2.5 py-1 rounded-lg">
                       <Clock size={12} />
@@ -545,7 +471,6 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                   )}
                 </div>
 
-                {/* Item image */}
                 {item.image_url && (
                   <div className="relative aspect-[16/10] rounded-xl overflow-hidden bg-muted mb-4 -mx-1">
                     <Image
@@ -563,7 +488,6 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                   </div>
                 )}
 
-                {/* Content */}
                 <div className="flex-1 space-y-2 mb-5">
                   <h4 className={`text-base font-bold ${
                     isTeaser ? "blur-[2.5px] select-none" : isClaimed ? "text-muted-foreground line-through" : "text-foreground"
@@ -579,7 +503,6 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
                   )}
                 </div>
 
-                {/* Footer */}
                 <div className="flex items-center justify-between pt-4 border-t border-border/40">
                   {isClaimed ? (
                     <span className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground bg-muted px-3 py-1.5 rounded-lg">
@@ -628,21 +551,12 @@ export function ShareContent({ items, currentUserId, isTeaser = false }: ShareCo
       )}
       </m.div>
 
-      {/* FAB - Floating Action Button */}
       {!isTeaser && (
-        <m.button
-          type="button"
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: "spring", stiffness: 400, damping: 25, delay: 0.2 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+        <FloatingActionButton
           onClick={() => { setIsComposeOpen(true); setFeedback(null); }}
-          className="fixed bottom-24 sm:bottom-8 right-5 sm:right-8 z-40 w-14 h-14 rounded-full bg-foreground text-background shadow-lg shadow-foreground/20 flex items-center justify-center"
-          aria-label={t("share.post")}
-        >
-          <Gift size={22} />
-        </m.button>
+          icon={Gift}
+          label={t("share.post")}
+        />
       )}
     </>
   );

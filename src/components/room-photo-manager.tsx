@@ -164,7 +164,7 @@ export function RoomPhotoManager({
                 alt={photo.caption || t("roomPhotos.photoAlt")}
                 fill
                 sizes="(max-width: 640px) 50vw, 25vw"
-                className="object-cover transition-transform duration-700 group-hover:scale-110"
+                className="object-cover img-hover-scale"
               />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
               <Button

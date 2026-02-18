@@ -7,7 +7,7 @@ import { Trash2, Pencil, Check } from "lucide-react";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { useI18n } from "@/hooks/use-i18n";
 import { BULLETIN } from "@/lib/constants/config";
-import { getInitials } from "@/lib/utils";
+import { getInitials, getDisplayName } from "@/lib/utils";
 import { formatTimestamp, SPRING, EASE_OUT } from "./utils";
 import type { BulletinWithProfile } from "@/domain/bulletin";
 
@@ -35,31 +35,26 @@ export function BulletinItem({
   const t = useI18n();
   const shouldReduceMotion = useReducedMotion();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const displayName = bulletin.profiles?.nickname ?? bulletin.profiles?.name ?? t("common.formerResident");
+  const displayName = getDisplayName(bulletin.profiles, t("common.formerResident"));
   const isMine = bulletin.user_id === currentUserId;
   const profileHref = bulletin.profiles ? `/profile/${bulletin.user_id}` : undefined;
 
-  // Edit state
   const [isEditing, setIsEditing] = useState(false);
   const [editMessage, setEditMessage] = useState(bulletin.message);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Check if message was edited
   const isEdited = bulletin.updated_at && bulletin.updated_at !== bulletin.created_at;
 
-  // Start editing
   const handleStartEdit = useCallback(() => {
     setEditMessage(bulletin.message);
     setIsEditing(true);
-  }, [bulletin.message]);
+  }, [bulletin.message, setEditMessage]);
 
-  // Cancel editing
   const handleCancelEdit = useCallback(() => {
     setEditMessage(bulletin.message);
     setIsEditing(false);
-  }, [bulletin.message]);
+  }, [bulletin.message, setEditMessage]);
 
-  // Save edit
   const handleSaveEdit = useCallback(async () => {
     const trimmed = editMessage.trim();
     if (!trimmed || trimmed === bulletin.message) {
@@ -76,7 +71,6 @@ export function BulletinItem({
     }
   }, [editMessage, bulletin.id, bulletin.message, onEdit]);
 
-  // Auto-focus textarea when editing starts
   useEffect(() => {
     if (isEditing && textareaRef.current) {
       textareaRef.current.focus();
@@ -84,7 +78,6 @@ export function BulletinItem({
     }
   }, [isEditing]);
 
-  // Handle keyboard shortcuts
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === "Escape") {
       handleCancelEdit();
@@ -108,7 +101,6 @@ export function BulletinItem({
       className={`py-4 px-1 transition-colors group border-b border-border/40 last:border-b-0 ${isEditing ? "bg-muted/20" : "hover:bg-muted/30"}`}
     >
       <div className="flex gap-3">
-        {/* Avatar */}
         {profileHref ? (
           <Link href={profileHref} className="shrink-0">
             <m.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -145,9 +137,7 @@ export function BulletinItem({
           </Avatar>
         )}
 
-        {/* Content */}
         <div className="flex-1 min-w-0">
-          {/* Header row */}
           <div className="flex items-center gap-1.5 mb-0.5">
             <div className="flex items-baseline gap-1.5 min-w-0 flex-1">
               {profileHref ? (
@@ -170,10 +160,8 @@ export function BulletinItem({
               </span>
             </div>
 
-            {/* Action buttons */}
             {isMine && !bulletin.id.startsWith("temp-") && !isEditing && (
               <div className="flex items-center gap-0.5 shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                {/* Edit button */}
                 <m.button
                   type="button"
                   onClick={handleStartEdit}
@@ -187,7 +175,6 @@ export function BulletinItem({
                   <Pencil size={14} />
                 </m.button>
 
-                {/* Delete button */}
                 <m.button
                   type="button"
                   onClick={() => onDelete(bulletin.id)}
@@ -204,7 +191,6 @@ export function BulletinItem({
             )}
           </div>
 
-          {/* Message or Edit form */}
           <AnimatePresence mode="wait">
             {isEditing ? (
               <m.div
@@ -215,7 +201,6 @@ export function BulletinItem({
                 transition={{ duration: 0.2, ease: EASE_OUT }}
                 className="space-y-3"
               >
-                {/* Textarea */}
                 <div className="relative">
                   <textarea
                     ref={textareaRef}
@@ -234,9 +219,7 @@ export function BulletinItem({
                   />
                 </div>
 
-                {/* Footer: Character count + Actions */}
                 <div className="flex items-center justify-between">
-                  {/* Character counter with circular progress */}
                   <div className="flex items-center gap-2">
                     <div className="relative w-6 h-6">
                       <svg className="w-6 h-6 -rotate-90" viewBox="0 0 24 24">
@@ -270,7 +253,6 @@ export function BulletinItem({
                     </span>
                   </div>
 
-                  {/* Action buttons */}
                   <div className="flex items-center gap-2">
                     <m.button
                       type="button"

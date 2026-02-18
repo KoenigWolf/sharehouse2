@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, memo, useCallback, useEffect } from "react";
+import { useState, memo, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { m, motion, AnimatePresence } from "framer-motion";
@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useI18n } from "@/hooks/use-i18n";
 import { useUser } from "@/hooks/use-user";
+import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -132,7 +133,6 @@ export const MobileNav = memo(function MobileNav() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [prevPathname, setPrevPathname] = useState(pathname);
 
-  // Auto-close drawer on route change
   if (pathname !== prevPathname) {
     setPrevPathname(pathname);
     setIsDrawerOpen(false);
@@ -152,19 +152,8 @@ export const MobileNav = memo(function MobileNav() {
     window.location.href = "/login";
   }, [closeDrawer]);
 
-  // Lock body scroll when drawer is open
-  useEffect(() => {
-    if (isDrawerOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isDrawerOpen]);
+  useBodyScrollLock(isDrawerOpen);
 
-  // Check if any item in More drawer is active
   const isMoreActive =
     !MOBILE_BOTTOM_NAV_ITEMS.some((item) => isNavItemActive(pathname, item)) &&
     [...PRIMARY_NAV_ITEMS, ...SECONDARY_NAV_ITEMS, SETTINGS_NAV_ITEM, profileItem].some(
@@ -173,7 +162,6 @@ export const MobileNav = memo(function MobileNav() {
 
   return (
     <>
-      {/* Bottom Navigation Bar */}
       <nav
         className="fixed bottom-0 left-0 right-0 z-50 sm:hidden bg-card/95 backdrop-blur-md border-t border-border/50 pb-safe shadow-lg"
         aria-label={t("a11y.mainNavigation")}
@@ -187,7 +175,6 @@ export const MobileNav = memo(function MobileNav() {
             />
           ))}
 
-          {/* More Button */}
           <button
             type="button"
             onClick={() => setIsDrawerOpen(true)}
@@ -224,11 +211,9 @@ export const MobileNav = memo(function MobileNav() {
         </div>
       </nav>
 
-      {/* More Menu Drawer */}
       <AnimatePresence>
         {isDrawerOpen && (
           <>
-            {/* Backdrop */}
             <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -239,7 +224,6 @@ export const MobileNav = memo(function MobileNav() {
               aria-hidden="true"
             />
 
-            {/* Drawer */}
             <m.div
               role="dialog"
               aria-modal="true"
@@ -250,12 +234,9 @@ export const MobileNav = memo(function MobileNav() {
               transition={{ type: "tween", duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
               className="fixed inset-x-0 bottom-0 z-[70] bg-card rounded-t-3xl shadow-2xl sm:hidden max-h-[85vh] overflow-hidden will-change-transform"
             >
-              {/* Decorative elements */}
               <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
 
-              {/* Content */}
               <div className="relative overflow-y-auto max-h-[85vh] pb-safe">
-                {/* Header */}
                 <div className="sticky top-0 z-10 bg-card/95 backdrop-blur-sm px-5 pt-4 pb-3 border-b border-border/30">
                   <div className="flex items-center justify-between">
                     <h2 className="text-lg font-bold text-foreground">
@@ -274,7 +255,6 @@ export const MobileNav = memo(function MobileNav() {
                 </div>
 
                 <div className="px-4 py-4 space-y-5 pb-8">
-                  {/* Main Navigation */}
                   <section>
                     <h3 className="px-4 mb-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">
                       {t("mobileNav.sectionMain")}
@@ -291,7 +271,6 @@ export const MobileNav = memo(function MobileNav() {
                     </div>
                   </section>
 
-                  {/* Utilities */}
                   <section>
                     <h3 className="px-4 mb-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">
                       {t("mobileNav.sectionUtilities")}
@@ -308,7 +287,6 @@ export const MobileNav = memo(function MobileNav() {
                     </div>
                   </section>
 
-                  {/* Account */}
                   <section>
                     <h3 className="px-4 mb-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">
                       {t("mobileNav.sectionAccount")}
@@ -353,7 +331,6 @@ export const MobileNav = memo(function MobileNav() {
                   </section>
                 </div>
 
-                {/* Footer */}
                 <div className="px-5 py-4 border-t border-border/30 bg-secondary/30">
                   <p className="text-center text-xs text-muted-foreground">
                     {t("mobileNav.brand")}

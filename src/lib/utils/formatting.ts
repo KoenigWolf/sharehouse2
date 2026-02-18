@@ -5,6 +5,25 @@
 
 import type { Translator } from "@/lib/i18n";
 
+interface ProfileLike {
+  nickname?: string | null;
+  name?: string | null;
+}
+
+/**
+ * Get display name from a profile, preferring nickname over name
+ * @param profile - Profile object with name/nickname fields
+ * @param fallback - Fallback string if both are empty
+ * @returns Display name string
+ */
+export function getDisplayName(
+  profile: ProfileLike | null | undefined,
+  fallback = ""
+): string {
+  if (!profile) return fallback;
+  return profile.nickname ?? profile.name ?? fallback;
+}
+
 /**
  * Get initials from a name string
  * @param name - Full name string
@@ -29,6 +48,7 @@ export function getInitials(name: string): string {
  * Format date to locale-aware string
  * @param dateString - ISO date string or null
  * @param options - Intl.DateTimeFormat options
+ * @param locale - Locale string (default: "ja-JP")
  * @returns Formatted date string or null
  */
 export function formatDate(
@@ -38,31 +58,20 @@ export function formatDate(
     month: "short",
     day: "numeric",
   },
-  locale = "ja-JP"
+  locale: string | undefined = "ja-JP"
 ): string | null {
   if (!dateString) return null;
 
   try {
-    const date = new Date(dateString);
+    // Date-only strings (YYYY-MM-DD) are parsed as UTC by default
+    // Append time component to force local-time interpretation
+    const normalized =
+      /^\d{4}-\d{2}-\d{2}$/.test(dateString) ? `${dateString}T00:00:00` : dateString;
+    const date = new Date(normalized);
     if (isNaN(date.getTime())) return null;
     return date.toLocaleDateString(locale, options);
   } catch {
     return null;
-  }
-}
-
-/**
- * Format date to short format (month/day only)
- * @param dateString - ISO date string
- * @returns Short formatted date string
- */
-export function formatDateShort(dateString: string, locale = "ja-JP"): string {
-  try {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return "";
-    return date.toLocaleDateString(locale, { month: "short", day: "numeric" });
-  } catch {
-    return "";
   }
 }
 
@@ -102,38 +111,4 @@ export function calculateResidenceDuration(
   } catch {
     return null;
   }
-}
-
-/**
- * Truncate text with ellipsis
- * @param text - Text to truncate
- * @param maxLength - Maximum length before truncation
- * @returns Truncated text with ellipsis if needed
- */
-export function truncateText(text: string, maxLength: number): string {
-  if (!text || text.length <= maxLength) return text;
-  return `${text.slice(0, maxLength)}...`;
-}
-
-/**
- * Parse comma-separated interests string into array
- * @param interestsString - Comma-separated interests
- * @returns Array of trimmed, non-empty interest strings
- */
-export function parseInterests(interestsString: string): string[] {
-  if (!interestsString) return [];
-
-  return interestsString
-    .split(/[,、]/)
-    .map((interest) => interest.trim())
-    .filter((interest) => interest.length > 0);
-}
-
-/**
- * Format interests array back to string
- * @param interests - Array of interests
- * @returns Comma-separated string
- */
-export function formatInterests(interests: string[]): string {
-  return interests.filter(Boolean).join(", ");
 }

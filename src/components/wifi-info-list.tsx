@@ -31,7 +31,6 @@ export function WifiInfoList({ wifiInfos, isAdmin }: WifiInfoListProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [error, setError] = useState("");
 
-  // 階のリストを取得（ソート済み）
   const floors = useMemo(() => {
     const floorSet = new Set<number>();
     wifiInfos.forEach((wifi) => {
@@ -46,7 +45,6 @@ export function WifiInfoList({ wifiInfos, isAdmin }: WifiInfoListProps) {
     floors.length > 0 ? floors[0] : null
   );
 
-  // 選択中の階のWi-Fi情報をフィルタ
   const filteredWifiInfos = useMemo(() => {
     if (activeFloor === null) {
       return wifiInfos;
