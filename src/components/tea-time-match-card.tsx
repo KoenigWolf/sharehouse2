@@ -6,7 +6,7 @@ import { m } from "framer-motion";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { updateMatchStatus } from "@/lib/tea-time/actions";
-import { getInitials } from "@/lib/utils";
+import { getInitials, formatDate } from "@/lib/utils";
 import { Profile } from "@/domain/profile";
 import { TeaTimeMatch } from "@/domain/tea-time";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
@@ -32,14 +32,8 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
     setIsLoading(false);
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const resolvedLocale = locale === "ja" ? "ja-JP" : "en-US";
-    return date.toLocaleDateString(resolvedLocale, {
-      month: "short",
-      day: "numeric",
-    });
-  };
+  const resolvedLocale = locale === "ja" ? "ja-JP" : "en-US";
+  const dateOptions: Intl.DateTimeFormatOptions = { month: "short", day: "numeric" };
 
   // 過去のマッチ（完了・スキップ済み）
   if (status !== "scheduled") {
@@ -61,7 +55,7 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
             </p>
           </div>
           <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight">
-            {formatDate(match.matched_at)}
+            {formatDate(match.matched_at, dateOptions, resolvedLocale)}
             <span className="mx-1.5 opacity-30">·</span>
             {status === "done" ? t("teaTime.done") : t("teaTime.skipped")}
           </span>
@@ -102,7 +96,7 @@ export function TeaTimeMatchCard({ match }: TeaTimeMatchCardProps) {
               {match.partner.room_number &&
                 `${match.partner.room_number}${t("profile.room")}`}
               {match.partner.room_number && <span className="mx-1.5 opacity-30">·</span>}
-              {formatDate(match.matched_at)}
+              {formatDate(match.matched_at, dateOptions, resolvedLocale)}
             </p>
           </div>
         </div>

@@ -7,6 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export {
   getInitials,
+  getDisplayName,
   formatDate,
   calculateResidenceDuration,
 } from "./utils/formatting";

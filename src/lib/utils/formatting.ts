@@ -5,6 +5,25 @@
 
 import type { Translator } from "@/lib/i18n";
 
+interface ProfileLike {
+  nickname?: string | null;
+  name?: string | null;
+}
+
+/**
+ * Get display name from a profile, preferring nickname over name
+ * @param profile - Profile object with name/nickname fields
+ * @param fallback - Fallback string if both are empty
+ * @returns Display name string
+ */
+export function getDisplayName(
+  profile: ProfileLike | null | undefined,
+  fallback = ""
+): string {
+  if (!profile) return fallback;
+  return profile.nickname ?? profile.name ?? fallback;
+}
+
 /**
  * Get initials from a name string
  * @param name - Full name string
@@ -29,6 +48,7 @@ export function getInitials(name: string): string {
  * Format date to locale-aware string
  * @param dateString - ISO date string or null
  * @param options - Intl.DateTimeFormat options
+ * @param locale - Locale string (default: "ja-JP")
  * @returns Formatted date string or null
  */
 export function formatDate(
@@ -38,12 +58,16 @@ export function formatDate(
     month: "short",
     day: "numeric",
   },
-  locale = "ja-JP"
+  locale: string | undefined = "ja-JP"
 ): string | null {
   if (!dateString) return null;
 
   try {
-    const date = new Date(dateString);
+    // Date-only strings (YYYY-MM-DD) are parsed as UTC by default
+    // Append time component to force local-time interpretation
+    const normalized =
+      /^\d{4}-\d{2}-\d{2}$/.test(dateString) ? `${dateString}T00:00:00` : dateString;
+    const date = new Date(normalized);
     if (isNaN(date.getTime())) return null;
     return date.toLocaleDateString(locale, options);
   } catch {
