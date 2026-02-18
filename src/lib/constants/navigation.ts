@@ -13,7 +13,7 @@ import {
   Image as ImageIcon,
   Info,
   Coffee,
-  Lightbulb,
+  Home,
   LayoutGrid,
   BarChart3,
   Settings,
@@ -36,6 +36,7 @@ export interface NavItem {
  * Order matters: most frequently used items first
  */
 export const PRIMARY_NAV_ITEMS: NavItem[] = [
+  { href: "/concept", labelKey: "nav.home", icon: Home },
   { href: "/residents", labelKey: "nav.residents", icon: Users },
   { href: "/events", labelKey: "nav.events", icon: Calendar },
   { href: "/bulletin", labelKey: "bulletin.title", icon: MessageCircle },
@@ -48,7 +49,6 @@ export const PRIMARY_NAV_ITEMS: NavItem[] = [
  */
 export const SECONDARY_NAV_ITEMS: NavItem[] = [
   { href: "/info", labelKey: "nav.info", icon: Info },
-  { href: "/concept", labelKey: "nav.concept", icon: Lightbulb },
   { href: "/tea-time", labelKey: "nav.teaTime", icon: Coffee },
   { href: "/floor-plan", labelKey: "nav.floorPlan", icon: LayoutGrid },
   { href: "/stats", labelKey: "nav.stats", icon: BarChart3 },
@@ -68,10 +68,10 @@ export const ALL_NAV_ITEMS: NavItem[] = [
  * Keep this small for usability (max 5 including More button)
  */
 export const MOBILE_BOTTOM_NAV_ITEMS: NavItem[] = [
+  { href: "/concept", labelKey: "nav.home", icon: Home },
   { href: "/residents", labelKey: "nav.residents", icon: Users },
   { href: "/events", labelKey: "nav.events", icon: Calendar },
   { href: "/bulletin", labelKey: "bulletin.title", icon: MessageCircle },
-  { href: "/room-photos", labelKey: "nav.gallery", icon: ImageIcon },
 ];
 
 /**
