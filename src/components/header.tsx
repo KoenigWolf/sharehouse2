@@ -198,7 +198,7 @@ export const Header = memo(function Header() {
       <div className="container mx-auto px-4 sm:px-8 h-14 flex items-center max-w-6xl">
         <div className="flex-1 flex items-center gap-6">
           <Link
-            href="/residents"
+            href="/"
             className="flex items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 group"
             aria-label={t("a11y.goHome")}
           >
@@ -211,6 +211,10 @@ export const Header = memo(function Header() {
 
           <span className="hidden sm:block text-sm font-bold text-foreground tracking-wide">
             {(() => {
+              // Concept page (landing page)
+              if (pathname === "/concept") {
+                return t("nav.concept");
+              }
               // Profile edit page (more specific, check first)
               if (pathname.includes("/profile/") && pathname.endsWith("/edit")) {
                 return t("profile.editTitle");
@@ -233,6 +237,13 @@ export const Header = memo(function Header() {
               }
               if (pathname === "/legal/terms") {
                 return t("legal.termsTitle");
+              }
+              // Contact/Tour pages
+              if (pathname === "/contact") {
+                return t("contact.title");
+              }
+              if (pathname === "/tour") {
+                return t("tour.title");
               }
               // Event detail pages (match parent nav item)
               if (pathname.startsWith("/events/")) {
