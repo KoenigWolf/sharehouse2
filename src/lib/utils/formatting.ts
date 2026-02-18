@@ -52,21 +52,6 @@ export function formatDate(
 }
 
 /**
- * Format date to short format (month/day only)
- * @param dateString - ISO date string
- * @returns Short formatted date string
- */
-export function formatDateShort(dateString: string, locale = "ja-JP"): string {
-  try {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return "";
-    return date.toLocaleDateString(locale, { month: "short", day: "numeric" });
-  } catch {
-    return "";
-  }
-}
-
-/**
  * Calculate residence duration from move-in date
  * @param moveInDate - ISO date string of move-in date
  * @returns Human-readable duration string in Japanese
@@ -102,38 +87,4 @@ export function calculateResidenceDuration(
   } catch {
     return null;
   }
-}
-
-/**
- * Truncate text with ellipsis
- * @param text - Text to truncate
- * @param maxLength - Maximum length before truncation
- * @returns Truncated text with ellipsis if needed
- */
-export function truncateText(text: string, maxLength: number): string {
-  if (!text || text.length <= maxLength) return text;
-  return `${text.slice(0, maxLength)}...`;
-}
-
-/**
- * Parse comma-separated interests string into array
- * @param interestsString - Comma-separated interests
- * @returns Array of trimmed, non-empty interest strings
- */
-export function parseInterests(interestsString: string): string[] {
-  if (!interestsString) return [];
-
-  return interestsString
-    .split(/[,、]/)
-    .map((interest) => interest.trim())
-    .filter((interest) => interest.length > 0);
-}
-
-/**
- * Format interests array back to string
- * @param interests - Array of interests
- * @returns Comma-separated string
- */
-export function formatInterests(interests: string[]): string {
-  return interests.filter(Boolean).join(", ");
 }

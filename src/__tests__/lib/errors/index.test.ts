@@ -3,9 +3,6 @@ import {
   ErrorCode,
   AppError,
   getErrorMessage,
-  success,
-  error,
-  handleError,
   logError,
 } from "@/lib/errors";
 
@@ -99,106 +96,6 @@ describe("getErrorMessage", () => {
   it("returns unknown error message for invalid code", () => {
     const message = getErrorMessage("INVALID_CODE" as typeof ErrorCode.UNAUTHORIZED);
     expect(message).toBe("エラーが発生しました");
-  });
-});
-
-describe("success", () => {
-  it("creates success response with data", () => {
-    const response = success({ id: 1, name: "Test" });
-    expect(response).toEqual({
-      success: true,
-      data: { id: 1, name: "Test" },
-    });
-  });
-
-  it("creates success response with string data", () => {
-    const response = success("OK");
-    expect(response).toEqual({
-      success: true,
-      data: "OK",
-    });
-  });
-
-  it("creates success response with null data", () => {
-    const response = success(null);
-    expect(response).toEqual({
-      success: true,
-      data: null,
-    });
-  });
-});
-
-describe("error", () => {
-  it("creates error response with message only", () => {
-    const response = error("Something went wrong");
-    expect(response).toEqual({
-      success: false,
-      error: "Something went wrong",
-    });
-  });
-
-  it("creates error response with message and code", () => {
-    const response = error("Not authorized", ErrorCode.UNAUTHORIZED);
-    expect(response).toEqual({
-      success: false,
-      error: "Not authorized",
-      code: ErrorCode.UNAUTHORIZED,
-    });
-  });
-});
-
-describe("handleError", () => {
-  it("handles AppError", () => {
-    const appError = new AppError(ErrorCode.UNAUTHORIZED, "Access denied");
-    const result = handleError(appError);
-    expect(result).toEqual({
-      error: "Access denied",
-      code: ErrorCode.UNAUTHORIZED,
-    });
-  });
-
-  it("handles standard Error", () => {
-    const standardError = new Error("Generic error");
-    const result = handleError(standardError);
-    expect(result).toEqual({
-      error: "Generic error",
-    });
-  });
-
-  it("maps 'already registered' error to EMAIL_ALREADY_EXISTS", () => {
-    const registeredError = new Error("User already registered");
-    const result = handleError(registeredError);
-    expect(result.code).toBe(ErrorCode.EMAIL_ALREADY_EXISTS);
-  });
-
-  it("maps 'Invalid login' error to INVALID_CREDENTIALS", () => {
-    const loginError = new Error("Invalid login credentials");
-    const result = handleError(loginError);
-    expect(result.code).toBe(ErrorCode.INVALID_CREDENTIALS);
-  });
-
-  it("handles non-Error types", () => {
-    const result = handleError("String error");
-    expect(result).toEqual({
-      error: "エラーが発生しました",
-      code: ErrorCode.INTERNAL_ERROR,
-    });
-  });
-
-  it("handles null", () => {
-    const result = handleError(null);
-    expect(result).toEqual({
-      error: "エラーが発生しました",
-      code: ErrorCode.INTERNAL_ERROR,
-    });
-  });
-
-  it("handles undefined", () => {
-    const result = handleError(undefined);
-    expect(result).toEqual({
-      error: "エラーが発生しました",
-      code: ErrorCode.INTERNAL_ERROR,
-    });
   });
 });
 

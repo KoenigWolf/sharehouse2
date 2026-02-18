@@ -85,8 +85,3 @@ export const profileSchema = z.object({
       .optional()
       .nullable(),
 });
-
-export type BulletinInput = z.infer<typeof bulletinSchema>;
-export type EventInput = z.infer<typeof eventSchema>;
-export type ShareItemInput = z.infer<typeof shareItemSchema>;
-export type ProfileInput = z.infer<typeof profileSchema>;

@@ -2,11 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   getInitials,
   formatDate,
-  formatDateShort,
   calculateResidenceDuration,
-  truncateText,
-  parseInterests,
-  formatInterests,
 } from "@/lib/utils/formatting";
 import { createTranslator } from "@/lib/i18n";
 
@@ -94,19 +90,6 @@ describe("formatDate", () => {
   });
 });
 
-describe("formatDateShort", () => {
-  it("formats date in short format", () => {
-    const result = formatDateShort("2024-01-15");
-    expect(result).toContain("1");
-    expect(result).toContain("15");
-    expect(result).not.toContain("2024");
-  });
-
-  it("returns empty string for invalid date", () => {
-    expect(formatDateShort("invalid")).toBe("");
-  });
-});
-
 describe("calculateResidenceDuration", () => {
   let mockDate: Date;
 
@@ -147,89 +130,5 @@ describe("calculateResidenceDuration", () => {
 
   it("returns null for invalid date", () => {
     expect(calculateResidenceDuration("invalid", t)).toBeNull();
-  });
-});
-
-describe("truncateText", () => {
-  it("returns original text when shorter than maxLength", () => {
-    expect(truncateText("Hello", 10)).toBe("Hello");
-  });
-
-  it("returns original text when equal to maxLength", () => {
-    expect(truncateText("Hello", 5)).toBe("Hello");
-  });
-
-  it("truncates text and adds ellipsis when longer", () => {
-    expect(truncateText("Hello World", 5)).toBe("Hello...");
-  });
-
-  it("handles empty string", () => {
-    expect(truncateText("", 5)).toBe("");
-  });
-
-  it("handles maxLength of 0", () => {
-    expect(truncateText("Hello", 0)).toBe("...");
-  });
-});
-
-describe("parseInterests", () => {
-  it("parses comma-separated interests", () => {
-    expect(parseInterests("料理, 映画, ランニング")).toEqual([
-      "料理",
-      "映画",
-      "ランニング",
-    ]);
-  });
-
-  it("parses Japanese comma-separated interests", () => {
-    expect(parseInterests("料理、映画、ランニング")).toEqual([
-      "料理",
-      "映画",
-      "ランニング",
-    ]);
-  });
-
-  it("handles mixed comma types", () => {
-    expect(parseInterests("料理, 映画、ランニング")).toEqual([
-      "料理",
-      "映画",
-      "ランニング",
-    ]);
-  });
-
-  it("trims whitespace from interests", () => {
-    expect(parseInterests("  料理  ,  映画  ")).toEqual(["料理", "映画"]);
-  });
-
-  it("filters out empty interests", () => {
-    expect(parseInterests("料理,,映画")).toEqual(["料理", "映画"]);
-  });
-
-  it("returns empty array for empty string", () => {
-    expect(parseInterests("")).toEqual([]);
-  });
-
-  it("handles single interest", () => {
-    expect(parseInterests("料理")).toEqual(["料理"]);
-  });
-});
-
-describe("formatInterests", () => {
-  it("formats interests array to comma-separated string", () => {
-    expect(formatInterests(["料理", "映画", "ランニング"])).toBe(
-      "料理, 映画, ランニング"
-    );
-  });
-
-  it("filters out falsy values", () => {
-    expect(formatInterests(["料理", "", "映画"])).toBe("料理, 映画");
-  });
-
-  it("returns empty string for empty array", () => {
-    expect(formatInterests([])).toBe("");
-  });
-
-  it("handles single interest", () => {
-    expect(formatInterests(["料理"])).toBe("料理");
   });
 });

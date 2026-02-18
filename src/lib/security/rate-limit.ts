@@ -327,18 +327,6 @@ export const RateLimiters = {
 } as const;
 
 /**
- * Get rate limit headers for response
- */
-export function getRateLimitHeaders(result: RateLimitResult): Record<string, string> {
-  return {
-    "X-RateLimit-Limit": String(result.remaining + (result.success ? 1 : 0)),
-    "X-RateLimit-Remaining": String(result.remaining),
-    "X-RateLimit-Reset": String(result.resetTime),
-    ...(result.success ? {} : { "Retry-After": String(result.retryAfter) }),
-  };
-}
-
-/**
  * Format rate limit error message
  */
 export function formatRateLimitError(

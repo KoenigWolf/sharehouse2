@@ -15,7 +15,7 @@ import type { Metric } from "web-vitals";
  *
  * @see https://web.dev/vitals/
  */
-export const WEB_VITALS_THRESHOLDS = {
+const WEB_VITALS_THRESHOLDS = {
   /** Largest Contentful Paint: 良好 < 2.5s、要改善 < 4s */
   LCP: { good: 2500, needsImprovement: 4000 },
   /** Cumulative Layout Shift: 良好 < 0.1、要改善 < 0.25 */
@@ -37,7 +37,7 @@ type MetricName = keyof typeof WEB_VITALS_THRESHOLDS;
  * @param value - 測定値
  * @returns "good" | "needs-improvement" | "poor"
  */
-export function rateMetric(
+function rateMetric(
   name: MetricName,
   value: number
 ): "good" | "needs-improvement" | "poor" {
@@ -54,7 +54,7 @@ export function rateMetric(
  *
  * @param metric - web-vitals ライブラリから取得したメトリクス
  */
-export function reportToConsole(metric: Metric): void {
+function reportToConsole(metric: Metric): void {
   const rating = rateMetric(metric.name as MetricName, metric.value);
 
   const style =
@@ -78,7 +78,7 @@ export function reportToConsole(metric: Metric): void {
  * @param metric - web-vitals ライブラリから取得したメトリクス
  * @param endpoint - 送信先URL（省略時はレポートしない）
  */
-export function reportToEndpoint(metric: Metric, endpoint?: string): void {
+function reportToEndpoint(metric: Metric, endpoint?: string): void {
   if (!endpoint) return;
 
   const body = JSON.stringify({

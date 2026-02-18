@@ -32,7 +32,7 @@ describe("t (translation function)", () => {
     });
 
     it("returns correct translation for deeply nested key", () => {
-      expect(t("profile.completionItems.photo")).toBe("写真");
+      expect(t("auth.passwordStrength.weak")).toBe("弱い");
     });
   });
 

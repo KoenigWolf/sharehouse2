@@ -3,15 +3,6 @@
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 
-/**
- * Scroll Restoration Component
- *
- * Instagram-style scroll position management:
- * - Saves scroll position when leaving a page
- * - Restores position when navigating back
- * - Scrolls to top for new pages
- * - Instant scroll (no animation) for natural feel
- */
 export function ScrollRestoration() {
   const pathname = usePathname();
   const scrollPositions = useRef<Map<string, number>>(new Map());
@@ -75,29 +66,4 @@ export function ScrollRestoration() {
   }, [pathname]);
 
   return null;
-}
-
-/**
- * Use this hook to programmatically manage scroll position
- */
-export function useScrollPosition() {
-  const savePosition = (key: string) => {
-    sessionStorage.setItem(`scroll-${key}`, String(window.scrollY));
-  };
-
-  const restorePosition = (key: string) => {
-    const saved = sessionStorage.getItem(`scroll-${key}`);
-    if (saved) {
-      const position = parseInt(saved, 10);
-      requestAnimationFrame(() => {
-        window.scrollTo({ top: position, behavior: "instant" });
-      });
-    }
-  };
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "instant" });
-  };
-
-  return { savePosition, restorePosition, scrollToTop };
 }

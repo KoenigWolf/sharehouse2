@@ -28,32 +28,6 @@
     box-shadow: var(--shadow-card-hover);
   }
 
-  .card-elevated {
-    @apply bg-card border border-border;
-    border-radius: var(--radius-card);
-    box-shadow: var(--shadow-elevated);
-  }
-
-  /* ========================================
-   * コンテナ系（Container）
-   * ======================================== */
-  .section-container {
-    @apply bg-secondary/50;
-    /* Slightly distinct from main bg */
-    border-radius: var(--radius-container);
-    padding: var(--spacing-section);
-  }
-
-  .page-container {
-    @apply max-w-4xl mx-auto px-4 sm:px-6 xl:px-8;
-  }
-
-  .modal-container {
-    @apply bg-popover text-popover-foreground;
-    border-radius: var(--radius-modal);
-    box-shadow: var(--shadow-elevated);
-  }
-
   /* ========================================
    * 入力系（Input）
    * ======================================== */
@@ -65,10 +39,6 @@
     border-radius: var(--radius-input);
     padding: 0 1.25rem;
     transition: border-color var(--transition-base), box-shadow var(--transition-base);
-  }
-
-  .input-lg {
-    height: var(--input-height-lg);
   }
 
   .textarea-base {
@@ -94,40 +64,6 @@
     background-position: right 0.75rem center;
     background-repeat: no-repeat;
     background-size: 1.25rem;
-  }
-
-  /*
-   * Select wrapper pattern for mask-image chevron (inherits text color).
-   * Usage: <div class="select-wrapper"><select class="select-base">...</select></div>
-   */
-  .select-wrapper {
-    @apply relative inline-block w-full;
-  }
-
-  .select-wrapper>.select-base {
-    background-image: none;
-  }
-
-  .select-wrapper::after {
-    content: "";
-    position: absolute;
-    right: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 1.25rem;
-    height: 1.25rem;
-    pointer-events: none;
-    /* Mask-based chevron inherits currentColor for automatic dark mode support */
-    -webkit-mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-    mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-    -webkit-mask-position: center;
-    mask-position: center;
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-    -webkit-mask-size: 1.25rem;
-    mask-size: 1.25rem;
-    background-color: currentColor;
-    opacity: 0.5;
   }
 
   /* ========================================
@@ -158,37 +94,15 @@
     @apply text-base lg:text-lg font-bold text-foreground;
   }
 
-  /* セクションラベル（上部の小さいラベル） */
-  .section-label {
-    @apply text-sm font-bold text-foreground;
-    letter-spacing: 0.01em;
-  }
-
   /* サブタイトル */
   .subtitle {
     @apply text-base text-muted-foreground leading-relaxed;
     letter-spacing: 0.02em;
   }
 
-  /* 本文 */
-  .text-body {
-    @apply text-sm sm:text-base text-foreground/90 leading-relaxed;
-    letter-spacing: 0.02em;
-  }
-
-  /* 補足テキスト */
-  .text-muted {
-    @apply text-xs sm:text-sm text-muted-foreground;
-  }
-
   /* ラベル（大文字） */
   .label-uppercase {
     @apply text-[10px] font-bold tracking-wider uppercase text-muted-foreground/80;
-  }
-
-  /* フィールドラベル */
-  .label-field {
-    @apply text-sm font-medium text-foreground/80;
   }
 
   /* ========================================
@@ -399,11 +313,6 @@
   /* ========================================
    * アラート・フィードバック系（Alert）
    * ======================================== */
-  .alert-base {
-    @apply p-4;
-    border-radius: var(--radius-card);
-  }
-
   .alert-success {
     @apply p-4 bg-success-bg/50 border-l-4 border-success text-success font-sans;
     border-radius: var(--radius-card);
@@ -412,121 +321,6 @@
   .alert-error {
     @apply p-4 bg-error-bg/50 border-l-4 border-error text-error font-sans;
     border-radius: var(--radius-card);
-  }
-
-  .alert-info {
-    @apply p-4 bg-secondary/80 border-l-4 border-muted-foreground/30 text-foreground font-sans;
-    border-radius: var(--radius-card);
-  }
-
-  /* ========================================
-   * アイコン-テキストスペーシング（Icon-Text Spacing）
-   *
-   * 人間工学に基づくアイコンとテキスト間の最適間隔
-   * - アイコンサイズの約50%の間隔が視覚的にバランスが良い
-   * - 8pxグリッドシステムに準拠
-   * ======================================== */
-
-  /** Extra small icons (12px) - 6px gap */
-  .icon-text-xs {
-    @apply inline-flex items-center gap-1.5;
-  }
-
-  /** Small icons (14px) - 8px gap */
-  .icon-text-sm {
-    @apply inline-flex items-center gap-2;
-  }
-
-  /** Medium icons (16px) - 8px gap */
-  .icon-text-md {
-    @apply inline-flex items-center gap-2;
-  }
-
-  /** Large icons (20px) - 10px gap */
-  .icon-text-lg {
-    @apply inline-flex items-center gap-2.5;
-  }
-
-  /** Extra large icons (24px) - 12px gap */
-  .icon-text-xl {
-    @apply inline-flex items-center gap-3;
-  }
-
-  /** 2X large icons (32px) - 16px gap */
-  .icon-text-2xl {
-    @apply inline-flex items-center gap-4;
-  }
-
-  /* Section header with icon - consistent pattern */
-  .section-header-icon {
-    @apply inline-flex items-center gap-2 text-brand-500;
-  }
-
-  /* Button content with icon - optimized for touch */
-  .btn-content-icon {
-    @apply inline-flex items-center justify-center gap-2;
-  }
-
-  /* Badge/tag with icon - compact spacing */
-  .badge-icon {
-    @apply inline-flex items-center gap-1.5;
-  }
-
-  /* Nav item with icon - comfortable touch target */
-  .nav-item-icon {
-    @apply inline-flex items-center gap-3;
-  }
-
-  /* List item with icon - readable spacing */
-  .list-item-icon {
-    @apply flex items-center gap-3;
-  }
-
-  /* ========================================
-   * ボタン系（Button Extensions）
-   * ======================================== */
-  .btn-icon {
-    @apply inline-flex items-center justify-center rounded-full transition-colors;
-    transition-duration: var(--transition-fast);
-  }
-
-  .btn-icon-sm {
-    @apply inline-flex items-center justify-center rounded-full transition-colors w-8 h-8;
-    transition-duration: var(--transition-fast);
-  }
-
-  .btn-icon-md {
-    @apply inline-flex items-center justify-center rounded-full transition-colors w-10 h-10;
-    transition-duration: var(--transition-fast);
-  }
-
-  .btn-icon-lg {
-    @apply inline-flex items-center justify-center rounded-full transition-colors w-12 h-12;
-    transition-duration: var(--transition-fast);
-  }
-
-  /* ========================================
-   * オーバーレイ系（Overlay）
-   * ======================================== */
-  .overlay-dark {
-    @apply bg-black/40 backdrop-blur-sm;
-  }
-
-  .overlay-light {
-    @apply bg-white/60 backdrop-blur-sm;
-    /* Slightly more transparent for rustic feel */
-  }
-
-  /* ========================================
-   * リスト・グリッド系（List/Grid）
-   * ======================================== */
-  .grid-cards {
-    @apply grid gap-4 sm:gap-6;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  }
-
-  .grid-photos {
-    @apply grid grid-cols-3 gap-0.5 sm:gap-1;
   }
 
   /* ========================================
@@ -591,21 +385,5 @@
   /* will-change最適化（アニメーション対象要素） */
   .will-change-transform {
     will-change: transform;
-  }
-
-  .will-change-opacity {
-    will-change: opacity;
-  }
-
-  /* コンテンツ可視性最適化（大きなリスト向け） */
-  .content-visibility-auto {
-    content-visibility: auto;
-    contain-intrinsic-size: 0 200px;
-  }
-
-  /* GPU合成レイヤー強制（スクロール性能改善） */
-  .gpu-accelerated {
-    transform: translateZ(0);
-    backface-visibility: hidden;
   }
 }

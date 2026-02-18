@@ -26,11 +26,6 @@ export type PhotoWithProfile = RoomPhoto & {
 export type LightboxDirection = "prev" | "next";
 
 /**
- * Photo gallery view mode
- */
-export type GalleryViewMode = "grid" | "lightbox";
-
-/**
  * Photo upload status for bulk upload progress
  */
 export type PhotoUploadStatus =

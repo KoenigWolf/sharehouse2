@@ -1,21 +1,8 @@
 "use client";
 
-import { useRef, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { m, AnimatePresence, useReducedMotion } from "framer-motion";
 
-/**
- * View Transitions API type (progressive enhancement)
- * Returns ViewTransition object but we discard it since we only need the callback execution
- */
-interface ViewTransitionDocument {
-  startViewTransition(callback: () => void | Promise<void>): unknown;
-}
-
-/**
- * Instagram-style page transition variants
- * Fast, smooth transitions with minimal perceived loading time
- */
 const pageVariants = {
   initial: {
     opacity: 0,
@@ -54,15 +41,6 @@ interface PageTransitionProps {
   children: React.ReactNode;
 }
 
-/**
- * Page Transition Wrapper
- *
- * Provides Instagram-level smooth page transitions:
- * - Fast fade + subtle scale for seamless feel
- * - Exit animation completes before enter starts
- * - Respects reduced motion preferences
- * - Minimal layout shift with fixed positioning during transition
- */
 export function PageTransition({ children }: PageTransitionProps) {
   const pathname = usePathname();
   const shouldReduceMotion = useReducedMotion();
@@ -82,46 +60,4 @@ export function PageTransition({ children }: PageTransitionProps) {
       </m.div>
     </AnimatePresence>
   );
-}
-
-/**
- * View Transitions API Hook (Progressive Enhancement)
- *
- * Uses the native View Transitions API when available for
- * hardware-accelerated, native-feeling page transitions.
- * Falls back gracefully when not supported.
- */
-export function useViewTransition() {
-  const isSupported = typeof document !== "undefined" && "startViewTransition" in document;
-
-  const startTransition = useCallback(
-    (callback: () => void | Promise<void>) => {
-      if (isSupported) {
-        (document as unknown as ViewTransitionDocument).startViewTransition(callback);
-      } else {
-        callback();
-      }
-    },
-    [isSupported]
-  );
-
-  return { isSupported, startTransition };
-}
-
-/**
- * Navigation Intent Hook
- *
- * Detects user's navigation intent (hover on links) and
- * provides haptic-like visual feedback before actual navigation.
- */
-export function useNavigationIntent() {
-  const intentRef = useRef<string | null>(null);
-
-  const setIntent = useCallback((href: string | null) => {
-    intentRef.current = href;
-  }, []);
-
-  const getIntent = useCallback(() => intentRef.current, []);
-
-  return { setIntent, getIntent };
 }

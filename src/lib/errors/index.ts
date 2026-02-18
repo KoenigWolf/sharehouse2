@@ -80,55 +80,6 @@ export function getErrorMessage(code: ErrorCodeType): string {
 }
 
 /**
- * Standard API response type
- */
-export type ApiResponse<T = void> =
-  | { success: true; data: T }
-  | { success: false; error: string; code?: ErrorCodeType };
-
-/**
- * Create success response
- */
-export function success<T>(data: T): ApiResponse<T> {
-  return { success: true, data };
-}
-
-/**
- * Create error response
- */
-export function error(
-  message: string,
-  code?: ErrorCodeType
-): ApiResponse<never> {
-  return { success: false, error: message, code };
-}
-
-/**
- * Handle unknown error and return consistent format
- */
-export function handleError(err: unknown): { error: string; code?: ErrorCodeType } {
-  if (err instanceof AppError) {
-    return { error: err.message, code: err.code };
-  }
-
-  if (err instanceof Error) {
-    if (err.message.includes("already registered")) {
-      return { error: t("auth.emailAlreadyExists"), code: ErrorCode.EMAIL_ALREADY_EXISTS };
-    }
-    if (err.message.includes("Invalid login")) {
-      return { error: t("auth.invalidCredentials"), code: ErrorCode.INVALID_CREDENTIALS };
-    }
-
-    return { error: err.message };
-  }
-
-  return { error: t("errors.unknownError"), code: ErrorCode.INTERNAL_ERROR };
-}
-
-/**
- * Sentryにエラー/警告を送信する（内部ヘルパー）
- */
-/**
  * Sensitive keys that should be redacted before sending to Sentry
  */
 const SENSITIVE_KEYS = [
