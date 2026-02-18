@@ -30,7 +30,7 @@ export function BlurredPageContent({
   return (
     <div className="space-y-8">
       <div className="relative max-h-[900px] overflow-hidden">
-        <div className="blur-[2px] pointer-events-none select-none">
+        <div className="blur-[2px] pointer-events-none select-none" aria-hidden="true">
           {children}
         </div>
         <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none" />

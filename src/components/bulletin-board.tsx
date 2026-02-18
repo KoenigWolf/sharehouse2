@@ -304,7 +304,7 @@ export function BulletinBoard({
         )}
       </div>
 
-      {isEditing && (
+      {isEditing && currentUserId && (
         <FloatingActionButton
           onClick={() => setIsComposeOpen(true)}
           icon={Feather}
