@@ -16,6 +16,7 @@ export interface PaginatedBulletins {
   bulletins: BulletinWithProfile[];
   nextCursor: string | null;
   hasMore: boolean;
+  totalCount: number;
 }
 
 /**
@@ -32,29 +33,36 @@ export async function getBulletinsPaginated(
   try {
     const supabase = await createClient();
 
-    let query = supabase
+    // Parallel execution reduces latency vs. sequential queries
+    const countQuery = supabase
+      .from("bulletins")
+      .select("*", { count: "exact", head: true });
+
+    let dataQuery = supabase
       .from("bulletins")
       .select("id, user_id, message, created_at, updated_at")
       .order("created_at", { ascending: false })
       .limit(limit + 1); // +1 to check if there are more
 
     if (cursor) {
-      query = query.lt("created_at", cursor);
+      dataQuery = dataQuery.lt("created_at", cursor);
     }
 
-    const bulletinsRes = await query;
+    const [countRes, bulletinsRes] = await Promise.all([countQuery, dataQuery]);
 
     if (bulletinsRes.error) {
       logError(bulletinsRes.error, { action: "getBulletinsPaginated:bulletins" });
-      return { bulletins: [], nextCursor: null, hasMore: false };
+      return { bulletins: [], nextCursor: null, hasMore: false, totalCount: 0 };
     }
+
+    const totalCount = countRes.count ?? 0;
 
     const allBulletins = bulletinsRes.data ?? [];
     const hasMore = allBulletins.length > limit;
     const bulletins = hasMore ? allBulletins.slice(0, limit) : allBulletins;
 
     if (bulletins.length === 0) {
-      return { bulletins: [], nextCursor: null, hasMore: false };
+      return { bulletins: [], nextCursor: null, hasMore: false, totalCount };
     }
 
     const userIds = [...new Set(bulletins.map((b) => b.user_id))];
@@ -82,10 +90,11 @@ export async function getBulletinsPaginated(
       bulletins: bulletinsWithProfiles,
       nextCursor,
       hasMore,
+      totalCount,
     };
   } catch (error) {
     logError(error, { action: "getBulletinsPaginated" });
-    return { bulletins: [], nextCursor: null, hasMore: false };
+    return { bulletins: [], nextCursor: null, hasMore: false, totalCount: 0 };
   }
 }
 

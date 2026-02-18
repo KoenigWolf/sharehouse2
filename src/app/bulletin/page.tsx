@@ -36,7 +36,7 @@ export default async function BulletinPage() {
 
       <main className="flex-1 pb-20 sm:pb-0">
         <div className="container mx-auto px-4 sm:px-6 pt-2 sm:pt-6 pb-4 max-w-4xl">
-          <BlurredPageContent isBlurred={isBlurred} totalCount={bulletinsResult.bulletins.length}>
+          <BlurredPageContent isBlurred={isBlurred} totalCount={bulletinsResult.totalCount}>
             <ErrorBoundary>
               <BulletinBoard
                 bulletins={bulletinsResult.bulletins}
