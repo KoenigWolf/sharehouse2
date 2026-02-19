@@ -9,6 +9,7 @@
 
 import { createHash } from "crypto";
 import { logError } from "@/lib/errors";
+import { getServerTranslator } from "@/lib/i18n/server";
 
 const HIBP_API_URL = "https://api.pwnedpasswords.com/range/";
 const HIBP_TIMEOUT_MS = 3000;
@@ -112,7 +113,8 @@ export async function getPasswordBreachWarning(
   const result = await checkPasswordBreach(password);
 
   if (result.breached && result.count && result.count >= BREACH_WARNING_THRESHOLD) {
-    return `This password has been found in ${result.count.toLocaleString()} data breaches. Please choose a different password.`;
+    const t = await getServerTranslator();
+    return t("errors.passwordBreached", { count: result.count.toLocaleString() });
   }
 
   return null;

@@ -219,7 +219,8 @@ export async function signIn(
   // Check account lockout before proceeding
   const lockoutStatus = checkAccountLockout(validatedEmail, ipAddress ?? undefined);
   if (lockoutStatus.isLocked) {
-    return { error: t("errors.accountLocked", { minutes: lockoutStatus.remainingMinutes }) };
+    // Display at least 1 minute to avoid confusing "0 minutes" message
+    return { error: t("errors.accountLocked", { minutes: Math.max(1, lockoutStatus.remainingMinutes) }) };
   }
 
   const rateLimitKey = ipAddress
@@ -249,7 +250,7 @@ export async function signIn(
 
       // If account is now locked, return lockout message
       if (lockout.isLocked) {
-        return { error: t("errors.accountLocked", { minutes: lockout.remainingMinutes }) };
+        return { error: t("errors.accountLocked", { minutes: Math.max(1, lockout.remainingMinutes) }) };
       }
 
       return { error: t("auth.invalidCredentials") };
