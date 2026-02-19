@@ -1,16 +1,48 @@
-import { redirect } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { MobileNav } from "@/components/mobile-nav";
 import { ResidentStats } from "@/components/resident-stats";
-import { getProfilesWithMock } from "@/lib/residents/queries";
+import { BlurredPageContent } from "@/components/blurred-page-content";
+import { getProfilesWithMock, getPublicProfilesWithMock } from "@/lib/residents/queries";
+import { mockProfiles } from "@/lib/mock-data";
 import { getCachedUser } from "@/lib/supabase/cached-queries";
 
 export default async function StatsPage() {
   const { user, supabase } = await getCachedUser();
+  const isBlurred = !user;
 
-  if (!user) {
-    redirect("/login");
+  // 未認証ユーザーには公開用の限定データのみ取得（セキュリティ対策）
+  if (isBlurred) {
+    const { profiles: publicTeasers } = await getPublicProfilesWithMock(supabase);
+    // プライバシー保護: 未認証ユーザーには実データを渡さない
+    const teaserProfiles = mockProfiles.slice(0, Math.min(publicTeasers.length, 12));
+    const emptyStats = {
+      events: { total: 0, upcoming: 0, past: 0, totalAttendees: 0, uniqueCreators: 0, avgAttendeesPerEvent: 0 },
+      shareItems: { total: 0, available: 0, claimed: 0, expired: 0, uniqueSharers: 0 },
+      roomPhotos: { total: 0, uniqueUploaders: 0, photosPerUser: 0 },
+      teaTimeMatches: { total: 0, done: 0, skipped: 0, successRate: 0 },
+      garbageDuties: { total: 0, completed: 0, upcoming: 0, completionRate: 0 },
+      bulletins: { total: 0, uniquePosters: 0 },
+    };
+
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <Header />
+        <main className="flex-1 pb-20 sm:pb-12">
+          <div className="container mx-auto px-4 sm:px-6 pt-2 sm:pt-6 pb-4 max-w-5xl">
+            <BlurredPageContent isBlurred={isBlurred} totalCount={publicTeasers.length}>
+              <ResidentStats
+                profiles={teaserProfiles}
+                teaTimeParticipants={[]}
+                extendedStats={emptyStats}
+              />
+            </BlurredPageContent>
+          </div>
+        </main>
+        <Footer />
+        <MobileNav />
+      </div>
+    );
   }
 
   const now = new Date();

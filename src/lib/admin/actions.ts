@@ -8,7 +8,7 @@ import { logError } from "@/lib/errors";
 import { getServerTranslator } from "@/lib/i18n/server";
 import { isValidUUID, AuditEventType, auditLog } from "@/lib/security";
 import { enforceAllowedOrigin } from "@/lib/security/request";
-import { requireAdmin } from "@/lib/admin/check";
+import { requireAdmin, clearAdminCache } from "@/lib/admin/check";
 import { emailSchema, passwordSchema } from "@/domain/validation/auth";
 
 type UpdateResponse = { success: true } | { error: string };
@@ -107,6 +107,9 @@ export async function toggleAdminStatus(targetUserId: string): Promise<UpdateRes
       logError(error, { action: "toggleAdminStatus", userId: targetUserId });
       return { error: t("errors.saveFailed") };
     }
+
+    // Clear admin cache for the affected user
+    clearAdminCache(targetUserId);
 
     CacheStrategy.afterProfileUpdate();
     return { success: true };

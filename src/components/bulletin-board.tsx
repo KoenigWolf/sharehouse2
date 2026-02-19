@@ -14,7 +14,7 @@ import type { BulletinWithProfile } from "@/domain/bulletin";
 
 interface BulletinBoardProps {
   bulletins: BulletinWithProfile[];
-  currentUserId: string;
+  currentUserId?: string;
   currentUserProfile?: {
     name: string;
     nickname: string | null;
@@ -94,7 +94,7 @@ export function BulletinBoard({
   }, [isIntersecting, hasMore, isLoadingMore, loadMore]);
 
   const handlePost = useCallback(async (message: string) => {
-    if (!message.trim() || isSubmitting) return;
+    if (!currentUserId || !message.trim() || isSubmitting) return;
     setIsSubmitting(true);
     setFeedback(null);
 
@@ -304,7 +304,7 @@ export function BulletinBoard({
         )}
       </div>
 
-      {isEditing && (
+      {isEditing && currentUserId && (
         <FloatingActionButton
           onClick={() => setIsComposeOpen(true)}
           icon={Feather}

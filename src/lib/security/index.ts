@@ -38,3 +38,17 @@ export {
   type AuditLogEntry,
   type AuditEventTypeValue,
 } from "./audit";
+
+export {
+  checkPasswordBreach,
+  getPasswordBreachWarning,
+  BREACH_WARNING_THRESHOLD,
+  clearBreachCache,
+} from "./password-breach";
+
+export {
+  checkAccountLockout,
+  recordFailedLogin,
+  recordSuccessfulLogin,
+  clearLockoutStore,
+} from "./account-lockout";

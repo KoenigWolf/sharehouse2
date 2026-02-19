@@ -44,8 +44,16 @@ vi.mock("@/lib/security", () => ({
     loginFailure: vi.fn(),
     loginSuccess: vi.fn(),
   },
-  AuditEventType: { AUTH_SIGNUP: "AUTH_SIGNUP" },
+  AuditEventType: {
+    AUTH_SIGNUP: "AUTH_SIGNUP",
+    SECURITY_VALIDATION_FAILURE: "SECURITY_VALIDATION_FAILURE",
+  },
   auditLog: vi.fn(),
+  checkPasswordBreach: vi.fn(() => ({ breached: false })),
+  BREACH_WARNING_THRESHOLD: 10,
+  checkAccountLockout: vi.fn(() => ({ isLocked: false, remainingMinutes: 0, failedAttempts: 0 })),
+  recordFailedLogin: vi.fn(() => ({ isLocked: false, remainingMinutes: 0, failedAttempts: 1 })),
+  recordSuccessfulLogin: vi.fn(),
 }));
 
 vi.mock("next/headers", () => ({

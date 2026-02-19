@@ -324,6 +324,17 @@ export const RateLimiters = {
       windowMs: RATE_LIMIT.event.windowMs,
       prefix: "event",
     }),
+
+  /**
+   * Rate limiter for payment/checkout
+   * Strict: 10 attempts per 10 minutes (prevent card testing)
+   */
+  checkout: (identifier: string) =>
+    checkRateLimit(identifier, {
+      limit: 10,
+      windowMs: 10 * 60 * 1000,
+      prefix: "checkout",
+    }),
 } as const;
 
 /**

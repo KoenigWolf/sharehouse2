@@ -412,6 +412,8 @@ export const ja = {
     rateLimitMinutes: "リクエストが多すぎます。{{minutes}}分後に再試行してください。",
     maxPhotosReached: "写真は最大5枚までアップロードできます",
     deleteFailed: "削除に失敗しました",
+    passwordBreached: "このパスワードは過去のデータ漏洩で{{count}}件確認されています。別のパスワードをご使用ください。",
+    accountLocked: "アカウントが一時的にロックされています。{{minutes}}分後に再試行してください。",
   },
 
   validation: {
@@ -897,6 +899,18 @@ export const ja = {
     errors: {
       failed: "お支払いに失敗しました。カード情報をご確認ください。",
       canceled: "お支払いがキャンセルされました。",
+    },
+  },
+
+  checkout: {
+    malformedJson: "無効なリクエスト形式です",
+    invalidPaymentType: "無効な支払い種別です",
+    invalidAmount: "金額は{{min}}円〜{{max}}円の範囲で指定してください",
+    sessionCreationFailed: "決済セッションの作成に失敗しました",
+    defaultDescription: {
+      eventFee: "イベント参加費",
+      deposit: "入居申込金",
+      monthlyFee: "月額利用料",
     },
   },
 

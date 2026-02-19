@@ -33,7 +33,7 @@ import {
 
 interface EventsContentProps {
   events: EventWithDetails[];
-  currentUserId: string;
+  currentUserId?: string;
   isTeaser?: boolean;
   initialEditEventId?: string;
 }
@@ -377,7 +377,7 @@ export function EventsContent({ events, currentUserId, isTeaser = false, initial
 // Extracted EventCard for better readability
 interface EventCardProps {
   event: EventWithDetails;
-  currentUserId: string;
+  currentUserId?: string;
   isTeaser: boolean;
   locale: "ja" | "en";
   groupIndex: number;

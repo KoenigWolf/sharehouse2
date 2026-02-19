@@ -413,6 +413,8 @@ export const en: Translations = {
     rateLimitMinutes: "Too many requests. Try again in {{minutes}} minutes.",
     maxPhotosReached: "You can upload up to 5 photos",
     deleteFailed: "Failed to delete",
+    passwordBreached: "This password has been found in {{count}} data breaches. Please use a different password.",
+    accountLocked: "Account temporarily locked. Try again in {{minutes}} minutes.",
   },
 
   validation: {
@@ -896,6 +898,18 @@ export const en: Translations = {
     errors: {
       failed: "Payment failed. Please check your card details.",
       canceled: "Payment was canceled.",
+    },
+  },
+
+  checkout: {
+    malformedJson: "Invalid request format",
+    invalidPaymentType: "Invalid payment type",
+    invalidAmount: "Amount must be between ¥{{min}} and ¥{{max}}",
+    sessionCreationFailed: "Failed to create checkout session",
+    defaultDescription: {
+      eventFee: "Event Fee",
+      deposit: "Application Deposit",
+      monthlyFee: "Monthly Fee",
     },
   },
 

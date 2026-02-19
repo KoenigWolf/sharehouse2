@@ -31,7 +31,7 @@ interface InfoPageContentProps {
   duties: GarbageDutyWithProfile[];
   sharedInfos: SharedInfo[];
   isAdmin: boolean;
-  currentUserId: string;
+  currentUserId?: string;
 }
 
 interface FloorData {

@@ -3,11 +3,12 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { MobileNav } from "@/components/mobile-nav";
 import { ResidentsGrid } from "@/components/residents-grid";
-import { PublicTeaserGrid } from "@/components/public-teaser/public-teaser-grid";
+import { TeaserOverlay } from "@/components/public-teaser/teaser-overlay";
 import { TeaTimeNotification } from "@/components/tea-time-notification";
 import { getLatestScheduledMatch } from "@/lib/tea-time/actions";
 import { getProfilesWithMock, getPublicProfilesWithMock } from "@/lib/residents/queries";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { mockProfiles } from "@/lib/mock-data";
 
 export const dynamic = "force-dynamic";
 
@@ -48,8 +49,11 @@ export default async function ResidentsPage() {
     );
   }
 
-  // 登録を促すため、未認証ユーザーにも residents_public_teaser 経由で最小限の住民情報を見せる
-  const { profiles } = await getPublicProfilesWithMock(supabase);
+  // 未認証ユーザーには公開用の限定データのみ取得（セキュリティ対策）
+  const { profiles: publicTeasers } = await getPublicProfilesWithMock(supabase);
+
+  // プライバシー保護: 未認証ユーザーには実データを渡さない
+  const teaserProfiles = mockProfiles.slice(0, Math.min(publicTeasers.length, 12));
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -57,9 +61,18 @@ export default async function ResidentsPage() {
 
       <main className="flex-1 pb-20 sm:pb-0">
         <div className="container mx-auto px-4 sm:px-6 pt-2 sm:pt-4 pb-4">
-          <ErrorBoundary>
-            <PublicTeaserGrid profiles={profiles} />
-          </ErrorBoundary>
+          <div className="space-y-8">
+            <div className="relative max-h-[800px] overflow-hidden" aria-hidden="true">
+              <ErrorBoundary>
+                <ResidentsGrid profiles={teaserProfiles} isBlurred />
+              </ErrorBoundary>
+              <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none" />
+            </div>
+
+            <div className="-mt-24 relative z-10">
+              <TeaserOverlay totalCount={publicTeasers.length} />
+            </div>
+          </div>
         </div>
       </main>
 

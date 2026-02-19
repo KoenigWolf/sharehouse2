@@ -35,26 +35,24 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
-  const isAuthCallback = pathname.startsWith("/auth/callback");
   const isLoginPage = pathname.startsWith("/login");
-  // /residents のみ未認証チラ見せ対応済み
-  const isPublicTeaserPage = pathname === "/residents";
 
-  // 未認証ユーザーの挙動
-  if (!user && !isLoginPage && !isAuthCallback && !isPublicTeaserPage) {
+  // Protect sensitive routes: user data modification requires authentication
+  const authRequiredPages = ["/admin", "/settings", "/profile"];
+  const isAuthRequired = authRequiredPages.some(
+    (page) => pathname.startsWith(page)
+  );
+
+  // Redirect unauthenticated users to login with returnTo for post-login navigation
+  if (!user && isAuthRequired) {
     const url = request.nextUrl.clone();
-
-    // ルートパスへのアクセスの場合は /residents (チラ見せ) へ
-    if (pathname === "/") {
-      url.pathname = "/residents";
-    } else {
-      url.pathname = "/login";
-    }
-
+    const returnTo = request.nextUrl.pathname + request.nextUrl.search;
+    url.pathname = "/login";
+    url.searchParams.set("returnTo", returnTo);
     return NextResponse.redirect(url);
   }
 
-  // 認証済みユーザーがログインページにアクセスした場合はホームへリダイレクト
+  // Prevent authenticated users from accessing login page (UX: direct to dashboard)
   if (user && isLoginPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/";

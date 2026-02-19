@@ -1,5 +1,6 @@
 import "server-only";
 import { headers } from "next/headers";
+import { NextRequest, NextResponse } from "next/server";
 import { validateOrigin } from "./validation";
 import { getAllowedOrigins } from "./origin";
 import { auditLog, AuditEventType } from "./audit";
@@ -92,4 +93,99 @@ export async function enforceAllowedOrigin(
     outcome: "failure",
   });
   return t("errors.forbidden");
+}
+
+/**
+ * Validate origin for API routes (NextRequest)
+ * Returns null if valid, error response if invalid
+ */
+export function validateApiOrigin(
+  req: NextRequest,
+  actionName: string
+): NextResponse | null {
+  const origin = req.headers.get("origin");
+
+  // No origin = same-origin request (allowed)
+  if (!origin) {
+    return null;
+  }
+
+  const allowedOrigins = getAllowedOrigins();
+  if (validateOrigin(origin, allowedOrigins)) {
+    return null;
+  }
+
+  // Fallback: compare origin host with request host (check x-forwarded-host for proxies)
+  const forwardedHost = req.headers.get("x-forwarded-host");
+  const host = forwardedHost?.split(",")[0]?.trim() || req.headers.get("host");
+  if (host) {
+    try {
+      const originHost = new URL(origin).host;
+      const requestHost = host.includes("://")
+        ? new URL(host).host
+        : new URL(`http://${host}`).host;
+      if (originHost === requestHost) {
+        return null;
+      }
+    } catch {
+      // Invalid URL
+    }
+  }
+
+  // Development fallback
+  if (process.env.NODE_ENV === "development") {
+    try {
+      const originUrl = new URL(origin);
+      if (originUrl.hostname === "localhost" || originUrl.hostname === "127.0.0.1") {
+        return null;
+      }
+    } catch {
+      // Invalid URL
+    }
+  }
+
+  auditLog({
+    timestamp: new Date().toISOString(),
+    eventType: AuditEventType.SECURITY_UNAUTHORIZED_ACCESS,
+    action: `Blocked API ${actionName} from origin: ${origin}`,
+    outcome: "failure",
+  });
+
+  return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+}
+
+/**
+ * Validate Content-Type header for JSON API routes
+ * Returns null if valid, error response if invalid
+ */
+export function validateJsonContentType(req: NextRequest): NextResponse | null {
+  const contentType = req.headers.get("content-type");
+
+  if (!contentType?.includes("application/json")) {
+    return NextResponse.json(
+      { error: "Content-Type must be application/json" },
+      { status: 415 }
+    );
+  }
+
+  return null;
+}
+
+/**
+ * Get request ID from headers (set by middleware)
+ */
+export function getApiRequestId(req: NextRequest): string {
+  return req.headers.get("x-request-id") || `api-${Date.now().toString(36)}`;
+}
+
+/**
+ * Get client IP from various headers
+ */
+export function getApiClientIp(req: NextRequest): string {
+  return (
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    req.headers.get("x-real-ip") ||
+    req.headers.get("cf-connecting-ip") ||
+    "unknown"
+  );
 }

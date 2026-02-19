@@ -1,7 +1,54 @@
 "use server";
 
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import type { Translator } from "@/lib/i18n";
+
+// In-memory cache for admin status (5 minute TTL)
+const ADMIN_CACHE_TTL_MS = 5 * 60 * 1000;
+const adminCache = new Map<string, { isAdmin: boolean; expiresAt: number }>();
+
+/**
+ * Check admin status with caching
+ * Uses both request-level (React cache) and cross-request (in-memory) caching
+ */
+async function checkAdminStatus(userId: string): Promise<boolean> {
+  // Check in-memory cache first
+  const cached = adminCache.get(userId);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.isAdmin;
+  }
+
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", userId)
+    .single();
+
+  const isAdmin = data?.is_admin === true;
+
+  // Cache the result
+  adminCache.set(userId, {
+    isAdmin,
+    expiresAt: Date.now() + ADMIN_CACHE_TTL_MS,
+  });
+
+  // Cleanup old entries periodically
+  if (adminCache.size > 1000) {
+    const now = Date.now();
+    for (const [key, value] of adminCache) {
+      if (value.expiresAt < now) {
+        adminCache.delete(key);
+      }
+    }
+  }
+
+  return isAdmin;
+}
+
+// Request-level cache for deduplication within the same request
+const getCachedAdminStatus = cache(checkAdminStatus);
 
 /**
  * 現在ログイン中のユーザーが管理者かどうかを確認する
@@ -17,16 +64,17 @@ export async function isCurrentUserAdmin(): Promise<boolean> {
 
     if (!user) return false;
 
-    const { data } = await supabase
-      .from("profiles")
-      .select("is_admin")
-      .eq("id", user.id)
-      .single();
-
-    return data?.is_admin === true;
+    return getCachedAdminStatus(user.id);
   } catch {
     return false;
   }
+}
+
+/**
+ * Clear admin cache for a specific user (call after admin status changes)
+ */
+export async function clearAdminCache(userId: string): Promise<void> {
+  adminCache.delete(userId);
 }
 
 /**

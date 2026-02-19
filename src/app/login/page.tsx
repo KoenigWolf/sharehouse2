@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { m, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,10 @@ export default function LoginPage() {
   const router = useRouter();
   const t = useI18n();
   const [isForgotMode, setIsForgotMode] = useState(false);
+  const searchParams = useSearchParams();
+  // Validate returnTo to prevent open redirect attacks (must be relative path, not //host or absolute URL)
+  const rawReturnTo = searchParams.get("returnTo");
+  const returnTo = rawReturnTo && /^\/(?!\/)/.test(rawReturnTo) ? rawReturnTo : "/";
 
   const handleResetRequest = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,7 +70,7 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/");
+    router.push(returnTo);
     router.refresh();
   };
 
@@ -106,7 +110,7 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/");
+    router.push(returnTo);
     router.refresh();
   };
 

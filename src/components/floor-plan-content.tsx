@@ -14,7 +14,7 @@ import { staggerContainer, staggerItem } from "@/lib/animation";
 
 interface FloorPlanContentProps {
   profiles: Profile[];
-  currentUserId: string;
+  currentUserId?: string;
 }
 
 const FLOORS: FloorId[] = ["2F", "3F", "4F", "5F"];

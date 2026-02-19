@@ -251,7 +251,7 @@ function ShareComposeModal(props: ShareComposeModalProps) {
 
 interface ShareContentProps {
   items: ShareItemWithProfile[];
-  currentUserId: string;
+  currentUserId?: string;
   isTeaser?: boolean;
 }
 

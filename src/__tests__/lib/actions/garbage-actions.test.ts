@@ -35,6 +35,12 @@ vi.mock("@/lib/security", () => ({
   ),
 }));
 
+const mockRequireAdmin = vi.fn();
+vi.mock("@/lib/admin/check", () => ({
+  requireAdmin: () => mockRequireAdmin(),
+  clearAdminCache: vi.fn(),
+}));
+
 const t = createTranslator("ja");
 
 describe("getGarbageSchedule", () => {
@@ -230,16 +236,7 @@ describe("createGarbageScheduleEntry (admin)", () => {
 
   it("should return error when user is not admin", async () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: "user-123" } } });
-    mockFrom.mockReturnValue({
-      select: vi.fn().mockReturnValue({
-        eq: vi.fn().mockReturnValue({
-          single: vi.fn().mockResolvedValue({
-            data: { is_admin: false },
-            error: null,
-          }),
-        }),
-      }),
-    });
+    mockRequireAdmin.mockResolvedValue(t("errors.forbidden"));
 
     const { createGarbageScheduleEntry } = await import("@/lib/garbage/actions");
     const result = await createGarbageScheduleEntry({
@@ -253,16 +250,7 @@ describe("createGarbageScheduleEntry (admin)", () => {
 
   it("should reject invalid day_of_week", async () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: "admin-123" } } });
-    mockFrom.mockReturnValue({
-      select: vi.fn().mockReturnValue({
-        eq: vi.fn().mockReturnValue({
-          single: vi.fn().mockResolvedValue({
-            data: { is_admin: true },
-            error: null,
-          }),
-        }),
-      }),
-    });
+    mockRequireAdmin.mockResolvedValue(null);
 
     const { createGarbageScheduleEntry } = await import("@/lib/garbage/actions");
     const result = await createGarbageScheduleEntry({
@@ -275,21 +263,11 @@ describe("createGarbageScheduleEntry (admin)", () => {
 
   it("should create schedule entry successfully for admin", async () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: "admin-123" } } });
+    mockRequireAdmin.mockResolvedValue(null);
 
-    mockFrom
-      .mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({
-              data: { is_admin: true },
-              error: null,
-            }),
-          }),
-        }),
-      })
-      .mockReturnValueOnce({
-        insert: vi.fn().mockResolvedValue({ error: null }),
-      });
+    mockFrom.mockReturnValue({
+      insert: vi.fn().mockResolvedValue({ error: null }),
+    });
 
     const { createGarbageScheduleEntry } = await import("@/lib/garbage/actions");
     const result = await createGarbageScheduleEntry({
@@ -319,23 +297,13 @@ describe("deleteGarbageScheduleEntry (admin)", () => {
 
   it("should delete entry successfully for admin", async () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: "admin-123" } } });
+    mockRequireAdmin.mockResolvedValue(null);
 
-    mockFrom
-      .mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({
-              data: { is_admin: true },
-              error: null,
-            }),
-          }),
-        }),
-      })
-      .mockReturnValueOnce({
-        delete: vi.fn().mockReturnValue({
-          eq: vi.fn().mockResolvedValue({ error: null }),
-        }),
-      });
+    mockFrom.mockReturnValue({
+      delete: vi.fn().mockReturnValue({
+        eq: vi.fn().mockResolvedValue({ error: null }),
+      }),
+    });
 
     const { deleteGarbageScheduleEntry } = await import("@/lib/garbage/actions");
     const result = await deleteGarbageScheduleEntry("12345678-1234-1234-1234-123456789012");
