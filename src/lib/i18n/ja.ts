@@ -26,6 +26,7 @@ export const ja = {
     formerResident: "退去済み",
     processing: "処理中...",
     copy: "Copy",
+    noData: "データがありません",
     new: "NEW",
     remove: "削除",
     input: "入力",
@@ -568,12 +569,18 @@ export const ja = {
   info: {
     title: "シェアハウス情報",
     subtitle: "生活に必要な情報をまとめています",
+    // Tab labels
+    tabQuickAccess: "クイック",
+    tabGarbage: "ゴミ出し",
+    tabBuilding: "施設案内",
+    // Section titles
     buildingName: "田中ビル",
     sharedFacilities: "共用設備",
     floorInfo: "フロア情報",
     floorGuide: "フロアガイド",
     garbageAndDuties: "ゴミ出し＆当番",
     generalInformation: "共通情報",
+    // Quick access section
     wifi: "Wi-Fi",
     password: "パスワード",
     noPassword: "パスワードなし",

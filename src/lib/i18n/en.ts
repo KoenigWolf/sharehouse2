@@ -27,6 +27,7 @@ export const en: Translations = {
     formerResident: "Former resident",
     processing: "Processing...",
     copy: "Copy",
+    noData: "No data available",
     new: "NEW",
     remove: "Remove",
     input: "input",
@@ -568,12 +569,18 @@ export const en: Translations = {
   info: {
     title: "Share House Info",
     subtitle: "Essential information for daily life",
+    // Tab labels
+    tabQuickAccess: "Quick",
+    tabGarbage: "Garbage",
+    tabBuilding: "Guide",
+    // Section titles
     buildingName: "Tanaka Building",
     sharedFacilities: "Shared Facilities",
     floorInfo: "Floor Info",
     floorGuide: "Floor Guide",
     garbageAndDuties: "Garbage & Duties",
     generalInformation: "General Information",
+    // Quick access section
     wifi: "Wi-Fi",
     password: "Password",
     noPassword: "No Password",
