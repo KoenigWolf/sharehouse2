@@ -5,11 +5,38 @@ import { ShareContent } from "@/components/share-content";
 import { BlurredPageContent } from "@/components/blurred-page-content";
 import { getShareItems } from "@/lib/share/actions";
 import { getCachedUser } from "@/lib/supabase/cached-queries";
+import { generateMockShareItems } from "@/lib/mock-data";
 
 export default async function SharePage() {
-  const { user } = await getCachedUser();
-  const shareItems = await getShareItems();
+  const { user, supabase } = await getCachedUser();
   const isBlurred = !user;
+
+  // プライバシー保護: 未認証ユーザーには実データを渡さない
+  if (isBlurred) {
+    const { count } = await supabase
+      .from("share_items")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "available");
+    const totalCount = count ?? 0;
+    const mockItems = generateMockShareItems(totalCount);
+
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <Header />
+        <main className="flex-1 pb-20 sm:pb-12">
+          <div className="container mx-auto px-4 sm:px-6 pt-2 sm:pt-6 pb-4 max-w-4xl">
+            <BlurredPageContent isBlurred={isBlurred} totalCount={totalCount}>
+              <ShareContent items={mockItems} currentUserId={undefined} />
+            </BlurredPageContent>
+          </div>
+        </main>
+        <Footer />
+        <MobileNav />
+      </div>
+    );
+  }
+
+  const shareItems = await getShareItems();
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -17,12 +44,7 @@ export default async function SharePage() {
 
       <main className="flex-1 pb-20 sm:pb-12">
         <div className="container mx-auto px-4 sm:px-6 pt-2 sm:pt-6 pb-4 max-w-4xl">
-          <BlurredPageContent isBlurred={isBlurred} totalCount={shareItems.length}>
-            <ShareContent
-              items={shareItems}
-              currentUserId={user?.id}
-            />
-          </BlurredPageContent>
+          <ShareContent items={shareItems} currentUserId={user.id} />
         </div>
       </main>
 
