@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, memo } from "react";
+import { useState, useCallback, useMemo, memo, useRef, useEffect } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import {
   Wifi,
@@ -32,6 +32,10 @@ import type { GarbageSchedule, GarbageDutyWithProfile } from "@/domain/garbage";
 import type { SharedInfo } from "@/domain/shared-info";
 import { staggerContainer, staggerItem } from "@/lib/animation";
 import { cn } from "@/lib/utils";
+import { logError } from "@/lib/errors";
+
+const TAB_TRIGGER_CLASS =
+  "flex-1 sm:flex-none gap-2 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm";
 
 // =============================================================================
 // WiFi Configuration - Single Source of Truth
@@ -125,17 +129,30 @@ const CopyButton = memo(function CopyButton({
   label: string;
   className?: string;
 }) {
-  const [copied, setCopied] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
+  const timerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current !== null) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
 
   const handleCopy = useCallback(
     async (e: React.MouseEvent) => {
       e.stopPropagation();
       try {
         await navigator.clipboard.writeText(value);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      } catch {
-        setCopied(false);
+        setIsCopied(true);
+        if (timerRef.current !== null) {
+          clearTimeout(timerRef.current);
+        }
+        timerRef.current = window.setTimeout(() => setIsCopied(false), 2000);
+      } catch (err) {
+        logError(err, { action: "CopyButton: clipboard write" });
+        setIsCopied(false);
       }
     },
     [value]
@@ -149,7 +166,7 @@ const CopyButton = memo(function CopyButton({
       onClick={handleCopy}
       className={cn(
         "w-10 h-10 rounded-full transition-all duration-200",
-        copied
+        isCopied
           ? "bg-green-500/10 text-green-600"
           : "hover:bg-muted text-muted-foreground",
         className
@@ -157,7 +174,7 @@ const CopyButton = memo(function CopyButton({
       aria-label={label}
     >
       <AnimatePresence mode="wait" initial={false}>
-        {copied ? (
+        {isCopied ? (
           <m.div
             key="check"
             initial={{ scale: 0.5, opacity: 0 }}
@@ -564,24 +581,15 @@ export function InfoPageContent({
   return (
     <Tabs defaultValue="quick" className="w-full">
       <TabsList className="w-full justify-start bg-muted/50 p-1 rounded-xl mb-6">
-        <TabsTrigger
-          value="quick"
-          className="flex-1 sm:flex-none gap-2 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm"
-        >
+        <TabsTrigger value="quick" className={TAB_TRIGGER_CLASS}>
           <Wifi size={16} />
           <span>{t("info.tabQuickAccess")}</span>
         </TabsTrigger>
-        <TabsTrigger
-          value="garbage"
-          className="flex-1 sm:flex-none gap-2 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm"
-        >
+        <TabsTrigger value="garbage" className={TAB_TRIGGER_CLASS}>
           <Trash2 size={16} />
           <span>{t("info.tabGarbage")}</span>
         </TabsTrigger>
-        <TabsTrigger
-          value="guide"
-          className="flex-1 sm:flex-none gap-2 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm"
-        >
+        <TabsTrigger value="guide" className={TAB_TRIGGER_CLASS}>
           <BookOpen size={16} />
           <span>{t("info.tabBuilding")}</span>
         </TabsTrigger>
