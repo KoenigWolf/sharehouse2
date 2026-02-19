@@ -84,7 +84,7 @@ export async function signUp(
     return { error: formatRateLimitError(rateLimitResult.retryAfter, t) };
   }
 
-  // Check if password has been exposed in data breaches
+  // Reject compromised passwords to prevent credential stuffing attacks
   const breachResult = await checkPasswordBreach(validatedPassword);
   if (breachResult.breached && breachResult.count && breachResult.count >= BREACH_WARNING_THRESHOLD) {
     auditLog({
