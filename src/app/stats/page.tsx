@@ -14,7 +14,7 @@ export default async function StatsPage() {
   // 未認証ユーザーには公開用の限定データのみ取得（セキュリティ対策）
   if (isBlurred) {
     const { profiles: publicTeasers } = await getPublicProfilesWithMock(supabase);
-    // 実データは渡さず、モックデータで視覚的な表示のみ提供
+    // プライバシー保護: 未認証ユーザーには実データを渡さない
     const teaserProfiles = mockProfiles.slice(0, Math.min(publicTeasers.length, 12));
     const emptyStats = {
       events: { total: 0, upcoming: 0, past: 0, totalAttendees: 0, uniqueCreators: 0, avgAttendeesPerEvent: 0 },
@@ -158,13 +158,11 @@ export default async function StatsPage() {
 
       <main className="flex-1 pb-20 sm:pb-12">
         <div className="container mx-auto px-4 sm:px-6 pt-2 sm:pt-6 pb-4 max-w-5xl">
-          <BlurredPageContent isBlurred={isBlurred} totalCount={profiles.length}>
-            <ResidentStats
-              profiles={profiles}
-              teaTimeParticipants={teaTimeParticipants}
-              extendedStats={extendedStats}
-            />
-          </BlurredPageContent>
+          <ResidentStats
+            profiles={profiles}
+            teaTimeParticipants={teaTimeParticipants}
+            extendedStats={extendedStats}
+          />
         </div>
       </main>
 
