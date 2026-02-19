@@ -8,26 +8,103 @@ import {
   Copy,
   Check,
   MapPin,
-  Signal,
   Info,
-  Zap,
   Building2,
   Mailbox,
   BookOpen,
+  Router,
+  AlertTriangle,
+  Server,
+  KeyRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { useI18n } from "@/hooks/use-i18n";
 import { GarbageScheduleView } from "@/components/garbage-schedule-view";
 import { GarbageAdminPanel } from "@/components/garbage-admin-panel";
-import type { WifiInfo } from "@/domain/wifi";
 import type { GarbageSchedule, GarbageDutyWithProfile } from "@/domain/garbage";
 import type { SharedInfo } from "@/domain/shared-info";
 import { staggerContainer, staggerItem } from "@/lib/animation";
 import { cn } from "@/lib/utils";
 
+// =============================================================================
+// WiFi Configuration - Single Source of Truth
+// =============================================================================
+
+const WIFI_CONFIG = {
+  password: "Koishikawa190808",
+  security: "WPA2",
+  isHidden: true,
+  ssids: [
+    { name: "Yamamomo-1", band: "2.4GHz / 5GHz", recommended: true },
+    { name: "Yamamomo-2", band: "2.4GHz", recommended: false },
+    { name: "Yamamomo-3", band: "5GHz", recommended: false },
+  ],
+  accessPoints: [
+    { id: "ap1", name: "親機1", location: "玄関", model: "PR-500MI" },
+    { id: "ap2", name: "親機2", location: "居間", model: "WEM-1266" },
+    { id: "ap3", name: "中継機", location: "廊下", model: "WEM-1266" },
+  ],
+  devices: [
+    {
+      id: "pr500mi",
+      name: "親機1",
+      model: "NTT PR-500MI",
+      year: "2018年10月",
+      mac: "58:52:8A:60:C2:C7",
+      pin: "97191223",
+      initialSsids: [
+        { name: "pr500m-60c2c7-1", key: "f8e0219cc78af" },
+        { name: "pr500m-60c2c7-2", key: "3eb0b6aa0eca3" },
+        { name: "pr500m-60c2c7-3", key: "84550a5f529ec" },
+      ],
+    },
+    {
+      id: "wem1266",
+      name: "親機2・中継機",
+      model: "Buffalo WEM-1266",
+      settingsUrl: "192.168.11.210",
+      adminUser: "admin",
+      adminPass: "password",
+      mac: "50C4DD2980E0",
+    },
+  ],
+  notes: [
+    {
+      type: "warning" as const,
+      titleKey: "info.wifiNoteRouterTitle" as const,
+      contentKey: "info.wifiNoteRouterContent" as const,
+    },
+    {
+      type: "info" as const,
+      titleKey: "info.wifiNoteRebootTitle" as const,
+      contentKey: "info.wifiNoteRebootContent" as const,
+    },
+  ],
+} as const;
+
+// =============================================================================
+// Building Info - Single Source of Truth
+// =============================================================================
+
+const BUILDING_INFO = {
+  mailbox: {
+    code: '左に2回「4」、右に1回「8」',
+  },
+  address: "〒112-0002 東京都文京区小石川1-9-8",
+} as const;
+
+// =============================================================================
+// Types
+// =============================================================================
+
 interface InfoPageContentProps {
-  wifiInfos: WifiInfo[];
   schedule: GarbageSchedule[];
   duties: GarbageDutyWithProfile[];
   sharedInfos: SharedInfo[];
@@ -106,190 +183,127 @@ const CopyButton = memo(function CopyButton({
 CopyButton.displayName = "CopyButton";
 
 // =============================================================================
-// Tab 1: Quick Access (WiFi, Mailbox, Address)
+// Tab 1: Quick Access (WiFi + Mailbox + Address)
 // =============================================================================
 
-interface QuickAccessTabProps {
-  wifiInfos: WifiInfo[];
-  sharedInfos: SharedInfo[];
-}
-
-function QuickAccessTab({ wifiInfos, sharedInfos }: QuickAccessTabProps) {
+function QuickAccessTab() {
   const t = useI18n();
-
-  // Group WiFi by floor
-  const wifiByFloor = useMemo(() => {
-    const grouped = new Map<number, WifiInfo[]>();
-    for (const wifi of wifiInfos) {
-      const floor = wifi.floor ?? 0;
-      const existing = grouped.get(floor) ?? [];
-      existing.push(wifi);
-      grouped.set(floor, existing);
-    }
-    // Sort floors (0 = shared goes last)
-    return Array.from(grouped.entries()).sort((a, b) => {
-      if (a[0] === 0) return 1;
-      if (b[0] === 0) return -1;
-      return a[0] - b[0];
-    });
-  }, [wifiInfos]);
-
-  // Extract mailbox codes and addresses
-  const mailboxCodes = useMemo(
-    () => sharedInfos.filter((info) => info.info_key.startsWith("mailbox_code")),
-    [sharedInfos]
-  );
-
-  const addresses = useMemo(
-    () => sharedInfos.filter((info) => info.info_key.startsWith("address")),
-    [sharedInfos]
-  );
 
   return (
     <m.div
       variants={staggerContainer}
       initial="hidden"
       animate="visible"
-      className="space-y-8"
+      className="space-y-6"
     >
-      {/* WiFi Section */}
-      {wifiByFloor.length > 0 && (
-        <m.section variants={staggerItem}>
-          <div className="flex items-center gap-2 mb-4 text-muted-foreground">
-            <Wifi size={18} />
-            <h3 className="text-sm font-bold uppercase tracking-wider">
-              {t("info.wifi")}
-            </h3>
+      {/* WiFi Connection Card */}
+      <m.section variants={staggerItem}>
+        <div className="flex items-center gap-2 mb-4 text-muted-foreground">
+          <Wifi size={18} />
+          <h3 className="text-sm font-bold uppercase tracking-wider">
+            {t("info.wifi")}
+          </h3>
+        </div>
+
+        <div className="rounded-xl border border-border/60 bg-card p-4 sm:p-5">
+          {/* Stealth Warning */}
+          <div className="flex items-center gap-2 mb-4 p-3 rounded-lg bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-900/50">
+            <AlertTriangle size={16} className="text-amber-600 dark:text-amber-400 flex-shrink-0" />
+            <p className="text-xs text-amber-700 dark:text-amber-300">
+              {t("info.wifiStealthNote")}
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {wifiByFloor.map(([floor, wifiList]) => {
-              const floorLabel = floor === 0 ? t("info.sharedFacilities") : `${floor}F`;
-              const passwords = wifiList.map((w) => w.password).filter(Boolean);
-              const uniquePasswords = [...new Set(passwords)];
-              const hasCommonPassword = uniquePasswords.length === 1;
-              const commonPassword = hasCommonPassword ? uniquePasswords[0] : null;
+          {/* Password */}
+          <div className="mb-4">
+            <div className="flex items-center gap-2 mb-2">
+              <KeyRound size={14} className="text-muted-foreground" />
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                {t("info.password")}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <code className="text-lg font-mono font-bold text-foreground bg-muted/50 px-3 py-1.5 rounded-lg">
+                {WIFI_CONFIG.password}
+              </code>
+              <CopyButton value={WIFI_CONFIG.password} label={t("common.copy")} />
+            </div>
+          </div>
 
-              return (
+          {/* SSID List */}
+          <div className="pt-4 border-t border-border/40">
+            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-3">
+              {t("info.wifiNetworks")}
+            </span>
+            <div className="space-y-2">
+              {WIFI_CONFIG.ssids.map((ssid) => (
                 <div
-                  key={floor}
-                  className="rounded-xl border border-border/60 bg-card p-4 hover:border-border transition-colors"
+                  key={ssid.name}
+                  className={cn(
+                    "flex items-center justify-between p-3 rounded-lg",
+                    ssid.recommended
+                      ? "bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/50 dark:border-emerald-900/50"
+                      : "bg-muted/30"
+                  )}
                 >
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                      {floorLabel}
-                    </span>
-                    <Signal size={14} className="text-emerald-500" />
-                  </div>
-
-                  <div className="space-y-2 mb-3">
-                    {wifiList.map((wifi) => (
-                      <div key={wifi.id} className="font-mono text-sm text-foreground/80">
-                        {wifi.ssid}
+                  <div className="flex items-center gap-3">
+                    <Wifi size={14} className={ssid.recommended ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"} />
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-medium text-sm">{ssid.name}</span>
+                        {ssid.recommended && (
+                          <span className="text-[10px] bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 px-1.5 py-0.5 rounded font-medium">
+                            {t("info.wifiRecommended")}
+                          </span>
+                        )}
                       </div>
-                    ))}
+                      <span className="text-xs text-muted-foreground">{ssid.band}</span>
+                    </div>
                   </div>
-
-                  {hasCommonPassword && commonPassword && (
-                    <div className="pt-3 border-t border-border/40 flex items-center justify-between">
-                      <div>
-                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-0.5">
-                          {t("info.password")}
-                        </span>
-                        <code className="text-sm font-mono font-bold text-foreground bg-muted/50 px-2 py-0.5 rounded">
-                          {commonPassword}
-                        </code>
-                      </div>
-                      <CopyButton value={commonPassword} label={t("common.copy")} />
-                    </div>
-                  )}
-
-                  {!hasCommonPassword && passwords.length > 0 && (
-                    <div className="pt-3 border-t border-border/40 space-y-2">
-                      {wifiList.map(
-                        (wifi) =>
-                          wifi.password && (
-                            <div key={wifi.id} className="flex items-center justify-between">
-                              <div>
-                                <span className="text-[10px] text-muted-foreground block">
-                                  {wifi.ssid}
-                                </span>
-                                <code className="text-sm font-mono font-bold text-foreground bg-muted/50 px-2 py-0.5 rounded">
-                                  {wifi.password}
-                                </code>
-                              </div>
-                              <CopyButton value={wifi.password} label={t("common.copy")} />
-                            </div>
-                          )
-                      )}
-                    </div>
-                  )}
-
-                  {passwords.length === 0 && (
-                    <div className="pt-3 border-t border-border/40 text-sm text-muted-foreground">
-                      {t("info.noPassword")}
-                    </div>
-                  )}
+                  <CopyButton value={ssid.name} label={t("common.copy")} className="w-8 h-8" />
                 </div>
-              );
-            })}
+              ))}
+            </div>
           </div>
-        </m.section>
-      )}
+        </div>
+      </m.section>
 
-      {/* Mailbox & Address Section */}
-      {(mailboxCodes.length > 0 || addresses.length > 0) && (
-        <m.section variants={staggerItem}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Mailbox Codes */}
-            {mailboxCodes.map((info) => (
-              <div
-                key={info.id}
-                className="rounded-xl border border-border/60 bg-card p-4 hover:border-border transition-colors"
-              >
-                <div className="flex items-center gap-2 mb-3 text-muted-foreground">
-                  <Mailbox size={18} />
-                  <span className="text-xs font-bold uppercase tracking-wider">
-                    {info.title || t("info.mailbox")}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-lg font-bold text-foreground font-mono">
-                    {info.content}
-                  </span>
-                  <CopyButton value={info.content} label={t("common.copy")} />
-                </div>
-                {info.notes && (
-                  <p className="text-xs text-muted-foreground mt-3 pt-3 border-t border-border/40">
-                    {info.notes}
-                  </p>
-                )}
-              </div>
-            ))}
-
-            {/* Addresses */}
-            {addresses.map((info) => (
-              <div
-                key={info.id}
-                className="rounded-xl border border-border/60 bg-card p-4 hover:border-border transition-colors"
-              >
-                <div className="flex items-center gap-2 mb-3 text-muted-foreground">
-                  <MapPin size={18} />
-                  <span className="text-xs font-bold uppercase tracking-wider">
-                    {info.title || t("info.address")}
-                  </span>
-                </div>
-                <div className="flex items-start justify-between gap-4">
-                  <p className="text-sm font-medium text-foreground leading-relaxed">
-                    {info.content}
-                  </p>
-                  <CopyButton value={info.content} label={t("common.copy")} className="-mt-1" />
-                </div>
-              </div>
-            ))}
+      {/* Mailbox & Address */}
+      <m.section variants={staggerItem}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Mailbox */}
+          <div className="rounded-xl border border-border/60 bg-card p-4 hover:border-border transition-colors">
+            <div className="flex items-center gap-2 mb-3 text-muted-foreground">
+              <Mailbox size={18} />
+              <span className="text-xs font-bold uppercase tracking-wider">
+                {t("info.mailbox")}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-bold text-foreground">
+                {BUILDING_INFO.mailbox.code}
+              </span>
+              <CopyButton value={BUILDING_INFO.mailbox.code} label={t("common.copy")} />
+            </div>
           </div>
-        </m.section>
-      )}
+
+          {/* Address */}
+          <div className="rounded-xl border border-border/60 bg-card p-4 hover:border-border transition-colors">
+            <div className="flex items-center gap-2 mb-3 text-muted-foreground">
+              <MapPin size={18} />
+              <span className="text-xs font-bold uppercase tracking-wider">
+                {t("info.address")}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-bold text-foreground">
+                {BUILDING_INFO.address}
+              </span>
+              <CopyButton value={BUILDING_INFO.address} label={t("common.copy")} />
+            </div>
+          </div>
+        </div>
+      </m.section>
     </m.div>
   );
 }
@@ -331,7 +345,7 @@ function GarbageTab({ schedule, duties, isAdmin, currentUserId }: GarbageTabProp
 }
 
 // =============================================================================
-// Tab 3: Building Guide (Notes + Common Info)
+// Tab 3: Building Guide (Technical Info + General Info)
 // =============================================================================
 
 interface BuildingGuideTabProps {
@@ -341,92 +355,194 @@ interface BuildingGuideTabProps {
 function BuildingGuideTab({ sharedInfos }: BuildingGuideTabProps) {
   const t = useI18n();
 
-  const wifiNote = useMemo(
-    () => sharedInfos.find((info) => info.info_key === "wifi_note") ?? null,
-    [sharedInfos]
-  );
-
-  // Floor-specific info (mailbox, address) is shown in QuickAccessTab, so filter to floor === null
   const commonInfos = useMemo(
     () =>
       sharedInfos.filter(
         (info) =>
           info.floor === null &&
           !info.info_key.startsWith("mailbox_code") &&
-          !info.info_key.startsWith("address") &&
-          info.info_key !== "wifi_note"
+          !info.info_key.startsWith("address")
       ),
     [sharedInfos]
   );
-
-  if (!wifiNote && commonInfos.length === 0) {
-    return (
-      <div className="text-center py-12 text-muted-foreground">
-        <Building2 size={48} className="mx-auto mb-4 opacity-50" />
-        <p className="text-sm">{t("common.noData")}</p>
-      </div>
-    );
-  }
 
   return (
     <m.div
       variants={staggerContainer}
       initial="hidden"
       animate="visible"
-      className="space-y-6"
+      className="space-y-8"
     >
-      {/* WiFi Tips (highlighted) */}
-      {wifiNote && (
-        <m.div
-          variants={staggerItem}
-          className="p-4 sm:p-5 rounded-xl border border-blue-200/50 bg-blue-50/50 dark:bg-blue-950/20 dark:border-blue-900/50"
-        >
-          <div className="flex gap-4">
-            <div className="text-blue-600 dark:text-blue-400 mt-1">
-              <Zap size={20} />
-            </div>
-            <div className="space-y-2">
-              <h4 className="text-sm font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300">
-                {wifiNote.title}
-              </h4>
-              <p className="text-sm text-foreground/90 leading-relaxed whitespace-pre-wrap">
-                {wifiNote.content}
-              </p>
-              {wifiNote.notes && (
-                <div className="flex items-start gap-2 mt-2 text-xs text-blue-600/80 dark:text-blue-300/80">
-                  <Info size={14} className="mt-0.5 flex-shrink-0" />
-                  <span>{wifiNote.notes}</span>
-                </div>
-              )}
-            </div>
-          </div>
-        </m.div>
-      )}
+      {/* WiFi Technical Section */}
+      <m.section variants={staggerItem} className="space-y-4">
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Router size={18} />
+          <h3 className="text-sm font-bold uppercase tracking-wider">
+            {t("info.wifiConfig")}
+          </h3>
+        </div>
 
-      {/* Common Information Cards */}
-      {commonInfos.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {commonInfos.map((info) => (
-            <m.div
-              key={info.id}
-              variants={staggerItem}
-              className="p-4 sm:p-5 rounded-xl border border-border/60 bg-card hover:border-border transition-colors"
-            >
-              <div className="flex items-center gap-2 mb-3 text-muted-foreground">
-                <Info size={18} />
-                <h4 className="text-xs font-bold uppercase tracking-wider">{info.title}</h4>
+        {/* Access Point Locations */}
+        <div className="rounded-xl border border-border/60 bg-card p-4 sm:p-5">
+          <div className="flex items-center gap-2 mb-4 text-muted-foreground">
+            <Server size={16} />
+            <span className="text-xs font-bold uppercase tracking-wider">
+              {t("info.wifiAccessPoints")}
+            </span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {WIFI_CONFIG.accessPoints.map((ap) => (
+              <div key={ap.id} className="bg-muted/30 rounded-lg p-3 text-center">
+                <div className="text-xs text-muted-foreground mb-1">{ap.location}</div>
+                <div className="font-medium text-sm">{ap.name}</div>
+                <div className="text-[10px] text-muted-foreground font-mono">{ap.model}</div>
               </div>
-              <p className="text-sm text-foreground/90 leading-relaxed whitespace-pre-wrap">
-                {info.content}
-              </p>
-              {info.notes && (
-                <p className="mt-3 text-xs text-muted-foreground bg-muted/30 p-2 rounded border border-border/20">
-                  {info.notes}
-                </p>
+            ))}
+          </div>
+        </div>
+
+        {/* Hardware Details */}
+        <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
+          <div className="px-4 sm:px-5 pt-4 pb-2">
+            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+              {t("info.wifiHardwareDetails")}
+            </span>
+          </div>
+          <Accordion type="single" collapsible className="px-4 sm:px-5">
+            {WIFI_CONFIG.devices.map((device) => (
+              <AccordionItem key={device.id} value={device.id}>
+                <AccordionTrigger className="text-sm">
+                  <span>
+                    <span className="font-medium">{device.name}</span>
+                    <span className="text-muted-foreground ml-2">({device.model})</span>
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-3 text-sm">
+                    {"year" in device && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">{t("info.wifiManufactureDate")}</span>
+                        <span className="font-mono">{device.year}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">{t("info.wifiMacAddress")}</span>
+                      <div className="flex items-center gap-1">
+                        <span className="font-mono text-xs">{device.mac}</span>
+                        <CopyButton value={device.mac} label={t("common.copy")} className="w-7 h-7" />
+                      </div>
+                    </div>
+                    {"pin" in device && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">PIN</span>
+                        <span className="font-mono">{device.pin}</span>
+                      </div>
+                    )}
+                    {"settingsUrl" in device && (
+                      <>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">{t("info.wifiSettingsUrl")}</span>
+                          <span className="font-mono text-xs">{device.settingsUrl}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">{t("info.wifiAdminUser")}</span>
+                          <span className="font-mono">{device.adminUser}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">{t("info.wifiAdminPass")}</span>
+                          <span className="font-mono">{device.adminPass}</span>
+                        </div>
+                      </>
+                    )}
+                    {"initialSsids" in device && (
+                      <div className="pt-2 border-t border-border/40">
+                        <div className="text-xs text-muted-foreground mb-2">
+                          {t("info.wifiInitialSsids")}
+                        </div>
+                        <div className="space-y-1">
+                          {device.initialSsids.map((ssid) => (
+                            <div key={ssid.name} className="flex justify-between text-xs">
+                              <span className="font-mono">{ssid.name}</span>
+                              <span className="font-mono text-muted-foreground">{ssid.key}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+
+        {/* Usage Notes */}
+        <div className="space-y-3">
+          {WIFI_CONFIG.notes.map((note, index) => (
+            <div
+              key={index}
+              className={cn(
+                "p-4 rounded-xl border flex gap-3",
+                note.type === "warning"
+                  ? "border-amber-200/50 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-900/50"
+                  : "border-blue-200/50 bg-blue-50/50 dark:bg-blue-950/20 dark:border-blue-900/50"
               )}
-            </m.div>
+            >
+              <div className={cn(
+                "mt-0.5 flex-shrink-0",
+                note.type === "warning"
+                  ? "text-amber-600 dark:text-amber-400"
+                  : "text-blue-600 dark:text-blue-400"
+              )}>
+                {note.type === "warning" ? <AlertTriangle size={16} /> : <Info size={16} />}
+              </div>
+              <div>
+                <div className={cn(
+                  "text-xs font-bold uppercase tracking-wider mb-1",
+                  note.type === "warning"
+                    ? "text-amber-700 dark:text-amber-300"
+                    : "text-blue-700 dark:text-blue-300"
+                )}>
+                  {t(note.titleKey)}
+                </div>
+                <p className="text-sm text-foreground/90">{t(note.contentKey)}</p>
+              </div>
+            </div>
           ))}
         </div>
+      </m.section>
+
+      {/* General Information */}
+      {commonInfos.length > 0 && (
+        <m.section variants={staggerItem}>
+          <div className="flex items-center gap-2 mb-4 text-muted-foreground">
+            <Building2 size={18} />
+            <h3 className="text-sm font-bold uppercase tracking-wider">
+              {t("info.generalInformation")}
+            </h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {commonInfos.map((info) => (
+              <div
+                key={info.id}
+                className="p-4 sm:p-5 rounded-xl border border-border/60 bg-card hover:border-border transition-colors"
+              >
+                <div className="flex items-center gap-2 mb-3 text-muted-foreground">
+                  <Info size={18} />
+                  <h4 className="text-xs font-bold uppercase tracking-wider">{info.title}</h4>
+                </div>
+                <p className="text-sm text-foreground/90 leading-relaxed whitespace-pre-wrap">
+                  {info.content}
+                </p>
+                {info.notes && (
+                  <p className="mt-3 text-xs text-muted-foreground bg-muted/30 p-2 rounded border border-border/20">
+                    {info.notes}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </m.section>
       )}
     </m.div>
   );
@@ -437,7 +553,6 @@ function BuildingGuideTab({ sharedInfos }: BuildingGuideTabProps) {
 // =============================================================================
 
 export function InfoPageContent({
-  wifiInfos,
   schedule,
   duties,
   sharedInfos,
@@ -473,7 +588,7 @@ export function InfoPageContent({
       </TabsList>
 
       <TabsContent value="quick" className="mt-0">
-        <QuickAccessTab wifiInfos={wifiInfos} sharedInfos={sharedInfos} />
+        <QuickAccessTab />
       </TabsContent>
 
       <TabsContent value="garbage" className="mt-0">
