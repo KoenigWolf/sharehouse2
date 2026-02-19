@@ -19,7 +19,9 @@ type PaymentType = (typeof ALLOWED_PAYMENT_TYPES)[number];
 const MIN_AMOUNT = 100;
 const MAX_AMOUNT = 1_000_000;
 
-// Idempotency cache (prevents duplicate charges)
+// Idempotency cache (prevents duplicate charges within same instance)
+// NOTE: In-memory cache is not shared across serverless instances.
+// For production, consider using Redis or DB-backed idempotency.
 interface IdempotencyEntry {
   response: { sessionId: string; url: string | null };
   expiresAt: number;

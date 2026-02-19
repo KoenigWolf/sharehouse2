@@ -52,7 +52,7 @@ export default async function ResidentsPage() {
   // 未認証ユーザーには公開用の限定データのみ取得（セキュリティ対策）
   const { profiles: publicTeasers } = await getPublicProfilesWithMock(supabase);
 
-  // 実データは渡さず、モックデータで視覚的な表示のみ提供
+  // プライバシー保護: 未認証ユーザーには実データを渡さない
   const teaserProfiles = mockProfiles.slice(0, Math.min(publicTeasers.length, 12));
 
   return (
