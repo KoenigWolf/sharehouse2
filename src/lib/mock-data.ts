@@ -1,4 +1,8 @@
 import { Profile } from "@/domain/profile";
+import type { BulletinWithProfile } from "@/domain/bulletin";
+import type { EventWithDetails } from "@/domain/event";
+import type { ShareItemWithProfile } from "@/domain/share-item";
+import type { PhotoWithProfile } from "@/domain/room-photo";
 
 /**
  * DESIGN_GUIDELINES.md準拠のミニマルなアバター生成
@@ -303,3 +307,108 @@ export const mockProfiles: Profile[] = [
     updated_at: "2024-06-01T00:00:00Z",
   },
 ];
+
+/**
+ * Generate mock bulletins for unauthenticated teaser display
+ * Uses generic placeholder content to avoid leaking real data
+ */
+export function generateMockBulletins(count: number): BulletinWithProfile[] {
+  return Array.from({ length: Math.min(count, 5) }, (_, i) => ({
+    id: `mock-bulletin-${i}`,
+    user_id: `mock-${i + 1}`,
+    message: "これはサンプルメッセージです。ログインすると実際の投稿が表示されます。",
+    created_at: new Date(Date.now() - i * 3600000).toISOString(),
+    updated_at: new Date(Date.now() - i * 3600000).toISOString(),
+    profiles: {
+      name: mockProfiles[i % mockProfiles.length].name,
+      nickname: null,
+      avatar_url: mockProfiles[i % mockProfiles.length].avatar_url,
+      room_number: mockProfiles[i % mockProfiles.length].room_number,
+    },
+  }));
+}
+
+/**
+ * Generate mock events for unauthenticated teaser display
+ */
+export function generateMockEvents(count: number): EventWithDetails[] {
+  const futureDate = (daysFromNow: number) => {
+    const d = new Date();
+    d.setDate(d.getDate() + daysFromNow);
+    return d.toISOString().split("T")[0];
+  };
+
+  return Array.from({ length: Math.min(count, 5) }, (_, i) => ({
+    id: `mock-event-${i}`,
+    user_id: `mock-${i + 1}`,
+    title: "サンプルイベント",
+    description: "これはサンプルイベントです。ログインすると詳細が表示されます。",
+    event_date: futureDate(i * 7 + 1),
+    event_time: "19:00",
+    location: "共有スペース",
+    cover_image_url: null,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    profiles: {
+      name: mockProfiles[i % mockProfiles.length].name,
+      nickname: null,
+      avatar_url: mockProfiles[i % mockProfiles.length].avatar_url,
+    },
+    event_attendees: [],
+  }));
+}
+
+/**
+ * Generate mock share items for unauthenticated teaser display
+ */
+export function generateMockShareItems(count: number): ShareItemWithProfile[] {
+  return Array.from({ length: Math.min(count, 5) }, (_, i) => ({
+    id: `mock-share-${i}`,
+    user_id: `mock-${i + 1}`,
+    title: "サンプルアイテム",
+    description: "これはサンプルです。ログインすると詳細が表示されます。",
+    image_url: null,
+    status: "available" as const,
+    claimed_by: null,
+    expires_at: new Date(Date.now() + 7 * 24 * 3600000).toISOString(),
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    profiles: {
+      name: mockProfiles[i % mockProfiles.length].name,
+      nickname: null,
+      avatar_url: mockProfiles[i % mockProfiles.length].avatar_url,
+      room_number: mockProfiles[i % mockProfiles.length].room_number,
+    },
+  }));
+}
+
+/**
+ * Generate mock room photos for unauthenticated teaser display
+ * Uses placeholder image to avoid leaking real photos
+ */
+export function generateMockRoomPhotos(count: number): PhotoWithProfile[] {
+  // Generate a placeholder image SVG
+  const placeholderImage = `data:image/svg+xml,${encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+      <rect width="400" height="300" fill="#f4f4f5"/>
+      <rect x="150" y="100" width="100" height="80" rx="8" fill="#d4d4d8"/>
+      <circle cx="180" cy="130" r="15" fill="#a1a1aa"/>
+      <path d="M150 180 L200 140 L250 180" stroke="#a1a1aa" stroke-width="3" fill="none"/>
+    </svg>
+  `)}`;
+
+  return Array.from({ length: Math.min(count, 6) }, (_, i) => ({
+    id: `mock-photo-${i}`,
+    user_id: `mock-${i + 1}`,
+    photo_url: placeholderImage,
+    caption: null,
+    taken_at: null,
+    display_order: i,
+    created_at: new Date().toISOString(),
+    profile: {
+      id: `mock-${i + 1}`,
+      name: mockProfiles[i % mockProfiles.length].name,
+      avatar_url: mockProfiles[i % mockProfiles.length].avatar_url,
+    },
+  }));
+}
