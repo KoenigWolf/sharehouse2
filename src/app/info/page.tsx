@@ -8,6 +8,8 @@ import { isCurrentUserAdmin } from "@/lib/admin/check";
 import { InfoPageContent } from "@/components/info-page-content";
 import { BlurredPageContent } from "@/components/blurred-page-content";
 import { getCachedUser } from "@/lib/supabase/cached-queries";
+import type { GarbageDutyWithProfile } from "@/domain/garbage";
+import type { SharedInfo } from "@/domain/shared-info";
 
 export default async function InfoPage() {
   const { user } = await getCachedUser();
@@ -31,8 +33,8 @@ export default async function InfoPage() {
       { id: "mock-1", garbage_type: "可燃ゴミ", day_of_week: 1, notes: null, display_order: 0, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
       { id: "mock-2", garbage_type: "資源ゴミ", day_of_week: 4, notes: null, display_order: 1, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
     ];
-    const mockDuties: never[] = [];
-    const mockSharedInfos: never[] = [];
+    const mockDuties: GarbageDutyWithProfile[] = [];
+    const mockSharedInfos: SharedInfo[] = [];
 
     return (
       <div className="min-h-screen bg-background flex flex-col">

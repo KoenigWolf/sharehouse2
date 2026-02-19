@@ -6,6 +6,7 @@ import { BlurredPageContent } from "@/components/blurred-page-content";
 import { getShareItems } from "@/lib/share/actions";
 import { getCachedUser } from "@/lib/supabase/cached-queries";
 import { generateMockShareItems } from "@/lib/mock-data";
+import { logError } from "@/lib/errors";
 
 export default async function SharePage() {
   const { user, supabase } = await getCachedUser();
@@ -13,10 +14,13 @@ export default async function SharePage() {
 
   // プライバシー保護: 未認証ユーザーには実データを渡さない
   if (isBlurred) {
-    const { count } = await supabase
+    const { count, error } = await supabase
       .from("share_items")
       .select("*", { count: "exact", head: true })
       .eq("status", "available");
+    if (error) {
+      logError(error, { action: "SharePage:countQuery" });
+    }
     const totalCount = count ?? 0;
     const mockItems = generateMockShareItems(totalCount);
 

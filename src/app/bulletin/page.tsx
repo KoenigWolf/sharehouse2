@@ -18,9 +18,12 @@ export default async function BulletinPage() {
   // プライバシー保護: 未認証ユーザーには実データを渡さない
   if (isBlurred) {
     // カウント取得のみ（実データなし）
-    const { count } = await supabase
+    const { count, error } = await supabase
       .from("bulletins")
       .select("*", { count: "exact", head: true });
+    if (error) {
+      logError(error, { action: "BulletinPage:countQuery" });
+    }
     const totalCount = count ?? 0;
     const mockBulletins = generateMockBulletins(totalCount);
 
@@ -50,7 +53,6 @@ export default async function BulletinPage() {
 
   const bulletinsResult = await getBulletinsPaginated();
 
-  let currentUserProfile: { name: string; nickname: string | null; avatar_url: string | null; room_number: string | null } | undefined;
   const profileResult = await supabase
     .from("profiles")
     .select("name, nickname, avatar_url, room_number")
@@ -60,7 +62,7 @@ export default async function BulletinPage() {
   if (profileResult.error) {
     logError(profileResult.error, { action: "BulletinPage:fetchProfile", userId: user.id });
   }
-  currentUserProfile = profileResult.data ?? undefined;
+  const currentUserProfile: { name: string; nickname: string | null; avatar_url: string | null; room_number: string | null } | undefined = profileResult.data ?? undefined;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">

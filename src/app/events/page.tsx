@@ -6,6 +6,7 @@ import { BlurredPageContent } from "@/components/blurred-page-content";
 import { getUpcomingEvents } from "@/lib/events/actions";
 import { getCachedUser } from "@/lib/supabase/cached-queries";
 import { generateMockEvents } from "@/lib/mock-data";
+import { logError } from "@/lib/errors";
 
 interface EventsPageProps {
   searchParams: Promise<{ edit?: string }>;
@@ -19,10 +20,13 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
   // プライバシー保護: 未認証ユーザーには実データを渡さない
   if (isBlurred) {
     const todayStr = new Date().toISOString().split("T")[0];
-    const { count } = await supabase
+    const { count, error } = await supabase
       .from("events")
       .select("*", { count: "exact", head: true })
       .gte("event_date", todayStr);
+    if (error) {
+      logError(error, { action: "EventsPage:countQuery" });
+    }
     const totalCount = count ?? 0;
     const mockEvents = generateMockEvents(totalCount);
 

@@ -8,6 +8,7 @@ import { getAllRoomPhotos } from "@/lib/room-photos/actions";
 import { getServerTranslator } from "@/lib/i18n/server";
 import { getCachedUser } from "@/lib/supabase/cached-queries";
 import { generateMockRoomPhotos } from "@/lib/mock-data";
+import { logError } from "@/lib/errors";
 
 const RoomPhotosGallery = dynamic(
   () => import("@/components/room-photos-gallery").then((m) => m.RoomPhotosGallery),
@@ -21,9 +22,12 @@ export default async function RoomPhotosPage() {
 
   // プライバシー保護: 未認証ユーザーには実データを渡さない
   if (isBlurred) {
-    const { count } = await supabase
+    const { count, error } = await supabase
       .from("room_photos")
       .select("*", { count: "exact", head: true });
+    if (error) {
+      logError(error, { action: "RoomPhotosPage:countQuery" });
+    }
     const totalCount = count ?? 0;
     const mockPhotos = generateMockRoomPhotos(totalCount);
 

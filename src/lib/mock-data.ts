@@ -311,6 +311,11 @@ export const mockProfiles: Profile[] = [
 /**
  * Generate mock bulletins for unauthenticated teaser display
  * Uses generic placeholder content to avoid leaking real data
+ *
+ * NOTE: Hardcoded Japanese is acceptable here because:
+ * 1. Content is blurred and not meant to be read
+ * 2. i18n requires async which would break sync API
+ * 3. Primary audience (Japanese sharehouse) expects Japanese placeholders
  */
 export function generateMockBulletins(count: number): BulletinWithProfile[] {
   return Array.from({ length: Math.min(count, 5) }, (_, i) => ({
@@ -382,25 +387,25 @@ export function generateMockShareItems(count: number): ShareItemWithProfile[] {
   }));
 }
 
+// Pre-computed placeholder for room photos (avoid re-encoding on each call)
+const PLACEHOLDER_ROOM_PHOTO = `data:image/svg+xml,${encodeURIComponent(`
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+    <rect width="400" height="300" fill="#f4f4f5"/>
+    <rect x="150" y="100" width="100" height="80" rx="8" fill="#d4d4d8"/>
+    <circle cx="180" cy="130" r="15" fill="#a1a1aa"/>
+    <path d="M150 180 L200 140 L250 180" stroke="#a1a1aa" stroke-width="3" fill="none"/>
+  </svg>
+`)}`;
+
 /**
  * Generate mock room photos for unauthenticated teaser display
  * Uses placeholder image to avoid leaking real photos
  */
 export function generateMockRoomPhotos(count: number): PhotoWithProfile[] {
-  // Generate a placeholder image SVG
-  const placeholderImage = `data:image/svg+xml,${encodeURIComponent(`
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
-      <rect width="400" height="300" fill="#f4f4f5"/>
-      <rect x="150" y="100" width="100" height="80" rx="8" fill="#d4d4d8"/>
-      <circle cx="180" cy="130" r="15" fill="#a1a1aa"/>
-      <path d="M150 180 L200 140 L250 180" stroke="#a1a1aa" stroke-width="3" fill="none"/>
-    </svg>
-  `)}`;
-
   return Array.from({ length: Math.min(count, 6) }, (_, i) => ({
     id: `mock-photo-${i}`,
     user_id: `mock-${i + 1}`,
-    photo_url: placeholderImage,
+    photo_url: PLACEHOLDER_ROOM_PHOTO,
     caption: null,
     taken_at: null,
     display_order: i,
