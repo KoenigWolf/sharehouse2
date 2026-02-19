@@ -901,6 +901,18 @@ export const en: Translations = {
     },
   },
 
+  checkout: {
+    malformedJson: "Invalid request format",
+    invalidPaymentType: "Invalid payment type",
+    invalidAmount: "Amount must be between ¥{{min}} and ¥{{max}}",
+    sessionCreationFailed: "Failed to create checkout session",
+    defaultDescription: {
+      eventFee: "Event Fee",
+      deposit: "Application Deposit",
+      monthlyFee: "Monthly Fee",
+    },
+  },
+
   notifications: {
     sectionTitle: "Notifications",
     teaTime: "Tea Time matching",

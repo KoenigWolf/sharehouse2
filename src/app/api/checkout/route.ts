@@ -10,16 +10,17 @@ import {
 import { getAllowedOrigins } from "@/lib/security/origin";
 import { RateLimiters, formatRateLimitError } from "@/lib/security/rate-limit";
 import { auditLog, AuditEventType } from "@/lib/security/audit";
+import { getServerTranslator } from "@/lib/i18n/server";
 
-// Allowed payment types (whitelist)
+// Restrict to known payment flows to prevent abuse of checkout endpoint
 const ALLOWED_PAYMENT_TYPES = ["event_fee", "deposit", "monthly_fee"] as const;
 type PaymentType = (typeof ALLOWED_PAYMENT_TYPES)[number];
 
-// Amount limits (in JPY)
+// Prevent micro-transaction abuse and unreasonably large charges
 const MIN_AMOUNT = 100;
 const MAX_AMOUNT = 1_000_000;
 
-// Idempotency cache (prevents duplicate charges within same instance)
+// Avoid double-charging users who click "Pay" multiple times
 // NOTE: In-memory cache is not shared across serverless instances.
 // For production, consider using Redis or DB-backed idempotency.
 interface IdempotencyEntry {
@@ -33,14 +34,14 @@ const MAX_IDEMPOTENCY_ENTRIES = 10000;
 function cleanupIdempotencyCache(): void {
   const now = Date.now();
 
-  // Remove expired entries first
+  // TTL enforcement: free memory from completed transactions
   for (const [key, entry] of idempotencyCache.entries()) {
     if (entry.expiresAt < now) {
       idempotencyCache.delete(key);
     }
   }
 
-  // Enforce max entries by removing oldest (Map preserves insertion order)
+  // Memory bound: prevent OOM in long-running instances
   if (idempotencyCache.size > MAX_IDEMPOTENCY_ENTRIES) {
     const keysToDelete = Array.from(idempotencyCache.keys()).slice(
       0,
@@ -68,17 +69,18 @@ function isValidAmount(amount: unknown): amount is number {
 export async function POST(req: NextRequest) {
   const clientIp = getApiClientIp(req);
   const requestId = getApiRequestId(req);
+  const t = await getServerTranslator();
 
   try {
-    // Security: Validate origin
+    // Prevent CSRF: reject requests from untrusted origins
     const originError = validateApiOrigin(req, "checkout");
     if (originError) return originError;
 
-    // Security: Validate Content-Type
+    // Block content-type smuggling attacks
     const contentTypeError = validateJsonContentType(req);
     if (contentTypeError) return contentTypeError;
 
-    // Security: Rate limiting (prevent card testing attacks)
+    // Throttle per-IP to prevent card-testing attacks that probe valid card numbers
     const rateLimitResult = RateLimiters.checkout(clientIp);
     if (!rateLimitResult.success) {
       auditLog({
@@ -90,7 +92,7 @@ export async function POST(req: NextRequest) {
         metadata: { retryAfter: rateLimitResult.retryAfter, requestId },
       });
       return NextResponse.json(
-        { error: formatRateLimitError(rateLimitResult.retryAfter) },
+        { error: formatRateLimitError(rateLimitResult.retryAfter, t) },
         {
           status: 429,
           headers: {
@@ -107,13 +109,13 @@ export async function POST(req: NextRequest) {
       body = await req.json();
     } catch (e) {
       if (e instanceof SyntaxError) {
-        return NextResponse.json({ error: "Malformed JSON" }, { status: 400 });
+        return NextResponse.json({ error: t("checkout.malformedJson") }, { status: 400 });
       }
       throw e;
     }
     const { type, amount, description, metadata, idempotencyKey } = body;
 
-    // Idempotency: Return cached response if same key
+    // Return cached response to prevent duplicate charges from retry clicks
     if (idempotencyKey && typeof idempotencyKey === "string") {
       const cached = idempotencyCache.get(idempotencyKey);
       if (cached && cached.expiresAt > Date.now()) {
@@ -123,28 +125,28 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Security: Validate payment type (whitelist)
+    // Only allow predefined payment flows, reject arbitrary type values
     if (!isValidPaymentType(type)) {
       return NextResponse.json(
-        { error: "Invalid payment type" },
+        { error: t("checkout.invalidPaymentType") },
         { status: 400 }
       );
     }
 
-    // Security: Validate amount (range check)
+    // Enforce business rules: no micro-transactions or unreasonable charges
     if (!isValidAmount(amount)) {
       return NextResponse.json(
-        { error: `Amount must be between ¥${MIN_AMOUNT} and ¥${MAX_AMOUNT.toLocaleString()}` },
+        { error: t("checkout.invalidAmount", { min: MIN_AMOUNT.toLocaleString(), max: MAX_AMOUNT.toLocaleString() }) },
         { status: 400 }
       );
     }
 
-    // Security: Sanitize description (max length, no HTML)
+    // Strip HTML to prevent XSS in Stripe-hosted checkout page
     const sanitizedDescription = description
       ? String(description).slice(0, 100).replace(/<[^>]*>/g, "")
-      : getDefaultDescription(type);
+      : getDefaultDescription(type, t);
 
-    // Use validated origin for redirect URLs
+    // Only redirect to trusted origins to prevent open redirect vulnerabilities
     const requestOrigin = req.headers.get("origin");
     const allowedOrigins = getAllowedOrigins();
     const origin = requestOrigin && allowedOrigins.some(o => {
@@ -157,7 +159,7 @@ export async function POST(req: NextRequest) {
 
     const stripe = getStripe();
 
-    // Security: Sanitize metadata (only allow string values)
+    // Limit metadata injection: only string values with bounded length
     const sanitizedMetadata: Record<string, string> = { type };
     if (metadata && typeof metadata === "object") {
       for (const [key, value] of Object.entries(metadata)) {
@@ -189,7 +191,7 @@ export async function POST(req: NextRequest) {
 
     const response = { sessionId: session.id, url: session.url };
 
-    // Cache response for idempotency
+    // Store successful session to return on retry (prevents duplicate charges)
     if (idempotencyKey && typeof idempotencyKey === "string") {
       cleanupIdempotencyCache();
       idempotencyCache.set(idempotencyKey, {
@@ -202,19 +204,19 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     logError(err, { action: "checkout", metadata: { requestId, clientIp } });
     return NextResponse.json(
-      { error: "Failed to create checkout session" },
+      { error: t("checkout.sessionCreationFailed") },
       { status: 500, headers: { "X-Request-ID": requestId } }
     );
   }
 }
 
-function getDefaultDescription(type: PaymentType): string {
+function getDefaultDescription(type: PaymentType, t: Awaited<ReturnType<typeof getServerTranslator>>): string {
   switch (type) {
     case "event_fee":
-      return "イベント参加費";
+      return t("checkout.defaultDescription.eventFee");
     case "deposit":
-      return "入居申込金";
+      return t("checkout.defaultDescription.deposit");
     case "monthly_fee":
-      return "月額利用料";
+      return t("checkout.defaultDescription.monthlyFee");
   }
 }

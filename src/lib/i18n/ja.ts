@@ -902,6 +902,18 @@ export const ja = {
     },
   },
 
+  checkout: {
+    malformedJson: "無効なリクエスト形式です",
+    invalidPaymentType: "無効な支払い種別です",
+    invalidAmount: "金額は{{min}}円〜{{max}}円の範囲で指定してください",
+    sessionCreationFailed: "決済セッションの作成に失敗しました",
+    defaultDescription: {
+      eventFee: "イベント参加費",
+      deposit: "入居申込金",
+      monthlyFee: "月額利用料",
+    },
+  },
+
   notifications: {
     sectionTitle: "通知設定",
     teaTime: "Tea Time マッチング",
