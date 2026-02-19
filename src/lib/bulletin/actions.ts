@@ -55,6 +55,10 @@ export async function getBulletinsPaginated(
       return { bulletins: [], nextCursor: null, hasMore: false, totalCount: 0 };
     }
 
+    // Handle count query error separately - don't fail the whole request
+    if (countRes.error) {
+      logError(countRes.error, { action: "getBulletinsPaginated:count" });
+    }
     const totalCount = countRes.count ?? 0;
 
     const allBulletins = bulletinsRes.data ?? [];
