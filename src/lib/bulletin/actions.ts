@@ -16,7 +16,7 @@ export interface PaginatedBulletins {
   bulletins: BulletinWithProfile[];
   nextCursor: string | null;
   hasMore: boolean;
-  totalCount: number;
+  totalCount: number | null;
 }
 
 /**
@@ -52,14 +52,17 @@ export async function getBulletinsPaginated(
 
     if (bulletinsRes.error) {
       logError(bulletinsRes.error, { action: "getBulletinsPaginated:bulletins" });
-      return { bulletins: [], nextCursor: null, hasMore: false, totalCount: 0 };
+      return { bulletins: [], nextCursor: null, hasMore: false, totalCount: null };
     }
 
     // Handle count query error separately - don't fail the whole request
+    // Return null so callers can distinguish "0 bulletins" from "count unavailable"
+    let totalCount: number | null = null;
     if (countRes.error) {
       logError(countRes.error, { action: "getBulletinsPaginated:count" });
+    } else {
+      totalCount = countRes.count ?? 0;
     }
-    const totalCount = countRes.count ?? 0;
 
     const allBulletins = bulletinsRes.data ?? [];
     const hasMore = allBulletins.length > limit;
@@ -98,7 +101,7 @@ export async function getBulletinsPaginated(
     };
   } catch (error) {
     logError(error, { action: "getBulletinsPaginated" });
-    return { bulletins: [], nextCursor: null, hasMore: false, totalCount: 0 };
+    return { bulletins: [], nextCursor: null, hasMore: false, totalCount: null };
   }
 }
 
