@@ -5,7 +5,10 @@ const isDev = process.env.NODE_ENV === "development";
 
 /**
  * Generate unique request ID for tracing and debugging
- * Format: timestamp-random (URL-safe base64)
+ *
+ * Format: base36-timestamp + UUID prefix (8 hex chars)
+ * - Base36 timestamp provides monotonic ordering for log analysis
+ * - UUID prefix ensures uniqueness across concurrent requests
  */
 function generateRequestId(): string {
   const timestamp = Date.now().toString(36);
@@ -14,10 +17,14 @@ function generateRequestId(): string {
 }
 
 export async function proxy(request: NextRequest) {
+  // Generate request ID early for response tracing
+  // Note: Middleware cannot inject headers into downstream request handlers,
+  // so API routes use getApiRequestId() which generates its own fallback
+  const requestId = generateRequestId();
+
   const response = await updateSession(request);
 
-  // Request ID for tracing (useful for debugging and audit logs)
-  const requestId = generateRequestId();
+  // Set response header for client-side request tracing and debugging
   response.headers.set("X-Request-ID", requestId);
 
   const nonce = generateNonce();
