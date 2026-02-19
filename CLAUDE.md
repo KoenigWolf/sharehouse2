@@ -49,8 +49,47 @@ npm run check-all    # コミット前チェック (lint + type-check + test + b
 - `any` 禁止。Boolean は `is/has/can`、関数は動詞で始める
 - 1関数50行以内。早期リターン（ガード節）を使う
 - エラーは `logError` ユーティリティを使う（`console.error` 禁止）
-- null/undefined は「状態」か「前提違反」か判断し暗黙処理しない。nullable フィールドは `??` でフォールバック、前提違反はガード節か型で排除（`!` 禁止）
 - 詳細: @docs/coding-guidelines.md
+
+## null/undefined 設計原則【必須遵守】
+
+**原則: `??`, `||`, `?.`, `!` を書くたびに「状態」か「前提違反」かを判断し、暗黙処理しない。**
+
+### 判断フロー
+1. この値が null になるのは**正常な状態**か、**バグ（前提違反）**か？
+2. 正常 → `??` でフォールバック
+3. バグ → ガード節で早期リターン or 型で null を排除
+
+### 状態（正当な値）として扱う場合
+```typescript
+// DB nullable カラム → ?? でフォールバック
+const bio = profile.bio ?? "";
+const displayName = profile.nickname ?? profile.name ?? "名無し";
+
+// オプショナルパラメータ → ?? で既定値
+const limit = options.limit ?? 10;
+```
+
+### 前提違反として扱う場合
+```typescript
+// 認証ユーザー必須 → ガード節で早期リターン
+if (!user) return { error: t("errors.unauthorized") };
+
+// 環境変数必須 → 起動時クラッシュ（requireEnv使用）
+const apiKey = requireEnv("API_KEY");
+
+// Supabase クエリ結果 → error チェック後は data 非 null 保証
+if (error) { logError(error, { action }); return []; }
+// ここで data! は不要、型が保証する
+```
+
+### 演算子の使い分け
+| 演算子 | 用途 | 注意 |
+|--------|------|------|
+| `??` | null/undefined のみフォールバック | `0`, `""`, `false` を保持 |
+| `\|\|` | 全 falsy をフォールバック | `0` や `""` を除外したい場合のみ |
+| `?.` | プロパティが存在しない可能性がある場合 | 前提上存在するはずの値に使わない |
+| `!` | **禁止** | 型設計で不要にする |
 
 - スタイル値は `src/styles/tokens.css`、ユーティリティは `src/styles/utilities.css` で一元管理
 - 直接 Tailwind クラスを羅列せず用途別クラスを使う（`card-base`, `input-base`, `alert-success` 等）
