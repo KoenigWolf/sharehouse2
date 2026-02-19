@@ -37,20 +37,22 @@ export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const isLoginPage = pathname.startsWith("/login");
 
-  // 認証必須ページ（プロフィール編集、設定、管理画面）
+  // Protect sensitive routes: user data modification requires authentication
   const authRequiredPages = ["/admin", "/settings", "/profile"];
   const isAuthRequired = authRequiredPages.some(
     (page) => pathname.startsWith(page)
   );
 
-  // 未認証ユーザーの挙動（認証必須ページのみリダイレクト）
+  // Redirect unauthenticated users to login with returnTo for post-login navigation
   if (!user && isAuthRequired) {
     const url = request.nextUrl.clone();
+    const returnTo = request.nextUrl.pathname + request.nextUrl.search;
     url.pathname = "/login";
+    url.searchParams.set("returnTo", returnTo);
     return NextResponse.redirect(url);
   }
 
-  // 認証済みユーザーがログインページにアクセスした場合はホームへリダイレクト
+  // Prevent authenticated users from accessing login page (UX: direct to dashboard)
   if (user && isLoginPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/";
