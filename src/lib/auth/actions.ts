@@ -80,7 +80,7 @@ export async function signUp(
     : validatedEmail;
   const rateLimitResult = RateLimiters.auth(rateLimitKey);
   if (!rateLimitResult.success) {
-    AuditActions.rateLimited(validatedEmail, "signUp", ipAddress || undefined);
+    AuditActions.rateLimited(validatedEmail, "signUp", ipAddress ?? undefined);
     return { error: formatRateLimitError(rateLimitResult.retryAfter, t) };
   }
 
@@ -146,7 +146,7 @@ export async function signUp(
         userId: data.user.id,
         action: "User signup - confirmation email sent",
         outcome: "success",
-        ipAddress: ipAddress || undefined,
+        ipAddress: ipAddress ?? undefined,
       });
 
       return {
@@ -174,7 +174,7 @@ export async function signUp(
       userId: data.user.id,
       action: "User signup completed",
       outcome: "success",
-      ipAddress: ipAddress || undefined,
+      ipAddress: ipAddress ?? undefined,
     });
 
     CacheStrategy.afterAuth();
@@ -216,20 +216,21 @@ export async function signIn(
 
   const ipAddress = await getRequestIp();
 
-  // Check account lockout before proceeding
-  const lockoutStatus = checkAccountLockout(validatedEmail, ipAddress ?? undefined);
-  if (lockoutStatus.isLocked) {
-    // Display at least 1 minute to avoid confusing "0 minutes" message
-    return { error: t("errors.accountLocked", { minutes: Math.max(1, lockoutStatus.remainingMinutes) }) };
-  }
-
+  // Rate limit first to prevent attackers from probing lockout status
   const rateLimitKey = ipAddress
     ? `${validatedEmail}:${ipAddress}`
     : validatedEmail;
   const rateLimitResult = RateLimiters.auth(rateLimitKey);
   if (!rateLimitResult.success) {
-    AuditActions.rateLimited(validatedEmail, "signIn", ipAddress || undefined);
+    AuditActions.rateLimited(validatedEmail, "signIn", ipAddress ?? undefined);
     return { error: formatRateLimitError(rateLimitResult.retryAfter, t) };
+  }
+
+  // Check account lockout after rate limit passes
+  const lockoutStatus = checkAccountLockout(validatedEmail, ipAddress ?? undefined);
+  if (lockoutStatus.isLocked) {
+    // Display at least 1 minute to avoid confusing "0 minutes" message
+    return { error: t("errors.accountLocked", { minutes: Math.max(1, lockoutStatus.remainingMinutes) }) };
   }
 
   try {
@@ -246,7 +247,7 @@ export async function signIn(
       // Record failed login attempt for lockout tracking
       const lockout = recordFailedLogin(validatedEmail, ipAddress ?? undefined);
 
-      AuditActions.loginFailure(error.message, ipAddress || undefined);
+      AuditActions.loginFailure(error.message, ipAddress ?? undefined);
 
       // If account is now locked, return lockout message
       if (lockout.isLocked) {
@@ -324,7 +325,7 @@ export async function requestPasswordReset(
     AuditActions.rateLimited(
       validatedEmail,
       "requestPasswordReset",
-      ipAddress || undefined
+      ipAddress ?? undefined
     );
     return { error: formatRateLimitError(rateLimitResult.retryAfter, t) };
   }
@@ -354,7 +355,7 @@ export async function requestPasswordReset(
       eventType: AuditEventType.AUTH_PASSWORD_RESET_REQUEST,
       action: "Password reset requested",
       outcome: "success",
-      ipAddress: ipAddress || undefined,
+      ipAddress: ipAddress ?? undefined,
       metadata: { email: validatedEmail.slice(0, 3) + "***" },
     });
 
@@ -421,7 +422,7 @@ export async function updatePasswordAfterReset(
         action: "Password reset failed",
         outcome: "failure",
         errorMessage: error.message,
-        ipAddress: ipAddress || undefined,
+        ipAddress: ipAddress ?? undefined,
       });
 
       return { error: t("errors.serverError") };
@@ -433,7 +434,7 @@ export async function updatePasswordAfterReset(
       userId: user.id,
       action: "Password reset completed",
       outcome: "success",
-      ipAddress: ipAddress || undefined,
+      ipAddress: ipAddress ?? undefined,
     });
 
     return { success: true };

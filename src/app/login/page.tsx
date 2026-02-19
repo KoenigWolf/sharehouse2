@@ -34,7 +34,9 @@ export default function LoginPage() {
   const t = useI18n();
   const [isForgotMode, setIsForgotMode] = useState(false);
   const searchParams = useSearchParams();
-  const returnTo = searchParams.get("returnTo") || "/";
+  // Validate returnTo to prevent open redirect attacks (must be relative path, not //host or absolute URL)
+  const rawReturnTo = searchParams.get("returnTo");
+  const returnTo = rawReturnTo && /^\/(?!\/)/.test(rawReturnTo) ? rawReturnTo : "/";
 
   const handleResetRequest = async (e: React.FormEvent) => {
     e.preventDefault();

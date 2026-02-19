@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
     if (!rateLimitResult.success) {
       auditLog({
         timestamp: new Date().toISOString(),
-        eventType: AuditEventType.AUTH_RATE_LIMITED,
+        eventType: AuditEventType.CHECKOUT_RATE_LIMITED,
         action: "Checkout rate limit exceeded",
         outcome: "failure",
         ipAddress: clientIp,
@@ -160,9 +160,12 @@ export async function POST(req: NextRequest) {
     const stripe = getStripe();
 
     // Limit metadata injection: only string values with bounded length
+    // Reserved keys prevent user-supplied metadata from overwriting validated values
+    const RESERVED_METADATA_KEYS = new Set(["type"]);
     const sanitizedMetadata: Record<string, string> = { type };
     if (metadata && typeof metadata === "object") {
       for (const [key, value] of Object.entries(metadata)) {
+        if (RESERVED_METADATA_KEYS.has(key)) continue;
         if (typeof value === "string" && key.length <= 40 && value.length <= 500) {
           sanitizedMetadata[key.slice(0, 40)] = value.slice(0, 500);
         }
