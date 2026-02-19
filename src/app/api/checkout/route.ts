@@ -29,11 +29,22 @@ const IDEMPOTENCY_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 const MAX_IDEMPOTENCY_ENTRIES = 10000;
 
 function cleanupIdempotencyCache(): void {
-  if (idempotencyCache.size <= MAX_IDEMPOTENCY_ENTRIES) return;
-
   const now = Date.now();
+
+  // Remove expired entries first
   for (const [key, entry] of idempotencyCache.entries()) {
     if (entry.expiresAt < now) {
+      idempotencyCache.delete(key);
+    }
+  }
+
+  // Enforce max entries by removing oldest (Map preserves insertion order)
+  if (idempotencyCache.size > MAX_IDEMPOTENCY_ENTRIES) {
+    const keysToDelete = Array.from(idempotencyCache.keys()).slice(
+      0,
+      idempotencyCache.size - MAX_IDEMPOTENCY_ENTRIES
+    );
+    for (const key of keysToDelete) {
       idempotencyCache.delete(key);
     }
   }
@@ -89,7 +100,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const body = await req.json();
+    let body: Record<string, unknown>;
+    try {
+      body = await req.json();
+    } catch (e) {
+      if (e instanceof SyntaxError) {
+        return NextResponse.json({ error: "Malformed JSON" }, { status: 400 });
+      }
+      throw e;
+    }
     const { type, amount, description, metadata, idempotencyKey } = body;
 
     // Idempotency: Return cached response if same key
