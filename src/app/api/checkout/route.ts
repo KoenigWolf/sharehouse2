@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
           headers: {
             "Retry-After": String(rateLimitResult.retryAfter),
             "X-RateLimit-Remaining": "0",
-            "X-RateLimit-Reset": String(rateLimitResult.resetTime),
+            "X-RateLimit-Reset": String(Math.floor(rateLimitResult.resetTime / 1000)),
           },
         }
       );
@@ -206,13 +206,13 @@ export async function POST(req: NextRequest) {
   }
 }
 
-function getDefaultDescription(type: string): string {
+function getDefaultDescription(type: PaymentType): string {
   switch (type) {
     case "event_fee":
       return "イベント参加費";
     case "deposit":
       return "入居申込金";
-    default:
-      return "お支払い";
+    case "monthly_fee":
+      return "月額利用料";
   }
 }
