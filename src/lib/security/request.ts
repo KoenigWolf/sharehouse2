@@ -115,8 +115,9 @@ export function validateApiOrigin(
     return null;
   }
 
-  // Fallback: compare origin host with request host
-  const host = req.headers.get("host");
+  // Fallback: compare origin host with request host (check x-forwarded-host for proxies)
+  const forwardedHost = req.headers.get("x-forwarded-host");
+  const host = forwardedHost?.split(",")[0]?.trim() || req.headers.get("host");
   if (host) {
     try {
       const originHost = new URL(origin).host;

@@ -142,8 +142,12 @@ export function recordFailedLogin(
   const now = Date.now();
   const entry = lockoutStore.get(key);
 
+  // Reset count if entry is stale (no activity for RESET_AFTER_MS)
+  const isStale = entry && (now - entry.lastAttempt > RESET_AFTER_MS);
+  const previousAttempts = isStale ? 0 : (entry?.failedAttempts ?? 0);
+
   const newEntry: LockoutEntry = {
-    failedAttempts: (entry?.failedAttempts ?? 0) + 1,
+    failedAttempts: previousAttempts + 1,
     lastAttempt: now,
     lockedUntil: null,
   };

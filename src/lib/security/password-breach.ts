@@ -8,12 +8,13 @@
  */
 
 import { createHash } from "crypto";
+import { logError } from "@/lib/errors";
 
 const HIBP_API_URL = "https://api.pwnedpasswords.com/range/";
 const HIBP_TIMEOUT_MS = 3000;
 
-// Cache breach check results to avoid repeated API calls
-const breachCache = new Map<string, { breached: boolean; expiresAt: number }>();
+// Cache breach check results (including count for threshold checks)
+const breachCache = new Map<string, { breached: boolean; count?: number; expiresAt: number }>();
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 
 /**
@@ -33,10 +34,10 @@ export async function checkPasswordBreach(password: string): Promise<{
     const prefix = hash.slice(0, 5);
     const suffix = hash.slice(5);
 
-    // Check cache first
+    // Check cache first (including count for threshold checks)
     const cached = breachCache.get(hash);
     if (cached && cached.expiresAt > Date.now()) {
-      return { breached: cached.breached };
+      return { breached: cached.breached, count: cached.count };
     }
 
     // Fetch hash suffixes from HIBP API
@@ -53,7 +54,11 @@ export async function checkPasswordBreach(password: string): Promise<{
     clearTimeout(timeout);
 
     if (!response.ok) {
-      // Don't block signup on API errors, just log
+      // Don't block signup on API errors, but log for monitoring
+      logError(new Error(`HIBP API returned ${response.status}`), {
+        action: "checkPasswordBreach",
+        metadata: { status: response.status },
+      });
       return { breached: false, error: "API unavailable" };
     }
 
@@ -66,8 +71,8 @@ export async function checkPasswordBreach(password: string): Promise<{
       if (hashSuffix?.trim() === suffix) {
         const count = parseInt(countStr?.trim() || "0", 10);
 
-        // Cache the result
-        breachCache.set(hash, { breached: true, expiresAt: Date.now() + CACHE_TTL_MS });
+        // Cache the result including count for threshold checks
+        breachCache.set(hash, { breached: true, count, expiresAt: Date.now() + CACHE_TTL_MS });
 
         return { breached: true, count };
       }
@@ -81,8 +86,10 @@ export async function checkPasswordBreach(password: string): Promise<{
     // On any error (timeout, network issue), don't block the user
     // Log for monitoring but allow signup to proceed
     if (error instanceof Error && error.name === "AbortError") {
+      logError(error, { action: "checkPasswordBreach", metadata: { reason: "timeout" } });
       return { breached: false, error: "Timeout" };
     }
+    logError(error, { action: "checkPasswordBreach" });
     return { breached: false, error: "Check failed" };
   }
 }
