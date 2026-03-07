@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { ResidentCard } from "@/components/residents/card";
+import { ResidentCard } from "@/components/residents";
 import { Profile } from "@/domain/profile";
 
 const mockProfile: Profile = {
