@@ -4,14 +4,6 @@ import { createClient } from "@/lib/supabase/server";
 import { logError } from "@/lib/errors";
 import type { SharedInfo } from "@/domain/shared-info";
 
-/**
- * 共用情報を全件取得する
- *
- * display_order昇順でソートして返す。
- * 認証済みユーザーのみアクセス可能。
- *
- * @returns 共用情報の配列、エラー時は空配列
- */
 export async function getSharedInfo(): Promise<SharedInfo[]> {
   try {
     const supabase = await createClient();

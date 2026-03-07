@@ -23,19 +23,14 @@ import type { PhotoWithProfile } from "@/domain/room-photo";
  * - 色: モノクローム（プレミアム感のある無機質さ）
  */
 const generateMonochromeHumanAvatar = (seed: number) => {
-  // 微妙に異なるグレーのバリエーション（完全に同じだと単調すぎるため）
+  // 完全に同じだと単調すぎるため、微妙に異なる背景色を使用
   const bgs = ["#f4f4f5", "#e4e4e7", "#d4d4d8", "#fafafa", "#f5f5f5"];
   const bg = bgs[seed % bgs.length];
-  const fg = "#a1a1aa"; // Neutral-400
+  const fg = "#a1a1aa";
 
-  // シンプルな人型シルエットアイコン
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
     <rect width="100" height="100" fill="${bg}" />
-    
-    <!-- 頭部 -->
     <circle cx="50" cy="40" r="18" fill="${fg}" />
-    
-    <!-- 身体（半円形） -->
     <path d="M20 90 C20 70 30 60 50 60 C70 60 80 70 80 90 V100 H20 V90 Z" fill="${fg}" />
   </svg>`;
 

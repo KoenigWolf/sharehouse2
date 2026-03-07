@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ResidentsFilter } from "@/components/residents-filter";
+import { ResidentsFilter } from "@/components/residents/filter";
 
 describe("ResidentsFilter", () => {
   const defaultProps = {

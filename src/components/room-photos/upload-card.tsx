@@ -15,16 +15,6 @@ interface UploadCardProps {
   disabled?: boolean;
 }
 
-/**
- * Upload card for adding new photos to the gallery
- *
- * Features:
- * - Hidden file input for better UX
- * - Multiple file selection support
- * - HEIC/HEIF support for iOS devices
- * - Loading state during upload
- * - Accessible button with proper labels
- */
 export const UploadCard = memo(function UploadCard({
   onSelectFiles,
   isUploading,

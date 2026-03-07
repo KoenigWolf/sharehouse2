@@ -8,8 +8,7 @@ import { getServerTranslator } from "@/lib/i18n/server";
 import { RateLimiters, formatRateLimitError, isValidUUID } from "@/lib/security";
 import { enforceAllowedOrigin } from "@/lib/security/request";
 import { requireAdmin } from "@/lib/admin/check";
-
-type UploadResponse = { success: true; url: string } | { error: string };
+import type { ActionResponseWith } from "@/lib/types/action-response";
 
 /**
  * カバー写真をアップロードする
@@ -20,7 +19,7 @@ type UploadResponse = { success: true; url: string } | { error: string };
  * @param formData - "cover" キーにFileを含むFormData
  * @returns 成功時 `{ success: true, url }`、失敗時 `{ error }`
  */
-export async function uploadCoverPhoto(formData: FormData): Promise<UploadResponse> {
+export async function uploadCoverPhoto(formData: FormData): Promise<ActionResponseWith<{ url: string }>> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "uploadCoverPhoto");

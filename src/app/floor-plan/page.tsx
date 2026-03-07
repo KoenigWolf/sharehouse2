@@ -1,8 +1,6 @@
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
-import { MobileNav } from "@/components/mobile-nav";
-import { FloorPlanContent } from "@/components/floor-plan-content";
-import { BlurredPageContent } from "@/components/blurred-page-content";
+import { FloorPlanContent } from "@/components/floor-plan";
+import { Header, Footer, MobileNav } from "@/components/layout";
+import { BlurredPageContent } from "@/components/public-teaser";
 import { getProfilesWithMock, getPublicProfilesWithMock } from "@/lib/residents/queries";
 import { getCachedUser } from "@/lib/supabase/cached-queries";
 import { mockProfiles } from "@/lib/mock-data";

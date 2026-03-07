@@ -34,6 +34,20 @@ export type ActionResponseWithData<T> =
   | { error: string };
 
 /**
+ * Action response with custom fields merged into success case.
+ * Use for operations that return specific fields (eventId, url, count, etc.)
+ *
+ * @template T - Additional fields to include on success
+ *
+ * @example
+ * ```typescript
+ * // Instead of: type CreateEventResponse = { success: true; eventId: string } | { error: string }
+ * type CreateEventResponse = ActionResponseWith<{ eventId: string }>;
+ * ```
+ */
+export type ActionResponseWith<T> = ({ success: true } & T) | { error: string };
+
+/**
  * Type guard to check if response is successful
  */
 export function isActionSuccess<T>(

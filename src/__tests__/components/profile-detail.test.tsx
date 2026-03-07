@@ -6,7 +6,7 @@ vi.mock("@/lib/env", () => ({
   SUPABASE_ANON_KEY: "test-anon-key",
 }));
 
-import { ProfileDetail } from "@/components/profile-detail";
+import { ProfileDetail } from "@/components/profile";
 import { Profile } from "@/domain/profile";
 
 const mockProfile: Profile = {

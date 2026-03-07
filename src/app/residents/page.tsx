@@ -1,10 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
-import { MobileNav } from "@/components/mobile-nav";
-import { ResidentsGrid } from "@/components/residents-grid";
+import { Header, Footer, MobileNav } from "@/components/layout";
+import { ResidentsGrid } from "@/components/residents";
 import { TeaserOverlay } from "@/components/public-teaser/teaser-overlay";
-import { TeaTimeNotification } from "@/components/tea-time-notification";
+import { TeaTimeNotification } from "@/components/tea-time";
 import { getLatestScheduledMatch } from "@/lib/tea-time/actions";
 import { getProfilesWithMock, getPublicProfilesWithMock } from "@/lib/residents/queries";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
@@ -49,10 +47,7 @@ export default async function ResidentsPage() {
     );
   }
 
-  // 未認証ユーザーには公開用の限定データのみ取得（セキュリティ対策）
   const { profiles: publicTeasers } = await getPublicProfilesWithMock(supabase);
-
-  // プライバシー保護: 未認証ユーザーには実データを渡さない
   const teaserProfiles = mockProfiles.slice(0, Math.min(publicTeasers.length, 12));
 
   return (

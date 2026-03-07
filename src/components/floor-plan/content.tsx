@@ -10,6 +10,7 @@ import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { useI18n } from "@/hooks/use-i18n";
 import { getInitials, formatDate, calculateResidenceDuration } from "@/lib/utils";
 import { getFloorFromRoom, FLOOR_COLORS, type FloorId } from "@/lib/utils/residents";
+import { isMockProfile } from "@/lib/utils/profile";
 import { staggerContainer, staggerItem } from "@/lib/animation";
 
 interface FloorPlanContentProps {
@@ -22,10 +23,6 @@ const FLOORS: FloorId[] = ["2F", "3F", "4F", "5F"];
 function getRoomsForFloor(floor: FloorId): string[] {
   const floorDigit = floor[0];
   return ROOM_NUMBERS.filter((r) => r[0] === floorDigit);
-}
-
-function isMockProfile(profile: Profile): boolean {
-  return profile.id.startsWith("mock-");
 }
 
 export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentProps) {
@@ -46,7 +43,7 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
   const occupancyByFloor = useMemo(() => {
     const counts: Record<FloorId, number> = { "2F": 0, "3F": 0, "4F": 0, "5F": 0 };
     for (const profile of profiles) {
-      if (profile.room_number && !isMockProfile(profile)) {
+      if (profile.room_number && !isMockProfile(profile.id)) {
         const floor = getFloorFromRoom(profile.room_number) as FloorId;
         counts[floor]++;
       }
@@ -139,7 +136,7 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
           >
             {rooms.map((roomNumber, index) => {
               const profile = profileByRoom.get(roomNumber);
-              const isMock = profile ? isMockProfile(profile) : false;
+              const isMock = profile ? isMockProfile(profile.id) : false;
               const isOccupied = !!profile && !isMock;
               const isCurrentUser = profile?.id === currentUserId;
 
@@ -252,7 +249,7 @@ export function FloorPlanContent({ profiles, currentUserId }: FloorPlanContentPr
                     <span className={`text-sm font-bold px-3 py-1.5 rounded-xl ${colors.bg} ${colors.text} border ${colors.border}`}>
                       {selectedRoom}
                     </span>
-                    {selectedProfile && isMockProfile(selectedProfile) && (
+                    {selectedProfile && isMockProfile(selectedProfile.id) && (
                       <span className="text-xs text-muted-foreground font-medium bg-muted px-2.5 py-1 rounded-lg">
                         {t("residents.sampleData")}
                       </span>
@@ -288,7 +285,7 @@ function RoomDetailOccupied({
   const displayName = profile.nickname || profile.name;
   const duration = calculateResidenceDuration(profile.move_in_date, t);
   const moveInFormatted = formatDate(profile.move_in_date);
-  const isMock = isMockProfile(profile);
+  const isMock = isMockProfile(profile.id);
 
   return (
     <div className="space-y-6">

@@ -4,17 +4,18 @@ import { createClient } from "@/lib/supabase/server";
 import { logError } from "@/lib/errors";
 import { sendPushNotification } from "@/lib/push/actions";
 import { t } from "@/lib/i18n";
+import { toDateString } from "@/lib/utils/formatting";
 
 export async function sendMorningDigest() {
   const supabase = await createClient();
 
   const today = new Date();
-  const todayStr = today.toISOString().split("T")[0];
+  const todayStr = toDateString(today);
   const dayOfWeek = today.getDay();
 
   const threeDaysLater = new Date(today);
   threeDaysLater.setDate(threeDaysLater.getDate() + 3);
-  const threeDaysLaterStr = threeDaysLater.toISOString().split("T")[0];
+  const threeDaysLaterStr = toDateString(threeDaysLater);
 
   const twentyFourHoursAgo = new Date(today);
   twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24);

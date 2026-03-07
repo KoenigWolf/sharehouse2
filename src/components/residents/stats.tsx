@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { m } from "framer-motion";
 import { useI18n } from "@/hooks/use-i18n";
 import { getFloorFromRoom, isNewResident, FLOOR_COLORS } from "@/lib/utils/residents";
+import { isMockProfile } from "@/lib/utils/profile";
 import { staggerContainer, staggerItem } from "@/lib/animation";
 import type { Profile } from "@/domain/profile";
 import {
@@ -74,7 +75,7 @@ export function ResidentStats({ profiles, teaTimeParticipants, extendedStats }: 
   const t = useI18n();
 
   const stats = useMemo(() => {
-    const registered = profiles.filter((p) => !p.id.startsWith("mock-"));
+    const registered = profiles.filter((p) => !isMockProfile(p.id));
     const newResidents = registered.filter((p) => isNewResident(p.move_in_date));
     const teaTimeCount = registered.filter((p) => teaTimeParticipants.includes(p.id)).length;
 

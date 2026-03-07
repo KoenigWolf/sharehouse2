@@ -7,125 +7,25 @@ import { logError } from "@/lib/errors";
 import { getServerTranslator } from "@/lib/i18n/server";
 import { enforceAllowedOrigin } from "@/lib/security/request";
 import { isValidUUID, RateLimiters, formatRateLimitError } from "@/lib/security";
-import { validateFileUpload, sanitizeFileName } from "@/domain/validation/profile";
 import { shareItemSchema } from "@/domain/validation/schemas";
+import {
+  validateAndReadFile,
+  uploadAndPersist,
+  deleteStorageFile,
+  type UploadResponse,
+} from "@/lib/utils/storage";
 import type { ShareItemWithProfile } from "@/domain/share-item";
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Translator } from "@/lib/i18n";
-import type { ActionResponse } from "@/lib/types/action-response";
-type CreateShareItemResponse = { success: true; itemId: string } | { error: string };
-type UploadResponse = { success: true; url: string } | { error: string };
+import type { ActionResponse, ActionResponseWith } from "@/lib/types/action-response";
 
-type FileValidationResult =
-  | { success: true; uint8Array: Uint8Array; fileName: string; contentType: string }
-  | { success: false; error: string };
-
-function extractStoragePath(imageUrl: string): string | null {
-  try {
-    const url = new URL(imageUrl);
-    const pathname = url.pathname;
-    const marker = "/share-item-images/";
-    const markerIndex = pathname.indexOf(marker);
-    if (markerIndex === -1) return null;
-    const path = pathname.slice(markerIndex + marker.length);
-    return path.replace(/^\/+|\/+$/g, "") || null;
-  } catch {
-    return null;
-  }
-}
-
-async function deleteStorageImage(
-  supabase: SupabaseClient,
-  imageUrl: string
-): Promise<void> {
-  const storagePath = extractStoragePath(imageUrl);
-  if (storagePath) {
-    await supabase.storage.from("share-item-images").remove([storagePath]);
-  }
-}
-
-async function validateAndReadFile(
-  formData: FormData,
-  userId: string,
-  itemId: string,
-  t: Translator
-): Promise<FileValidationResult> {
-  const fileEntry = formData.get("image");
-
-  if (!fileEntry || !(fileEntry instanceof File)) {
-    return { success: false, error: t("errors.fileRequired") };
-  }
-
-  if (fileEntry.size === 0) {
-    return { success: false, error: t("errors.fileRequired") };
-  }
-
-  const fileValidation = validateFileUpload(
-    { size: fileEntry.size, type: fileEntry.type },
-    t
-  );
-  if (!fileValidation.success) {
-    return { success: false, error: fileValidation.error ?? t("errors.invalidFileType") };
-  }
-
-  const fileExt = fileEntry.name.split(".").pop()?.toLowerCase() ?? "jpg";
-  const sanitizedExt = sanitizeFileName(fileExt).slice(0, 10);
-  const fileName = `${userId}/${itemId}.${sanitizedExt}`;
-
-  const arrayBuffer = await fileEntry.arrayBuffer();
-  const uint8Array = new Uint8Array(arrayBuffer);
-
-  return {
-    success: true,
-    uint8Array,
-    fileName,
-    contentType: fileEntry.type,
-  };
-}
-
-async function uploadAndPersistImage(
-  supabase: SupabaseClient,
-  fileName: string,
-  uint8Array: Uint8Array,
-  contentType: string,
-  itemId: string,
-  userId: string,
-  t: Translator
-): Promise<UploadResponse> {
-  const { error: uploadError } = await supabase.storage
-    .from("share-item-images")
-    .upload(fileName, uint8Array, {
-      contentType,
-      cacheControl: "3600",
-      upsert: true,
-    });
-
-  if (uploadError) {
-    logError(uploadError, { action: "uploadShareItemImage", userId });
-    return { error: t("errors.uploadFailed") };
-  }
-
-  const { data: urlData } = supabase.storage
-    .from("share-item-images")
-    .getPublicUrl(fileName);
-
-  const cacheBuster = Date.now();
-  const urlWithCacheBuster = `${urlData.publicUrl}?v=${cacheBuster}`;
-
-  const { error: updateError } = await supabase
-    .from("share_items")
-    .update({ image_url: urlWithCacheBuster })
-    .eq("id", itemId)
-    .eq("user_id", userId);
-
-  if (updateError) {
-    logError(updateError, { action: "uploadShareItemImage:update", userId });
-    await supabase.storage.from("share-item-images").remove([fileName]);
-    return { error: t("errors.saveFailed") };
-  }
-
-  return { success: true, url: urlWithCacheBuster };
-}
+const STORAGE_BUCKET = "share-item-images";
+const STORAGE_MARKER = `/${STORAGE_BUCKET}/`;
+const UPLOAD_CONFIG = {
+  bucket: STORAGE_BUCKET,
+  table: "share_items",
+  idColumn: "id",
+  urlColumn: "image_url",
+  actionName: "uploadShareItemImage",
+} as const;
 
 export async function getShareItems(): Promise<ShareItemWithProfile[]> {
   try {
@@ -150,7 +50,7 @@ export async function getShareItems(): Promise<ShareItemWithProfile[]> {
 export async function createShareItem(
   title: string,
   description: string | null
-): Promise<CreateShareItemResponse> {
+): Promise<ActionResponseWith<{ itemId: string }>> {
   const t = await getServerTranslator();
   const originError = await enforceAllowedOrigin(t, "createShareItem");
   if (originError) return { error: originError };
@@ -353,7 +253,7 @@ export async function uploadShareItemImage(
       return { error: t("errors.notFound") };
     }
 
-    const fileResult = await validateAndReadFile(formData, user.id, itemId, t);
+    const fileResult = await validateAndReadFile(formData, "image", user.id, itemId, t);
     if (!fileResult.success) {
       return { error: fileResult.error };
     }
@@ -361,8 +261,9 @@ export async function uploadShareItemImage(
     // Save old image URL before upload - we'll delete it only after successful upload
     const oldImageUrl = item.image_url;
 
-    const uploadResult = await uploadAndPersistImage(
+    const uploadResult = await uploadAndPersist(
       supabase,
+      UPLOAD_CONFIG,
       fileResult.fileName,
       fileResult.uint8Array,
       fileResult.contentType,
@@ -377,7 +278,7 @@ export async function uploadShareItemImage(
 
     // Delete old image only after successful upload and DB update
     if (oldImageUrl) {
-      await deleteStorageImage(supabase, oldImageUrl);
+      await deleteStorageFile(supabase, STORAGE_BUCKET, oldImageUrl, STORAGE_MARKER);
     }
 
     CacheStrategy.afterShareUpdate();

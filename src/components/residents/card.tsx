@@ -8,9 +8,10 @@ import type { Profile } from "@/domain/profile";
 import { getInitials } from "@/lib/utils";
 import { getOptimizedImageUrl, getResponsiveImageSizes } from "@/lib/utils/image";
 import { isNewResident } from "@/lib/utils/residents";
+import { isMockProfile } from "@/lib/utils/profile";
 import { useI18n } from "@/hooks/use-i18n";
 import { usePrefetch } from "@/hooks/use-prefetch";
-import { SharedAvatar } from "@/components/shared-element";
+import { SharedAvatar } from "@/components/layout/shared-element";
 import { Sparkles } from "lucide-react";
 
 interface ResidentCardProps {
@@ -18,10 +19,6 @@ interface ResidentCardProps {
   isCurrentUser?: boolean;
   /** 未認証ユーザー向けにモザイクをかける */
   isBlurred?: boolean;
-}
-
-function isMockProfile(profileId: string): boolean {
-  return profileId.startsWith("mock-");
 }
 
 export const ResidentCard = memo(function ResidentCard({

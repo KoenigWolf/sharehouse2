@@ -8,12 +8,8 @@ import { getServerTranslator } from "@/lib/i18n/server";
 import { isValidUUID } from "@/lib/security";
 import { enforceAllowedOrigin } from "@/lib/security/request";
 import { requireAdmin } from "@/lib/admin/check";
+import type { ActionResponse } from "@/lib/types/action-response";
 import type { WifiInfo, WifiInfoInput } from "@/domain/wifi";
-
-/**
- * Response types
- */
-type UpdateResponse = { success: true } | { error: string };
 
 /**
  * WiFi情報を全件取得する
@@ -60,7 +56,7 @@ export async function getWifiInfo(): Promise<WifiInfo[]> {
  * @param data - WiFi情報の入力データ
  * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
  */
-export async function createWifiInfo(data: WifiInfoInput): Promise<UpdateResponse> {
+export async function createWifiInfo(data: WifiInfoInput): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "createWifiInfo");
@@ -117,7 +113,7 @@ export async function createWifiInfo(data: WifiInfoInput): Promise<UpdateRespons
  * @param data - WiFi情報の入力データ
  * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
  */
-export async function updateWifiInfo(id: string, data: WifiInfoInput): Promise<UpdateResponse> {
+export async function updateWifiInfo(id: string, data: WifiInfoInput): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "updateWifiInfo");
@@ -181,7 +177,7 @@ export async function updateWifiInfo(id: string, data: WifiInfoInput): Promise<U
  * @param id - 削除対象のWiFi情報ID（UUID形式）
  * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
  */
-export async function deleteWifiInfo(id: string): Promise<UpdateResponse> {
+export async function deleteWifiInfo(id: string): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "deleteWifiInfo");

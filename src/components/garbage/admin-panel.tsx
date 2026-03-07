@@ -36,7 +36,6 @@ export function GarbageAdminPanel({ schedule }: GarbageAdminPanelProps) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // ローテーション生成フォーム
   const [rotationStartDate, setRotationStartDate] = useState("");
   const [rotationWeeks, setRotationWeeks] = useState(4);
   const [isGenerating, setIsGenerating] = useState(false);

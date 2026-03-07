@@ -28,16 +28,16 @@ import {
   createDefaultProfileData,
   resolveFallbackName,
 } from "@/application/auth/profile";
+import type { ActionResponse } from "@/lib/types/action-response";
 
 /**
- * Response types for auth actions
+ * SignUp has a special three-way union: basic success, success with email confirmation, or error.
+ * This doesn't fit cleanly into ActionResponseWith, so we keep it explicit.
  */
 type SignUpResponse =
   | { success: true }
   | { success: true; needsEmailConfirmation: true; message: string }
   | { error: string };
-
-type SignInResponse = { success: true } | { error: string };
 
 /**
  * メールとパスワードで新規ユーザーを登録する
@@ -198,7 +198,7 @@ export async function signUp(
 export async function signIn(
   email: string,
   password: string
-): Promise<SignInResponse> {
+): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "signIn");
@@ -297,11 +297,9 @@ export async function signIn(
  *
  * メールアドレスの存在有無に関わらず常に成功を返す（列挙攻撃防止）。
  */
-type PasswordResetRequestResponse = { success: true } | { error: string };
-
 export async function requestPasswordReset(
   email: string
-): Promise<PasswordResetRequestResponse> {
+): Promise<ActionResponse> {
   const t = await getServerTranslator();
   const startTime = Date.now();
 
@@ -330,7 +328,7 @@ export async function requestPasswordReset(
     return { error: formatRateLimitError(rateLimitResult.retryAfter, t) };
   }
 
-  let result: PasswordResetRequestResponse;
+  let result: ActionResponse;
 
   try {
     const supabase = await createClient();
@@ -378,11 +376,9 @@ export async function requestPasswordReset(
 /**
  * リカバリーセッション後にパスワードを再設定する
  */
-type PasswordResetResponse = { success: true } | { error: string };
-
 export async function updatePasswordAfterReset(
   newPassword: string
-): Promise<PasswordResetResponse> {
+): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "updatePasswordAfterReset");

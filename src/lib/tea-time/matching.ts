@@ -84,7 +84,6 @@ function createPairs(
   const pairs: [string, string][] = [];
   const matched = new Set<string>();
 
-  // 直近マッチのペアをマップ化（重み計算用）
   const recentPairCount = new Map<string, number>();
   for (const match of recentMatches) {
     const key = getPairKey(match.user1_id, match.user2_id);

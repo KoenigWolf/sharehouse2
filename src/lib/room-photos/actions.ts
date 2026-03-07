@@ -9,12 +9,9 @@ import { RateLimiters, formatRateLimitError, isValidUUID } from "@/lib/security"
 import { enforceAllowedOrigin } from "@/lib/security/request";
 import { extractTakenAt } from "@/lib/utils/exif";
 import { ROOM_PHOTOS } from "@/lib/constants/config";
+import type { ActionResponse, ActionResponseWith, ActionResponseWithData } from "@/lib/types/action-response";
 import type { RoomPhoto } from "@/domain/room-photo";
 import type { Profile } from "@/domain/profile";
-
-type UpdateResponse = { success: true } | { error: string };
-type UploadResponse = { success: true; url: string } | { error: string };
-type BulkUploadResponse = { success: true; data: RoomPhoto[] } | { error: string };
 
 export interface BulkPhotoItem {
   storagePath: string;
@@ -22,21 +19,9 @@ export interface BulkPhotoItem {
 }
 
 /**
- * 部屋の写真をアップロードする
- *
- * 処理フロー:
- * 1. オリジン検証
- * 2. 認証確認
- * 3. レート制限
- * 4. ファイルバリデーション
- * 5. Storage アップロード
- * 6. DB挿入
- * 7. キャッシュ再検証
- *
  * @param formData - "photo" キーにFileを、"caption" キーにキャプション文字列を含むFormData
- * @returns 成功時 `{ success: true, url }`、失敗時 `{ error }`
  */
-export async function uploadRoomPhoto(formData: FormData): Promise<UploadResponse> {
+export async function uploadRoomPhoto(formData: FormData): Promise<ActionResponseWith<{ url: string }>> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "uploadRoomPhoto");
@@ -125,22 +110,7 @@ export async function uploadRoomPhoto(formData: FormData): Promise<UploadRespons
   }
 }
 
-/**
- * 部屋の写真を削除する
- *
- * 処理フロー:
- * 1. オリジン検証
- * 2. 認証確認
- * 3. UUID検証
- * 4. 所有権確認
- * 5. Storage削除
- * 6. DB削除
- * 7. キャッシュ再検証
- *
- * @param photoId - 削除対象の写真ID（UUID）
- * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
- */
-export async function deleteRoomPhoto(photoId: string): Promise<UpdateResponse> {
+export async function deleteRoomPhoto(photoId: string): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "deleteRoomPhoto");
@@ -199,12 +169,6 @@ export async function deleteRoomPhoto(photoId: string): Promise<UpdateResponse> 
   }
 }
 
-/**
- * 指定ユーザーの部屋写真一覧を取得する
- *
- * @param userId - 対象ユーザーのID
- * @returns 写真一覧（display_order順）、エラー時は空配列
- */
 export async function getRoomPhotos(userId: string): Promise<RoomPhoto[]> {
   try {
     const supabase = await createClient();
@@ -234,11 +198,6 @@ export async function getRoomPhotos(userId: string): Promise<RoomPhoto[]> {
   }
 }
 
-/**
- * 全ユーザーの部屋写真をプロフィール情報付きで取得する（ギャラリー用）
- *
- * @returns 写真一覧（プロフィール付き、作成日時降順）、エラー時は空配列
- */
 export async function getAllRoomPhotos(): Promise<
   (RoomPhoto & { profile: Profile | null })[]
 > {
@@ -295,24 +254,10 @@ export async function getAllRoomPhotos(): Promise<
   }
 }
 
-/**
- * 部屋の写真キャプションを更新する
- *
- * 処理フロー:
- * 1. オリジン検証
- * 2. 認証確認
- * 3. UUID検証
- * 4. 所有権チェック付きUPDATE
- * 5. キャッシュ再検証
- *
- * @param photoId - 更新対象の写真ID（UUID）
- * @param caption - 新しいキャプション（null で削除）
- * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
- */
 export async function updateRoomPhotoCaption(
   photoId: string,
   caption: string | null
-): Promise<UpdateResponse> {
+): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "updateRoomPhotoCaption");
@@ -364,18 +309,9 @@ export async function updateRoomPhotoCaption(
   }
 }
 
-/**
- * 一括アップロードされた写真をDBに登録する
- *
- * クライアントから直接Supabase Storageにアップロード済みのファイルパスと
- * EXIF 撮影日時を受け取り、バッチでDB挿入する。
- *
- * @param items - アップロード済みファイルのパスと撮影日時の配列
- * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
- */
 export async function registerBulkPhotos(
   items: BulkPhotoItem[]
-): Promise<BulkUploadResponse> {
+): Promise<ActionResponseWithData<RoomPhoto[]>> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "registerBulkPhotos");

@@ -2,11 +2,6 @@ import { cache } from "react";
 import { createClient } from "./server";
 import type { Profile } from "@/domain/profile";
 
-/**
- * React cache() でリクエスト単位キャッシュ
- * 同一リクエスト内で複数回呼び出しても Supabase へのリクエストは1回のみ
- */
-
 export const getCachedUser = cache(async () => {
   const supabase = await createClient();
   const { data: { user }, error } = await supabase.auth.getUser();

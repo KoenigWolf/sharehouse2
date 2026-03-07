@@ -1,8 +1,6 @@
 import { redirect, notFound } from "next/navigation";
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
-import { MobileNav } from "@/components/mobile-nav";
-import { ProfileDetail } from "@/components/profile-detail";
+import { Header, Footer, MobileNav } from "@/components/layout";
+import { ProfileDetail } from "@/components/profile";
 import { Profile } from "@/domain/profile";
 import { mockProfiles } from "@/lib/mock-data";
 import { getTeaTimeSetting } from "@/lib/tea-time/actions";

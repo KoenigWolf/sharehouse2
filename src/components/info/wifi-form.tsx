@@ -13,17 +13,6 @@ interface WifiInfoFormProps {
   onCancel: () => void;
 }
 
-/**
- * WiFi情報フォームコンポーネント
- *
- * 新規作成・編集の両方に対応する。
- * initialDataが渡された場合は編集モードで動作し、updateWifiInfoを呼ぶ。
- * それ以外はcreateWifiInfoを呼ぶ。
- *
- * @param props.initialData - 編集時の初期データ
- * @param props.onSave - 保存成功時のコールバック
- * @param props.onCancel - キャンセル時のコールバック
- */
 export function WifiInfoForm({ initialData, onSave, onCancel }: WifiInfoFormProps) {
   const t = useI18n();
   const isEditing = !!initialData;

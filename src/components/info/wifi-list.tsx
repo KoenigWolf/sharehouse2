@@ -5,7 +5,7 @@ import { m, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/use-i18n";
-import { WifiInfoForm } from "@/components/wifi-info-form";
+import { WifiInfoForm } from "@/components/info";
 import { deleteWifiInfo } from "@/lib/wifi/actions";
 import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
 import type { WifiInfo } from "@/domain/wifi";

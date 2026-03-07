@@ -1,5 +1,7 @@
 "use client";
 
+import { Header, Footer, MobileNav } from "@/components/layout";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -16,9 +18,6 @@ import {
   Clock,
   X,
 } from "lucide-react";
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
-import { MobileNav } from "@/components/mobile-nav";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
@@ -55,7 +54,6 @@ export function EventDetailClient({ initialEvent }: EventDetailClientProps) {
   const [isUploadingCover, setIsUploadingCover] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Inline editing state
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(event.title);
   const [editDate, setEditDate] = useState(event.event_date);

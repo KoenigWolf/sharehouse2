@@ -15,9 +15,6 @@ interface ResidentsFilterProps {
   onSortChange: (sort: SortOption) => void;
 }
 
-/**
- * Sort button configuration
- */
 const SORT_OPTIONS: {
   value: SortOption;
   labelKey: TranslationKey;
@@ -28,9 +25,6 @@ const SORT_OPTIONS: {
   { value: "move_in_date", labelKey: "residents.sortByMoveIn", ariaKey: "a11y.sortByMoveIn" },
 ];
 
-/**
- * Filter and sort controls for residents list
- */
 export const ResidentsFilter = memo(function ResidentsFilter({
   searchQuery,
   onSearchChange,

@@ -5,6 +5,29 @@
 
 import type { Translator } from "@/lib/i18n";
 
+/**
+ * Date を YYYY-MM-DD 形式の文字列に変換
+ *
+ * @param date - 変換する日付 (デフォルト: 現在日時)
+ * @returns YYYY-MM-DD 形式の文字列
+ */
+export function toDateString(date: Date = new Date()): string {
+  return date.toISOString().split("T")[0];
+}
+
+/**
+ * 現在日時から指定日数後までの日付範囲を取得
+ *
+ * @param days - 日数
+ * @returns { start: string, end: string } YYYY-MM-DD 形式
+ */
+export function getDateRange(days: number): { start: string; end: string } {
+  const start = toDateString();
+  const end = new Date();
+  end.setDate(end.getDate() + days);
+  return { start, end: toDateString(end) };
+}
+
 interface ProfileLike {
   nickname?: string | null;
   name?: string | null;

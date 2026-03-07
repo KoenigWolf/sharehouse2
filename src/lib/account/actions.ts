@@ -14,19 +14,12 @@ import {
 } from "@/lib/security";
 import { enforceAllowedOrigin } from "@/lib/security/request";
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@/lib/env";
+import type { ActionResponse } from "@/lib/types/action-response";
 
-type UpdateResponse = { success: true } | { error: string };
-
-/**
- * パスワードを変更する
- *
- * オリジン検証 → 認証確認 → レート制限 → 新パスワードバリデーション →
- * 現パスワード検証（セッション非干渉） → パスワード更新 → 監査ログ
- */
 export async function changePassword(
   currentPassword: string,
   newPassword: string
-): Promise<UpdateResponse> {
+): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "changePassword");
@@ -99,15 +92,9 @@ export async function changePassword(
   }
 }
 
-/**
- * メールアドレスを変更する
- *
- * オリジン検証 → 認証確認 → レート制限 → メールバリデーション →
- * Supabase に確認メール送信を依頼 → 監査ログ
- */
 export async function changeEmail(
   newEmail: string
-): Promise<UpdateResponse> {
+): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "changeEmail");
@@ -156,15 +143,9 @@ export async function changeEmail(
   }
 }
 
-/**
- * アカウントを削除する
- *
- * オリジン検証 → 認証確認 → 確認テキスト検証 → レート制限 →
- * 全ユーザーデータ削除（Storage + DB） → Auth ユーザー削除 → 監査ログ
- */
 export async function deleteAccount(
   confirmText: string
-): Promise<UpdateResponse> {
+): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "deleteAccount");
@@ -189,7 +170,6 @@ export async function deleteAccount(
 
     const userId = user.id;
 
-    // Storage: room-photos バケットからユーザーのファイルを削除
     const { data: photoFiles, error: listPhotosError } = await supabase.storage
       .from("room-photos")
       .list(userId);
@@ -206,7 +186,6 @@ export async function deleteAccount(
       }
     }
 
-    // Storage: avatars バケットからプロフィールのアバターを削除
     const { data: profile } = await supabase
       .from("profiles")
       .select("avatar_url")
@@ -225,7 +204,6 @@ export async function deleteAccount(
       }
     }
 
-    // DB: ユーザー関連データを削除（エラーがあっても続行し、全てログする）
     const deleteResults = await Promise.all([
       supabase.from("room_photos").delete().eq("user_id", userId),
       supabase.from("notification_settings").delete().eq("user_id", userId),
@@ -246,7 +224,6 @@ export async function deleteAccount(
       }
     }
 
-    // DB: プロフィールを削除
     const { error: profileDeleteError } = await supabase
       .from("profiles")
       .delete()
@@ -256,7 +233,6 @@ export async function deleteAccount(
       logError(profileDeleteError, { action: "deleteAccount.delete.profiles", userId });
     }
 
-    // Auth: ユーザーを削除（Service Role 必要）
     const adminClient = createAdminClient();
     const { error: deleteError } =
       await adminClient.auth.admin.deleteUser(userId);

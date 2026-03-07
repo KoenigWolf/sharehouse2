@@ -1,12 +1,11 @@
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
-import { MobileNav } from "@/components/mobile-nav";
-import { EventsContent } from "@/components/events-content";
-import { BlurredPageContent } from "@/components/blurred-page-content";
+import { EventsContent } from "@/components/events";
+import { Header, Footer, MobileNav } from "@/components/layout";
+import { BlurredPageContent } from "@/components/public-teaser";
 import { getUpcomingEvents } from "@/lib/events/actions";
 import { getCachedUser } from "@/lib/supabase/cached-queries";
 import { generateMockEvents } from "@/lib/mock-data";
 import { logError } from "@/lib/errors";
+import { toDateString } from "@/lib/utils/formatting";
 
 interface EventsPageProps {
   searchParams: Promise<{ edit?: string }>;
@@ -17,9 +16,8 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
   const { user, supabase } = await getCachedUser();
   const isBlurred = !user;
 
-  // プライバシー保護: 未認証ユーザーには実データを渡さない
   if (isBlurred) {
-    const todayStr = new Date().toISOString().split("T")[0];
+    const todayStr = toDateString();
     const { count, error } = await supabase
       .from("events")
       .select("*", { count: "exact", head: true })

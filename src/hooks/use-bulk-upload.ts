@@ -33,14 +33,9 @@ interface Feedback {
   message: string;
 }
 
-const CONCURRENCY = 2; // Reduced from 5 for better stability on mobile devices
+// Reduced from 5 for better stability on mobile devices
+const CONCURRENCY = 2;
 
-/**
- * 一括アップロードフック
- *
- * クライアント側で圧縮 → Supabase Storageへ直接並列アップロード →
- * サーバーアクションでバッチDB登録、の流れを管理する。
- */
 export function useBulkUpload() {
   const router = useRouter();
   const t = useI18n();

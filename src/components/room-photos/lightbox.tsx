@@ -405,7 +405,6 @@ export function PhotoLightbox({
   const photo = selectedIndex !== null ? photos[selectedIndex] ?? null : null;
   const isOwner = photo !== null && currentUserId !== null && photo.user_id === currentUserId;
 
-  // Caption editing state
   const [isEditingCaption, setIsEditingCaption] = useState(false);
   const [captionDraft, setCaptionDraft] = useState("");
   const [isSavingCaption, setIsSavingCaption] = useState(false);

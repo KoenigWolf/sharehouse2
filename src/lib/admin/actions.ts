@@ -10,9 +10,7 @@ import { isValidUUID, AuditEventType, auditLog } from "@/lib/security";
 import { enforceAllowedOrigin } from "@/lib/security/request";
 import { requireAdmin, clearAdminCache } from "@/lib/admin/check";
 import { emailSchema, passwordSchema } from "@/domain/validation/auth";
-
-type UpdateResponse = { success: true } | { error: string };
-type EmailResponse = { success: true; email: string } | { error: string };
+import type { ActionResponse, ActionResponseWith } from "@/lib/types/action-response";
 
 export interface AdminListProfile {
   id: string;
@@ -62,7 +60,7 @@ export async function getAllProfilesForAdmin(): Promise<AdminListProfile[]> {
  *
  * @param targetUserId - 対象ユーザーのID
  */
-export async function toggleAdminStatus(targetUserId: string): Promise<UpdateResponse> {
+export async function toggleAdminStatus(targetUserId: string): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "toggleAdminStatus");
@@ -127,7 +125,7 @@ export async function toggleAdminStatus(targetUserId: string): Promise<UpdateRes
  *
  * @param targetUserId - 対象ユーザーのID
  */
-export async function adminDeleteAccount(targetUserId: string): Promise<UpdateResponse> {
+export async function adminDeleteAccount(targetUserId: string): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "adminDeleteAccount");
@@ -262,7 +260,7 @@ export async function adminDeleteAccount(targetUserId: string): Promise<UpdateRe
  */
 export async function adminGetUserEmail(
   targetUserId: string,
-): Promise<EmailResponse> {
+): Promise<ActionResponseWith<{ email: string }>> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "adminGetUserEmail");
@@ -308,7 +306,7 @@ export async function adminGetUserEmail(
 export async function adminUpdateUserEmail(
   targetUserId: string,
   newEmail: string,
-): Promise<UpdateResponse> {
+): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "adminUpdateUserEmail");
@@ -391,7 +389,7 @@ export async function adminUpdateUserEmail(
 export async function adminUpdateUserPassword(
   targetUserId: string,
   newPassword: string,
-): Promise<UpdateResponse> {
+): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "adminUpdateUserPassword");

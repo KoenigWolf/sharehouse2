@@ -3,13 +3,14 @@
 import { createClient } from "@/lib/supabase/server";
 import { logError } from "@/lib/errors";
 import { sendPushNotification } from "@/lib/push/actions";
+import { toDateString } from "@/lib/utils/formatting";
 
 export async function sendDutyReminders() {
   const supabase = await createClient();
 
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
-  const dutyDate = tomorrow.toISOString().split("T")[0];
+  const dutyDate = toDateString(tomorrow);
 
   const { data: duties, error } = await supabase
     .from("garbage_duties")

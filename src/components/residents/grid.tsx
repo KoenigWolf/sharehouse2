@@ -11,7 +11,7 @@ import {
   ChevronRight,
   MessageCircle,
 } from "lucide-react";
-import { ResidentCard } from "@/components/resident-card";
+import { ResidentCard } from "@/components/residents";
 import { Profile } from "@/domain/profile";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
 import type { Translator } from "@/lib/i18n";
@@ -20,8 +20,9 @@ import Link from "next/link";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
 import { getFloorFromRoom, isNewResident, FLOOR_COLORS, type FloorId } from "@/lib/utils/residents";
+import { isMockProfile as isMockProfileFn } from "@/lib/utils/profile";
 import { staggerContainer, staggerItem } from "@/lib/animation";
-import { VibeUpdateModal } from "@/components/vibe-update-modal";
+import { VibeUpdateModal } from "@/components/bulletin";
 import { FloatingActionButton } from "@/components/ui/floating-action-button";
 
 interface ResidentsGridProps {
@@ -57,7 +58,7 @@ export function ResidentsGrid({
   );
 
   const floorStats = useMemo(() => {
-    const registered = profiles.filter((p) => !p.id.startsWith("mock-"));
+    const registered = profiles.filter((p) => !isMockProfileFn(p.id));
     const result: Record<string, { total: number; registered: number }> = {
       "2F": { total: 5, registered: 0 },
       "3F": { total: 5, registered: 0 },
@@ -440,7 +441,7 @@ function ResidentListItem({
   isCurrentUser: boolean;
   t: Translator;
 }) {
-  const isMockProfile = profile.id.startsWith("mock-");
+  const isMockProfile = isMockProfileFn(profile.id);
   const floor = getFloorFromRoom(profile.room_number);
   const colors = FLOOR_COLORS[(floor as FloorId)] || FLOOR_COLORS["?"];
   const isNew = isNewResident(profile.move_in_date);

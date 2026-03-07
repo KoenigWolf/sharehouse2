@@ -8,6 +8,9 @@ import { getServerTranslator } from "@/lib/i18n/server";
 import { isValidUUID } from "@/lib/security";
 import { enforceAllowedOrigin } from "@/lib/security/request";
 import { requireAdmin } from "@/lib/admin/check";
+import { toDateString, getDateRange } from "@/lib/utils/formatting";
+import { fetchProfileMap } from "@/lib/utils/server-helpers";
+import type { ActionResponse, ActionResponseWith } from "@/lib/types/action-response";
 import type {
   GarbageSchedule,
   GarbageDuty,
@@ -16,12 +19,6 @@ import type {
   GarbageDutyInput,
 } from "@/domain/garbage";
 import type { Profile } from "@/domain/profile";
-
-/**
- * Response types
- */
-type UpdateResponse = { success: true } | { error: string };
-type GenerateResponse = { success: true; count: number } | { error: string };
 
 /**
  * ゴミ出しスケジュール（曜日別）を全件取得する
@@ -81,10 +78,7 @@ export async function getUpcomingDuties(days = 7): Promise<GarbageDutyWithProfil
       return [];
     }
 
-    const today = new Date().toISOString().split("T")[0];
-    const endDate = new Date();
-    endDate.setDate(endDate.getDate() + days);
-    const endDateStr = endDate.toISOString().split("T")[0];
+    const { start: today, end: endDateStr } = getDateRange(days);
 
     const { data: duties, error } = await supabase
       .from("garbage_duties")
@@ -102,23 +96,14 @@ export async function getUpcomingDuties(days = 7): Promise<GarbageDutyWithProfil
       return [];
     }
 
-    const userIds = [...new Set(duties.map((duty) => duty.user_id))];
-
-    const { data: profiles } = await supabase
-      .from("profiles")
-      .select("id, name, avatar_url")
-      .in("id", userIds);
-
-    const profileMap = new Map<string, Profile>();
-    if (profiles) {
-      for (const profile of profiles) {
-        profileMap.set(profile.id, profile as Profile);
-      }
-    }
+    const profileMap = await fetchProfileMap<Profile>(
+      supabase,
+      duties.map((duty) => duty.user_id)
+    );
 
     return duties.map((duty) => ({
       ...duty,
-      profile: profileMap.get(duty.user_id) || null,
+      profile: profileMap.get(duty.user_id) ?? null,
     })) as GarbageDutyWithProfile[];
   } catch (error) {
     logError(error, { action: "getUpcomingDuties" });
@@ -143,7 +128,7 @@ export async function getMyDuties(): Promise<GarbageDuty[]> {
       return [];
     }
 
-    const today = new Date().toISOString().split("T")[0];
+    const today = toDateString();
 
     const { data, error } = await supabase
       .from("garbage_duties")
@@ -172,7 +157,7 @@ export async function getMyDuties(): Promise<GarbageDuty[]> {
  * @param data - スケジュール入力データ
  * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
  */
-export async function createGarbageScheduleEntry(data: GarbageScheduleInput): Promise<UpdateResponse> {
+export async function createGarbageScheduleEntry(data: GarbageScheduleInput): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "createGarbageScheduleEntry");
@@ -226,7 +211,7 @@ export async function createGarbageScheduleEntry(data: GarbageScheduleInput): Pr
  * @param data - スケジュール入力データ
  * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
  */
-export async function updateGarbageScheduleEntry(id: string, data: GarbageScheduleInput): Promise<UpdateResponse> {
+export async function updateGarbageScheduleEntry(id: string, data: GarbageScheduleInput): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "updateGarbageScheduleEntry");
@@ -289,7 +274,7 @@ export async function updateGarbageScheduleEntry(id: string, data: GarbageSchedu
  * @param id - 削除対象のスケジュールID（UUID形式）
  * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
  */
-export async function deleteGarbageScheduleEntry(id: string): Promise<UpdateResponse> {
+export async function deleteGarbageScheduleEntry(id: string): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "deleteGarbageScheduleEntry");
@@ -344,7 +329,7 @@ export async function deleteGarbageScheduleEntry(id: string): Promise<UpdateResp
  * @param data - 当番入力データ
  * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
  */
-export async function assignDuty(data: GarbageDutyInput): Promise<UpdateResponse> {
+export async function assignDuty(data: GarbageDutyInput): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "assignDuty");
@@ -399,7 +384,7 @@ export async function assignDuty(data: GarbageDutyInput): Promise<UpdateResponse
  * @param weeks - 生成する週数
  * @returns 成功時 `{ success: true, count }` (生成件数)、失敗時 `{ error }`
  */
-export async function generateDutyRotation(startDate: string, weeks: number): Promise<GenerateResponse> {
+export async function generateDutyRotation(startDate: string, weeks: number): Promise<ActionResponseWith<{ count: number }>> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "generateDutyRotation");
@@ -475,7 +460,7 @@ export async function generateDutyRotation(startDate: string, weeks: number): Pr
         );
 
         for (const entry of daySchedule) {
-          const dateStr = currentDate.toISOString().split("T")[0];
+          const dateStr = toDateString(currentDate);
           duties.push({
             user_id: (profiles[residentIndex] as Profile).id,
             duty_date: dateStr,
@@ -516,7 +501,7 @@ export async function generateDutyRotation(startDate: string, weeks: number): Pr
  * @param dutyId - 対象当番のID（UUID形式）
  * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
  */
-export async function completeDuty(dutyId: string): Promise<UpdateResponse> {
+export async function completeDuty(dutyId: string): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "completeDuty");

@@ -1,14 +1,12 @@
 "use client";
 
+import { Header, Footer, MobileNav, PageTransition } from "@/components/layout";
+
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { m } from "framer-motion";
 import { ArrowLeft, CreditCard, Loader2 } from "lucide-react";
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
-import { MobileNav } from "@/components/mobile-nav";
 import { useI18n } from "@/hooks/use-i18n";
-import { PageTransition } from "@/components/page-transition";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 

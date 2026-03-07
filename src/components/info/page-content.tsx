@@ -17,8 +17,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/use-i18n";
-import { GarbageScheduleView } from "@/components/garbage-schedule-view";
-import { GarbageAdminPanel } from "@/components/garbage-admin-panel";
+import { GarbageScheduleView } from "@/components/garbage";
+import { GarbageAdminPanel } from "@/components/garbage";
 import type { WifiInfo } from "@/domain/wifi";
 import type { GarbageSchedule, GarbageDutyWithProfile } from "@/domain/garbage";
 import type { SharedInfo } from "@/domain/shared-info";

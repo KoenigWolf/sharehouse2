@@ -77,7 +77,6 @@ export function BulletinBoard({
       setCursor(result.nextCursor);
       setHasMore(result.hasMore);
 
-      // Clear loaded batch after animation
       setTimeout(() => setLoadedBatch(new Set()), 500);
     } catch (error) {
       logError(error, { action: "loadMoreBulletins" });
@@ -185,11 +184,10 @@ export function BulletinBoard({
     }
   }, [t, router]);
 
-  // Calculate stagger delay for loaded items
   const getStaggerDelay = useCallback((bulletinId: string) => {
     if (loadedBatch.has(bulletinId)) {
       const batchIndex = Array.from(loadedBatch).indexOf(bulletinId);
-      return batchIndex * 0.05; // 50ms stagger
+      return batchIndex * 0.05;
     }
     return 0;
   }, [loadedBatch]);

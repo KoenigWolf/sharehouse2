@@ -5,7 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { m } from "framer-motion";
-import { SharedAvatar } from "@/components/shared-element";
+import { SharedAvatar } from "@/components/layout";
+import { isMockProfile as isMockProfileFn } from "@/lib/utils/profile";
 import {
   Camera,
   MapPin,
@@ -33,7 +34,7 @@ import {
 import { ICON_SIZE, ICON_STROKE, ICON_GAP } from "@/lib/constants/icons";
 import { Avatar, OptimizedAvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { RoomPhotoManager } from "@/components/room-photo-manager";
+import { RoomPhotoManager } from "@/components/room-photos";
 import {
   Profile,
   AGE_RANGES,
@@ -57,8 +58,7 @@ import {
 import { MBTI_COLORS } from "@/lib/constants/mbti";
 import type { RoomPhoto } from "@/domain/room-photo";
 import { getInitials } from "@/lib/utils";
-import { TeaserOverlay } from "./public-teaser/teaser-overlay";
-import { MaskedText } from "./public-teaser/masked-text";
+import { TeaserOverlay, MaskedText } from "@/components/public-teaser";
 import { uploadCoverPhoto } from "@/lib/profile/cover-photo-actions";
 import { prepareImageForUpload } from "@/lib/utils/image-compression";
 import { FILE_UPLOAD } from "@/lib/constants/config";
@@ -302,7 +302,7 @@ export function ProfileDetail({
   teaTimeEnabled,
   roomPhotos = [],
 }: ProfileDetailProps) {
-  const isMockProfile = profile.id.startsWith("mock-");
+  const isMockProfile = isMockProfileFn(profile.id);
   const t = useI18n();
   const router = useRouter();
   const coverInputRef = useRef<HTMLInputElement>(null);

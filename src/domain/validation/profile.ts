@@ -3,6 +3,7 @@ import { PROFILE, FILE_UPLOAD } from "@/lib/constants/config";
 import { sanitizeForStorage, stripHtml } from "@/lib/security/validation";
 import type { TranslationKey, Translator } from "@/lib/i18n";
 import { MBTI_TYPES } from "@/domain/profile";
+import { formatValidationError } from "./format-error";
 
 /**
  * Profile validation schemas with security sanitization
@@ -171,23 +172,6 @@ const VALIDATION_PARAMS: Partial<Record<TranslationKey, Record<string, number>>>
   "validation.fileTooLarge": { max: FILE_UPLOAD.maxSizeMB },
 };
 
-function formatValidationError(
-  issue: z.ZodIssue,
-  t: Translator
-): string {
-  const key = issue.message as TranslationKey;
-  if (!key.includes(".")) {
-    return t("errors.invalidInput");
-  }
-  const params = VALIDATION_PARAMS[key];
-
-  if (params) {
-    return t(key, params);
-  }
-
-  return t(key);
-}
-
 /**
  * Validate profile update input
  */
@@ -202,7 +186,7 @@ export function validateProfileUpdate(
   const issue = result.error.issues[0];
   return {
     success: false,
-    error: issue ? formatValidationError(issue, t) : t("errors.invalidInput"),
+    error: issue ? formatValidationError(issue, t, VALIDATION_PARAMS) : t("errors.invalidInput"),
   };
 }
 
@@ -220,15 +204,15 @@ export function validateFileUpload(
   const issue = result.error.issues[0];
   return {
     success: false,
-    error: issue ? formatValidationError(issue, t) : t("errors.invalidInput"),
+    error: issue ? formatValidationError(issue, t, VALIDATION_PARAMS) : t("errors.invalidInput"),
   };
 }
 
 /**
  * Sanitize filename for storage
+ * Removes path traversal attempts and special characters
  */
 export function sanitizeFileName(fileName: string): string {
-  // Remove path traversal attempts and special characters
   return fileName
     .replace(/[/\\]/g, "")
     .replace(/\.\./g, "")

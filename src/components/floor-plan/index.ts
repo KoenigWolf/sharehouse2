@@ -1,0 +1,1 @@
+export { FloorPlanContent } from "./content";

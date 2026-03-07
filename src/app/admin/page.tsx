@@ -1,8 +1,6 @@
 import { redirect } from "next/navigation";
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
-import { MobileNav } from "@/components/mobile-nav";
-import { AdminUserList } from "@/components/admin-user-list";
+import { Header, Footer, MobileNav } from "@/components/layout";
+import { AdminUserList } from "@/components/admin";
 import { getAllProfilesForAdmin } from "@/lib/admin/actions";
 import { isCurrentUserAdmin } from "@/lib/admin/check";
 import { getServerTranslator } from "@/lib/i18n/server";

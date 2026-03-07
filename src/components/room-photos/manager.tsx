@@ -10,7 +10,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { deleteRoomPhoto } from "@/lib/room-photos/actions";
 import { useI18n } from "@/hooks/use-i18n";
 import { useBulkUpload } from "@/hooks/use-bulk-upload";
-import { BulkUploadProgress } from "@/components/bulk-upload-progress";
+import { BulkUploadProgress } from "@/components/room-photos";
 import { ROOM_PHOTOS, FILE_UPLOAD } from "@/lib/constants/config";
 import type { RoomPhoto } from "@/domain/room-photo";
 
