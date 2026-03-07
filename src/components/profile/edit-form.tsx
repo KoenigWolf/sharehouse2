@@ -252,7 +252,6 @@ export function ProfileEditForm({
       </AnimatePresence>
 
       <form onSubmit={handleSubmit} className="space-y-12">
-        {/* Avatar & Basic Info Section */}
         <div className="premium-surface rounded-[2.5rem] p-8 sm:p-10 shadow-sm border border-border/50 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary/30 rounded-full blur-3xl -mr-32 -mt-32" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-muted/50 rounded-full blur-3xl -ml-24 -mb-24" />
@@ -300,7 +299,6 @@ export function ProfileEditForm({
           </div>
         </div>
 
-        {/* Bio Section */}
         <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-border/50 space-y-8">
           <SectionLabel
             label={t("profile.bio")}
@@ -346,7 +344,6 @@ export function ProfileEditForm({
           />
         </div>
 
-        {/* Basic Info Section */}
         <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-border/50 space-y-8">
           <SectionLabel
             label={t("profile.sectionBasicInfo")}
@@ -406,7 +403,6 @@ export function ProfileEditForm({
           </div>
         </div>
 
-        {/* Work Section */}
         <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-border/50 space-y-8">
           <SectionLabel
             label={t("profile.sectionWork")}
@@ -456,7 +452,6 @@ export function ProfileEditForm({
           </div>
         </div>
 
-        {/* Lifestyle Section */}
         <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-border/50 space-y-8">
           <SectionLabel
             label={t("profile.sectionLifestyle")}
@@ -542,7 +537,6 @@ export function ProfileEditForm({
           </div>
         </div>
 
-        {/* Communal Section */}
         <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-border/50 space-y-8">
           <SectionLabel
             label={t("profile.sectionCommunal")}
@@ -618,7 +612,6 @@ export function ProfileEditForm({
           </div>
         </div>
 
-        {/* Personality Section */}
         <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-border/50 space-y-8">
           <SectionLabel
             label={t("profile.sectionPersonality")}
@@ -642,7 +635,6 @@ export function ProfileEditForm({
           </div>
         </div>
 
-        {/* SNS Section */}
         <div className="premium-surface rounded-[2rem] p-8 sm:p-10 shadow-sm border border-border/50 space-y-8">
           <SectionLabel
             label={t("profile.sectionSns")}
@@ -692,7 +684,6 @@ export function ProfileEditForm({
           </div>
         </div>
 
-        {/* Settings Section */}
         <SettingsSection
           teaTimeEnabled={teaTimeEnabled}
           isTeaTimeLoading={isTeaTimeLoading}
@@ -702,7 +693,6 @@ export function ProfileEditForm({
           onNotificationToggle={handleNotificationToggle}
         />
 
-        {/* Submit Button */}
         <m.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
