@@ -3,6 +3,12 @@
 -- Garbage schedule, Wi-Fi info, shared info
 -- Source: https://www.city.bunkyo.lg.jp/b039/p000926/
 -- ============================================
+--
+-- ⚠️ WARNING: Development/Test Environment Only
+-- このファイルは開発・テスト環境専用です。
+-- 本番環境では既存データが DELETE されるため実行しないでください。
+-- 本番環境のシードデータは Supabase Dashboard から手動で投入してください。
+-- ============================================
 
 -- ============================================
 -- 1. Garbage Schedule (Bunkyo-ku Hakusan 3-chome)
