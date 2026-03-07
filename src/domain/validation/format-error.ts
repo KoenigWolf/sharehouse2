@@ -19,8 +19,19 @@ export function formatValidationError(
     return t("errors.invalidInput");
   }
 
-  const keyParams = params?.[key];
-  if (keyParams) {
+  // ZodIssue から制約値を抽出（minimum, maximum など）
+  const issueConstraints: Record<string, number> = {};
+  if ("minimum" in issue && typeof issue.minimum === "number") {
+    issueConstraints.minimum = issue.minimum;
+  }
+  if ("maximum" in issue && typeof issue.maximum === "number") {
+    issueConstraints.maximum = issue.maximum;
+  }
+
+  // 呼び出し元のパラメータと ZodIssue の制約値をマージ
+  const keyParams = { ...issueConstraints, ...params?.[key] };
+
+  if (Object.keys(keyParams).length > 0) {
     return t(key, keyParams);
   }
 

@@ -51,16 +51,16 @@ export type ActionResponseWith<T> = ({ success: true } & T) | { error: string };
  * Type guard to check if response is successful
  */
 export function isActionSuccess<T>(
-  response: ActionResponse | ActionResponseWithData<T>
-): response is { success: true } | { success: true; data: T } {
+  response: ActionResponse | ActionResponseWithData<T> | ActionResponseWith<T>
+): response is { success: true } | { success: true; data: T } | ({ success: true } & T) {
   return "success" in response && response.success === true;
 }
 
 /**
  * Type guard to check if response is an error
  */
-export function isActionError(
-  response: ActionResponse | ActionResponseWithData<unknown>
+export function isActionError<T>(
+  response: ActionResponse | ActionResponseWithData<T> | ActionResponseWith<T>
 ): response is { error: string } {
   return "error" in response;
 }
