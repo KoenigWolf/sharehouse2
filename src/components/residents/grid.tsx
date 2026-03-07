@@ -11,7 +11,7 @@ import {
   ChevronRight,
   MessageCircle,
 } from "lucide-react";
-import { ResidentCard } from "@/components/residents";
+import { ResidentCard } from "./card";
 import { Profile } from "@/domain/profile";
 import { useI18n, useLocale } from "@/hooks/use-i18n";
 import type { Translator } from "@/lib/i18n";

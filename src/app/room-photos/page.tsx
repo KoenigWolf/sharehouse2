@@ -9,7 +9,7 @@ import { generateMockRoomPhotos } from "@/lib/mock-data";
 import { logError } from "@/lib/errors";
 
 const RoomPhotosGallery = dynamic(
-  () => import("@/components/room-photos").then((m) => m.RoomPhotosGallery),
+  () => import("@/components/room-photos/gallery").then((m) => m.RoomPhotosGallery),
   { loading: () => <div className="flex justify-center py-20"><Spinner size="lg" variant="dark" /></div> },
 );
 

@@ -10,8 +10,8 @@ import { useBulkUpload } from "@/hooks/use-bulk-upload";
 import { usePhotoGallery } from "@/hooks/use-photo-gallery";
 import { useLightbox } from "@/hooks/use-lightbox";
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
-import { BulkUploadProgress } from "@/components/room-photos";
-import { PhotoCard } from "@/components/room-photos";
+import { BulkUploadProgress } from "./bulk-upload-progress";
+import { PhotoCard } from "./photo-card";
 import { Spinner } from "@/components/ui/spinner";
 import { FeedbackMessage } from "@/components/ui/feedback-message";
 import { FloatingActionButton } from "@/components/ui/floating-action-button";
@@ -20,7 +20,7 @@ import { FILE_UPLOAD } from "@/lib/constants/config";
 import type { PhotoWithProfile } from "@/domain/room-photo";
 
 const PhotoLightbox = dynamic(
-  () => import("@/components/room-photos").then((mod) => mod.PhotoLightbox),
+  () => import("./lightbox").then((mod) => mod.PhotoLightbox),
   { ssr: false }
 );
 
