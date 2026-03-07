@@ -43,6 +43,28 @@ export async function sendMorningDigest() {
       supabase.from("push_subscriptions").select("user_id"),
     ]);
 
+  // Check for errors in any query result - abort if any failed
+  if (garbageResult.error) {
+    logError(garbageResult.error, { action: "sendMorningDigest.garbageQuery" });
+    return;
+  }
+  if (bulletinResult.error) {
+    logError(bulletinResult.error, { action: "sendMorningDigest.bulletinQuery" });
+    return;
+  }
+  if (eventResult.error) {
+    logError(eventResult.error, { action: "sendMorningDigest.eventQuery" });
+    return;
+  }
+  if (shareResult.error) {
+    logError(shareResult.error, { action: "sendMorningDigest.shareQuery" });
+    return;
+  }
+  if (usersResult.error) {
+    logError(usersResult.error, { action: "sendMorningDigest.usersQuery" });
+    return;
+  }
+
   const garbageTypes = (garbageResult.data ?? [])
     .map((g) => g.garbage_type)
     .filter(Boolean);

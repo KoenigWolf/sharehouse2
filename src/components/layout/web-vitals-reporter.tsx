@@ -5,9 +5,10 @@ import { initWebVitals } from "@/lib/utils/web-vitals";
 
 export function WebVitalsReporter() {
   useEffect(() => {
-    initWebVitals({
-      endpoint: process.env.NEXT_PUBLIC_WEB_VITALS_ENDPOINT,
-    });
+    const endpoint = process.env.NEXT_PUBLIC_WEB_VITALS_ENDPOINT;
+    if (!endpoint) return;
+
+    initWebVitals({ endpoint });
   }, []);
 
   return null;

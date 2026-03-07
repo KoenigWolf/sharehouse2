@@ -154,7 +154,7 @@ export async function adminDeleteAccount(targetUserId: string): Promise<ActionRe
     try {
       adminClient = createAdminClient();
     } catch {
-      return { error: "SUPABASE_SERVICE_ROLE_KEY is not configured" };
+      return { error: t("errors.serviceRoleNotConfigured") };
     }
 
     // Storage: room-photos - DBから取得して削除（storage.list()より効率的）
@@ -278,7 +278,7 @@ export async function adminGetUserEmail(
     try {
       adminClient = createAdminClient();
     } catch {
-      return { error: "SUPABASE_SERVICE_ROLE_KEY is not configured" };
+      return { error: t("errors.serviceRoleNotConfigured") };
     }
 
     const { data, error } =
@@ -345,7 +345,7 @@ export async function adminUpdateUserEmail(
     try {
       adminClient = createAdminClient();
     } catch {
-      return { error: "SUPABASE_SERVICE_ROLE_KEY is not configured" };
+      return { error: t("errors.serviceRoleNotConfigured") };
     }
 
     const { error: updateError } =
@@ -428,7 +428,7 @@ export async function adminUpdateUserPassword(
     try {
       adminClient = createAdminClient();
     } catch {
-      return { error: "SUPABASE_SERVICE_ROLE_KEY is not configured" };
+      return { error: t("errors.serviceRoleNotConfigured") };
     }
 
     const { error: updateError } =

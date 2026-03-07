@@ -170,19 +170,38 @@ export async function deleteAccount(
 
     const userId = user.id;
 
-    const { data: photoFiles, error: listPhotosError } = await supabase.storage
-      .from("room-photos")
-      .list(userId);
+    // Storage: room-photos - ページネーションで全ファイルを取得・削除
+    const BATCH_SIZE = 100;
+    let offset = 0;
+    let hasMore = true;
 
-    if (listPhotosError) {
-      logError(listPhotosError, { action: "deleteAccount.listPhotos", userId });
-    } else if (photoFiles && photoFiles.length > 0) {
+    while (hasMore) {
+      const { data: photoFiles, error: listPhotosError } = await supabase.storage
+        .from("room-photos")
+        .list(userId, { limit: BATCH_SIZE, offset });
+
+      if (listPhotosError) {
+        logError(listPhotosError, { action: "deleteAccount.listPhotos", userId });
+        break;
+      }
+
+      if (!photoFiles || photoFiles.length === 0) {
+        hasMore = false;
+        break;
+      }
+
       const photoPaths = photoFiles.map((f) => `${userId}/${f.name}`);
       const { error: removePhotosError } = await supabase.storage
         .from("room-photos")
         .remove(photoPaths);
       if (removePhotosError) {
         logError(removePhotosError, { action: "deleteAccount.removePhotos", userId });
+      }
+
+      if (photoFiles.length < BATCH_SIZE) {
+        hasMore = false;
+      } else {
+        offset += BATCH_SIZE;
       }
     }
 
