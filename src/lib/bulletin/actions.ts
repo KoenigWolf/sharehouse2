@@ -19,11 +19,6 @@ export interface PaginatedBulletins {
   totalCount: number | null;
 }
 
-/**
- * 投稿をページネーション付きで取得（cursor-based pagination）
- * @param cursor - 次のページを取得するためのカーソル（created_at の値）
- * @param limit - 取得件数（デフォルト: BULLETIN.pageSize）
- */
 export async function getBulletinsPaginated(
   cursor?: string | null,
   limit: number = BULLETIN.pageSize
@@ -105,18 +100,12 @@ export async function getBulletinsPaginated(
   }
 }
 
-/**
- * 各ユーザーの最新投稿のみ取得（/residents ページ用、上書き型）
- * 
- * DB側で DISTINCT ON により重複排除済み
- */
 export async function getLatestBulletinPerUser(): Promise<Map<string, { message: string; updated_at: string }>> {
   await connection();
 
   try {
     const supabase = await createClient();
 
-    // 各ユーザーの最新投稿1件のみを返す
     const { data, error } = await supabase
       .from("latest_bulletins_per_user")
       .select("user_id, message, updated_at");
@@ -141,9 +130,6 @@ export async function getLatestBulletinPerUser(): Promise<Map<string, { message:
   }
 }
 
-/**
- * 新規投稿を作成（Twitter型：積み重ね）
- */
 export async function createBulletin(message: string): Promise<ActionResponse> {
   const t = await getServerTranslator();
   const originError = await enforceAllowedOrigin(t, "createBulletin");
@@ -191,9 +177,6 @@ export async function createBulletin(message: string): Promise<ActionResponse> {
   }
 }
 
-/**
- * 投稿を編集（自分の投稿のみ編集可能）
- */
 export async function updateBulletin(bulletinId: string, message: string): Promise<ActionResponse> {
   const t = await getServerTranslator();
   const originError = await enforceAllowedOrigin(t, "updateBulletin");
@@ -243,9 +226,6 @@ export async function updateBulletin(bulletinId: string, message: string): Promi
   }
 }
 
-/**
- * 投稿を削除（自分の投稿のみ削除可能）
- */
 export async function deleteBulletin(bulletinId: string): Promise<ActionResponse> {
   const t = await getServerTranslator();
   const originError = await enforceAllowedOrigin(t, "deleteBulletin");
