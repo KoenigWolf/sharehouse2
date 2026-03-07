@@ -6,13 +6,16 @@
 import type { Translator } from "@/lib/i18n";
 
 /**
- * Date を YYYY-MM-DD 形式の文字列に変換
+ * Date を YYYY-MM-DD 形式の文字列に変換（ローカル日付を使用）
  *
  * @param date - 変換する日付 (デフォルト: 現在日時)
  * @returns YYYY-MM-DD 形式の文字列
  */
 export function toDateString(date: Date = new Date()): string {
-  return date.toISOString().split("T")[0];
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 /**
