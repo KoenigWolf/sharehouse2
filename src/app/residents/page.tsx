@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { Header, Footer, MobileNav } from "@/components/layout";
 import { ResidentsGrid } from "@/components/residents";
-import { TeaserOverlay } from "@/components/public-teaser/teaser-overlay";
+import { TeaserOverlay } from "@/components/public-teaser";
 import { TeaTimeNotification } from "@/components/tea-time";
 import { getLatestScheduledMatch } from "@/lib/tea-time/actions";
 import { getProfilesWithMock, getPublicProfilesWithMock } from "@/lib/residents/queries";

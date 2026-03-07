@@ -15,12 +15,12 @@ const ThemeSettings = dynamic(
 );
 
 const NotificationSettings = dynamic(
-  () => import("@/components/settings/notification-settings").then((m) => m.NotificationSettings),
+  () => import("@/components/settings").then((m) => m.NotificationSettings),
   { loading: () => <div className="flex justify-center py-10"><Spinner variant="dark" /></div> },
 );
 
 const LanguageSettings = dynamic(
-  () => import("@/components/settings/language-settings").then((m) => m.LanguageSettings),
+  () => import("@/components/settings").then((m) => m.LanguageSettings),
   { loading: () => <div className="flex justify-center py-10"><Spinner variant="dark" /></div> },
 );
 

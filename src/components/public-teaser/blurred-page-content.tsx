@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { TeaserOverlay } from "@/components/public-teaser/teaser-overlay";
+import { TeaserOverlay } from "./teaser-overlay";
 
 interface BlurredPageContentProps {
   children: ReactNode;

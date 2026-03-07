@@ -11,7 +11,7 @@ import { isNewResident } from "@/lib/utils/residents";
 import { isMockProfile } from "@/lib/utils/profile";
 import { useI18n } from "@/hooks/use-i18n";
 import { usePrefetch } from "@/hooks/use-prefetch";
-import { SharedAvatar } from "@/components/layout/shared-element";
+import { SharedAvatar } from "@/components/layout";
 import { Sparkles } from "lucide-react";
 
 interface ResidentCardProps {
