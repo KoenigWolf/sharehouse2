@@ -1,7 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ResidentsFilter } from "@/components/residents/filter";
+
+vi.mock("@/lib/env", () => ({
+  SUPABASE_URL: "http://localhost:54321",
+  SUPABASE_ANON_KEY: "test-anon-key",
+}));
+
+import { ResidentsFilter } from "@/components/residents";
 
 describe("ResidentsFilter", () => {
   const defaultProps = {

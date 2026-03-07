@@ -94,6 +94,42 @@ CREATE POLICY "Shareの更新ポリシー"
 COMMENT ON POLICY "Shareの更新ポリシー" ON public.share_items IS
   '所有者は自由に更新可。他ユーザーは available のアイテムを自分宛てに claim する場合のみ更新可能。';
 
+-- ============================================
+-- Claim Restriction Trigger
+-- 所有者以外は status と claimed_by のみ変更可能
+-- ============================================
+
+CREATE OR REPLACE FUNCTION restrict_share_item_claim()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  -- 所有者は全カラム変更可能
+  IF OLD.user_id = auth.uid() THEN
+    RETURN NEW;
+  END IF;
+
+  -- 所有者以外は status と claimed_by 以外の変更を禁止
+  IF (
+    NEW.title IS DISTINCT FROM OLD.title OR
+    NEW.description IS DISTINCT FROM OLD.description OR
+    NEW.image_url IS DISTINCT FROM OLD.image_url OR
+    NEW.user_id IS DISTINCT FROM OLD.user_id OR
+    NEW.expires_at IS DISTINCT FROM OLD.expires_at
+  ) THEN
+    RAISE EXCEPTION 'Non-owners can only modify status and claimed_by';
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS enforce_share_item_claim_restriction ON public.share_items;
+CREATE TRIGGER enforce_share_item_claim_restriction
+  BEFORE UPDATE ON public.share_items
+  FOR EACH ROW
+  EXECUTE FUNCTION restrict_share_item_claim();
+
 DROP POLICY IF EXISTS "自分または管理者がShareを削除可能" ON public.share_items;
 CREATE POLICY "自分または管理者がShareを削除可能"
   ON public.share_items FOR DELETE TO authenticated
