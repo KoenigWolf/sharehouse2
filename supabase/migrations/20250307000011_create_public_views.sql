@@ -47,10 +47,10 @@ SELECT
   LEFT(b.message, 20) AS masked_message,
   b.created_at,
   b.updated_at,
-  p.masked_name,
+  COALESCE(p.masked_name, '***') AS masked_name,
   p.masked_nickname
 FROM public.bulletins b
-JOIN public.residents_public_teaser p ON b.user_id = p.id;
+LEFT JOIN public.residents_public_teaser p ON b.user_id = p.id;
 
 GRANT SELECT ON public.bulletins_public_teaser TO anon;
 GRANT SELECT ON public.bulletins_public_teaser TO authenticated;
@@ -69,10 +69,10 @@ SELECT
   s.status,
   s.expires_at,
   s.created_at,
-  p.masked_name,
+  COALESCE(p.masked_name, '***') AS masked_name,
   p.masked_nickname
 FROM public.share_items s
-JOIN public.residents_public_teaser p ON s.user_id = p.id;
+LEFT JOIN public.residents_public_teaser p ON s.user_id = p.id;
 
 GRANT SELECT ON public.share_items_public_teaser TO anon;
 GRANT SELECT ON public.share_items_public_teaser TO authenticated;
@@ -92,10 +92,10 @@ SELECT
   e.event_time,
   e.location,
   e.created_at,
-  p.masked_name,
+  COALESCE(p.masked_name, '***') AS masked_name,
   p.masked_nickname
 FROM public.events e
-JOIN public.residents_public_teaser p ON e.user_id = p.id;
+LEFT JOIN public.residents_public_teaser p ON e.user_id = p.id;
 
 GRANT SELECT ON public.events_public_teaser TO anon;
 GRANT SELECT ON public.events_public_teaser TO authenticated;
@@ -113,10 +113,10 @@ SELECT
   COALESCE(LEFT(rp.caption, 5), '') || '...' AS masked_caption,
   rp.taken_at,
   rp.created_at,
-  p.masked_name,
+  COALESCE(p.masked_name, '***') AS masked_name,
   p.masked_nickname
 FROM public.room_photos rp
-JOIN public.residents_public_teaser p ON rp.user_id = p.id;
+LEFT JOIN public.residents_public_teaser p ON rp.user_id = p.id;
 
 GRANT SELECT ON public.room_photos_public_teaser TO anon;
 GRANT SELECT ON public.room_photos_public_teaser TO authenticated;

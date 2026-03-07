@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at timestamptz NOT NULL DEFAULT now(),
   event_type text NOT NULL,
-  severity text NOT NULL DEFAULT 'INFO',
+  severity text NOT NULL DEFAULT 'INFO'
+    CONSTRAINT audit_logs_severity_check CHECK (severity IN ('INFO', 'WARNING', 'ERROR', 'CRITICAL')),
   user_id uuid REFERENCES auth.users(id) ON DELETE SET NULL,
   target_id text,
   action text NOT NULL,
@@ -57,16 +58,24 @@ CREATE OR REPLACE FUNCTION cleanup_old_audit_logs()
 RETURNS void
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public, pg_temp
 AS $$
 BEGIN
+  -- Delete non-critical logs older than 90 days
   DELETE FROM public.audit_logs
   WHERE created_at < now() - INTERVAL '90 days'
   AND severity NOT IN ('ERROR', 'CRITICAL');
 
+  -- Delete all logs older than 365 days
   DELETE FROM public.audit_logs
   WHERE created_at < now() - INTERVAL '365 days';
 END;
 $$;
+
+-- Restrict function execution to service_role only
+REVOKE ALL ON FUNCTION cleanup_old_audit_logs() FROM PUBLIC;
+REVOKE ALL ON FUNCTION cleanup_old_audit_logs() FROM authenticated;
+REVOKE ALL ON FUNCTION cleanup_old_audit_logs() FROM anon;
 
 -- Comments
 COMMENT ON TABLE public.audit_logs IS 'セキュリティ監査ログ - コンプライアンス・インシデント対応用';

@@ -10,8 +10,15 @@ CREATE TABLE IF NOT EXISTS public.room_photos (
   caption text,
   display_order smallint DEFAULT 0 NOT NULL,
   taken_at timestamptz,  -- EXIF DateTimeOriginal
-  created_at timestamptz DEFAULT now() NOT NULL
+  created_at timestamptz DEFAULT now() NOT NULL,
+  updated_at timestamptz DEFAULT now() NOT NULL
 );
+
+DROP TRIGGER IF EXISTS on_room_photos_updated ON public.room_photos;
+CREATE TRIGGER on_room_photos_updated
+  BEFORE UPDATE ON public.room_photos
+  FOR EACH ROW
+  EXECUTE FUNCTION public.handle_updated_at();
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS room_photos_user_id_idx ON public.room_photos(user_id);

@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS public.garbage_schedule (
   notes text,
   display_order smallint DEFAULT 0 NOT NULL,
   created_at timestamptz DEFAULT now() NOT NULL,
-  updated_at timestamptz DEFAULT now() NOT NULL
+  updated_at timestamptz DEFAULT now() NOT NULL,
+  UNIQUE (day_of_week, garbage_type)
 );
 
 DROP TRIGGER IF EXISTS on_garbage_schedule_updated ON public.garbage_schedule;

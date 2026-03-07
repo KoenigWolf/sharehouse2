@@ -14,10 +14,14 @@ CREATE TABLE IF NOT EXISTS public.wifi_info (
   ssid text NOT NULL,
   password text NOT NULL,
   display_order smallint DEFAULT 0 NOT NULL,
-  updated_by uuid REFERENCES auth.users(id),
+  updated_by uuid REFERENCES auth.users(id) ON DELETE SET NULL,
   created_at timestamptz DEFAULT now() NOT NULL,
-  updated_at timestamptz DEFAULT now() NOT NULL
+  updated_at timestamptz DEFAULT now() NOT NULL,
+  UNIQUE (floor, ssid)
 );
+
+-- Index for floor-based queries
+CREATE INDEX IF NOT EXISTS idx_wifi_info_floor ON public.wifi_info(floor);
 
 DROP TRIGGER IF EXISTS on_wifi_info_updated ON public.wifi_info;
 CREATE TRIGGER on_wifi_info_updated
@@ -59,7 +63,7 @@ CREATE TABLE IF NOT EXISTS public.shared_info (
   notes text,
   floor smallint,  -- NULL for building-wide info
   display_order smallint DEFAULT 0 NOT NULL,
-  updated_by uuid REFERENCES auth.users(id),
+  updated_by uuid REFERENCES auth.users(id) ON DELETE SET NULL,
   created_at timestamptz DEFAULT now() NOT NULL,
   updated_at timestamptz DEFAULT now() NOT NULL
 );
