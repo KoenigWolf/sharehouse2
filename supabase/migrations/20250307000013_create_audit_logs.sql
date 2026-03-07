@@ -1,11 +1,8 @@
 -- ============================================
--- Security: Audit Logs Table
---
--- セキュリティ監査ログを永続化するテーブル
--- コンプライアンス・インシデント対応用
+-- Share House Portal: Audit Logs
+-- Security audit logging for compliance
 -- ============================================
 
--- audit_logs テーブル作成
 CREATE TABLE IF NOT EXISTS public.audit_logs (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at timestamptz NOT NULL DEFAULT now(),
@@ -21,25 +18,27 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
   error_message text
 );
 
--- インデックス作成（クエリパフォーマンス最適化）
+-- Indexes for query performance
 CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at ON public.audit_logs(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_event_type ON public.audit_logs(event_type);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_severity ON public.audit_logs(severity);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_user_id ON public.audit_logs(user_id);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_outcome ON public.audit_logs(outcome);
 
--- 複合インデックス（セキュリティイベント検索用）
+-- Composite index for security event searches
 CREATE INDEX IF NOT EXISTS idx_audit_logs_security_events
   ON public.audit_logs(event_type, severity, created_at DESC)
   WHERE severity IN ('WARNING', 'ERROR', 'CRITICAL');
 
--- RLSを有効化
+-- ============================================
+-- RLS: Admin-only read access
+-- ============================================
+
 ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
 
--- ポリシー: 管理者のみ閲覧可能
+DROP POLICY IF EXISTS "Admin can view audit logs" ON public.audit_logs;
 CREATE POLICY "Admin can view audit logs"
-  ON public.audit_logs FOR SELECT
-  TO authenticated
+  ON public.audit_logs FOR SELECT TO authenticated
   USING (
     EXISTS (
       SELECT 1 FROM public.profiles
@@ -48,11 +47,12 @@ CREATE POLICY "Admin can view audit logs"
     )
   );
 
--- ポリシー: サービスロールのみ書き込み可能（アプリケーションから）
--- Note: INSERT/UPDATE/DELETE は service_role 経由のみ許可
--- authenticated ユーザーは直接書き込み不可
+-- INSERT/UPDATE/DELETE only via service_role
 
--- 90日以上古いログを自動削除する関数
+-- ============================================
+-- Cleanup Function (90 days normal, 365 days critical)
+-- ============================================
+
 CREATE OR REPLACE FUNCTION cleanup_old_audit_logs()
 RETURNS void
 LANGUAGE plpgsql
@@ -63,13 +63,12 @@ BEGIN
   WHERE created_at < now() - INTERVAL '90 days'
   AND severity NOT IN ('ERROR', 'CRITICAL');
 
-  -- CRITICAL/ERROR ログは1年間保持
   DELETE FROM public.audit_logs
   WHERE created_at < now() - INTERVAL '365 days';
 END;
 $$;
 
--- コメント追加
+-- Comments
 COMMENT ON TABLE public.audit_logs IS 'セキュリティ監査ログ - コンプライアンス・インシデント対応用';
 COMMENT ON COLUMN public.audit_logs.event_type IS 'イベントタイプ (AUTH_LOGIN_SUCCESS, SECURITY_SUSPICIOUS_ACTIVITY 等)';
 COMMENT ON COLUMN public.audit_logs.severity IS '重要度 (INFO, WARNING, ERROR, CRITICAL)';
