@@ -19,13 +19,13 @@ export function formatValidationError(
     return t("errors.invalidInput");
   }
 
-  // ZodIssue から制約値を抽出（minimum, maximum など）
+  // ZodIssue から制約値を抽出し、i18n テンプレート用のキー名にマッピング
   const issueConstraints: Record<string, number> = {};
   if ("minimum" in issue && typeof issue.minimum === "number") {
-    issueConstraints.minimum = issue.minimum;
+    issueConstraints.min = issue.minimum;
   }
   if ("maximum" in issue && typeof issue.maximum === "number") {
-    issueConstraints.maximum = issue.maximum;
+    issueConstraints.max = issue.maximum;
   }
 
   // 呼び出し元のパラメータと ZodIssue の制約値をマージ
