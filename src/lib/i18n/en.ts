@@ -417,6 +417,7 @@ export const en: Translations = {
     passwordBreached: "This password has been found in {{count}} data breaches. Please use a different password.",
     accountLocked: "Account temporarily locked. Try again in {{minutes}} minutes.",
     serviceRoleNotConfigured: "Server configuration error. Please contact an administrator.",
+    adminOperationFailed: "Admin operation failed",
   },
 
   validation: {

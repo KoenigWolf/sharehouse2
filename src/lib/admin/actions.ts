@@ -221,7 +221,7 @@ export async function adminDeleteAccount(targetUserId: string): Promise<ActionRe
 
     if (authError) {
       logError(authError, { action: "adminDeleteAccount.authDelete", userId: targetUserId });
-      return { error: `Auth delete failed: ${authError.message}` };
+      return { error: t("errors.adminOperationFailed") };
     }
 
     // 削除の検証
@@ -240,7 +240,7 @@ export async function adminDeleteAccount(targetUserId: string): Promise<ActionRe
 
       if (profileError) {
         logError(profileError, { action: "adminDeleteAccount.delete.profiles", userId: targetUserId });
-        return { error: `Profile delete failed: ${profileError.message}` };
+        return { error: t("errors.adminOperationFailed") };
       }
     }
 
@@ -359,7 +359,7 @@ export async function adminUpdateUserEmail(
         action: "adminUpdateUserEmail",
         userId: targetUserId,
       });
-      return { error: updateError.message };
+      return { error: t("errors.adminOperationFailed") };
     }
 
     auditLog({
@@ -441,7 +441,7 @@ export async function adminUpdateUserPassword(
         action: "adminUpdateUserPassword",
         userId: targetUserId,
       });
-      return { error: updateError.message };
+      return { error: t("errors.adminOperationFailed") };
     }
 
     auditLog({
