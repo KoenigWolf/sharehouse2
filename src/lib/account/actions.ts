@@ -170,38 +170,45 @@ export async function deleteAccount(
 
     const userId = user.id;
 
-    // Storage: room-photos - ページネーションで全ファイルを取得・削除
+    // Storage: room-photos - 全ファイル名を収集してから削除
     const BATCH_SIZE = 100;
+    const allPhotoPaths: string[] = [];
     let offset = 0;
-    let hasMore = true;
 
-    while (hasMore) {
+    // 全ファイル名を収集
+    while (true) {
       const { data: photoFiles, error: listPhotosError } = await supabase.storage
         .from("room-photos")
         .list(userId, { limit: BATCH_SIZE, offset });
 
       if (listPhotosError) {
         logError(listPhotosError, { action: "deleteAccount.listPhotos", userId });
-        break;
+        return { error: t("errors.serverError") };
       }
 
       if (!photoFiles || photoFiles.length === 0) {
-        hasMore = false;
         break;
       }
 
-      const photoPaths = photoFiles.map((f) => `${userId}/${f.name}`);
-      const { error: removePhotosError } = await supabase.storage
-        .from("room-photos")
-        .remove(photoPaths);
-      if (removePhotosError) {
-        logError(removePhotosError, { action: "deleteAccount.removePhotos", userId });
+      for (const f of photoFiles) {
+        allPhotoPaths.push(`${userId}/${f.name}`);
       }
 
       if (photoFiles.length < BATCH_SIZE) {
-        hasMore = false;
-      } else {
-        offset += BATCH_SIZE;
+        break;
+      }
+      offset += BATCH_SIZE;
+    }
+
+    // 収集したパスをバッチで削除
+    for (let i = 0; i < allPhotoPaths.length; i += BATCH_SIZE) {
+      const batch = allPhotoPaths.slice(i, i + BATCH_SIZE);
+      const { error: removePhotosError } = await supabase.storage
+        .from("room-photos")
+        .remove(batch);
+      if (removePhotosError) {
+        logError(removePhotosError, { action: "deleteAccount.removePhotos", userId });
+        return { error: t("errors.serverError") };
       }
     }
 
