@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 vi.mock("@/lib/env", () => ({
@@ -170,8 +170,7 @@ describe("ResidentsFilter", () => {
 
       const nameButton = screen.getByText("名前");
       nameButton.focus();
-      fireEvent.keyDown(nameButton, { key: "Enter", code: "Enter" });
-      await userEvent.click(nameButton);
+      await userEvent.keyboard("{Enter}");
 
       expect(onSortChange).toHaveBeenCalledWith("name");
     });
