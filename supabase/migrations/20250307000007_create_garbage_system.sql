@@ -84,7 +84,8 @@ CREATE POLICY "管理者のみゴミ当番を割り当て可能"
 DROP POLICY IF EXISTS "自分の当番完了または管理者は更新可能" ON public.garbage_duties;
 CREATE POLICY "自分の当番完了または管理者は更新可能"
   ON public.garbage_duties FOR UPDATE TO authenticated
-  USING (auth.uid() = user_id OR public.is_admin());
+  USING (auth.uid() = user_id OR public.is_admin())
+  WITH CHECK (auth.uid() = user_id OR public.is_admin());
 
 DROP POLICY IF EXISTS "管理者のみゴミ当番を削除可能" ON public.garbage_duties;
 CREATE POLICY "管理者のみゴミ当番を削除可能"

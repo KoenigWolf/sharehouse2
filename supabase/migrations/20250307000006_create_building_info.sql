@@ -23,6 +23,10 @@ CREATE TABLE IF NOT EXISTS public.wifi_info (
 -- Index for floor-based queries
 CREATE INDEX IF NOT EXISTS idx_wifi_info_floor ON public.wifi_info(floor);
 
+-- Partial unique index for building-wide entries (floor IS NULL)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_wifi_info_ssid_null_floor
+  ON public.wifi_info(ssid) WHERE floor IS NULL;
+
 DROP TRIGGER IF EXISTS on_wifi_info_updated ON public.wifi_info;
 CREATE TRIGGER on_wifi_info_updated
   BEFORE UPDATE ON public.wifi_info

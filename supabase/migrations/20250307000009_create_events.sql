@@ -106,8 +106,8 @@ CREATE POLICY "自分のイベントのみ作成可能"
 DROP POLICY IF EXISTS "自分のイベントのみ更新可能" ON public.events;
 CREATE POLICY "自分のイベントのみ更新可能"
   ON public.events FOR UPDATE TO authenticated
-  USING (auth.uid() = user_id)
-  WITH CHECK (auth.uid() = user_id);
+  USING (auth.uid() = user_id OR user_id IS NULL)
+  WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
 
 DROP POLICY IF EXISTS "自分または管理者がイベントを削除可能" ON public.events;
 CREATE POLICY "自分または管理者がイベントを削除可能"

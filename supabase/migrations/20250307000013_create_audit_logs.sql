@@ -51,7 +51,9 @@ CREATE POLICY "Admin can view audit logs"
 -- INSERT/UPDATE/DELETE only via service_role
 
 -- ============================================
--- Cleanup Function (90 days normal, 365 days critical)
+-- Cleanup Function
+-- - 90 days: INFO, WARNING logs
+-- - 365 days: ERROR, CRITICAL logs (retained longer for compliance)
 -- ============================================
 
 CREATE OR REPLACE FUNCTION cleanup_old_audit_logs()
@@ -76,6 +78,7 @@ $$;
 REVOKE ALL ON FUNCTION cleanup_old_audit_logs() FROM PUBLIC;
 REVOKE ALL ON FUNCTION cleanup_old_audit_logs() FROM authenticated;
 REVOKE ALL ON FUNCTION cleanup_old_audit_logs() FROM anon;
+GRANT EXECUTE ON FUNCTION cleanup_old_audit_logs() TO service_role;
 
 -- Comments
 COMMENT ON TABLE public.audit_logs IS 'セキュリティ監査ログ - コンプライアンス・インシデント対応用';
