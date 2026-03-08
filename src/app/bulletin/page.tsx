@@ -1,8 +1,6 @@
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
-import { MobileNav } from "@/components/mobile-nav";
-import { BulletinBoard } from "@/components/bulletin-board";
-import { BlurredPageContent } from "@/components/blurred-page-content";
+import { BulletinBoard } from "@/components/bulletin";
+import { Header, Footer, MobileNav } from "@/components/layout";
+import { BlurredPageContent } from "@/components/public-teaser";
 import { getBulletinsPaginated } from "@/lib/bulletin/actions";
 import { getCachedUser } from "@/lib/supabase/cached-queries";
 import { logError } from "@/lib/errors";
@@ -15,9 +13,7 @@ export default async function BulletinPage() {
   const { user, supabase } = await getCachedUser();
   const isBlurred = !user;
 
-  // プライバシー保護: 未認証ユーザーには実データを渡さない
   if (isBlurred) {
-    // カウント取得のみ（実データなし）
     const { count, error } = await supabase
       .from("bulletins")
       .select("*", { count: "exact", head: true });

@@ -6,132 +6,31 @@ import { logError } from "@/lib/errors";
 import { getServerTranslator } from "@/lib/i18n/server";
 import { enforceAllowedOrigin } from "@/lib/security/request";
 import { isValidUUID, RateLimiters, formatRateLimitError } from "@/lib/security";
-import { validateFileUpload, sanitizeFileName } from "@/domain/validation/profile";
 import { eventSchema } from "@/domain/validation/schemas";
+import {
+  validateAndReadFile,
+  uploadAndPersist,
+  deleteStorageFile,
+  type UploadResponse,
+} from "@/lib/utils/storage";
+import { toDateString } from "@/lib/utils/formatting";
 import type { EventWithDetails } from "@/domain/event";
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Translator } from "@/lib/i18n";
-import type { ActionResponse } from "@/lib/types/action-response";
-type CreateEventResponse = { success: true; eventId: string } | { error: string };
-type UploadResponse = { success: true; url: string } | { error: string };
+import type { ActionResponse, ActionResponseWith } from "@/lib/types/action-response";
 
-type FileValidationResult =
-  | { success: true; uint8Array: Uint8Array; fileName: string; contentType: string }
-  | { success: false; error: string };
-
-// Uses URL constructor to properly parse and exclude query strings
-function extractStoragePath(coverImageUrl: string): string | null {
-  try {
-    const url = new URL(coverImageUrl);
-    const pathname = url.pathname;
-    const marker = "/event-covers/";
-    const markerIndex = pathname.indexOf(marker);
-    if (markerIndex === -1) return null;
-    const path = pathname.slice(markerIndex + marker.length);
-    return path.replace(/^\/+|\/+$/g, "") || null;
-  } catch {
-    return null;
-  }
-}
-
-async function deleteStorageCover(
-  supabase: SupabaseClient,
-  coverImageUrl: string
-): Promise<void> {
-  const storagePath = extractStoragePath(coverImageUrl);
-  if (storagePath) {
-    await supabase.storage.from("event-covers").remove([storagePath]);
-  }
-}
-
-async function validateAndReadFile(
-  formData: FormData,
-  userId: string,
-  eventId: string,
-  t: Translator
-): Promise<FileValidationResult> {
-  const fileEntry = formData.get("cover");
-
-  if (!fileEntry || !(fileEntry instanceof File)) {
-    return { success: false, error: t("errors.fileRequired") };
-  }
-
-  if (fileEntry.size === 0) {
-    return { success: false, error: t("errors.fileRequired") };
-  }
-
-  const fileValidation = validateFileUpload(
-    { size: fileEntry.size, type: fileEntry.type },
-    t
-  );
-  if (!fileValidation.success) {
-    return { success: false, error: fileValidation.error ?? t("errors.invalidFileType") };
-  }
-
-  const fileExt = fileEntry.name.split(".").pop()?.toLowerCase() ?? "jpg";
-  const sanitizedExt = sanitizeFileName(fileExt).slice(0, 10);
-  const fileName = `${userId}/${eventId}.${sanitizedExt}`;
-
-  const arrayBuffer = await fileEntry.arrayBuffer();
-  const uint8Array = new Uint8Array(arrayBuffer);
-
-  return {
-    success: true,
-    uint8Array,
-    fileName,
-    contentType: fileEntry.type,
-  };
-}
-
-async function uploadAndPersistCover(
-  supabase: SupabaseClient,
-  fileName: string,
-  uint8Array: Uint8Array,
-  contentType: string,
-  eventId: string,
-  userId: string,
-  t: Translator
-): Promise<UploadResponse> {
-  const { error: uploadError } = await supabase.storage
-    .from("event-covers")
-    .upload(fileName, uint8Array, {
-      contentType,
-      cacheControl: "3600",
-      upsert: true,
-    });
-
-  if (uploadError) {
-    logError(uploadError, { action: "uploadEventCover", userId });
-    return { error: t("errors.uploadFailed") };
-  }
-
-  const { data: urlData } = supabase.storage
-    .from("event-covers")
-    .getPublicUrl(fileName);
-
-  // Add cache-busting timestamp to force browsers to fetch new image
-  const cacheBuster = Date.now();
-  const urlWithCacheBuster = `${urlData.publicUrl}?v=${cacheBuster}`;
-
-  const { error: updateError } = await supabase
-    .from("events")
-    .update({ cover_image_url: urlWithCacheBuster })
-    .eq("id", eventId)
-    .eq("user_id", userId);
-
-  if (updateError) {
-    logError(updateError, { action: "uploadEventCover:update", userId });
-    await supabase.storage.from("event-covers").remove([fileName]);
-    return { error: t("errors.saveFailed") };
-  }
-
-  return { success: true, url: urlWithCacheBuster };
-}
+const STORAGE_BUCKET = "event-covers";
+const STORAGE_MARKER = `/${STORAGE_BUCKET}/`;
+const UPLOAD_CONFIG = {
+  bucket: STORAGE_BUCKET,
+  table: "events",
+  idColumn: "id",
+  urlColumn: "cover_image_url",
+  actionName: "uploadEventCover",
+} as const;
 
 export async function getUpcomingEvents(): Promise<EventWithDetails[]> {
   try {
     const supabase = await createClient();
-    const today = new Date().toISOString().split("T")[0];
+    const today = toDateString();
 
     const { data, error } = await supabase
       .from("events")
@@ -156,7 +55,7 @@ export async function createEvent(input: {
   event_date: string;
   event_time: string | null;
   location: string | null;
-}): Promise<CreateEventResponse> {
+}): Promise<ActionResponseWith<{ eventId: string }>> {
   const t = await getServerTranslator();
   const originError = await enforceAllowedOrigin(t, "createEvent");
   if (originError) return { error: originError };
@@ -405,17 +304,18 @@ export async function uploadEventCover(
       return { error: t("errors.notFound") };
     }
 
-    const fileResult = await validateAndReadFile(formData, user.id, eventId, t);
+    const fileResult = await validateAndReadFile(formData, "cover", user.id, eventId, t);
     if (!fileResult.success) {
       return { error: fileResult.error };
     }
 
     if (event.cover_image_url) {
-      await deleteStorageCover(supabase, event.cover_image_url);
+      await deleteStorageFile(supabase, STORAGE_BUCKET, event.cover_image_url, STORAGE_MARKER);
     }
 
-    const uploadResult = await uploadAndPersistCover(
+    const uploadResult = await uploadAndPersist(
       supabase,
+      UPLOAD_CONFIG,
       fileResult.fileName,
       fileResult.uint8Array,
       fileResult.contentType,
@@ -478,7 +378,7 @@ export async function removeEventCover(eventId: string): Promise<ActionResponse>
     }
 
     if (event.cover_image_url) {
-      await deleteStorageCover(supabase, event.cover_image_url);
+      await deleteStorageFile(supabase, STORAGE_BUCKET, event.cover_image_url, STORAGE_MARKER);
     }
 
     const { error: updateError } = await supabase

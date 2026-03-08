@@ -1,3 +1,4 @@
+export { EventsContent } from "./content";
 export { EventComposeModal, type EventFormData } from "./EventComposeModal";
 export { AttendeesModal } from "./AttendeesModal";
 export {

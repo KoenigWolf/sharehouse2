@@ -1,10 +1,8 @@
 import { redirect } from "next/navigation";
+import { Header, Footer, MobileNav } from "@/components/layout";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { ChevronLeft } from "lucide-react";
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
-import { MobileNav } from "@/components/mobile-nav";
 import { Spinner } from "@/components/ui/spinner";
 import { getTeaTimeSetting } from "@/lib/tea-time/actions";
 import { getNotificationSettings } from "@/lib/notifications/actions";
@@ -12,22 +10,22 @@ import { getServerTranslator } from "@/lib/i18n/server";
 import { getCachedUser } from "@/lib/supabase/cached-queries";
 
 const ThemeSettings = dynamic(
-  () => import("@/components/theme-settings").then((m) => m.ThemeSettings),
+  () => import("@/components/settings").then((m) => m.ThemeSettings),
   { loading: () => <div className="flex justify-center py-10"><Spinner variant="dark" /></div> },
 );
 
 const NotificationSettings = dynamic(
-  () => import("@/components/settings/notification-settings").then((m) => m.NotificationSettings),
+  () => import("@/components/settings").then((m) => m.NotificationSettings),
   { loading: () => <div className="flex justify-center py-10"><Spinner variant="dark" /></div> },
 );
 
 const LanguageSettings = dynamic(
-  () => import("@/components/settings/language-settings").then((m) => m.LanguageSettings),
+  () => import("@/components/settings").then((m) => m.LanguageSettings),
   { loading: () => <div className="flex justify-center py-10"><Spinner variant="dark" /></div> },
 );
 
 const AccountSettings = dynamic(
-  () => import("@/components/account-settings").then((m) => m.AccountSettings),
+  () => import("@/components/settings").then((m) => m.AccountSettings),
   { loading: () => <div className="flex justify-center py-10"><Spinner variant="dark" /></div> },
 );
 
@@ -50,7 +48,6 @@ export default async function SettingsPage() {
 
       <main className="flex-1 pb-24 sm:pb-0">
         <div className="container mx-auto px-5 sm:px-8 py-8 sm:py-13 max-w-2xl">
-          {/* Header section with golden ratio spacing */}
           <div className="mb-13">
             <Link
               href={`/profile/${user.id}`}
@@ -68,7 +65,6 @@ export default async function SettingsPage() {
             </p>
           </div>
 
-          {/* Settings sections with golden ratio spacing (21→34→55) */}
           <div className="space-y-13">
             <ThemeSettings />
 

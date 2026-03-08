@@ -117,7 +117,6 @@ export const getProfilesWithMock = cache(async function getProfilesWithMock(
   };
 });
 
-/** 未認証ユーザー向けの公開チラ見せデータを取得する */
 export const getPublicProfilesWithMock = cache(async function getPublicProfilesWithMock(
   supabase: SupabaseClient,
 ): Promise<{ profiles: PublicProfileTeaser[] }> {

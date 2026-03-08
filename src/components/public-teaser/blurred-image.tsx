@@ -42,7 +42,6 @@ export function BlurredImage({ userId, className }: BlurredImageProps) {
   );
 }
 
-/** 文字列から 0-359 のハッシュ値を生成 */
 function hashToHue(str: string): number {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {

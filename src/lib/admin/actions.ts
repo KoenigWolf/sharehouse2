@@ -10,9 +10,7 @@ import { isValidUUID, AuditEventType, auditLog } from "@/lib/security";
 import { enforceAllowedOrigin } from "@/lib/security/request";
 import { requireAdmin, clearAdminCache } from "@/lib/admin/check";
 import { emailSchema, passwordSchema } from "@/domain/validation/auth";
-
-type UpdateResponse = { success: true } | { error: string };
-type EmailResponse = { success: true; email: string } | { error: string };
+import type { ActionResponse, ActionResponseWith } from "@/lib/types/action-response";
 
 export interface AdminListProfile {
   id: string;
@@ -24,6 +22,152 @@ export interface AdminListProfile {
 }
 
 const ADMIN_LIST_COLUMNS = "id, name, avatar_url, room_number, is_admin, move_in_date" as const;
+
+type ServerTranslator = Awaited<ReturnType<typeof getServerTranslator>>;
+
+// --- Shared Helpers ---
+
+/**
+ * Originと管理者権限の検証を行う共通ヘルパー
+ */
+async function requireAdminAndOrigin(t: ServerTranslator, actionName: string): Promise<string | undefined> {
+  const originError = await enforceAllowedOrigin(t, actionName);
+  if (originError) return originError;
+
+  const adminError = await requireAdmin(t);
+  if (adminError) return adminError;
+
+  return undefined;
+}
+
+/**
+ * 対象UUIDを検証する共通ヘルパー
+ */
+function validateUUIDOrReturnError(targetUserId: string, t: ServerTranslator): string | undefined {
+  if (!isValidUUID(targetUserId)) {
+    return t("errors.invalidInput");
+  }
+  return undefined;
+}
+
+/**
+ * AdminClientの生成と、失敗時のエラーハンドリングを共通化するヘルパー
+ */
+async function withAdminClient<R>(
+  t: ServerTranslator,
+  actionName: string,
+  callback: (adminClient: ReturnType<typeof createAdminClient>) => Promise<R | { error: string }>
+): Promise<R | { error: string }> {
+  let adminClient;
+  try {
+    adminClient = createAdminClient();
+  } catch (e) {
+    logError(e, { action: `${actionName}.createAdminClient` });
+    return { error: t("errors.serviceRoleNotConfigured") };
+  }
+  return callback(adminClient);
+}
+
+/**
+ * Mutation エラーをログ記録し統一レスポンスに変換するヘルパー
+ */
+function handleMutationError(error: unknown, actionName: string, t: ServerTranslator, userId?: string): ActionResponse {
+  if (error) {
+    logError(error, { action: actionName, userId });
+    return { error: t("errors.adminOperationFailed") };
+  }
+  return { success: true };
+}
+
+type AdminClient = ReturnType<typeof createAdminClient>;
+
+/**
+ * ユーザーの Storage ファイル（room-photos, avatars, cover-photos）を削除する
+ * @returns エラー時は { error: string }、成功時は undefined
+ */
+async function deleteUserStorageFiles(
+  adminClient: AdminClient,
+  targetUserId: string,
+  t: ServerTranslator
+): Promise<{ error: string } | undefined> {
+  // room-photos
+  const { data: roomPhotos } = await adminClient
+    .from("room_photos")
+    .select("photo_url")
+    .eq("user_id", targetUserId);
+
+  if (roomPhotos && roomPhotos.length > 0) {
+    const photoPaths = roomPhotos
+      .map((p) => p.photo_url?.split("/room-photos/").pop())
+      .filter((path): path is string => !!path);
+    if (photoPaths.length > 0) {
+      const { error: removePhotosError } = await adminClient.storage.from("room-photos").remove(photoPaths);
+      if (removePhotosError) {
+        logError(removePhotosError, { action: "adminDeleteAccount.removePhotos", userId: targetUserId });
+        return { error: t("errors.serverError") };
+      }
+    }
+  }
+
+  // avatars / cover-photos
+  const { data: profile } = await adminClient
+    .from("profiles")
+    .select("avatar_url, cover_photo_url")
+    .eq("id", targetUserId)
+    .single();
+
+  if (profile) {
+    if (profile.avatar_url?.includes("/avatars/")) {
+      const avatarPath = profile.avatar_url.split("/avatars/").pop();
+      if (avatarPath) {
+        const { error: removeAvatarError } = await adminClient.storage.from("avatars").remove([avatarPath]);
+        if (removeAvatarError) {
+          logError(removeAvatarError, { action: "adminDeleteAccount.removeAvatar", userId: targetUserId });
+          return { error: t("errors.serverError") };
+        }
+      }
+    }
+
+    if (profile.cover_photo_url?.includes("/cover-photos/")) {
+      const coverPath = profile.cover_photo_url.split("/cover-photos/").pop();
+      if (coverPath) {
+        const { error: removeCoverError } = await adminClient.storage.from("cover-photos").remove([coverPath]);
+        if (removeCoverError) {
+          logError(removeCoverError, { action: "adminDeleteAccount.removeCover", userId: targetUserId });
+          return { error: t("errors.serverError") };
+        }
+      }
+    }
+  }
+
+  return undefined;
+}
+
+/**
+ * ユーザーの関連データ（room_photos, notification_settings, tea_time_settings, tea_time_matches）を削除する
+ * エラーはログ記録のみで処理続行（Auth削除でCASCADE削除されるため）
+ */
+async function deleteUserRelatedData(adminClient: AdminClient, targetUserId: string): Promise<void> {
+  const relatedResults = await Promise.all([
+    adminClient.from("room_photos").delete().eq("user_id", targetUserId),
+    adminClient.from("notification_settings").delete().eq("user_id", targetUserId),
+    adminClient.from("tea_time_settings").delete().eq("user_id", targetUserId),
+    adminClient
+      .from("tea_time_matches")
+      .delete()
+      .or(`user1_id.eq.${targetUserId},user2_id.eq.${targetUserId}`),
+  ]);
+
+  const relatedTables = ["room_photos", "notification_settings", "tea_time_settings", "tea_time_matches"];
+  for (let i = 0; i < relatedResults.length; i++) {
+    if (relatedResults[i].error) {
+      logError(relatedResults[i].error, {
+        action: `adminDeleteAccount.delete.${relatedTables[i]}`,
+        userId: targetUserId,
+      });
+    }
+  }
+}
 
 /**
  * 全ユーザーのプロフィール一覧を取得する（管理者専用）
@@ -62,18 +206,14 @@ export async function getAllProfilesForAdmin(): Promise<AdminListProfile[]> {
  *
  * @param targetUserId - 対象ユーザーのID
  */
-export async function toggleAdminStatus(targetUserId: string): Promise<UpdateResponse> {
+export async function toggleAdminStatus(targetUserId: string): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
-  const originError = await enforceAllowedOrigin(t, "toggleAdminStatus");
-  if (originError) return { error: originError };
+  const guardError = await requireAdminAndOrigin(t, "toggleAdminStatus");
+  if (guardError) return { error: guardError };
 
-  const adminError = await requireAdmin(t);
-  if (adminError) return { error: adminError };
-
-  if (!isValidUUID(targetUserId)) {
-    return { error: t("errors.invalidInput") };
-  }
+  const uuidError = validateUUIDOrReturnError(targetUserId, t);
+  if (uuidError) return { error: uuidError };
 
   try {
     const supabase = await createClient();
@@ -127,18 +267,14 @@ export async function toggleAdminStatus(targetUserId: string): Promise<UpdateRes
  *
  * @param targetUserId - 対象ユーザーのID
  */
-export async function adminDeleteAccount(targetUserId: string): Promise<UpdateResponse> {
+export async function adminDeleteAccount(targetUserId: string): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
-  const originError = await enforceAllowedOrigin(t, "adminDeleteAccount");
-  if (originError) return { error: originError };
+  const guardError = await requireAdminAndOrigin(t, "adminDeleteAccount");
+  if (guardError) return { error: guardError };
 
-  const adminError = await requireAdmin(t);
-  if (adminError) return { error: adminError };
-
-  if (!isValidUUID(targetUserId)) {
-    return { error: t("errors.invalidInput") };
-  }
+  const uuidError = validateUUIDOrReturnError(targetUserId, t);
+  if (uuidError) return { error: uuidError };
 
   try {
     const supabase = await createClient();
@@ -152,103 +288,46 @@ export async function adminDeleteAccount(targetUserId: string): Promise<UpdateRe
       return { error: t("errors.forbidden") };
     }
 
-    let adminClient;
-    try {
-      adminClient = createAdminClient();
-    } catch {
-      return { error: "SUPABASE_SERVICE_ROLE_KEY is not configured" };
-    }
-
-    // Storage: room-photos - DBから取得して削除（storage.list()より効率的）
-    const { data: roomPhotos } = await adminClient
-      .from("room_photos")
-      .select("photo_url")
-      .eq("user_id", targetUserId);
-
-    if (roomPhotos && roomPhotos.length > 0) {
-      const photoPaths = roomPhotos
-        .map((p) => p.photo_url?.split("/room-photos/").pop())
-        .filter((path): path is string => !!path);
-      if (photoPaths.length > 0) {
-        await adminClient.storage.from("room-photos").remove(photoPaths);
-      }
-    }
-
-    // Storage: avatars / cover-photos
-    const { data: profile } = await adminClient
-      .from("profiles")
-      .select("avatar_url, cover_photo_url")
-      .eq("id", targetUserId)
-      .single();
-
-    if (profile) {
-      if (profile.avatar_url?.includes("/avatars/")) {
-        const avatarPath = profile.avatar_url.split("/avatars/").pop();
-        if (avatarPath) {
-          await adminClient.storage.from("avatars").remove([avatarPath]);
-        }
+    return withAdminClient(t, "adminDeleteAccount", async (adminClient) => {
+      // Storage: ファイル削除
+      const storageError = await deleteUserStorageFiles(adminClient, targetUserId, t);
+      if (storageError) {
+        return storageError;
       }
 
-      if (profile.cover_photo_url?.includes("/cover-photos/")) {
-        const coverPath = profile.cover_photo_url.split("/cover-photos/").pop();
-        if (coverPath) {
-          await adminClient.storage.from("cover-photos").remove([coverPath]);
-        }
+      // DB: 関連データ削除
+      await deleteUserRelatedData(adminClient, targetUserId);
+
+      // Auth: ユーザー削除（CASCADE で profiles 含む全関連データが削除される）
+      const { error: authError } = await adminClient.auth.admin.deleteUser(targetUserId);
+
+      if (authError) {
+        return handleMutationError(authError, "adminDeleteAccount.authDelete", t, targetUserId);
       }
-    }
 
-    // DB: 関連データ削除
-    const relatedResults = await Promise.all([
-      adminClient.from("room_photos").delete().eq("user_id", targetUserId),
-      adminClient.from("notification_settings").delete().eq("user_id", targetUserId),
-      adminClient.from("tea_time_settings").delete().eq("user_id", targetUserId),
-      adminClient
-        .from("tea_time_matches")
-        .delete()
-        .or(`user1_id.eq.${targetUserId},user2_id.eq.${targetUserId}`),
-    ]);
-
-    const relatedTables = ["room_photos", "notification_settings", "tea_time_settings", "tea_time_matches"];
-    for (let i = 0; i < relatedResults.length; i++) {
-      if (relatedResults[i].error) {
-        logError(relatedResults[i].error, {
-          action: `adminDeleteAccount.delete.${relatedTables[i]}`,
-          userId: targetUserId,
-        });
-      }
-    }
-
-    // Auth: ユーザー削除（CASCADE で profiles 含む全関連データが削除される）
-    const { error: authError } = await adminClient.auth.admin.deleteUser(targetUserId);
-
-    if (authError) {
-      logError(authError, { action: "adminDeleteAccount.authDelete", userId: targetUserId });
-      return { error: `Auth delete failed: ${authError.message}` };
-    }
-
-    // 削除の検証
-    const { data: remaining } = await adminClient
-      .from("profiles")
-      .select("id")
-      .eq("id", targetUserId)
-      .maybeSingle();
-
-    if (remaining) {
-      // CASCADE で消えなかった場合、直接削除
-      const { error: profileError } = await adminClient
+      // 削除の検証
+      const { data: remaining } = await adminClient
         .from("profiles")
-        .delete()
-        .eq("id", targetUserId);
+        .select("id")
+        .eq("id", targetUserId)
+        .maybeSingle();
 
-      if (profileError) {
-        logError(profileError, { action: "adminDeleteAccount.delete.profiles", userId: targetUserId });
-        return { error: `Profile delete failed: ${profileError.message}` };
+      if (remaining) {
+        // CASCADE で消えなかった場合、直接削除
+        const { error: profileError } = await adminClient
+          .from("profiles")
+          .delete()
+          .eq("id", targetUserId);
+
+        if (profileError) {
+          return handleMutationError(profileError, "adminDeleteAccount.delete.profiles", t, targetUserId);
+        }
       }
-    }
 
-    CacheStrategy.clearAll();
-    revalidatePath("/admin");
-    return { success: true };
+      CacheStrategy.clearAll();
+      revalidatePath("/admin");
+      return { success: true };
+    });
   } catch (error) {
     logError(error, { action: "adminDeleteAccount" });
     return { error: t("errors.serverError") };
@@ -262,35 +341,30 @@ export async function adminDeleteAccount(targetUserId: string): Promise<UpdateRe
  */
 export async function adminGetUserEmail(
   targetUserId: string,
-): Promise<EmailResponse> {
+): Promise<ActionResponseWith<{ email: string }>> {
   const t = await getServerTranslator();
 
-  const originError = await enforceAllowedOrigin(t, "adminGetUserEmail");
-  if (originError) return { error: originError };
+  const guardError = await requireAdminAndOrigin(t, "adminGetUserEmail");
+  if (guardError) return { error: guardError };
 
-  const adminError = await requireAdmin(t);
-  if (adminError) return { error: adminError };
-
-  if (!isValidUUID(targetUserId)) {
-    return { error: t("errors.invalidInput") };
-  }
+  const uuidError = validateUUIDOrReturnError(targetUserId, t);
+  if (uuidError) return { error: uuidError };
 
   try {
-    let adminClient;
-    try {
-      adminClient = createAdminClient();
-    } catch {
-      return { error: "SUPABASE_SERVICE_ROLE_KEY is not configured" };
-    }
+    return withAdminClient<{ success: true; email: string }>(t, "adminGetUserEmail", async (adminClient) => {
+      const { data, error } = await adminClient.auth.admin.getUserById(targetUserId);
 
-    const { data, error } =
-      await adminClient.auth.admin.getUserById(targetUserId);
+      if (error) {
+        logError(error, { action: "adminGetUserEmail.getUserById", userId: targetUserId });
+        return { error: error.message || t("errors.adminOperationFailed") };
+      }
 
-    if (error || !data.user) {
-      return { error: t("errors.notFound") };
-    }
+      if (!data || !data.user) {
+        return { error: t("errors.notFound") };
+      }
 
-    return { success: true, email: data.user.email ?? "" };
+      return { success: true as const, email: data.user.email ?? "" };
+    });
   } catch (error) {
     logError(error, { action: "adminGetUserEmail" });
     return { error: t("errors.serverError") };
@@ -308,18 +382,14 @@ export async function adminGetUserEmail(
 export async function adminUpdateUserEmail(
   targetUserId: string,
   newEmail: string,
-): Promise<UpdateResponse> {
+): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
-  const originError = await enforceAllowedOrigin(t, "adminUpdateUserEmail");
-  if (originError) return { error: originError };
+  const guardError = await requireAdminAndOrigin(t, "adminUpdateUserEmail");
+  if (guardError) return { error: guardError };
 
-  const adminError = await requireAdmin(t);
-  if (adminError) return { error: adminError };
-
-  if (!isValidUUID(targetUserId)) {
-    return { error: t("errors.invalidInput") };
-  }
+  const uuidError = validateUUIDOrReturnError(targetUserId, t);
+  if (uuidError) return { error: uuidError };
 
   const parsed = emailSchema.safeParse(newEmail);
   if (!parsed.success) {
@@ -343,37 +413,27 @@ export async function adminUpdateUserEmail(
       return { error: t("errors.forbidden") };
     }
 
-    let adminClient;
-    try {
-      adminClient = createAdminClient();
-    } catch {
-      return { error: "SUPABASE_SERVICE_ROLE_KEY is not configured" };
-    }
-
-    const { error: updateError } =
-      await adminClient.auth.admin.updateUserById(targetUserId, {
+    return withAdminClient(t, "adminUpdateUserEmail", async (adminClient) => {
+      const { error: updateError } = await adminClient.auth.admin.updateUserById(targetUserId, {
         email: parsed.data,
         email_confirm: true,
       });
 
-    if (updateError) {
-      logError(updateError, {
-        action: "adminUpdateUserEmail",
-        userId: targetUserId,
+      if (updateError) {
+        return handleMutationError(updateError, "adminUpdateUserEmail", t, targetUserId);
+      }
+
+      auditLog({
+        timestamp: new Date().toISOString(),
+        eventType: AuditEventType.AUTH_EMAIL_CHANGE,
+        userId: user.id,
+        action: `Admin changed email for user ${targetUserId}`,
+        outcome: "success",
       });
-      return { error: updateError.message };
-    }
 
-    auditLog({
-      timestamp: new Date().toISOString(),
-      eventType: AuditEventType.AUTH_EMAIL_CHANGE,
-      userId: user.id,
-      action: `Admin changed email for user ${targetUserId}`,
-      outcome: "success",
+      revalidatePath("/admin");
+      return { success: true };
     });
-
-    revalidatePath("/admin");
-    return { success: true };
   } catch (error) {
     logError(error, { action: "adminUpdateUserEmail" });
     return { error: t("errors.serverError") };
@@ -391,18 +451,14 @@ export async function adminUpdateUserEmail(
 export async function adminUpdateUserPassword(
   targetUserId: string,
   newPassword: string,
-): Promise<UpdateResponse> {
+): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
-  const originError = await enforceAllowedOrigin(t, "adminUpdateUserPassword");
-  if (originError) return { error: originError };
+  const guardError = await requireAdminAndOrigin(t, "adminUpdateUserPassword");
+  if (guardError) return { error: guardError };
 
-  const adminError = await requireAdmin(t);
-  if (adminError) return { error: adminError };
-
-  if (!isValidUUID(targetUserId)) {
-    return { error: t("errors.invalidInput") };
-  }
+  const uuidError = validateUUIDOrReturnError(targetUserId, t);
+  if (uuidError) return { error: uuidError };
 
   const parsed = passwordSchema.safeParse(newPassword);
   if (!parsed.success) {
@@ -426,35 +482,25 @@ export async function adminUpdateUserPassword(
       return { error: t("errors.forbidden") };
     }
 
-    let adminClient;
-    try {
-      adminClient = createAdminClient();
-    } catch {
-      return { error: "SUPABASE_SERVICE_ROLE_KEY is not configured" };
-    }
-
-    const { error: updateError } =
-      await adminClient.auth.admin.updateUserById(targetUserId, {
+    return withAdminClient(t, "adminUpdateUserPassword", async (adminClient) => {
+      const { error: updateError } = await adminClient.auth.admin.updateUserById(targetUserId, {
         password: parsed.data,
       });
 
-    if (updateError) {
-      logError(updateError, {
-        action: "adminUpdateUserPassword",
-        userId: targetUserId,
+      if (updateError) {
+        return handleMutationError(updateError, "adminUpdateUserPassword", t, targetUserId);
+      }
+
+      auditLog({
+        timestamp: new Date().toISOString(),
+        eventType: AuditEventType.AUTH_PASSWORD_CHANGE,
+        userId: user.id,
+        action: `Admin changed password for user ${targetUserId}`,
+        outcome: "success",
       });
-      return { error: updateError.message };
-    }
 
-    auditLog({
-      timestamp: new Date().toISOString(),
-      eventType: AuditEventType.AUTH_PASSWORD_CHANGE,
-      userId: user.id,
-      action: `Admin changed password for user ${targetUserId}`,
-      outcome: "success",
+      return { success: true };
     });
-
-    return { success: true };
   } catch (error) {
     logError(error, { action: "adminUpdateUserPassword" });
     return { error: t("errors.serverError") };

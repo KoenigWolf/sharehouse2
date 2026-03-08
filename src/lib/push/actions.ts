@@ -4,12 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { logError } from "@/lib/errors";
 import { getServerTranslator } from "@/lib/i18n/server";
 import { enforceAllowedOrigin } from "@/lib/security/request";
+import type { ActionResponse } from "@/lib/types/action-response";
 import type { PushSubscriptionInput, NotificationPayload } from "@/domain/push";
-
-/**
- * Response types
- */
-type PushResponse = { success: true } | { error: string };
 
 /**
  * プッシュ通知のサブスクリプションを保存する
@@ -22,7 +18,7 @@ type PushResponse = { success: true } | { error: string };
  */
 export async function savePushSubscription(
   subscription: PushSubscriptionInput
-): Promise<PushResponse> {
+): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "savePushSubscription");
@@ -74,7 +70,7 @@ export async function savePushSubscription(
  */
 export async function removePushSubscription(
   endpoint: string
-): Promise<PushResponse> {
+): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "removePushSubscription");

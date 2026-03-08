@@ -1,11 +1,10 @@
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
-import { MobileNav } from "@/components/mobile-nav";
-import { ResidentStats } from "@/components/resident-stats";
-import { BlurredPageContent } from "@/components/blurred-page-content";
+import { ResidentStats } from "@/components/residents";
+import { Header, Footer, MobileNav } from "@/components/layout";
+import { BlurredPageContent } from "@/components/public-teaser";
 import { getProfilesWithMock, getPublicProfilesWithMock } from "@/lib/residents/queries";
 import { mockProfiles } from "@/lib/mock-data";
 import { getCachedUser } from "@/lib/supabase/cached-queries";
+import { toDateString } from "@/lib/utils/formatting";
 
 export default async function StatsPage() {
   const { user, supabase } = await getCachedUser();
@@ -46,7 +45,7 @@ export default async function StatsPage() {
   }
 
   const now = new Date();
-  const todayStr = now.toISOString().split("T")[0];
+  const todayStr = toDateString(now);
 
   const [
     { profiles },

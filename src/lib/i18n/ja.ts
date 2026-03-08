@@ -415,6 +415,8 @@ export const ja = {
     deleteFailed: "削除に失敗しました",
     passwordBreached: "このパスワードは過去のデータ漏洩で{{count}}件確認されています。別のパスワードをご使用ください。",
     accountLocked: "アカウントが一時的にロックされています。{{minutes}}分後に再試行してください。",
+    serviceRoleNotConfigured: "サーバー設定に問題があります。管理者にお問い合わせください。",
+    adminOperationFailed: "管理者操作に失敗しました",
   },
 
   validation: {

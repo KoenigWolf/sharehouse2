@@ -1,10 +1,3 @@
-/**
- * Client-side image compression using Canvas API.
- * Reduces file sizes by 80-90% before upload, saving bandwidth and storage costs.
- *
- * Supports HEIC/HEIF (iPhone) via dynamic heic2any import.
- */
-
 const MAX_DIMENSION = 1920;
 const COMPRESSION_QUALITY = 0.8;
 
@@ -41,9 +34,7 @@ function isHeic(file: File | Blob): boolean {
 }
 
 /**
- * HEIC/HEIF → JPEG 変換（動的 import で heic2any を遅延ロード）
- *
- * Safari は Canvas で HEIC を直接読めるため、変換が不要な場合はスキップする。
+ * Safari は Canvas で HEIC を直接読めるため、変換が不要な場合はスキップ。
  * 非 Safari ブラウザでは heic2any で JPEG に変換してから Canvas に渡す。
  */
 async function convertHeicIfNeeded(file: File): Promise<Blob> {
@@ -68,11 +59,6 @@ function canBrowserDecodeHeic(): boolean {
   return /Safari/i.test(ua) && !/Chrome/i.test(ua) && !/Chromium/i.test(ua);
 }
 
-/**
- * Compress an image file using Canvas API.
- * Resizes to max 1920px on longest side and converts to WebP (JPEG fallback).
- * Automatically converts HEIC/HEIF to JPEG before Canvas processing.
- */
 export async function compressImage(file: File): Promise<Blob> {
   const input = await convertHeicIfNeeded(file);
 
@@ -127,12 +113,6 @@ export async function compressImage(file: File): Promise<Blob> {
   });
 }
 
-/**
- * 画像ファイルをアップロード用に準備する（圧縮 + メタデータ生成）
- *
- * HEIC 変換 → Canvas 圧縮 → WebP/JPEG Blob を File として返す。
- * FormData に載せてサーバーアクションに送る用途。
- */
 export async function prepareImageForUpload(
   file: File
 ): Promise<{ file: File; mimeType: string; extension: string }> {

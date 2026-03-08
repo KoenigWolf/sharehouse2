@@ -1,8 +1,7 @@
 import { Metadata } from "next";
+import { Header, Footer } from "@/components/layout";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
 import { getServerTranslator } from "@/lib/i18n/server";
 
 export async function generateMetadata(): Promise<Metadata> {

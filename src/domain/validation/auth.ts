@@ -2,6 +2,7 @@ import { z } from "zod";
 import { PROFILE, AUTH } from "@/lib/constants/config";
 import { sanitizeEmail } from "@/lib/security/validation";
 import type { TranslationKey, Translator } from "@/lib/i18n";
+import { formatValidationError } from "./format-error";
 
 /**
  * Authentication validation schemas
@@ -77,23 +78,6 @@ const VALIDATION_PARAMS: Partial<Record<TranslationKey, Record<string, number>>>
   "validation.nameMaxLength": { max: PROFILE.nameMaxLength },
 };
 
-function formatValidationError(
-  issue: z.ZodIssue,
-  t: Translator
-): string {
-  const key = issue.message as TranslationKey;
-  if (!key.includes(".")) {
-    return t("errors.invalidInput");
-  }
-  const params = VALIDATION_PARAMS[key];
-
-  if (params) {
-    return t(key, params);
-  }
-
-  return t(key);
-}
-
 /**
  * Validate sign up input
  */
@@ -108,7 +92,7 @@ export function validateSignUp(
   const issue = result.error.issues[0];
   return {
     success: false,
-    error: issue ? formatValidationError(issue, t) : t("errors.invalidInput"),
+    error: issue ? formatValidationError(issue, t, VALIDATION_PARAMS) : t("errors.invalidInput"),
   };
 }
 
@@ -126,7 +110,7 @@ export function validatePasswordResetInput(
   const issue = result.error.issues[0];
   return {
     success: false,
-    error: issue ? formatValidationError(issue, t) : t("errors.invalidInput"),
+    error: issue ? formatValidationError(issue, t, VALIDATION_PARAMS) : t("errors.invalidInput"),
   };
 }
 
@@ -144,6 +128,6 @@ export function validateSignIn(
   const issue = result.error.issues[0];
   return {
     success: false,
-    error: issue ? formatValidationError(issue, t) : t("errors.invalidInput"),
+    error: issue ? formatValidationError(issue, t, VALIDATION_PARAMS) : t("errors.invalidInput"),
   };
 }

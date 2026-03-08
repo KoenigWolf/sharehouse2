@@ -5,11 +5,10 @@ import { logError } from "@/lib/errors";
 import { getServerTranslator } from "@/lib/i18n/server";
 import { enforceAllowedOrigin } from "@/lib/security/request";
 import { checkRateLimitAsync } from "@/lib/security/rate-limit";
+import type { ActionResponse } from "@/lib/types/action-response";
 
 export type ThemeStyle = "modern" | "cottage" | "mono";
 export type ColorMode = "light" | "dark" | "system";
-
-type UpdateResponse = { success: true } | { error: string };
 
 interface ThemePreferences {
   theme_style: ThemeStyle | null;
@@ -60,7 +59,7 @@ export async function getThemePreferences(): Promise<ThemePreferences | null> {
 export async function updateThemePreferences(
   themeStyle: ThemeStyle,
   colorMode: ColorMode
-): Promise<UpdateResponse> {
+): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "updateThemePreferences");

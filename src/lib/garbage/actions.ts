@@ -8,6 +8,9 @@ import { getServerTranslator } from "@/lib/i18n/server";
 import { isValidUUID } from "@/lib/security";
 import { enforceAllowedOrigin } from "@/lib/security/request";
 import { requireAdmin } from "@/lib/admin/check";
+import { toDateString, getDateRange } from "@/lib/utils/formatting";
+import { fetchProfileMap } from "@/lib/utils/server-helpers";
+import type { ActionResponse, ActionResponseWith } from "@/lib/types/action-response";
 import type {
   GarbageSchedule,
   GarbageDuty,
@@ -17,20 +20,6 @@ import type {
 } from "@/domain/garbage";
 import type { Profile } from "@/domain/profile";
 
-/**
- * Response types
- */
-type UpdateResponse = { success: true } | { error: string };
-type GenerateResponse = { success: true; count: number } | { error: string };
-
-/**
- * ゴミ出しスケジュール（曜日別）を全件取得する
- *
- * day_of_week, display_order の昇順でソートして返す。
- * 認証済みユーザーのみアクセス可能。
- *
- * @returns スケジュールの配列、エラー時は空配列
- */
 export async function getGarbageSchedule(): Promise<GarbageSchedule[]> {
   try {
     const supabase = await createClient();
@@ -61,14 +50,6 @@ export async function getGarbageSchedule(): Promise<GarbageSchedule[]> {
   }
 }
 
-/**
- * 直近のゴミ出し当番をプロフィール付きで取得する
- *
- * N+1問題を回避するため、ユーザーIDを集約しバッチ取得する。
- *
- * @param days - 取得する日数（デフォルト: 7日）
- * @returns 当番の配列（プロフィール付き）、エラー時は空配列
- */
 export async function getUpcomingDuties(days = 7): Promise<GarbageDutyWithProfile[]> {
   try {
     const supabase = await createClient();
@@ -81,10 +62,7 @@ export async function getUpcomingDuties(days = 7): Promise<GarbageDutyWithProfil
       return [];
     }
 
-    const today = new Date().toISOString().split("T")[0];
-    const endDate = new Date();
-    endDate.setDate(endDate.getDate() + days);
-    const endDateStr = endDate.toISOString().split("T")[0];
+    const { start: today, end: endDateStr } = getDateRange(days);
 
     const { data: duties, error } = await supabase
       .from("garbage_duties")
@@ -102,23 +80,14 @@ export async function getUpcomingDuties(days = 7): Promise<GarbageDutyWithProfil
       return [];
     }
 
-    const userIds = [...new Set(duties.map((duty) => duty.user_id))];
-
-    const { data: profiles } = await supabase
-      .from("profiles")
-      .select("id, name, avatar_url")
-      .in("id", userIds);
-
-    const profileMap = new Map<string, Profile>();
-    if (profiles) {
-      for (const profile of profiles) {
-        profileMap.set(profile.id, profile as Profile);
-      }
-    }
+    const profileMap = await fetchProfileMap<Profile>(
+      supabase,
+      duties.map((duty) => duty.user_id)
+    );
 
     return duties.map((duty) => ({
       ...duty,
-      profile: profileMap.get(duty.user_id) || null,
+      profile: profileMap.get(duty.user_id) ?? null,
     })) as GarbageDutyWithProfile[];
   } catch (error) {
     logError(error, { action: "getUpcomingDuties" });
@@ -126,11 +95,6 @@ export async function getUpcomingDuties(days = 7): Promise<GarbageDutyWithProfil
   }
 }
 
-/**
- * ログインユーザーの今後のゴミ出し当番を取得する
- *
- * @returns 当番の配列、エラー時は空配列
- */
 export async function getMyDuties(): Promise<GarbageDuty[]> {
   try {
     const supabase = await createClient();
@@ -143,7 +107,7 @@ export async function getMyDuties(): Promise<GarbageDuty[]> {
       return [];
     }
 
-    const today = new Date().toISOString().split("T")[0];
+    const today = toDateString();
 
     const { data, error } = await supabase
       .from("garbage_duties")
@@ -164,15 +128,7 @@ export async function getMyDuties(): Promise<GarbageDuty[]> {
   }
 }
 
-/**
- * ゴミ出しスケジュールエントリを新規作成する（管理者専用）
- *
- * enforceAllowedOrigin -> 認証チェック -> 管理者権限チェック -> バリデーション -> 挿入
- *
- * @param data - スケジュール入力データ
- * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
- */
-export async function createGarbageScheduleEntry(data: GarbageScheduleInput): Promise<UpdateResponse> {
+export async function createGarbageScheduleEntry(data: GarbageScheduleInput): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "createGarbageScheduleEntry");
@@ -217,16 +173,7 @@ export async function createGarbageScheduleEntry(data: GarbageScheduleInput): Pr
   }
 }
 
-/**
- * ゴミ出しスケジュールエントリを更新する（管理者専用）
- *
- * enforceAllowedOrigin -> 認証チェック -> 管理者権限チェック -> バリデーション -> 更新
- *
- * @param id - 更新対象のスケジュールID（UUID形式）
- * @param data - スケジュール入力データ
- * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
- */
-export async function updateGarbageScheduleEntry(id: string, data: GarbageScheduleInput): Promise<UpdateResponse> {
+export async function updateGarbageScheduleEntry(id: string, data: GarbageScheduleInput): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "updateGarbageScheduleEntry");
@@ -281,15 +228,7 @@ export async function updateGarbageScheduleEntry(id: string, data: GarbageSchedu
   }
 }
 
-/**
- * ゴミ出しスケジュールエントリを削除する（管理者専用）
- *
- * enforceAllowedOrigin -> 認証チェック -> 管理者権限チェック -> UUID検証 -> 削除
- *
- * @param id - 削除対象のスケジュールID（UUID形式）
- * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
- */
-export async function deleteGarbageScheduleEntry(id: string): Promise<UpdateResponse> {
+export async function deleteGarbageScheduleEntry(id: string): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "deleteGarbageScheduleEntry");
@@ -336,15 +275,7 @@ export async function deleteGarbageScheduleEntry(id: string): Promise<UpdateResp
   }
 }
 
-/**
- * ゴミ出し当番を割り当てる（管理者専用）
- *
- * enforceAllowedOrigin -> 認証チェック -> 管理者権限チェック -> バリデーション -> 挿入
- *
- * @param data - 当番入力データ
- * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
- */
-export async function assignDuty(data: GarbageDutyInput): Promise<UpdateResponse> {
+export async function assignDuty(data: GarbageDutyInput): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "assignDuty");
@@ -389,17 +320,8 @@ export async function assignDuty(data: GarbageDutyInput): Promise<UpdateResponse
   }
 }
 
-/**
- * ゴミ出し当番のローテーションを自動生成する（管理者専用）
- *
- * 全住民をroom_number順に取得し、ゴミ出しスケジュールに基づいて
- * 指定期間（週数）分の当番をラウンドロビン方式で割り当てる。
- *
- * @param startDate - ローテーション開始日（YYYY-MM-DD形式）
- * @param weeks - 生成する週数
- * @returns 成功時 `{ success: true, count }` (生成件数)、失敗時 `{ error }`
- */
-export async function generateDutyRotation(startDate: string, weeks: number): Promise<GenerateResponse> {
+/** 住民を room_number 順にラウンドロビンで当番割り当て */
+export async function generateDutyRotation(startDate: string, weeks: number): Promise<ActionResponseWith<{ count: number }>> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "generateDutyRotation");
@@ -475,7 +397,7 @@ export async function generateDutyRotation(startDate: string, weeks: number): Pr
         );
 
         for (const entry of daySchedule) {
-          const dateStr = currentDate.toISOString().split("T")[0];
+          const dateStr = toDateString(currentDate);
           duties.push({
             user_id: (profiles[residentIndex] as Profile).id,
             duty_date: dateStr,
@@ -508,15 +430,7 @@ export async function generateDutyRotation(startDate: string, weeks: number): Pr
   }
 }
 
-/**
- * 自分のゴミ出し当番を完了にする
- *
- * 所有権チェック（user_id が自分であること）を行った上で更新する。
- *
- * @param dutyId - 対象当番のID（UUID形式）
- * @returns 成功時 `{ success: true }`、失敗時 `{ error }`
- */
-export async function completeDuty(dutyId: string): Promise<UpdateResponse> {
+export async function completeDuty(dutyId: string): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "completeDuty");

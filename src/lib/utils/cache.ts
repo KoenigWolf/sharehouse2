@@ -7,108 +7,69 @@ import { revalidatePath } from "next/cache";
  * 保守性とパフォーマンスを向上させます。
  */
 export const CacheStrategy = {
-  /**
-   * プロフィール更新後のキャッシュ再検証
-   */
   afterProfileUpdate: () => {
-    revalidatePath("/"); // ホームページ（住民一覧）
-    revalidatePath(`/profile/[id]`, "page"); // プロフィール詳細（動的）
-    revalidatePath("/settings"); // 設定ページ
+    revalidatePath("/");
+    revalidatePath(`/profile/[id]`, "page");
+    revalidatePath("/settings");
   },
 
-  /**
-   * ティータイム設定更新後のキャッシュ再検証
-   */
   afterTeaTimeUpdate: () => {
-    revalidatePath("/"); // ホームページ（通知表示）
-    revalidatePath("/tea-time"); // ティータイムページ
-    revalidatePath("/settings"); // 設定ページ
+    revalidatePath("/");
+    revalidatePath("/tea-time");
+    revalidatePath("/settings");
   },
 
-  /**
-   * ティータイムマッチ更新後のキャッシュ再検証
-   */
   afterMatchUpdate: () => {
-    revalidatePath("/"); // ホームページ（通知表示）
-    revalidatePath("/tea-time"); // ティータイムページ
+    revalidatePath("/");
+    revalidatePath("/tea-time");
   },
 
-  /**
-   * 認証後のキャッシュ再検証
-   */
   afterAuth: () => {
-    revalidatePath("/", "layout"); // 全体のレイアウトをリフレッシュ
+    revalidatePath("/", "layout");
   },
 
-  /**
-   * アバター更新後のキャッシュ再検証
-   */
   afterAvatarUpdate: () => {
-    revalidatePath("/"); // ホームページ（住民一覧）
-    revalidatePath(`/profile/[id]`, "page"); // プロフィール詳細
-    revalidatePath("/settings"); // 設定ページ
-    revalidatePath("/tea-time"); // ティータイムページ（アバター表示あり）
+    revalidatePath("/");
+    revalidatePath(`/profile/[id]`, "page");
+    revalidatePath("/settings");
+    revalidatePath("/tea-time");
   },
 
-  /**
-   * カバー写真更新後のキャッシュ再検証
-   */
   afterCoverPhotoUpdate: () => {
     revalidatePath("/settings");
     revalidatePath(`/profile/[id]`, "page");
   },
 
-  /**
-   * 部屋写真更新後のキャッシュ再検証
-   */
   afterRoomPhotoUpdate: () => {
     revalidatePath("/room-photos");
     revalidatePath(`/profile/[id]`, "page");
     revalidatePath("/settings");
   },
 
-  /**
-   * Wi-Fi情報更新後のキャッシュ再検証
-   */
   afterWifiUpdate: () => {
     revalidatePath("/info");
   },
 
-  /**
-   * ゴミ出しスケジュール・当番更新後のキャッシュ再検証
-   */
   afterGarbageUpdate: () => {
     revalidatePath("/info");
   },
 
-  /**
-   * 掲示板更新後のキャッシュ再検証
-   */
   afterBulletinUpdate: () => {
     revalidatePath("/");
     revalidatePath("/residents");
     revalidatePath("/bulletin");
   },
 
-  /**
-   * Share更新後のキャッシュ再検証
-   */
   afterShareUpdate: () => {
     revalidatePath("/");
     revalidatePath("/share");
   },
 
-  /**
-   * イベント更新後のキャッシュ再検証
-   */
   afterEventUpdate: () => {
     revalidatePath("/");
     revalidatePath("/events");
   },
 
-  /**
-   * 全体キャッシュクリア（管理用・緊急時）
-   */
   clearAll: () => {
     revalidatePath("/", "layout");
   },

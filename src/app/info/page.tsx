@@ -1,11 +1,9 @@
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
-import { MobileNav } from "@/components/mobile-nav";
+import { Header, Footer, MobileNav } from "@/components/layout";
 import { getGarbageSchedule, getUpcomingDuties } from "@/lib/garbage/actions";
 import { getSharedInfo } from "@/lib/shared-info/actions";
 import { isCurrentUserAdmin } from "@/lib/admin/check";
-import { InfoPageContent } from "@/components/info-page-content";
-import { BlurredPageContent } from "@/components/blurred-page-content";
+import { InfoPageContent } from "@/components/info";
+import { BlurredPageContent } from "@/components/public-teaser";
 import { getCachedUser } from "@/lib/supabase/cached-queries";
 import type { GarbageDutyWithProfile } from "@/domain/garbage";
 import type { SharedInfo } from "@/domain/shared-info";
@@ -14,7 +12,6 @@ export default async function InfoPage() {
   const { user } = await getCachedUser();
   const isBlurred = !user;
 
-  // プライバシー保護: 未認証ユーザーには実データを渡さない
   if (isBlurred) {
     const mockSchedule = [
       { id: "mock-1", garbage_type: "可燃ゴミ", day_of_week: 1, notes: null, display_order: 0, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },

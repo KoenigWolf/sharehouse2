@@ -23,5 +23,4 @@ export function formatTimestamp(dateString: string, locale: string): string {
   return rtf.format(-diffDays, "day");
 }
 
-// Re-export animation configs from centralized location
 export { SPRING, SPRING_SOFT, EASE_OUT } from "@/lib/animation";

@@ -1,10 +1,8 @@
 import { redirect, notFound } from "next/navigation";
+import { Header, Footer, MobileNav } from "@/components/layout";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
-import { MobileNav } from "@/components/mobile-nav";
-import { RoomPhotoManager } from "@/components/room-photo-manager";
+import { RoomPhotoManager } from "@/components/room-photos";
 import { Spinner } from "@/components/ui/spinner";
 import { Settings, ChevronRight } from "lucide-react";
 import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
@@ -12,7 +10,7 @@ import { Profile } from "@/domain/profile";
 import { getCachedUser } from "@/lib/supabase/cached-queries";
 
 const ProfileEditForm = dynamic(
-  () => import("@/components/profile-edit-form").then((m) => m.ProfileEditForm),
+  () => import("@/components/profile").then((m) => m.ProfileEditForm),
   { loading: () => <div className="flex justify-center py-20"><Spinner size="lg" variant="dark" /></div> },
 );
 

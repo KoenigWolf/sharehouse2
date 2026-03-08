@@ -1,13 +1,11 @@
 import type { Metadata, Viewport } from "next";
+import { MotionProvider, WebVitalsReporter, NavigationProgress } from "@/components/layout";
 import { Geist, Geist_Mono, Noto_Sans_JP } from "next/font/google";
 import { getServerLocale } from "@/lib/i18n/server";
 import { headers } from "next/headers";
 import { getCachedAuthWithProfile } from "@/lib/supabase/cached-queries";
-import { MotionProvider } from "@/components/motion-provider";
 import { UserProvider } from "@/hooks/use-user";
 import { ThemeProvider, ThemeScript, type ThemeStyle, type ColorMode } from "@/hooks/use-theme";
-import { WebVitalsReporter } from "@/components/web-vitals-reporter";
-import { NavigationProgress } from "@/components/navigation-progress";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -69,7 +67,6 @@ export default async function RootLayout({
   return (
     <html lang={locale} nonce={nonce} suppressHydrationWarning>
       <head>
-        {/* Preconnect to Supabase for faster image/API loads */}
         <link rel="preconnect" href="https://nwvapjxkxoeomevhrzky.supabase.co" />
         <link rel="dns-prefetch" href="https://nwvapjxkxoeomevhrzky.supabase.co" />
         <ThemeScript initialTheme={themeStyle} initialColorMode={colorMode} />

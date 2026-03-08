@@ -91,7 +91,6 @@ export function useLightbox({
     }
   }, [photos.length]);
 
-  // Notify parent of photo changes
   useEffect(() => {
     if (selectedIndex !== null && selectedIndex !== prevIndexRef.current) {
       prevIndexRef.current = selectedIndex;
@@ -120,7 +119,6 @@ export function useLightbox({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, close, navigate]);
 
-  // Preload adjacent images
   useEffect(() => {
     if (selectedIndex === null) return;
 

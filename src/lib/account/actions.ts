@@ -14,19 +14,12 @@ import {
 } from "@/lib/security";
 import { enforceAllowedOrigin } from "@/lib/security/request";
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@/lib/env";
+import type { ActionResponse } from "@/lib/types/action-response";
 
-type UpdateResponse = { success: true } | { error: string };
-
-/**
- * パスワードを変更する
- *
- * オリジン検証 → 認証確認 → レート制限 → 新パスワードバリデーション →
- * 現パスワード検証（セッション非干渉） → パスワード更新 → 監査ログ
- */
 export async function changePassword(
   currentPassword: string,
   newPassword: string
-): Promise<UpdateResponse> {
+): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "changePassword");
@@ -99,15 +92,9 @@ export async function changePassword(
   }
 }
 
-/**
- * メールアドレスを変更する
- *
- * オリジン検証 → 認証確認 → レート制限 → メールバリデーション →
- * Supabase に確認メール送信を依頼 → 監査ログ
- */
 export async function changeEmail(
   newEmail: string
-): Promise<UpdateResponse> {
+): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "changeEmail");
@@ -156,15 +143,9 @@ export async function changeEmail(
   }
 }
 
-/**
- * アカウントを削除する
- *
- * オリジン検証 → 認証確認 → 確認テキスト検証 → レート制限 →
- * 全ユーザーデータ削除（Storage + DB） → Auth ユーザー削除 → 監査ログ
- */
 export async function deleteAccount(
   confirmText: string
-): Promise<UpdateResponse> {
+): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "deleteAccount");
@@ -189,80 +170,34 @@ export async function deleteAccount(
 
     const userId = user.id;
 
-    // Storage: room-photos バケットからユーザーのファイルを削除
-    const { data: photoFiles, error: listPhotosError } = await supabase.storage
-      .from("room-photos")
-      .list(userId);
+    // The storage API requires collecting all exact paths for deletion.
+    // We paginate through the list to avoid partial deletes and then remove them in a subsequent batch operation.
+    const BATCH_SIZE = 100;
+    const allPhotoPaths = await collectAllPhotoPaths(supabase, "room-photos", userId);
 
-    if (listPhotosError) {
-      logError(listPhotosError, { action: "deleteAccount.listPhotos", userId });
-    } else if (photoFiles && photoFiles.length > 0) {
-      const photoPaths = photoFiles.map((f) => `${userId}/${f.name}`);
-      const { error: removePhotosError } = await supabase.storage
-        .from("room-photos")
-        .remove(photoPaths);
-      if (removePhotosError) {
-        logError(removePhotosError, { action: "deleteAccount.removePhotos", userId });
-      }
+    const removePhotosError = await removePhotosInBatches(supabase, "room-photos", allPhotoPaths, BATCH_SIZE);
+    if (removePhotosError) {
+      logError(removePhotosError, { action: "deleteAccount.removePhotos", userId });
+      return { error: t("errors.serverError") };
     }
 
-    // Storage: avatars バケットからプロフィールのアバターを削除
     const { data: profile } = await supabase
       .from("profiles")
       .select("avatar_url")
       .eq("id", userId)
       .single();
 
-    if (profile?.avatar_url && profile.avatar_url.includes("/avatars/")) {
-      const avatarPath = profile.avatar_url.split("/avatars/").pop();
-      if (avatarPath) {
-        const { error: removeAvatarError } = await supabase.storage
-          .from("avatars")
-          .remove([avatarPath]);
-        if (removeAvatarError) {
-          logError(removeAvatarError, { action: "deleteAccount.removeAvatar", userId });
-        }
-      }
+    if (profile?.avatar_url) {
+      await removeAvatarIfPresent(supabase, userId, profile.avatar_url);
     }
 
-    // DB: ユーザー関連データを削除（エラーがあっても続行し、全てログする）
-    const deleteResults = await Promise.all([
-      supabase.from("room_photos").delete().eq("user_id", userId),
-      supabase.from("notification_settings").delete().eq("user_id", userId),
-      supabase.from("tea_time_settings").delete().eq("user_id", userId),
-      supabase
-        .from("tea_time_matches")
-        .delete()
-        .or(`user1_id.eq.${userId},user2_id.eq.${userId}`),
-    ]);
+    await deleteUserRecords(supabase, userId);
 
-    const tableNames = ["room_photos", "notification_settings", "tea_time_settings", "tea_time_matches"];
-    for (let i = 0; i < deleteResults.length; i++) {
-      if (deleteResults[i].error) {
-        logError(deleteResults[i].error, {
-          action: `deleteAccount.delete.${tableNames[i]}`,
-          userId,
-        });
-      }
-    }
-
-    // DB: プロフィールを削除
-    const { error: profileDeleteError } = await supabase
-      .from("profiles")
-      .delete()
-      .eq("id", userId);
-
-    if (profileDeleteError) {
-      logError(profileDeleteError, { action: "deleteAccount.delete.profiles", userId });
-    }
-
-    // Auth: ユーザーを削除（Service Role 必要）
     const adminClient = createAdminClient();
-    const { error: deleteError } =
-      await adminClient.auth.admin.deleteUser(userId);
+    const { error: authDeleteError } = await adminClient.auth.admin.deleteUser(userId);
 
-    if (deleteError) {
-      logError(deleteError, { action: "deleteAccount.authDelete", userId });
+    if (authDeleteError) {
+      logError(authDeleteError, { action: "deleteAccount.authDelete", userId });
       return { error: t("errors.serverError") };
     }
 
@@ -278,5 +213,119 @@ export async function deleteAccount(
   } catch (error) {
     logError(error, { action: "deleteAccount" });
     return { error: t("errors.serverError") };
+  }
+}
+
+// --- Helpers for Account Deletion ---
+
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+/**
+ * Storage バケットから指定ユーザーの全ファイルパスを収集する
+ * @throws リスト取得エラー時は例外をスロー（呼び出し元で処理を中断させる）
+ */
+async function collectAllPhotoPaths(supabase: SupabaseClient, bucket: string, userId: string): Promise<string[]> {
+  const BATCH_SIZE = 100;
+  const allPhotoPaths: string[] = [];
+  let offset = 0;
+
+  while (true) {
+    const { data: photoFiles, error: listError } = await supabase.storage
+      .from(bucket)
+      .list(userId, { limit: BATCH_SIZE, offset });
+
+    if (listError) {
+      logError(listError, { action: "collectAllPhotoPaths.listPhotos", userId, metadata: { bucket } });
+      throw listError;
+    }
+
+    if (!photoFiles || photoFiles.length === 0) {
+      break;
+    }
+
+    for (const f of photoFiles) {
+      allPhotoPaths.push(`${userId}/${f.name}`);
+    }
+
+    if (photoFiles.length < BATCH_SIZE) {
+      break;
+    }
+    offset += BATCH_SIZE;
+  }
+  return allPhotoPaths;
+}
+
+async function removePhotosInBatches(supabase: SupabaseClient, bucket: string, paths: string[], batchSize: number) {
+  for (let i = 0; i < paths.length; i += batchSize) {
+    const batch = paths.slice(i, i + batchSize);
+    const { error: removeError } = await supabase.storage
+      .from(bucket)
+      .remove(batch);
+    if (removeError) {
+      return removeError;
+    }
+  }
+  return null;
+}
+
+/**
+ * アバター画像を Storage から削除する
+ * @throws 削除エラー時は例外をスロー
+ */
+async function removeAvatarIfPresent(supabase: SupabaseClient, userId: string, avatarUrl: string): Promise<void> {
+  if (!avatarUrl.includes("/avatars/")) {
+    return;
+  }
+
+  const avatarPath = avatarUrl.split("/avatars/").pop();
+  if (!avatarPath) {
+    return;
+  }
+
+  const { error: removeError } = await supabase.storage
+    .from("avatars")
+    .remove([avatarPath]);
+
+  if (removeError) {
+    logError(removeError, { action: "deleteAccount.removeAvatar", userId });
+    throw removeError;
+  }
+}
+
+/**
+ * ユーザーの関連レコードを全て削除する
+ * @throws いずれかの削除でエラーが発生した場合は例外をスロー
+ */
+async function deleteUserRecords(supabase: SupabaseClient, userId: string): Promise<void> {
+  const deleteResults = await Promise.all([
+    supabase.from("room_photos").delete().eq("user_id", userId),
+    supabase.from("notification_settings").delete().eq("user_id", userId),
+    supabase.from("tea_time_settings").delete().eq("user_id", userId),
+    supabase
+      .from("tea_time_matches")
+      .delete()
+      .or(`user1_id.eq.${userId},user2_id.eq.${userId}`),
+  ]);
+
+  const tableNames = ["room_photos", "notification_settings", "tea_time_settings", "tea_time_matches"];
+  for (let i = 0; i < deleteResults.length; i++) {
+    const err = deleteResults[i].error;
+    if (err) {
+      logError(err, {
+        action: `deleteAccount.delete.${tableNames[i]}`,
+        userId,
+      });
+      throw err;
+    }
+  }
+
+  const { error: profileDeleteError } = await supabase
+    .from("profiles")
+    .delete()
+    .eq("id", userId);
+
+  if (profileDeleteError) {
+    logError(profileDeleteError, { action: "deleteAccount.delete.profiles", userId });
+    throw profileDeleteError;
   }
 }

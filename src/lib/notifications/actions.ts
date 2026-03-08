@@ -4,10 +4,9 @@ import { createClient } from "@/lib/supabase/server";
 import { logError } from "@/lib/errors";
 import { getServerTranslator } from "@/lib/i18n/server";
 import { enforceAllowedOrigin } from "@/lib/security/request";
+import type { ActionResponse } from "@/lib/types/action-response";
 import type { NotificationSettings, NotificationKey } from "@/domain/notification";
 import { DEFAULT_NOTIFICATION_SETTINGS } from "@/domain/notification";
-
-type UpdateResponse = { success: true } | { error: string };
 
 /**
  * ログインユーザーの通知設定を取得する
@@ -66,7 +65,7 @@ const VALID_KEYS: NotificationKey[] = ["notify_tea_time", "notify_garbage_duty",
 export async function updateNotificationSetting(
   key: NotificationKey,
   value: boolean,
-): Promise<UpdateResponse> {
+): Promise<ActionResponse> {
   const t = await getServerTranslator();
 
   const originError = await enforceAllowedOrigin(t, "updateNotificationSetting");

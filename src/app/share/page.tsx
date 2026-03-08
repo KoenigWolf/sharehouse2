@@ -1,8 +1,6 @@
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
-import { MobileNav } from "@/components/mobile-nav";
-import { ShareContent } from "@/components/share-content";
-import { BlurredPageContent } from "@/components/blurred-page-content";
+import { ShareContent } from "@/components/share";
+import { Header, Footer, MobileNav } from "@/components/layout";
+import { BlurredPageContent } from "@/components/public-teaser";
 import { getShareItems } from "@/lib/share/actions";
 import { getCachedUser } from "@/lib/supabase/cached-queries";
 import { generateMockShareItems } from "@/lib/mock-data";
@@ -12,7 +10,6 @@ export default async function SharePage() {
   const { user, supabase } = await getCachedUser();
   const isBlurred = !user;
 
-  // プライバシー保護: 未認証ユーザーには実データを渡さない
   if (isBlurred) {
     const { count, error } = await supabase
       .from("share_items")

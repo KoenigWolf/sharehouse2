@@ -1,11 +1,9 @@
 import Link from "next/link";
+import { Header, Footer, MobileNav } from "@/components/layout";
 import { Settings, ChevronRight, Coffee } from "lucide-react";
 import { ICON_SIZE, ICON_STROKE } from "@/lib/constants/icons";
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
-import { MobileNav } from "@/components/mobile-nav";
-import { TeaTimeMatchCard } from "@/components/tea-time-match-card";
-import { BlurredPageContent } from "@/components/blurred-page-content";
+import { TeaTimeMatchCard } from "@/components/tea-time";
+import { BlurredPageContent } from "@/components/public-teaser";
 import { getTeaTimeSetting, getMyMatches } from "@/lib/tea-time/actions";
 import { getServerTranslator } from "@/lib/i18n/server";
 import { getCachedUser } from "@/lib/supabase/cached-queries";

@@ -4,17 +4,18 @@ import { createClient } from "@/lib/supabase/server";
 import { logError } from "@/lib/errors";
 import { sendPushNotification } from "@/lib/push/actions";
 import { t } from "@/lib/i18n";
+import { toDateString } from "@/lib/utils/formatting";
 
 export async function sendMorningDigest() {
   const supabase = await createClient();
 
   const today = new Date();
-  const todayStr = today.toISOString().split("T")[0];
+  const todayStr = toDateString(today);
   const dayOfWeek = today.getDay();
 
   const threeDaysLater = new Date(today);
   threeDaysLater.setDate(threeDaysLater.getDate() + 3);
-  const threeDaysLaterStr = threeDaysLater.toISOString().split("T")[0];
+  const threeDaysLaterStr = toDateString(threeDaysLater);
 
   const twentyFourHoursAgo = new Date(today);
   twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24);
@@ -41,6 +42,28 @@ export async function sendMorningDigest() {
         .gte("expires_at", today.toISOString()),
       supabase.from("push_subscriptions").select("user_id"),
     ]);
+
+  // Check for errors in any query result - abort if any failed
+  if (garbageResult.error) {
+    logError(garbageResult.error, { action: "sendMorningDigest.garbageQuery" });
+    return;
+  }
+  if (bulletinResult.error) {
+    logError(bulletinResult.error, { action: "sendMorningDigest.bulletinQuery" });
+    return;
+  }
+  if (eventResult.error) {
+    logError(eventResult.error, { action: "sendMorningDigest.eventQuery" });
+    return;
+  }
+  if (shareResult.error) {
+    logError(shareResult.error, { action: "sendMorningDigest.shareQuery" });
+    return;
+  }
+  if (usersResult.error) {
+    logError(usersResult.error, { action: "sendMorningDigest.usersQuery" });
+    return;
+  }
 
   const garbageTypes = (garbageResult.data ?? [])
     .map((g) => g.garbage_type)
