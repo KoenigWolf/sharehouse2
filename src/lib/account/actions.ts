@@ -220,6 +220,10 @@ export async function deleteAccount(
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+/**
+ * Storage バケットから指定ユーザーの全ファイルパスを収集する
+ * @throws リスト取得エラー時は例外をスロー（呼び出し元で処理を中断させる）
+ */
 async function collectAllPhotoPaths(supabase: SupabaseClient, bucket: string, userId: string): Promise<string[]> {
   const BATCH_SIZE = 100;
   const allPhotoPaths: string[] = [];
@@ -231,8 +235,8 @@ async function collectAllPhotoPaths(supabase: SupabaseClient, bucket: string, us
       .list(userId, { limit: BATCH_SIZE, offset });
 
     if (listError) {
-      logError(listError, { action: "collectAllPhotoPaths.listPhotos", userId });
-      break;
+      logError(listError, { action: "collectAllPhotoPaths.listPhotos", userId, metadata: { bucket } });
+      throw listError;
     }
 
     if (!photoFiles || photoFiles.length === 0) {
@@ -264,21 +268,35 @@ async function removePhotosInBatches(supabase: SupabaseClient, bucket: string, p
   return null;
 }
 
-async function removeAvatarIfPresent(supabase: SupabaseClient, userId: string, avatarUrl: string) {
-  if (avatarUrl.includes("/avatars/")) {
-    const avatarPath = avatarUrl.split("/avatars/").pop();
-    if (avatarPath) {
-      const { error: removeError } = await supabase.storage
-        .from("avatars")
-        .remove([avatarPath]);
-      if (removeError) {
-        logError(removeError, { action: "deleteAccount.removeAvatar", userId });
-      }
-    }
+/**
+ * アバター画像を Storage から削除する
+ * @throws 削除エラー時は例外をスロー
+ */
+async function removeAvatarIfPresent(supabase: SupabaseClient, userId: string, avatarUrl: string): Promise<void> {
+  if (!avatarUrl.includes("/avatars/")) {
+    return;
+  }
+
+  const avatarPath = avatarUrl.split("/avatars/").pop();
+  if (!avatarPath) {
+    return;
+  }
+
+  const { error: removeError } = await supabase.storage
+    .from("avatars")
+    .remove([avatarPath]);
+
+  if (removeError) {
+    logError(removeError, { action: "deleteAccount.removeAvatar", userId });
+    throw removeError;
   }
 }
 
-async function deleteUserRecords(supabase: SupabaseClient, userId: string) {
+/**
+ * ユーザーの関連レコードを全て削除する
+ * @throws いずれかの削除でエラーが発生した場合は例外をスロー
+ */
+async function deleteUserRecords(supabase: SupabaseClient, userId: string): Promise<void> {
   const deleteResults = await Promise.all([
     supabase.from("room_photos").delete().eq("user_id", userId),
     supabase.from("notification_settings").delete().eq("user_id", userId),
@@ -297,6 +315,7 @@ async function deleteUserRecords(supabase: SupabaseClient, userId: string) {
         action: `deleteAccount.delete.${tableNames[i]}`,
         userId,
       });
+      throw err;
     }
   }
 
@@ -307,5 +326,6 @@ async function deleteUserRecords(supabase: SupabaseClient, userId: string) {
 
   if (profileDeleteError) {
     logError(profileDeleteError, { action: "deleteAccount.delete.profiles", userId });
+    throw profileDeleteError;
   }
 }

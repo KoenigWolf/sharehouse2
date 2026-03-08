@@ -94,12 +94,14 @@ CREATE POLICY "管理者のみゴミ当番を削除可能"
 
 -- ============================================
 -- 4. Assignment Guard Trigger
+-- Only admins can modify user_id, duty_date, garbage_type, created_at
 -- ============================================
 
 CREATE OR REPLACE FUNCTION public.guard_garbage_duty_assignment_fields()
 RETURNS trigger
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public, pg_temp
 AS $$
 BEGIN
   IF public.is_admin() THEN
@@ -118,42 +120,8 @@ END;
 $$;
 
 DROP TRIGGER IF EXISTS on_garbage_duties_assignment_guard ON public.garbage_duties;
-CREATE TRIGGER on_garbage_duties_assignment_guard
-  BEFORE UPDATE ON public.garbage_duties
-  FOR EACH ROW
-  EXECUTE FUNCTION public.guard_garbage_duty_assignment_fields();
-
--- ============================================
--- 4. Trigger to guard assignment fields
--- Only admins can modify user_id, duty_date, garbage_type
--- ============================================
-
-CREATE OR REPLACE FUNCTION guard_garbage_duty_assignment_fields()
-RETURNS TRIGGER
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public, pg_temp
-AS $$
-BEGIN
-  -- Allow admins to modify any field
-  IF public.is_admin() THEN
-    RETURN NEW;
-  END IF;
-
-  -- Non-admins cannot change assignment fields
-  IF NEW.user_id IS DISTINCT FROM OLD.user_id
-    OR NEW.duty_date IS DISTINCT FROM OLD.duty_date
-    OR NEW.garbage_type IS DISTINCT FROM OLD.garbage_type
-  THEN
-    RAISE EXCEPTION 'Only administrators can modify assignment fields';
-  END IF;
-
-  RETURN NEW;
-END;
-$$;
-
 DROP TRIGGER IF EXISTS guard_garbage_duty_assignment ON public.garbage_duties;
 CREATE TRIGGER guard_garbage_duty_assignment
   BEFORE UPDATE ON public.garbage_duties
   FOR EACH ROW
-  EXECUTE FUNCTION guard_garbage_duty_assignment_fields();
+  EXECUTE FUNCTION public.guard_garbage_duty_assignment_fields();

@@ -69,14 +69,104 @@ async function withAdminClient<R>(
 }
 
 /**
- * Mutation時のエラーログ記録と統一レスポンスを返す共通ヘルパー
+ * Mutation エラーをログ記録し統一レスポンスに変換するヘルパー
  */
-function runAdminMutation(error: unknown, actionName: string, t: ServerTranslator, userId?: string): ActionResponse {
+function handleMutationError(error: unknown, actionName: string, t: ServerTranslator, userId?: string): ActionResponse {
   if (error) {
     logError(error, { action: actionName, userId });
     return { error: t("errors.adminOperationFailed") };
   }
   return { success: true };
+}
+
+type AdminClient = ReturnType<typeof createAdminClient>;
+
+/**
+ * ユーザーの Storage ファイル（room-photos, avatars, cover-photos）を削除する
+ * @returns エラー時は { error: string }、成功時は undefined
+ */
+async function deleteUserStorageFiles(
+  adminClient: AdminClient,
+  targetUserId: string,
+  t: ServerTranslator
+): Promise<{ error: string } | undefined> {
+  // room-photos
+  const { data: roomPhotos } = await adminClient
+    .from("room_photos")
+    .select("photo_url")
+    .eq("user_id", targetUserId);
+
+  if (roomPhotos && roomPhotos.length > 0) {
+    const photoPaths = roomPhotos
+      .map((p) => p.photo_url?.split("/room-photos/").pop())
+      .filter((path): path is string => !!path);
+    if (photoPaths.length > 0) {
+      const { error: removePhotosError } = await adminClient.storage.from("room-photos").remove(photoPaths);
+      if (removePhotosError) {
+        logError(removePhotosError, { action: "adminDeleteAccount.removePhotos", userId: targetUserId });
+        return { error: t("errors.serverError") };
+      }
+    }
+  }
+
+  // avatars / cover-photos
+  const { data: profile } = await adminClient
+    .from("profiles")
+    .select("avatar_url, cover_photo_url")
+    .eq("id", targetUserId)
+    .single();
+
+  if (profile) {
+    if (profile.avatar_url?.includes("/avatars/")) {
+      const avatarPath = profile.avatar_url.split("/avatars/").pop();
+      if (avatarPath) {
+        const { error: removeAvatarError } = await adminClient.storage.from("avatars").remove([avatarPath]);
+        if (removeAvatarError) {
+          logError(removeAvatarError, { action: "adminDeleteAccount.removeAvatar", userId: targetUserId });
+          return { error: t("errors.serverError") };
+        }
+      }
+    }
+
+    if (profile.cover_photo_url?.includes("/cover-photos/")) {
+      const coverPath = profile.cover_photo_url.split("/cover-photos/").pop();
+      if (coverPath) {
+        const { error: removeCoverError } = await adminClient.storage.from("cover-photos").remove([coverPath]);
+        if (removeCoverError) {
+          logError(removeCoverError, { action: "adminDeleteAccount.removeCover", userId: targetUserId });
+          return { error: t("errors.serverError") };
+        }
+      }
+    }
+  }
+
+  return undefined;
+}
+
+/**
+ * ユーザーの関連データ（room_photos, notification_settings, tea_time_settings, tea_time_matches）を削除する
+ * エラーはログ記録のみで処理続行（Auth削除でCASCADE削除されるため）
+ */
+async function deleteUserRelatedData(adminClient: AdminClient, targetUserId: string): Promise<void> {
+  const relatedResults = await Promise.all([
+    adminClient.from("room_photos").delete().eq("user_id", targetUserId),
+    adminClient.from("notification_settings").delete().eq("user_id", targetUserId),
+    adminClient.from("tea_time_settings").delete().eq("user_id", targetUserId),
+    adminClient
+      .from("tea_time_matches")
+      .delete()
+      .or(`user1_id.eq.${targetUserId},user2_id.eq.${targetUserId}`),
+  ]);
+
+  const relatedTables = ["room_photos", "notification_settings", "tea_time_settings", "tea_time_matches"];
+  for (let i = 0; i < relatedResults.length; i++) {
+    if (relatedResults[i].error) {
+      logError(relatedResults[i].error, {
+        action: `adminDeleteAccount.delete.${relatedTables[i]}`,
+        userId: targetUserId,
+      });
+    }
+  }
 }
 
 /**
@@ -199,82 +289,20 @@ export async function adminDeleteAccount(targetUserId: string): Promise<ActionRe
     }
 
     return withAdminClient(t, "adminDeleteAccount", async (adminClient) => {
-      // Storage: room-photos
-      const { data: roomPhotos } = await adminClient
-        .from("room_photos")
-        .select("photo_url")
-        .eq("user_id", targetUserId);
-
-      if (roomPhotos && roomPhotos.length > 0) {
-        const photoPaths = roomPhotos
-          .map((p) => p.photo_url?.split("/room-photos/").pop())
-          .filter((path): path is string => !!path);
-        if (photoPaths.length > 0) {
-          const { error: removePhotosError } = await adminClient.storage.from("room-photos").remove(photoPaths);
-          if (removePhotosError) {
-            logError(removePhotosError, { action: "adminDeleteAccount.removePhotos", userId: targetUserId });
-            return { error: t("errors.serverError") };
-          }
-        }
-      }
-
-      // Storage: avatars / cover-photos
-      const { data: profile } = await adminClient
-        .from("profiles")
-        .select("avatar_url, cover_photo_url")
-        .eq("id", targetUserId)
-        .single();
-
-      if (profile) {
-        if (profile.avatar_url?.includes("/avatars/")) {
-          const avatarPath = profile.avatar_url.split("/avatars/").pop();
-          if (avatarPath) {
-            const { error: removeAvatarError } = await adminClient.storage.from("avatars").remove([avatarPath]);
-            if (removeAvatarError) {
-              logError(removeAvatarError, { action: "adminDeleteAccount.removeAvatar", userId: targetUserId });
-              return { error: t("errors.serverError") };
-            }
-          }
-        }
-
-        if (profile.cover_photo_url?.includes("/cover-photos/")) {
-          const coverPath = profile.cover_photo_url.split("/cover-photos/").pop();
-          if (coverPath) {
-            const { error: removeCoverError } = await adminClient.storage.from("cover-photos").remove([coverPath]);
-            if (removeCoverError) {
-              logError(removeCoverError, { action: "adminDeleteAccount.removeCover", userId: targetUserId });
-              return { error: t("errors.serverError") };
-            }
-          }
-        }
+      // Storage: ファイル削除
+      const storageError = await deleteUserStorageFiles(adminClient, targetUserId, t);
+      if (storageError) {
+        return storageError;
       }
 
       // DB: 関連データ削除
-      const relatedResults = await Promise.all([
-        adminClient.from("room_photos").delete().eq("user_id", targetUserId),
-        adminClient.from("notification_settings").delete().eq("user_id", targetUserId),
-        adminClient.from("tea_time_settings").delete().eq("user_id", targetUserId),
-        adminClient
-          .from("tea_time_matches")
-          .delete()
-          .or(`user1_id.eq.${targetUserId},user2_id.eq.${targetUserId}`),
-      ]);
-
-      const relatedTables = ["room_photos", "notification_settings", "tea_time_settings", "tea_time_matches"];
-      for (let i = 0; i < relatedResults.length; i++) {
-        if (relatedResults[i].error) {
-          logError(relatedResults[i].error, {
-            action: `adminDeleteAccount.delete.${relatedTables[i]}`,
-            userId: targetUserId,
-          });
-        }
-      }
+      await deleteUserRelatedData(adminClient, targetUserId);
 
       // Auth: ユーザー削除（CASCADE で profiles 含む全関連データが削除される）
       const { error: authError } = await adminClient.auth.admin.deleteUser(targetUserId);
 
       if (authError) {
-        return runAdminMutation(authError, "adminDeleteAccount.authDelete", t, targetUserId);
+        return handleMutationError(authError, "adminDeleteAccount.authDelete", t, targetUserId);
       }
 
       // 削除の検証
@@ -292,7 +320,7 @@ export async function adminDeleteAccount(targetUserId: string): Promise<ActionRe
           .eq("id", targetUserId);
 
         if (profileError) {
-          return runAdminMutation(profileError, "adminDeleteAccount.delete.profiles", t, targetUserId);
+          return handleMutationError(profileError, "adminDeleteAccount.delete.profiles", t, targetUserId);
         }
       }
 
@@ -392,7 +420,7 @@ export async function adminUpdateUserEmail(
       });
 
       if (updateError) {
-        return runAdminMutation(updateError, "adminUpdateUserEmail", t, targetUserId);
+        return handleMutationError(updateError, "adminUpdateUserEmail", t, targetUserId);
       }
 
       auditLog({
@@ -460,7 +488,7 @@ export async function adminUpdateUserPassword(
       });
 
       if (updateError) {
-        return runAdminMutation(updateError, "adminUpdateUserPassword", t, targetUserId);
+        return handleMutationError(updateError, "adminUpdateUserPassword", t, targetUserId);
       }
 
       auditLog({
